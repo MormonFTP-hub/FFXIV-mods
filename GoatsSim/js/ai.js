@@ -1,8 +1,9 @@
 // The bots. A Director per team runs the fight the way GOATS teams did: group up behind the Rein, poke
 // through the gate, wait for an engage call (Lucio's speed, an ult advantage, a pick, or their Rein walking
 // in), brawl, and trade ults in order: bait a save with one ult, land the next when the save is gone, and
-// answer the other side's ults (Trans the grav, Beat the bomb, hide behind the shield). Each hero has a
-// brain that moves to its spot in the deathball and plays its kit like players of that hero did.
+// answer the other side's ults (Trans the grav, Beat the bomb, hide behind the shield). After a lost fight
+// the team regroups instead of walking back in one at a time, and the clock pushes attackers onto the point.
+// Each hero has a brain that moves to its spot in the deathball and plays its kit like players of that hero did.
 (function (G) {
   const T = THREE;
   const K = () => G.Kits;
@@ -62,7 +63,7 @@
     // a slow Rein a few seconds to catch up), then take the platform over the point; defenders hold the point.
     plan() {
       const g = this.g, t = g.time, ec = this.centroid(this.enemies), oc = this.centroid(this.units);
-      if (this.phase === 'retreat') return g.map.spawn[this.team];
+      if (this.phase === 'regroup') return this.side === 'attack' ? g.map.plaza : g.map.hold;
       if (this.phase === 'engage') {
         if (ec && oc) return oc.clone().lerp(ec, 0.5);
         return this.side === 'attack' ? g.map.point : g.map.hold;
@@ -133,14 +134,25 @@
       const ec = this.centroid(this.enemies), oc = this.centroid(this.units);
       const dist = ec && oc ? ec.distanceTo(oc) : 99;
 
-      // regroup when the fight is lost
-      if (own.length <= 2 && foes.length - own.length >= 2) { this.setPhase('retreat'); return; }
-      if (this.phase === 'retreat' && own.length >= foes.length) this.setPhase('poke');
+      // a lost fight: fall back and wait for the respawns instead of feeding in one at a time
+      const losing = (own.length <= 2 && foes.length - own.length >= 2) || (own.length <= 3 && foes.length - own.length >= 3);
+      if (this.phase !== 'regroup' && losing && !(this.side === 'defense' && g.attackersOn > 0)) { this.setPhase('regroup'); return; }
+      if (this.phase === 'regroup') {
+        const spot = this.plan();
+        const gathered = own.filter((u) => u.pos.distanceTo(spot) < 14).length;
+        const enough = own.length >= 5 || (own.length >= 4 && own.length >= foes.length) || gathered >= 5;
+        // defenders can't sit back while the point is being taken
+        const mustGo = this.side === 'defense' ? g.attackersOn > 0 : (g.roundEnd - t < 25);
+        if ((enough && gathered >= Math.min(4, own.length)) || mustGo || t - this.phaseAt > 24) this.setPhase(this.side === 'attack' ? 'approach' : 'poke');
+        return;
+      }
 
       if (this.phase === 'setup' || this.phase === 'approach') {
         if (dist < 26) this.setPhase('poke');
         else if (this.phase === 'setup') this.setPhase('approach');
       }
+      // after a won fight the attackers stand on the point; defenders always come back to contest it
+      if (this.phase === 'poke' && this.side === 'attack' && foes.length <= 2 && own.length >= foes.length + 2) this.engage();
       if (this.phase === 'poke') {
         const s = this.engageValue(own, foes, dist);
         this.engageScore = s;
@@ -150,7 +162,7 @@
       }
       if (this.phase === 'engage' && dist > 32 && t - this.phaseAt > 6) this.setPhase('poke');
       // nobody has hurt anybody for a while: whoever is left goes to the point and settles it
-      if (t - (g.lastDamageAt || 0) > 10 && t > 20 && this.phase !== 'engage' && this.phase !== 'retreat') this.setPhase('engage');
+      if (t - (g.lastDamageAt || 0) > 10 && t > 20 && this.phase !== 'engage' && this.phase !== 'regroup') this.setPhase('engage');
     }
 
     engageValue(own, foes, dist) {
@@ -164,7 +176,12 @@
       const lucio = own.find((u) => u.hero === 'lucio');
       if (lucio && lucio.ready('amp')) s += 0.5;
       s += Math.min(3, (t - this.phaseAt) * 0.18);
-      if (this.side === 'attack') s += 0.4;
+      if (this.side === 'attack') {
+        s += 0.4;
+        const left = g.roundEnd - t;
+        if (left < 60) s += 2;          // the clock is running out: go
+        if (left < 25) s += 4;
+      }
       // defenders step up when attackers walk onto the point
       if (this.side === 'defense' && this.alive(this.enemies).some((e) => e.pos.distanceTo(g.map.point) < g.map.pointR + 2)) s += 3;
       // the player's Rein walking into them is an engage, like it or not
@@ -441,7 +458,7 @@
       const foe = this.nearestEnemy();
       const fd = foe ? foe.pos.distanceTo(u.pos) : 99;
       let goal;
-      if (d.phase === 'retreat') goal = g.map.spawn[u.team];
+      if (d.phase === 'regroup') goal = d.plan();
       else if (d.phase === 'engage') goal = foe && fd < 30 ? foe.pos : this.objective();
       else if (d.side === 'defense') goal = g.map.hold;
       else { const plan = d.plan(); goal = fd > 8 && u.pos.distanceTo(plan) > 1.5 ? plan : null; }
@@ -536,7 +553,6 @@
         else if (dist < 5) goal = u.pos.clone().add(u.pos.clone().sub(tgt.pos).setY(0).normalize().multiplyScalar(3));
         else goal = null;
       }
-      if (d.phase === 'retreat') goal = g.map.spawn[u.team];
       if (!tgt && d.phase === 'engage') goal = this.objective();
       if (goal) this.goTo(goal, dt, 1.2); else this.strafe(0.6);
       // bubbles: the anchor when he's focused or committing, a gravved/knocked teammate, herself when hit
@@ -631,7 +647,7 @@
         this.goTo(zen.pos, dt, 3);
       } else {
         tgt = this.pickTarget(22, { lucio: 0.3 });
-        const goal = d.phase === 'retreat' ? g.map.spawn[u.team] : (d.phase === 'engage' ? (tgt ? tgt.pos : this.objective()) : this.slot(front));
+        const goal = d.phase === 'regroup' ? this.slot(front) : (d.phase === 'engage' ? (tgt ? tgt.pos : this.objective()) : this.slot(front));
         this.goTo(goal, dt, d.phase === 'engage' ? 4 : 1.2);
         if (d.phase === 'engage') this.strafe(0.5);
       }
@@ -703,13 +719,12 @@
       }
       // song: speed on the walk and the engage, heal otherwise
       const healing = g.alliesOf(u.team).some((a) => a.alive && a.frac() < 0.85 && a.pos.distanceTo(u.pos) < 10);
-      const wantSpeed = (d.phase === 'approach' && !healing) || (this.speedUntil > t) || d.phase === 'retreat';
+      const wantSpeed = (d.phase === 'approach' && !healing) || (this.speedUntil > t) || d.phase === 'regroup';
       L.song(u, wantSpeed ? 'speed' : 'heal');
       if (d.phase === 'engage' && !u.has('amp') && u.ready('amp') && g.alliesOf(u.team).filter((a) => a.alive && a.frac() < 0.55 && a.pos.distanceTo(u.pos) < 10).length >= 2) L.amp(u);
       const tgt = this.pickTarget(26);
       this.target = tgt;
       let goal = this.slot(front);
-      if (d.phase === 'retreat') goal = g.map.spawn[u.team];
       if (d.phase === 'engage') {
         const mates = g.alliesOf(u.team).filter((x) => x.alive && x !== u && x.hero !== 'zenyatta');
         if (mates.length) {
@@ -749,7 +764,6 @@
         if (tg) { B.shield(u, true); if (B.bash(u, tg)) { this.aimAt(tg.center(v1), 1, 99); return; } }
       }
       let goal = this.slot(front);
-      if (d.phase === 'retreat') goal = g.map.spawn[u.team];
       if (d.peel && d.peel.pos.distanceTo(u.pos) < 18) goal = d.peel.pos;   // peel for Zen / Lucio first
       else if (d.phase === 'engage') goal = near && nd < 14 ? near.pos : goal;
       this.goTo(goal, dt, d.phase === 'engage' ? 3.5 : 1.0);
@@ -800,7 +814,6 @@
       }
       if (disc && u.discordT !== disc && (!u.discordT || !u.discordT.alive || Math.random() < dt * 0.6)) { if (Z.discord(u, disc)) d.say('zenyatta', 'discord', { t: disc.H.name }, 10); }
       let goal = this.slot(front);
-      if (d.phase === 'retreat') goal = g.map.spawn[u.team];
       if (d.phase === 'engage') goal = front.pos.clone().addScaledVector(front.dir, -5).add(new T.Vector3(Math.sin(t * 0.5 + 1) * 1.5, 0, 0));
       // a Zen who can't see the fight is doing nothing: walk up until he can
       const sees = foes.length > 0 || (u.harmonyT && this.visible(u.harmonyT));

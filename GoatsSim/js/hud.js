@@ -66,9 +66,10 @@
         if (!u.hudEl) continue;
         u.hudEl.classList.toggle('dead', !u.alive);
         const ul = u.hudEl.querySelector('.ul');
-        if (u.team === g.blue) {
+        if (!u.alive) { ul.textContent = Math.ceil(g.respawnIn(u)) + 's'; ul.classList.remove('ready'); }
+        else if (u.team === g.blue) {
           const pct = u.ultPct();
-          ul.textContent = u.alive ? (u.ultReady() ? '★' : pct + '%') : '';
+          ul.textContent = u.ultReady() ? '★' : pct + '%';
           ul.classList.toggle('ready', u.ultReady());
         } else ul.textContent = '';
       }
@@ -77,8 +78,9 @@
       $('cap-ring').style.strokeDashoffset = String(213.6 * (1 - cap));
       $('point-state').textContent = g.pointState;
       $('point').className = g.pointState === 'CONTESTED' ? 'contested' : (g.pointState === 'CAPTURING' ? 'capturing' : '');
-      const left = Math.max(0, g.roundEnd - t);
-      $('round-time').textContent = `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
+      const left = Math.max(0, g.roundEnd - Math.max(t, g.countEnd));
+      $('round-time').textContent = g.overtime ? 'OT' : `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
+      $('point').classList.toggle('overtime', !!g.overtime);
       // health segments
       const pools = [['hp', p.hp, p.maxHp], ['ar', p.armor + p.tempArmor, p.maxArmor + p.tempArmor], ['sh', p.shields + p.temp, p.maxShields + p.temp]];
       const segs = [];
@@ -115,7 +117,7 @@
       // status banner
       let banner = '';
       if (g.autopilot) banner = '';
-      else if (!p.alive) banner = 'ELIMINATED — SPECTATING';
+      else if (!p.alive) banner = `RESPAWNING IN ${Math.ceil(g.respawnIn(p))}`;
       else if (p.has('knock')) banner = 'KNOCKED DOWN';
       else if (p.has('grav')) banner = 'GRAVITON SURGE';
       else if (p.has('stun')) banner = 'STUNNED';
@@ -349,6 +351,7 @@
       }
       if (p.barrier.up && p.barrier.hp < 500) { this.tip('lowShield', 'Shield is cracking. Step back behind your Brig and let it regen, or drop it and swing if you\'re on top of them.', 6, 3, 10); return; }
       if (p.frac() < 0.35) { this.tip('lowHp', 'You\'re low. Hold shield and back up into your Brig\'s packs and Zen\'s Harmony.', 6, 3, 10); return; }
+      if (blueD.phase === 'regroup') { this.tip('regroup', 'Fight lost: your team is regrouping in the plaza. Wait for the respawns and walk back in together.', 6, 3.5, 15); return; }
       if (blueD.phase === 'engage' && t - blueD.phaseAt < 3) { this.tip('engage', `Lucio's speeding in — GO with them! Close in, drop shield on top of them and swing ${k('LMB')}.`, 7, 3, 8); return; }
       if (near >= 3 && !p.barrierUp() && blueD.phase !== 'engage') { this.tip('alone', 'You\'re in front of your team. Shield up or back off — they haven\'t gone in yet.', 6, 3, 10); return; }
       if (p.ready('fire')) {

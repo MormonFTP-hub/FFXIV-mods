@@ -49,6 +49,21 @@
       this.recentDmg = 0;
     }
 
+    // back in the fight after the respawn timer: full health, cooldowns ready, ult charge and stats kept
+    respawn(pos, yaw) {
+      this.reset();
+      G.Kits[this.hero].init(this);
+      this.pos.copy(pos);
+      this.yaw = this.bodyYaw = yaw;
+      this.pitch = 0;
+      this.onGround = true;
+      this.safe = null;
+      if (this.anim) { this.anim.last.copy(pos); this.anim.fall = 0; this.anim.alpha = 1; }
+      for (const r of this.rigs ? Object.values(this.rigs) : [this.rig]) if (r) { r.setOpacity(1); r.root.visible = true; }
+      if (this.brain) Object.assign(this.brain, { path: null, pathAt: -99, pathGoal: null, waitSave: 0, target: null });
+      this.game.emit('respawn', { unit: this });
+    }
+
     get height() { return this.mech || this.hero !== 'dva' ? this.H.height : 1.5; }
     get radius() { return this.mech || this.hero !== 'dva' ? this.H.radius : 0.4; }
     get eyeH() { return this.mech || this.hero !== 'dva' ? this.H.eye : 1.3; }

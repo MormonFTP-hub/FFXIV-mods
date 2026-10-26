@@ -38,6 +38,8 @@ kbd { font-family: var(--font); font-weight: 700; font-size: 11px; padding: 1px 
 #point .ring-bg { fill: rgba(10,14,24,0.6); stroke: rgba(255,255,255,0.25); stroke-width: 6; }
 #point .ring { fill: none; stroke: var(--blue); stroke-width: 6; stroke-dasharray: 213.6; stroke-dashoffset: 213.6; transition: stroke-dashoffset 0.2s; }
 #point.contested .ring-bg { stroke: #ffd040; }
+#point .tick { stroke: #0b0f17; stroke-width: 3; }
+#point.overtime #round-time, #point.overtime #point-state { color: #ff8a3a; }
 #point-label { font-family: var(--disp); font-weight: 900; font-size: 34px; font-style: italic; line-height: 1; margin-top: -8px; }
 #round-time { position: absolute; bottom: 12px; font-weight: 700; font-size: 13px; }
 #point-state { position: absolute; top: 88px; white-space: nowrap; font-family: var(--disp); font-weight: 800; font-style: italic; font-size: 15px; letter-spacing: 0.06em; text-shadow: 0 1px 3px #000; }
@@ -199,6 +201,7 @@ button kbd { margin-left: 6px; font-style: normal; }
 .log li.bad { border-color: var(--red); }
 .log li.ult { border-color: var(--ow); color: #ffd59a; }
 .log li.eult { border-color: #ff7a4a; color: #ffb59a; }
+.log li.fight { border: 0; background: none; padding: 8px 0 2px; font-family: var(--disp); font-weight: 800; font-style: italic; font-size: 15px; color: var(--ow); letter-spacing: 0.04em; }
 .mine { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 10px; }
 .mine td { padding: 4px 6px; border-bottom: 1px solid var(--line); }
 .mine td:last-child { text-align: right; font-weight: 700; }

@@ -1,6 +1,7 @@
-// The game: loads everything, sets up a fight at Hanamura's first point, runs the simulation and the
-// render loop, and keeps score across fights. Your team attacks through the main gate; the bots on both
-// sides play GOATS; the fight ends when a team is wiped, the point is taken, or time runs out.
+// The game: loads everything, sets up a round on Hanamura's first point, runs the simulation and the
+// render loop, and keeps score across rounds. Your team attacks through the main gate with 4 minutes to
+// take the point; heroes respawn, so a round is a string of team fights in which ults build from 0% and
+// the rotations come in the later fights. It ends when the point is taken or the defence holds.
 (function (G) {
   const T = THREE;
   const $ = (id) => document.getElementById(id);
@@ -18,23 +19,13 @@
     plaza: [35, 0, 0],
     hold: [13.5, -1, -6],
     stage: [23.5, 0, -3],
-    spawn: [[58, -1, 12], [2, 0, -6]],
+    spawn: [[58, -1, 12], [-8, 1, 8]],      // attackers' spawn in the town; defenders' behind the bell temple
     blueStart: [[36, 0, 0], [35, 0, 2.5], [35.5, 0, -2.5], [38.5, 0, 1.5], [38, 0, -1], [39, 0, 3]],
     redStart: [[13.5, -1, -6], [12, -1, -9], [12.5, -1, -2.5], [9.5, -1, -7], [11, -1, -4.5], [6.5, -1, -8]],
   };
 
-  // Who walks in with which ults. Your own Shatter isn't set here: you start the first fight at 0% and
-  // whatever charge you end a fight with carries into the next one.
-  const SCENARIOS = [
-    { name: 'Even fight', brief: 'Both teams walk in with their ults; your Shatter you build yourself. Whoever wins the trade wins the fight: make them use their saves first.',
-      blue: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1 }, red: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
-    { name: 'Ult advantage', brief: 'You hold Grav and Bomb. They hold Trans and Beat. Bait a save out before you commit the combo.',
-      blue: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 0.7, zenyatta: 0.6 }, red: { zarya: 0.5, dva: 0.55, lucio: 1, brigitte: 0.6, zenyatta: 1, reinhardt: 0.7 } },
-    { name: 'They have the combo', brief: 'They hold Grav and Bomb. You hold Trans and Beat. Keep your shield on the bomb and make them waste ults.',
-      blue: { zarya: 0.45, dva: 0.5, lucio: 1, brigitte: 0.8, zenyatta: 1 }, red: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 1, zenyatta: 0.6, reinhardt: 0.6 } },
-    { name: 'Their Shatter', brief: 'Their Reinhardt walks in with Shatter. Don’t swing in front of him with your shield down; make him throw it into your barrier.',
-      blue: { zarya: 0.7, dva: 0.6, lucio: 1, brigitte: 1, zenyatta: 0.7 }, red: { zarya: 0.7, dva: 0.7, lucio: 0.8, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
-  ];
+  const BRIEF = 'Take Point A in 4 minutes. Nobody has an ult yet: win the first fight with cooldowns, build Shatter, and track their ults as they come online.';
+  const fmt = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 
   class Game {
     constructor() {
@@ -50,7 +41,7 @@
       this.usedAt = {};
       this.blue = 0;
       this.red = 1;
-      this.fightNo = 0;
+      this.roundNo = 0;
       this.record = { won: 0, lost: 0 };
       this.skill = 0.85;
       this.capture = 0;
@@ -167,46 +158,45 @@
     }
 
     setupFight(quiet) {
-      this.fightNo += quiet ? 0 : 1;
-      const sc = this.fightNo <= 1 ? SCENARIOS[0] : pick(SCENARIOS);
-      this.scenario = sc;
+      this.roundNo += quiet ? 0 : 1;
       this.time = 0;
       this.projectiles = []; this.gravs = []; this.bombs = []; this.timers = [];
       this.usedAt = {};
       this.capture = 0;
+      this.tick_ = 0;            // highest capture tick reached (progress never drops below it)
+      this.overtime = false;
+      this.otAnnounced = false;
+      this.fuse = G.ROUND.fuse;
+      this.attackersOn = 0;
+      this.fights = 0;
+      this.lastEngage = -99;
       this.log = [];
       this.result = null;
-      this.lopsided = 0;
       this.lastDamageAt = 0;
-      for (const d of this.directors) { d.phase = 'setup'; d.phaseAt = 0; d.enemyUsed = {}; d.saveAt = -99; d.called = {}; d.bombAt = -99; d.lastUlt = -99; d.nextThink = 0; }
+      this.shatterHits = 0; this.shatterBlocked = false; this.bombsBlocked = 0;
+      for (const d of this.directors) Object.assign(d, { phase: 'setup', phaseAt: 0, enemyUsed: {}, saveAt: -99, called: {}, bombAt: -99, lastUlt: -99, nextThink: 0 });
       const starts = { [this.blue]: MAP.blueStart, [this.red]: MAP.redStart };
-      const order = G.COMP;
       for (const u of this.units) {
-        u.reset();
+        const s = starts[u.team][G.COMP.indexOf(u.hero)];
+        let p = this.vec([s[0] + rnd(-0.5, 0.5), s[1], s[2] + rnd(-0.5, 0.5)]);
+        if (!this.world.reachable(p)) p = this.world.nearestReachable(p);
+        u.respawn(p, u.team === this.blue ? -Math.PI / 2 : Math.PI / 2);
         u.stats = { dmg: 0, heal: 0, blocked: 0, kills: 0, deaths: 0, ults: 0, hits: 0 };
-        G.Kits[u.hero].init(u);
-        const s = starts[u.team][order.indexOf(u.hero)];
-        u.pos.copy(this.vec([s[0] + rnd(-0.5, 0.5), s[1], s[2] + rnd(-0.5, 0.5)]));
-        if (!this.world.reachable(u.pos)) u.pos.copy(this.world.nearestReachable(u.pos));
-        u.yaw = u.team === this.blue ? -Math.PI / 2 : Math.PI / 2;
-        u.bodyYaw = u.yaw;
-        u.pitch = 0;
-        if (u === this.playerUnit) u.ult = Math.min(u.ultCost, this.carryUlt || 0);
-        else {
-          const frac = (u.team === this.blue ? sc.blue : sc.red)[u.hero] || 0.7;
-          u.ult = Math.min(u.ultCost, u.ultCost * frac * rnd(0.97, 1.03));
-          if (frac >= 1) u.ult = u.ultCost;
-        }
+        u.ult = 0;                 // nobody walks in with an ult
         u.readyAt = -10;
-        if (u.anim) { u.anim.last.copy(u.pos); u.anim.fall = 0; u.anim.alpha = 1; }
-        if (u.rig) { u.rig.setOpacity(1); u.rig.root.visible = true; }
-        if (u.rigs) for (const k in u.rigs) { u.rigs[k].setOpacity(1); }
-        if (u.brain) Object.assign(u.brain, { path: null, pathAt: -99, pathGoal: null, waitSave: 0, target: null, errAt: 0, speedUntil: 0 });
+        if (u.brain) Object.assign(u.brain, { errAt: 0, speedUntil: 0 });
       }
       this.player.third = 0;
-      this.roundEnd = 5 + 100;
-      this.state = quiet ? 'menu' : 'countdown';
       this.countEnd = 5;
+      this.roundEnd = this.countEnd + G.ROUND.time;
+      this.state = quiet ? 'menu' : 'countdown';
+    }
+
+    // where a hero comes back after dying
+    spawnPoint(u) {
+      const s = this.map.spawn[u.team];
+      const p = new T.Vector3(s.x + rnd(-2, 2), s.y + 1, s.z + rnd(-2, 2));
+      return this.world.nearestReachable(p, 10);
     }
 
     startFight(watch) {
@@ -220,9 +210,9 @@
       this.hud.reset();
       this.player.specPos = null;
       this.player.specAngle = undefined;
-      this.hud.center(`FIGHT ${this.fightNo} · ${this.scenario.name.toUpperCase()}`, 3.5, 'big');
-      $('coach-text').textContent = this.autopilot ? `Watching: ${this.scenario.brief}` : this.scenario.brief;
-      this.hud.coachText = this.scenario.brief;
+      this.hud.center(`ROUND ${this.roundNo} · ATTACK POINT A`, 3.5, 'big');
+      $('coach-text').textContent = this.autopilot ? `Watching: ${BRIEF}` : BRIEF;
+      this.hud.coachText = BRIEF;
       this.hud.coachUntil = 6;
       this.hud.coachPrio = 5;
       if (!this.autopilot) this.lockMouse();
@@ -287,16 +277,22 @@
       this.on('bombExploded', (e) => {
         const killed = e.victims.filter((v) => !v.alive || (v.hero === 'dva' && !v.mech)).length;
         this.logEvent(`Bomb hit ${e.victims.length}${killed ? ', killed ' + killed : ''}`, e.bomb.team === this.blue ? 'good' : 'bad');
-        if (e.bomb.team === this.red) this.result_bombBlocked = (this.result_bombBlocked || 0) + (P().barrier.lastHit > this.time - 0.1 ? 1 : 0);
+        if (e.bomb.team === this.red && P().barrier.lastHit > this.time - 0.1) this.bombsBlocked++;
       });
       this.on('shatterLanded', (e) => {
         this.logEvent(`Shatter knocked down ${e.hits.length}`, e.unit.team === this.blue ? (e.hits.length ? 'good' : 'bad') : (e.hits.length ? 'bad' : 'good'));
-        if (e.unit === P()) this.shatterHits = (this.shatterHits || 0) + e.hits.length;
+        if (e.unit === P()) this.shatterHits += e.hits.length;
       });
       this.on('shatterBlocked', (e) => { if (e.unit === P()) this.shatterBlocked = true; });
       this.on('barrierBreak', (e) => { if (e.barrier.owner === P()) this.hud.center('BARRIER BROKEN', 1.2, 'warn'); });
       this.on('pin', (e) => { if (e.unit === P()) this.logEvent(`You pinned ${this.who(e.target)}`, 'good'); });
-      this.on('engage', (e) => this.logEvent(e.team === this.blue ? 'Your team engaged' : 'They engaged', 'info'));
+      this.on('engage', (e) => {
+        // a new team fight when either side goes in after a lull
+        if (this.time - this.lastEngage > 12) { this.fights++; this.logEvent(`Fight ${this.fights}`, 'fight'); }
+        this.lastEngage = this.time;
+        this.logEvent(e.team === this.blue ? 'Your team engaged' : 'They engaged', 'info');
+      });
+      this.on('respawn', (e) => { if (e.unit === P() && this.state === 'fight') this.hud.center('RESPAWNED', 1.2); });
     }
 
     who(u) { return (u.team === this.blue ? '' : 'Enemy ') + (u.isPlayer ? 'You' : u.H.name); }
@@ -312,7 +308,7 @@
       $('b-howto').onclick = () => { $('menu').classList.add('hidden'); $('howto').classList.remove('hidden'); };
       $('b-howto-close').onclick = () => { $('howto').classList.add('hidden'); $('menu').classList.remove('hidden'); };
       $('b-resume').onclick = () => this.pause(false);
-      $('b-restart').onclick = () => { this.fightNo--; this.startFight(); };
+      $('b-restart').onclick = () => { this.roundNo--; this.startFight(); };
       $('b-quit').onclick = () => this.toMenu();
       $('b-next').onclick = () => this.startFight(this.autopilot);
       $('b-res-menu').onclick = () => this.toMenu();
@@ -341,8 +337,7 @@
 
     toMenu() {
       this.state = 'menu';
-      this.carryUlt = 0;
-      this.fightNo = 0;
+      this.roundNo = 0;
       this.record = { won: 0, lost: 0 };
       document.exitPointerLock && document.exitPointerLock();
       for (const id of ['result', 'pause', 'howto']) $(id).classList.add('hidden');
@@ -397,8 +392,19 @@
       G.Combat.tickProjectiles(this, dt);
       G.Kits.zarya.tickGravs(this, dt);
       G.Kits.dva.tickBombs(this, dt);
-      if (this.state === 'fight') { this.objective(dt); this.checkEnd(); }
+      if (this.state === 'fight') { this.respawns(); this.objective(dt); this.checkEnd(dt); }
     }
+
+    respawns() {
+      for (const u of this.units) {
+        if (u.alive || this.time - u.deadAt < G.ROUND.respawn) continue;
+        const p = this.spawnPoint(u);
+        const toward = this.map.point.clone().sub(p);
+        u.respawn(p, Math.atan2(toward.x, toward.z));
+      }
+    }
+
+    respawnIn(u) { return u.alive ? 0 : Math.max(0, G.ROUND.respawn - (this.time - u.deadAt)); }
 
     physics(u, dt) {
       const t = this.time, W = this.world;
@@ -456,31 +462,44 @@
     }
 
     objective(dt) {
-      const p = this.map.point, R = this.map.pointR;
+      const p = this.map.point, R = this.map.pointR, Rd = G.ROUND;
       const on = (team) => this.team(team).filter((u) => u.alive && Math.hypot(u.pos.x - p.x, u.pos.z - p.z) < R && Math.abs(u.pos.y - p.y) < 2.5).length;
       const a = on(this.blue), d = on(this.red);
+      this.attackersOn = a;
       if (a && d) this.pointState = 'CONTESTED';
-      else if (a) { this.pointState = 'CAPTURING'; this.capture = Math.min(1, this.capture + dt / 11 * (a >= 2 ? 1.25 : 1)); }
-      else this.pointState = this.capture > 0 ? 'ATTACK · ' + Math.floor(this.capture * 100) + '%' : 'ATTACK';
+      else if (a) {
+        this.pointState = 'CAPTURING';
+        this.capture = Math.min(1, this.capture + Rd.capRate[Math.min(3, a)] * dt);
+        const next = Rd.ticks.find((k) => k > this.tick_ + 1e-6);
+        if (next !== undefined && this.capture >= next - 1e-6) {
+          this.tick_ = next;
+          this.logEvent(`Point A ${Math.round(next * 100)}%`, 'good');
+          if (next < 1) this.hud.center(`POINT A · ${Math.round(next * 100)}%`, 1.6);
+        }
+      } else {
+        // progress above the last tick slowly drains when nobody is capturing
+        this.capture = Math.max(this.tick_, this.capture - Rd.decay * dt);
+        this.pointState = this.capture > 0 ? `ATTACK · ${Math.floor(this.capture * 100)}%` : 'ATTACK';
+      }
+      if (this.overtime) this.pointState = 'OVERTIME';
     }
 
-    checkEnd() {
+    checkEnd(dt) {
       const t = this.time;
       if (this.result) { if (t >= this.result.at) this.showResult(); return; }
-      const nBlue = this.team(this.blue).filter((u) => u.alive).length, nRed = this.team(this.red).filter((u) => u.alive).length;
-      const blueAlive = nBlue > 0, redAlive = nRed > 0;
-      if ((nBlue <= 1 && nRed >= 3) || (nRed <= 1 && nBlue >= 3)) this.lopsided = this.lopsided || t; else this.lopsided = 0;
       let res = null;
-      if (!redAlive) res = { won: true, why: 'Team kill. They\'re wiped and the point is yours.' };
-      else if (this.capture >= 1) res = { won: true, why: 'Point A captured.' };
-      else if (!blueAlive) res = { won: false, why: 'Your team was wiped.' };
-      else if (nBlue <= 1 && nRed >= 3 && t - (this.lopsided || t) > 4) res = { won: false, why: 'Your team was picked apart. The last one standing falls back to spawn.' };
-      else if (nRed <= 1 && nBlue >= 3 && t - (this.lopsided || t) > 4) res = { won: true, why: 'Their last hero ran. The point is yours.' };
-      else if (t >= this.roundEnd) res = { won: false, why: 'Time ran out. They held the point.' };
+      if (this.capture >= 1) res = { won: true, why: `Point A captured with ${fmt(Math.max(0, this.roundEnd - t))} left on the clock.` };
+      else if (t >= this.roundEnd) {
+        // overtime: the round goes on while attackers stand on the point, and ends a moment after they leave
+        if (this.attackersOn > 0) { this.overtime = true; this.fuse = G.ROUND.fuse; }
+        else if (this.overtime && this.fuse > 0) this.fuse -= dt;
+        else res = { won: false, why: `Time ran out with the point at ${Math.floor(this.capture * 100)}%. The defence held.` };
+        if (this.overtime && !this.otAnnounced) { this.otAnnounced = true; this.hud.center('OVERTIME', 2, 'big warn'); }
+      }
       if (res) {
-        res.at = t + 2.5;
+        res.at = t + 3;
         this.result = res;
-        this.hud.center(res.won ? 'FIGHT WON' : 'FIGHT LOST', 2.4, res.won ? 'big win' : 'big lose');
+        this.hud.center(res.won ? 'VICTORY' : 'DEFEAT', 2.8, res.won ? 'big win' : 'big lose');
         this.audio.play(res.won ? 'win' : 'lose');
         if (res.won) this.record.won++; else this.record.lost++;
       }
@@ -488,26 +507,23 @@
 
     showResult() {
       this.state = 'result';
-      this.carryUlt = this.playerUnit.ult;
       document.exitPointerLock && document.exitPointerLock();
       const r = this.result, p = this.playerUnit;
-      $('res-kicker').textContent = `FIGHT ${this.fightNo} · ${this.scenario.name.toUpperCase()} · RECORD ${this.record.won}–${this.record.lost}`;
-      $('res-title').textContent = r.won ? 'Fight won' : 'Fight lost';
+      $('res-kicker').textContent = `ROUND ${this.roundNo} · ATTACK HANAMURA A · ${this.fights} TEAM FIGHT${this.fights === 1 ? '' : 'S'} · RECORD ${this.record.won}–${this.record.lost}`;
+      $('res-title').textContent = r.won ? 'Victory' : 'Defeat';
       $('res-title').className = r.won ? 'win' : 'lose';
-      const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-      const log = this.log.filter((l) => l.kind !== 'info' || true).map((l) => `<li class="${l.kind}"><span>${fmt(l.t)}</span>${l.text}</li>`).join('');
+      const log = this.log.map((l) => l.kind === 'fight' ? `<li class="fight">${l.text}</li>` : `<li class="${l.kind}"><span>${fmt(l.t)}</span>${l.text}</li>`).join('');
       const notes = this.review();
       const st = p.stats;
       $('res-body').innerHTML = `<p class="why">${r.why}</p>
         <div class="res-grid">
-          <div><h3>The fight</h3><ol class="log">${log || '<li>Nothing happened.</li>'}</ol></div>
+          <div><h3>The round</h3><ol class="log">${log || '<li>Nothing happened.</li>'}</ol></div>
           <div><h3>Your Reinhardt</h3>
             <table class="mine"><tr><td>Damage blocked</td><td>${Math.round(st.blocked)}</td></tr><tr><td>Damage dealt</td><td>${Math.round(st.dmg)}</td></tr>
-            <tr><td>Eliminations</td><td>${st.kills}</td></tr><tr><td>Deaths</td><td>${st.deaths}</td></tr><tr><td>Shatter targets</td><td>${this.shatterHits || 0}</td></tr></table>
-            <h3>Coach's notes</h3><ul class="notes">${notes.map((n) => `<li>${n}</li>`).join('')}</ul>
-            <p class="carry">Earthshatter going into the next fight: <b>${p.ultPct()}%</b></p></div>
+            <tr><td>Eliminations</td><td>${st.kills}</td></tr><tr><td>Deaths</td><td>${st.deaths}</td></tr>
+            <tr><td>Earthshatters</td><td>${st.ults}</td></tr><tr><td>Shatter targets</td><td>${this.shatterHits}</td></tr></table>
+            <h3>Coach's notes</h3><ul class="notes">${notes.map((n) => `<li>${n}</li>`).join('')}</ul></div>
         </div>`;
-      this.shatterHits = 0; this.shatterBlocked = false; this.result_bombBlocked = 0;
       $('result').classList.remove('hidden');
       this.hud.showScore(false);
     }
@@ -515,14 +531,16 @@
     review() {
       const p = this.playerUnit, notes = [], st = p.stats;
       const blueUlts = this.log.filter((l) => l.kind === 'ult').length, redUlts = this.log.filter((l) => l.kind === 'eult').length;
-      if (this.shatterHits >= 3) notes.push(`Your Shatter hit ${this.shatterHits}. That's the fight-winner in GOATS.`);
-      else if (this.shatterBlocked) notes.push('Your Shatter went into their shield. Wait for their Rein to drop it, turn, or swing.');
-      else if (p.ultReady()) notes.push('You ended the fight holding Shatter. Using it after their saves were gone would have swung it.');
-      if (this.result_bombBlocked) notes.push('You ate a bomb with your shield. Exactly right.');
-      if (st.blocked < 1500 && st.deaths) notes.push('Low damage blocked. In poke, the shield is your job; drop it only on top of them.');
-      if (st.blocked > 4000) notes.push(`${Math.round(st.blocked)} damage blocked. Strong shield discipline.`);
-      if (redUlts > blueUlts + 1) notes.push('They used more ults than you. The side that runs out of ults first loses the next fight.');
-      if (!notes.length) notes.push('Clean fight. Next one: watch their Zen and Lucio. Once Trans and Beat are gone, go.');
+      if (st.ults && this.shatterHits / st.ults >= 2.5) notes.push(`Your Shatters averaged ${(this.shatterHits / st.ults).toFixed(1)} targets. That's what wins GOATS fights.`);
+      if (this.shatterBlocked) notes.push('At least one Shatter went into their shield. Wait for their Rein to drop it, turn, or swing.');
+      if (!st.ults) notes.push('You never used Shatter. Build it by swinging on targets and blocking, and spend it once their saves are gone.');
+      if (this.bombsBlocked) notes.push(`You ate ${this.bombsBlocked > 1 ? this.bombsBlocked + ' bombs' : 'a bomb'} with your shield. Exactly right.`);
+      if (st.deaths >= 4) notes.push(`${st.deaths} deaths. A dead Rein means a team with no shield: back off to your Brig and Zen when you're low.`);
+      if (st.blocked > 6000) notes.push(`${Math.round(st.blocked)} damage blocked over the round. Strong shield discipline.`);
+      else if (st.blocked < 2500) notes.push('Not much damage blocked. In poke, the shield is your job; drop it only on top of them.');
+      if (redUlts > blueUlts + 2) notes.push('They used more ults than your team. Track theirs, bait the saves, and don’t fight into a full set.');
+      if (!this.result.won && this.capture < 0.34) notes.push('The point barely moved. After a won fight, everyone stands on the point: the clock is the defenders’ best friend.');
+      if (!notes.length) notes.push('Clean round. Next time watch their Zen and Lúcio: once Trans and Beat are gone, go.');
       return notes;
     }
   }

@@ -1,6 +1,6 @@
 # GOATS on Hanamura (Overwatch, late 2018)
 
-A browser game: you're the Reinhardt in a GOATS mirror (Reinhardt, Zarya, D.Va, Lúcio, Brigitte, Zenyatta on both sides) attacking Hanamura's first point. Your team walks in through the main gate behind your shield, pokes from the platform above the point, waits for Lúcio's speed, and brawls. Both teams trade ults the way the meta did: bait a save with one ult, land the next when the save is gone, and answer theirs.
+A browser game: you're the Reinhardt in a GOATS mirror (Reinhardt, Zarya, D.Va, Lúcio, Brigitte, Zenyatta on both sides) attacking Hanamura's first point. You get 4 minutes to take it. Everyone starts with no ult and respawns after 10 seconds, so a round is fight after fight: walk in through the main gate behind your shield, poke from the platform above the point, wait for Lúcio's speed, brawl, regroup, go again. As ults come online the teams trade them the way the meta did: bait a save with one ult, land the next when the save is gone, and answer theirs.
 
 The heroes and the map are the real Overwatch models, converted from the rips in `source/` (see [Models and map](#models-and-map)).
 
@@ -22,7 +22,7 @@ python GoatsSim/tools/build_single.py
 
 This writes `build/GoatsSim.html`, the whole game in one file (models and map included), and `build/GoatsSim.zip`, the same file zipped. Send either one; they double-click the HTML. It needs an internet connection when it opens, because three.js, the Draco decoder and the fonts come from CDNs.
 
-**Play** puts you in the fight. **Watch the bots** runs the same fight with a bot on your Reinhardt, a camera that follows the fight, and the coach box narrating each ult and counter as it happens, if you want to see how a GOATS fight plays out before you try it.
+**Play** starts a round. **Watch the bots** plays the same round with a bot on your Reinhardt, a camera that follows the fight, and the coach box narrating each ult and counter as it happens, if you want to see how a GOATS round plays out before you try it.
 
 | | |
 |---|---|
@@ -32,28 +32,29 @@ This writes `build/GoatsSim.html`, the whole game in one file (models and map in
 | `RMB` | Barrier Field (hold; the camera goes third person, like the game). You can cancel a swing into the barrier once the hit has landed, and hold it inside a Graviton Surge |
 | `Shift` | Charge (pins the first enemy it hits; 300 damage when the charge ends) |
 | `E` | Fire Strike (goes through barriers and heroes) |
-| `Q` | Earthshatter (blocked by a Reinhardt or Brigitte barrier in the way). You start with 0% and build it from hammer hits, Fire Strike and damage your barrier soaks; it carries over from fight to fight |
+| `Q` | Earthshatter (blocked by a Reinhardt or Brigitte barrier in the way). You start the round at 0% and build it from hammer hits, Fire Strike, damage your barrier soaks and passive charge |
 | `Tab` | Scoreboard for the current fight |
 | `H` | Coach tips on or off |
 | `Esc` | Pause |
 
 Settings (sensitivity, FOV, coach, bot skill, reading comms aloud) are saved in your browser.
 
-## What a fight looks like
+## What a round looks like
 
 1. **Setup and walk-in.** Your team groups up in the plaza outside the gate and walks in with you. Lúcio plays speed on the walk. The defenders set up on the point.
 2. **Poke.** Your team takes the platform over the courtyard. Zen discords a tank, D.Va and Zen poke, Zarya fishes for energy, Brig hugs you with packs ready. Shields face each other.
-3. **Engage.** Someone calls it: an ult advantage, a pick, an enemy save used, or you walking into them. Lúcio amps speed, everyone goes in.
-4. **Ult trade.** Grav into bomb if it's there. Trans the grav, Beat the bomb. Bubbles on whoever is about to eat a Shatter or a bomb. Rally on the engage. Shatter when their Rein's shield is down or turned, or once their saves are gone.
-5. **End.** A team is wiped (or down to its last hero), the point is captured, or the clock runs out. The result screen shows the fight's timeline (every ult, grav catch, bomb and kill) with notes on your Reinhardt.
+3. **Engage.** Someone calls it: an ult advantage, a pick, an enemy save used, the clock, or you walking into them. Lúcio amps speed, everyone goes in.
+4. **Ult trade.** The first fight is usually cooldowns only; from the second on, ults are coming online (Shatter and Rally first, then Grav and Trans, Beat, and the bomb last). Grav into bomb if it's there. Trans the grav, Beat the bomb. Bubbles on whoever is about to eat a Shatter or a bomb. Shatter when their Rein's shield is down or turned, or once their saves are gone.
+5. **After the fight.** Dead heroes respawn after 10 seconds: yours in the town, a long walk back; theirs behind the bell temple, close to the point. The winners stand on the point; the losers regroup and come back together instead of one at a time.
+6. **The point and the clock.** The point captures in three locked ticks (33, 66, 100%), faster with more attackers on it, and only while no defender is standing on it. If the clock runs out with attackers on the point it goes to overtime, which ends 3 seconds after the last one steps off. The result screen shows the whole round's timeline, fight by fight (every ult, grav catch, bomb, kill and tick), with notes on your Reinhardt.
 
-Each fight after the first picks a scenario that sets who walks in with which ults: an even fight, your team holding Grav and Bomb against their Trans and Beat, them holding the combo, or their Rein walking in with Shatter. Your own Shatter isn't part of it: you start the first fight at 0%, and whatever you end a fight with carries into the next (back to 0% from the main menu).
+A round with bots on both sides lasts about 3 to 4 minutes and runs 5 to 10 team fights; the attackers win a bit under half of them, so your Reinhardt decides it.
 
 Your team plays around you, but it doesn't just follow you. It has its own plan (group at the gate, take the platform, fight on the point), forms up behind your barrier when you're with it, and sets up without you if you lag or wander off. It holds a while before engaging without its Rein, then goes anyway.
 
 ### The HUD
 
-Health in 25 hp segments (white health, yellow armour, blue shields), ult meter, abilities with cooldowns and the barrier's health, objective and both teams up top, kill feed. On top of the 2018 HUD there are team comms as text ("Grav is up", "Their Trans is down!"), the ult voice lines (theirs in their language: "Огонь по готовности!", "Pass into the Iris."), an ult tracker (your team's ult %, and what you've seen theirs use) and a coach box.
+Health in 25 hp segments (white health, yellow armour, blue shields), ult meter, abilities with cooldowns and the barrier's health, the point (with its ticks) and round clock with both teams up top (dead heroes show their respawn time), kill feed. On top of the 2018 HUD there are team comms as text ("Grav is up", "Their Trans is down!"), the ult voice lines (theirs in their language: "Огонь по готовности!", "Pass into the Iris."), an ult tracker (your team's ult %, and what you've seen theirs use) and a coach box.
 
 ## How the sim works
 
@@ -100,10 +101,11 @@ python GoatsSim/tools/build_single.py
 | `js/player.js` | Your controls, first-person hammer, third-person and watch cameras |
 | `js/fx.js`, `js/audio.js` | Effects and synthesised sound |
 | `js/hud.js` | HUD, kill feed, comms, ult tracker, coach, scoreboard |
-| `js/main.js` | Map points, scenarios, the fight loop, physics, objective, results |
+| `js/main.js` | Map points, the round (respawns, capture ticks, overtime), the loop, physics, results |
 | `tools/` | The Blender export scripts, the packer and the single-file builder |
 
 ## Changelog
 
+- **1.2.0**: full rounds instead of single fights: 4 minutes to take the point, everyone starts at 0% ult, 10-second respawns, capture ticks and overtime, teams regroup after a lost fight; the result screen covers the whole round.
 - **1.1.0**: your Shatter starts at 0% and carries between fights; Reinhardt can hold his barrier in a grav; teammates follow their own plan, call a focus target and peel instead of just following you; one-file build to send to people (`build_single.py`); Draco-compressed models.
 - **1.0.0**: first version. Hanamura first point, attack, GOATS mirror with the six real hero models, procedural animation, team directors with ult rotations, coach, watch mode.

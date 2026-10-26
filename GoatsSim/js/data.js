@@ -26,7 +26,7 @@
     },
     dva: {
       name: 'D.Va', short: 'D.VA', color: '#f59fc9', hp: 400, armor: 200, shields: 0,
-      speed: 5.5, radius: 0.85, height: 2.3, eye: 1.95, ultCost: 1540, ult: 'Self-Destruct',
+      speed: 5.5, radius: 0.85, height: 2.3, eye: 1.95, ultCost: 1250, ult: 'Self-Destruct',
       model: 'dva_mech',
       guns: { pellet: 2, pellets: 11, period: 0.15, range: 15, slow: 0.5 },
       matrix: { dur: 3, range: 10, regen: 0.33, delay: 1 },
@@ -65,9 +65,14 @@
     },
   };
 
-  // Ult charge: points per damage dealt / healing done, scaled so one fight lets each side bring
-  // one or two more ults online, the way a long brawl did.
-  G.ULT = { perDamage: 0.55, perBarrier: 0.25, perBlock: 0.3, perHeal: 0.55, passive: 5 };
+  // Ult charge: points per damage dealt (to heroes, and to barriers), per point of damage a Reinhardt's
+  // barrier soaks, per point healed, and per second just for being alive. Everyone starts a round at 0%.
+  G.ULT = { perDamage: 1.0, perBarrier: 0.5, perBlock: 0.12, perHeal: 1.0, passive: 5 };
+
+  // The round: attack Point A in 4 minutes. Heroes respawn after 10 s. The point captures in three locked
+  // ticks (33 / 66 / 100%), faster with more attackers on it; if time runs out while attackers are on the
+  // point it goes to overtime, which ends 3 s after the last attacker steps off.
+  G.ROUND = { time: 240, respawn: 10, fuse: 3, ticks: [1 / 3, 2 / 3, 1], capRate: [0, 1 / 23, 1 / 19, 1 / 15.5], decay: 0.01 };
 
   G.COMP = ['reinhardt', 'zarya', 'dva', 'lucio', 'brigitte', 'zenyatta'];
 
