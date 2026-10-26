@@ -214,7 +214,6 @@ def export_dummy(pack, key):
     mdl = game.model(game.game_file(gp))
     sc = {"models": [{"meshes": [], "attrs": {}}], "materials": []}
     blob = bytearray()
-    names = []
     for name in mdl["materials"]:
         local = game.game_file(name.lstrip("/"))
         if not local:
@@ -223,7 +222,6 @@ def export_dummy(pack, key):
         mt = game.material(local)
         texs = {i: game.game_file(t["path"]) for i, t in enumerate(mt["textures"])}
         sc["materials"].append(shade.bake(mt, texs, {}, max_size=COLOR_MAX))
-        names.append(name)
 
     def put(a):
         a = np.ascontiguousarray(a)
@@ -329,7 +327,8 @@ def export_anims(pack):
                     seen[nm] = entry["release"]
         if entry:
             out["actions"][sim_id] = entry
-        print(f"  {sim_id:16s} start={start_key or '-':28s} end={end_key or '-':30s} -> {', '.join(f'{k}:{v[\"name\"]}' for k, v in entry.items()) or 'none'}")
+        got = ", ".join(k + ":" + v["name"] for k, v in entry.items()) or "none"
+        print(f"  {sim_id:16s} start={start_key or '-':28s} end={end_key or '-':30s} -> {got}")
     return out
 
 
