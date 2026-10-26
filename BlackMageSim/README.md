@@ -26,6 +26,12 @@ then go to http://localhost:8797.
 
 Hotbars, keybinds and settings save in your browser.
 
+To send it to someone, bundle it into one file and send them `build/BlackMageSim.html`; they double-click it to play:
+
+```
+python BlackMageSim/tools/build_single.py
+```
+
 ## What's in it
 
 - **The 6.5 kit.** Fire, Fire III, Fire IV, Despair, Blizzard, Blizzard III, Blizzard IV, Thunder III, Paradox, Xenoglossy, Foul, Scathe, Umbral Soul, Transpose, Sharpcast (2 charges), Triplecast (2 charges), Manafont, Amplifier, Ley Lines, Between the Lines, Manaward, Swiftcast, Lucid Dreaming, Addle, Surecast, Sprint and a Grade 8 Tincture of Intelligence.
