@@ -131,7 +131,7 @@
         this.set(s, 'oor', oor, v => s.el.classList.toggle('oor', v));
         const proc = (rid === 'fire3' && e.has('firestarter')) || (rid === 'thunder3' && e.has('thundercloud')) || rid === 'paradox';
         this.set(s, 'proc', proc, v => s.el.classList.toggle('proc', v));
-        const q = !!(e.queued && e.queued.id === rid);
+        const q = e.queue.length > 0 && e.queuedIds().includes(rid);
         this.set(s, 'q', q, v => s.el.classList.toggle('queued', v));
 
         let mpText = '', short = false;
@@ -616,7 +616,7 @@
 </table>
 
 <h3>How it plays (Endwalker 6.5)</h3>
-<p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Press a button up to 0.5s early and it queues, like the game. Without NoClippy or XivAlexander your ping sits on top of every animation lock and every caster tax, so set your real ping in Settings: that's what makes double weaves clip. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
+<p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Buttons queue like the game: a spell queues in the last 0.5s of the GCD or of a cast, and anything pressed during an animation lock waits for it. The queue keeps one spell and two abilities in the order you pressed them, so Triplecast then Fire IV comes out instant. Without NoClippy or XivAlexander your ping sits on top of every animation lock and every caster tax, so set your real ping in Settings: that's what makes double weaves clip. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
 <p>Paradox lights up when you swap from Astral Fire III into ice, or from Umbral Ice III with 3 Umbral Hearts into fire. Fire and Blizzard become Paradox. In ice it's instant and free; in fire it refreshes Astral Fire and can proc Firestarter. Thunder III ticks can proc Thundercloud (instant Thunder III with the whole DoT added up front).</p>
 
 <h3>Standard rotation</h3>

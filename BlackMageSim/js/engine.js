@@ -42,7 +42,7 @@
       this.gcdStart = -10; this.gcdEnd = -10; this.gcdLen = 2.5;
       this.lockUntil = 0;
       this.casting = null;
-      this.queued = null;
+      this.queue = [];
       this.hits = [];
       this.mpTickNext = this.now + 0.5 + Math.random() * 2.5;
       this.dotTickNext = this.now + 0.5 + Math.random() * 2.5;
@@ -210,17 +210,50 @@
     }
 
     // ---------- input ----------
+    // The queue holds one GCD and up to two oGCDs (a double weave), fired in the
+    // order they were pressed, so Triplecast pressed before Fire IV goes first
+    // and Fire IV comes out instant.
     press(rawId) {
       const id = this.resolve(rawId);
       if (!A[id]) return;
-      const at = this.availableAt(id);
-      if (at <= this.now + EPS) {
-        this.queued = null;
+      if (this.availableAt(id) <= this.now + EPS) {
         this.execute(id);
-      } else if (at - this.now <= B.QUEUE_WINDOW) {
-        this.queued = { id, at };
+        return;
       }
+      if (!this.queueable(id)) return;
+      const isGcd = (q) => A[this.resolve(q.id)].kind === 'gcd';
+      if (A[id].kind === 'gcd') {
+        this.queue = this.queue.filter(q => !isGcd(q));
+      } else {
+        this.queue = this.queue.filter(q => this.resolve(q.id) !== id);
+        const ogcds = this.queue.filter(q => !isGcd(q));
+        if (ogcds.length >= 2) this.queue.splice(this.queue.indexOf(ogcds[0]), 1);
+      }
+      this.queue.push({ id: rawId, t: this.now });
     }
+
+    // An action can wait in the queue when it's due within 0.5s. Using an action
+    // starts a 0.5s client lock, so an animation lock never stops the next press
+    // from queueing; a cast does, until its last 0.5s.
+    queueable(id) {
+      const a = A[id];
+      if (this.casting && this.casting.end + this.casting.tax - this.now > B.QUEUE_WINDOW) return false;
+      const ready = a.kind === 'gcd' ? this.gcdEnd : this.cdReadyAt(id);
+      return ready - this.now <= B.QUEUE_WINDOW;
+    }
+
+    runQueue() {
+      for (let guard = 0; guard < 4 && this.queue.length; guard++) {
+        const i = this.queue.findIndex(q => this.availableAt(this.resolve(q.id)) <= this.now + EPS);
+        if (i < 0) break;
+        const [q] = this.queue.splice(i, 1);
+        this.execute(this.resolve(q.id));
+      }
+      // A hardcast that just started, or a stale press, empties what's left.
+      this.queue = this.queue.filter(q => this.now - q.t < 2 && this.queueable(this.resolve(q.id)));
+    }
+
+    queuedIds() { return this.queue.map(q => this.resolve(q.id)); }
 
     setMoving(moving) {
       this.moving = moving;
@@ -238,8 +271,9 @@
       const c = this.casting;
       if (!c) return;
       this.casting = null;
-      // A cancelled cast hands the GCD back.
+      // A cancelled cast hands the GCD back and drops anything queued behind it.
       this.gcdEnd = this.now; this.lockUntil = this.now;
+      this.queue = [];
       this.emit('interrupt', { id: c.id, reason });
     }
 
@@ -479,7 +513,7 @@
     nextEventTime() {
       let t = Infinity;
       if (this.casting) t = Math.min(t, this.casting.end);
-      if (this.queued) t = Math.min(t, Math.max(this.now, this.queued.at));
+      for (const q of this.queue) t = Math.min(t, Math.max(this.now, this.availableAt(this.resolve(q.id))));
       for (const h of this.hits) t = Math.min(t, h.at);
       t = Math.min(t, this.mpTickNext, this.dotTickNext);
       if (this.element !== 0) t = Math.min(t, this.elementUntil);
@@ -581,16 +615,7 @@
         }
       }
 
-      if (this.queued && now >= this.queued.at - EPS) {
-        const q = this.queued;
-        const at = this.availableAt(q.id);
-        if (at <= now + EPS) {
-          this.queued = null;
-          this.execute(this.resolve(q.id));
-        } else {
-          q.at = at;
-        }
-      }
+      if (this.queue.length) this.runQueue();
     }
 
     // The gauge or MP can change under a cast; the game cancels it at the end if so.
