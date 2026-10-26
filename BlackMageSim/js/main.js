@@ -61,7 +61,7 @@
     uptime(now) {
       const end = this.end !== null ? this.end : now;
       const iv = this.uses.filter(u => A[u.id].kind === 'gcd').map(u => {
-        const len = u.interrupted ? u.cut : Math.max(u.recast, u.cast ? u.cast + B.CASTER_TAX : 0);
+        const len = u.interrupted ? u.cut : Math.max(u.recast, u.cast ? u.cast + (u.tax || B.CASTER_TAX) : 0);
         return [Math.max(this.start, u.t), Math.min(end, u.t + len)];
       }).filter(([a, b]) => b > a).sort((a, b) => a[0] - b[0]);
       let busy = 0, cs = null, ce = null;
@@ -186,7 +186,9 @@
 
     // Rough single-target dummy benchmark for the chosen GCD (no raid buffs).
     referenceDps() {
-      return B.REFERENCE_DPS * (2.37 / this.engine.speedScale(2.5)) ** 0.85;
+      // Most GCDs are hardcasts, so ping stretches each one by about its own length.
+      const cycle = 2.65 + B.CASTER_TAX;
+      return B.REFERENCE_DPS * (2.37 / this.engine.speedScale(2.5)) ** 0.85 * cycle / (cycle + this.engine.latency(true));
     },
     parseColor(dps) {
       const k = dps / this.referenceDps();
@@ -205,7 +207,7 @@
 
       e.on('use', ev => {
         const a = A[ev.id];
-        const u = { t: ev.t, id: ev.id, cast: ev.cast || 0, recast: a.kind === 'gcd' ? e.gcdLen : 0 };
+        const u = { t: ev.t, id: ev.id, cast: ev.cast || 0, tax: ev.tax || 0, recast: a.kind === 'gcd' ? e.gcdLen : 0 };
         this.recentUses.push(u);
         this.recentUses = this.recentUses.filter(x => ev.t - x.t < 40);
         if (this.enc) { this.enc.uses.push(u); this.enc.lastActivity = ev.t; }

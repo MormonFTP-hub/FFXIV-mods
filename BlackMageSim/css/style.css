@@ -236,7 +236,7 @@ canvas#scene { position: fixed; inset: 0; display: block; }
 .win .wt .x:hover { color: #fff; }
 .win .wb { padding: 14px 18px; overflow-y: auto; }
 
-#win-settings { width: 560px; }
+#win-settings { width: 680px; }
 .form { display: grid; grid-template-columns: 210px 1fr; gap: 12px 14px; align-items: center; font-size: 15px; }
 .form label { color: var(--muted); }
 .form input[type=text], .form select { font: 15px var(--ui); color: var(--text); background: #0e0d13; border: 1px solid var(--edge-strong); border-radius: 5px; padding: 6px 8px; }
@@ -245,7 +245,8 @@ canvas#scene { position: fixed; inset: 0; display: block; }
 .form .row2 { display: flex; gap: 8px; }
 .form .row2.sps { align-items: center; gap: 12px; }
 .form input[type=number] { width: 96px; font: 600 16px var(--num); color: var(--text); background: #0e0d13; border: 1px solid var(--edge-strong); border-radius: 5px; padding: 5px 8px; }
-#s-gcdinfo { font: 500 14px var(--num); color: var(--gold); }
+#s-gcdinfo, #s-lockinfo { font: 500 14px var(--num); color: var(--gold); }
+.form .hint { font-size: 13px; color: var(--muted); }
 
 #win-actions { width: 760px; }
 .agrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }

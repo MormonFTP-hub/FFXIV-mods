@@ -88,6 +88,31 @@
 
     gcdRecast() { return this.speedScale(2.5, this.inCircle() ? 15 : 0); }
 
+    gcdForSps(sps) {
+      const x = Math.floor(130 * (sps - 400) / 1900);
+      return Math.floor(Math.floor(2500 * (1000 - x) / 1000) / 10) / 100;
+    }
+
+    // Lowest spell speed that reaches a GCD (in seconds), for typing a GCD in settings.
+    spsForGcd(gcd) {
+      for (let sps = B.SPS_MIN; sps <= B.SPS_MAX; sps++) {
+        if (this.gcdForSps(sps) <= gcd + 1e-9) return sps;
+      }
+      return B.SPS_MAX;
+    }
+
+    // The vanilla client holds your animation lock until the server answers,
+    // so ping lands on top of every lock and every caster tax. NoClippy and
+    // XivAlexander take it back out.
+    latency(nominal) {
+      const s = this.settings;
+      if (s.latencyComp) return 0;
+      const ping = Math.max(0, Math.min(B.PING_MAX, s.ping || 0)) / 1000;
+      return nominal ? ping : ping * (0.85 + Math.random() * 0.3);
+    }
+    animLock(base, nominal) { return (base || B.BASE_LOCK) + this.latency(nominal); }
+    casterTax(nominal) { return B.CASTER_TAX + this.latency(nominal); }
+
     // Fire and Blizzard turn into Paradox while the marker is lit.
     resolve(id) {
       if ((id === 'fire' || id === 'blizzard') && this.paradox) return 'paradox';
@@ -117,7 +142,7 @@
     availableAt(id) {
       const a = A[id];
       let t = this.lockUntil;
-      if (this.casting) t = Math.max(t, this.casting.end + B.CASTER_TAX);
+      if (this.casting) t = Math.max(t, this.casting.end + this.casting.tax);
       if (a.kind === 'gcd') t = Math.max(t, this.gcdEnd);
       else t = Math.max(t, this.cdReadyAt(id));
       return t;
@@ -228,13 +253,14 @@
         const recast = this.gcdRecast();
         this.gcdStart = this.now; this.gcdEnd = this.now + recast; this.gcdLen = recast;
         if (castTime > 0) {
-          this.casting = { id, start: this.now, end: this.now + castTime };
-          this.lockUntil = this.now + castTime + B.CASTER_TAX;
-          this.emit('use', { id, gcd: true, cast: castTime, t: this.now });
+          const tax = this.casterTax();
+          this.casting = { id, start: this.now, end: this.now + castTime, tax };
+          this.lockUntil = this.now + castTime + tax;
+          this.emit('use', { id, gcd: true, cast: castTime, tax, t: this.now });
           this.emit('castStart', { id, start: this.now, end: this.now + castTime });
         } else {
           this.consumeInstant(id);
-          this.lockUntil = this.now + this.settings.animLock;
+          this.lockUntil = this.now + this.animLock();
           this.emit('use', { id, gcd: true, cast: 0, t: this.now });
           this.resolveSpell(id);
         }
@@ -242,7 +268,7 @@
         const c = this.cd(id);
         if (c.charges === c.max) c.nextAt = this.now + c.recast;
         c.charges--;
-        this.lockUntil = this.now + (a.lock || this.settings.animLock);
+        this.lockUntil = this.now + this.animLock(a.lock);
         this.emit('use', { id, gcd: false, t: this.now });
         this.resolveAbility(id);
       }

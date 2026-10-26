@@ -89,12 +89,12 @@
           <label for="s-name">Character name</label><input id="s-name" type="text" maxlength="24">
           <label for="s-sps">Spell speed</label>
           <div class="row2 sps"><input id="s-sps" type="number" min="400" max="4000" step="1" inputmode="numeric"><span id="s-gcdinfo"></span></div>
-          <label for="s-lock">Animation lock</label>
-          <select id="s-lock">
-            <option value="0.6">0.60s (normal, ~50 ms ping)</option>
-            <option value="0.65">0.65s (higher ping)</option>
-            <option value="0.5">0.50s (XivAlexander-style)</option>
-          </select>
+          <label for="s-gcd">GCD</label>
+          <div class="row2 sps"><input id="s-gcd" type="number" min="1.88" max="2.50" step="0.01" inputmode="decimal"><span class="hint">Type a GCD to set the spell speed for it</span></div>
+          <label for="s-ping">Ping</label>
+          <div class="row2 sps"><input id="s-ping" type="number" min="0" max="500" step="1" inputmode="numeric"><span class="hint">ms</span><span id="s-lockinfo"></span></div>
+          <label for="s-comp">Latency plugins</label>
+          <div class="row2"><label><input id="s-comp" type="checkbox"> NoClippy / XivAlexander (takes ping back out of locks)</label></div>
           <label for="s-pull">Pull length</label>
           <select id="s-pull">
             <option value="0">Until you stop attacking</option>

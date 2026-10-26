@@ -18,6 +18,8 @@ window.BLM = window.BLM || {};
   B.LUCID_REGEN = 550;
   B.QUEUE_WINDOW = 0.5;
   B.CASTER_TAX = 0.1;
+  B.BASE_LOCK = 0.6;          // server-side animation lock for most actions
+  B.PING_MAX = 500;
   B.SLIDECAST = 0.5;
   B.TINCTURE_INT = 262;        // Grade 8 Tincture of Intelligence cap
   B.RANGE = 25;
@@ -175,7 +177,8 @@ window.BLM = window.BLM || {};
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
     sps: 1160,            // 2.37 GCD
-    animLock: 0.6,
+    ping: 70,             // ms; the vanilla client adds it to every lock
+    latencyComp: false,   // NoClippy / XivAlexander
     volume: 0.5,
     pullLength: 0,        // seconds, 0 = until you stop
     countdown: 15,

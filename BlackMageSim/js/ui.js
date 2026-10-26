@@ -197,7 +197,7 @@
         recast = a.recast + 's';
       }
       tip.innerHTML = `<div class="t1"><img src="${B.icon(id)}" alt=""><div><b>${esc(a.name)}</b><small>${kindLabel(a)}${a.target ? ' · Range 25y' : ''}</small></div></div>` +
-        `<div class="grid"><div>Cast<b>${cast}</b></div><div>Recast<b>${recast}</b></div><div>${a.kind === 'gcd' ? 'MP Cost' : (a.charges ? 'Charges' : 'Lock')}<b>${a.kind === 'gcd' ? mp : (a.charges ? a.charges : (a.lock || this.app.store.settings.animLock).toFixed(2) + 's')}</b></div></div>` +
+        `<div class="grid"><div>Cast<b>${cast}</b></div><div>Recast<b>${recast}</b></div><div>${a.kind === 'gcd' ? 'MP Cost' : (a.charges ? 'Charges' : 'Lock')}<b>${a.kind === 'gcd' ? mp : (a.charges ? a.charges : e.animLock(a.lock, true).toFixed(2) + 's')}</b></div></div>` +
         `<div class="desc">${esc(a.desc)}</div>`;
       tip.classList.add('show');
       const r = this.app.toHud(anchor.getBoundingClientRect());
@@ -616,7 +616,7 @@
 </table>
 
 <h3>How it plays (Endwalker 6.5)</h3>
-<p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Press a button up to 0.5s early and it queues, like the game. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
+<p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Press a button up to 0.5s early and it queues, like the game. Without NoClippy or XivAlexander your ping sits on top of every animation lock and every caster tax, so set your real ping in Settings: that's what makes double weaves clip. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
 <p>Paradox lights up when you swap from Astral Fire III into ice, or from Umbral Ice III with 3 Umbral Hearts into fire. Fire and Blizzard become Paradox. In ice it's instant and free; in fire it refreshes Astral Fire and can proc Firestarter. Thunder III ticks can proc Thundercloud (instant Thunder III with the whole DoT added up front).</p>
 
 <h3>Standard rotation</h3>
@@ -631,23 +631,57 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
 
     buildSettings() {
       const st = () => this.app.store.settings;
-      const sps = $('#s-sps');
+      const e = this.e;
+      const commit = () => { this.app.save(); this.app.applySettings(); this.showGcdInfo(); };
+      const sps = $('#s-sps'), gcd = $('#s-gcd'), ping = $('#s-ping');
+      const minGcd = e.gcdForSps(B.SPS_MAX);
+
+      // Spell speed and GCD drive each other: type either one and the other follows.
       sps.addEventListener('input', () => {
         const v = parseInt(sps.value, 10);
         if (!(v >= B.SPS_MIN && v <= B.SPS_MAX)) { $('#s-gcdinfo').textContent = `Enter ${B.SPS_MIN}–${B.SPS_MAX}`; return; }
         st().sps = v;
-        this.app.save();
-        this.app.applySettings();
-        this.showGcdInfo();
+        gcd.value = e.gcdForSps(v).toFixed(2);
+        commit();
       });
       sps.addEventListener('change', () => {
-        const v = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, parseInt(sps.value, 10) || st().sps));
-        st().sps = v;
-        sps.value = String(v);
-        this.app.save();
-        this.app.applySettings();
-        this.showGcdInfo();
+        st().sps = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, parseInt(sps.value, 10) || st().sps));
+        sps.value = String(st().sps);
+        gcd.value = e.gcdForSps(st().sps).toFixed(2);
+        commit();
       });
+      // A GCD applies once it has two decimals (2.31), so half-typed values don't jump the spell speed.
+      const setGcd = (v) => {
+        st().sps = e.spsForGcd(Math.max(minGcd, Math.min(2.5, v)));
+        sps.value = String(st().sps);
+        commit();
+      };
+      gcd.addEventListener('input', () => {
+        const raw = gcd.value.trim();
+        const v = parseFloat(raw);
+        if (!/^\d\.\d\d$/.test(raw)) return;
+        if (!(v >= minGcd && v <= 2.5)) { $('#s-gcdinfo').textContent = `Enter ${minGcd.toFixed(2)}–2.50`; return; }
+        setGcd(v);
+      });
+      gcd.addEventListener('change', () => {
+        const v = parseFloat(gcd.value);
+        setGcd(Number.isFinite(v) ? v : e.gcdForSps(st().sps));
+        gcd.value = e.gcdForSps(st().sps).toFixed(2);
+      });
+
+      ping.addEventListener('input', () => {
+        const v = parseInt(ping.value, 10);
+        if (!(v >= 0 && v <= B.PING_MAX)) { $('#s-lockinfo').textContent = `Enter 0–${B.PING_MAX}`; return; }
+        st().ping = v;
+        commit();
+      });
+      ping.addEventListener('change', () => {
+        st().ping = Math.max(0, Math.min(B.PING_MAX, parseInt(ping.value, 10) || 0));
+        ping.value = String(st().ping);
+        commit();
+      });
+      $('#s-comp').addEventListener('change', () => { st().latencyComp = $('#s-comp').checked; commit(); });
+
       const bind = (id, key, conv, evt) => {
         const el = $(id);
         el.addEventListener(evt || 'change', () => {
@@ -657,7 +691,6 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
         });
       };
       bind('#s-name', 'name', el => el.value.trim().slice(0, 24) || 'Warrior of Light', 'input');
-      bind('#s-lock', 'animLock', el => parseFloat(el.value));
       bind('#s-pull', 'pullLength', el => parseInt(el.value, 10));
       bind('#s-cd', 'countdown', el => parseInt(el.value, 10));
       bind('#s-vol', 'volume', el => parseFloat(el.value), 'input');
@@ -671,8 +704,10 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       const s = this.app.store.settings;
       $('#s-name').value = s.name;
       $('#s-sps').value = String(s.sps);
+      $('#s-gcd').value = this.e.gcdForSps(s.sps).toFixed(2);
+      $('#s-ping').value = String(s.ping);
+      $('#s-comp').checked = s.latencyComp;
       this.showGcdInfo();
-      $('#s-lock').value = String(s.animLock);
       $('#s-pull').value = String(s.pullLength);
       $('#s-cd').value = String(s.countdown);
       $('#s-vol').value = String(s.volume);
@@ -683,7 +718,8 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
 
     showGcdInfo() {
       const e = this.e;
-      $('#s-gcdinfo').textContent = `GCD ${e.speedScale(2.5).toFixed(2)} · Fire IV ${e.speedScale(2.8).toFixed(2)}s · Despair ${e.speedScale(3).toFixed(2)}s`;
+      $('#s-gcdinfo').textContent = `Fire IV ${e.speedScale(2.8).toFixed(2)}s · Despair ${e.speedScale(3).toFixed(2)}s · Fire III ${e.speedScale(3.5).toFixed(2)}s`;
+      $('#s-lockinfo').textContent = `Abilities lock ${e.animLock(0, true).toFixed(2)}s · casts add ${e.casterTax(true).toFixed(2)}s`;
     }
 
     update(hpK) {
