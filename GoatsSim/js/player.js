@@ -40,7 +40,7 @@
         if (e.code === 'Tab') this.g.hud.showScore(false);
       });
       c.addEventListener('mousedown', (e) => {
-        if (!this.locked && this.g.running()) { c.requestPointerLock(); return; }
+        if (!this.locked && this.g.running()) { this.g.lockMouse(); return; }
         if (e.button === 0) this.mouse.l = true;
         if (e.button === 2) this.mouse.r = true;
       });
@@ -123,17 +123,24 @@
       const len = across.length();
       if (len > 0.1) across.normalize(); else across.set(-1, 0, 0);
       const side = new T.Vector3(across.z, 0, -across.x);
-      // behind your team, a little above head height; pull in along the line of sight when a wall is in the way
+      // look from behind your team if there's room, else from whichever side has the clearest view; pull in
+      // along the line of sight when a wall is in the way. Re-pick only now and then so the camera doesn't hop.
       const look = mid.clone().add(new T.Vector3(0, 1.2, 0));
-      let want = null, best = -1;
-      for (const [s, h] of [[4, 6], [-4, 6], [0, 7.5], [8, 6], [-8, 6], [0, 4.5]]) {
-        const p = mid.clone().addScaledVector(across, -(10 + len * 0.5)).addScaledVector(side, s).add(new T.Vector3(0, h, 0));
-        const dir = p.clone().sub(look), dl = dir.length();
-        dir.normalize();
-        const free = Math.min(dl, g.world.rayDist(look, dir, dl) - 0.6);
-        if (free > best) { best = free; want = look.clone().addScaledVector(dir, Math.max(3, free)); }
-        if (free >= dl - 0.01) break;
+      const dist = 11 + len * 0.45;
+      if (!this.specAngle || g.time - (this.specPickAt || -9) > 2.5) {
+        let best = -1e9;
+        for (let i = 0; i < 12; i++) {
+          const a = i / 12 * Math.PI * 2;
+          const dir = across.clone().multiplyScalar(-Math.cos(a)).addScaledVector(side, Math.sin(a)).setY(0.62).normalize();
+          const free = Math.min(dist, g.world.rayDist(look, dir, dist));
+          const score = free / dist * 3 - (1 - Math.cos(a)) * 0.6 - (this.specAngle !== undefined && Math.abs(a - this.specAngle) > 0.01 ? 0.25 : 0);
+          if (score > best) { best = score; this.specDirPick = dir; this.specAngle = a; }
+        }
+        this.specPickAt = g.time;
       }
+      const dir = this.specDirPick;
+      const free = Math.min(dist, g.world.rayDist(look, dir, dist) - 0.6);
+      const want = look.clone().addScaledVector(dir, Math.max(3, free));
       this.specPos = this.specPos || want.clone();
       this.specLook = this.specLook || mid.clone();
       const k = Math.min(1, dt * 1.5);

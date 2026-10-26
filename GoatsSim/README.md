@@ -14,14 +14,14 @@ python -m http.server 8803 --directory GoatsSim
 
 then go to http://localhost:8803. To open `index.html` straight from disk instead, run `python GoatsSim/tools/pack_assets.py` once first (browsers block loading the models from a file:// page, so that bundles them into a script).
 
-**Play** puts you in the fight. **Watch the bots** runs the same fight with a bot on your Reinhardt and a camera behind your team, if you want to see how a GOATS fight plays out before you try it.
+**Play** puts you in the fight. **Watch the bots** runs the same fight with a bot on your Reinhardt, a camera that follows the fight, and the coach box narrating each ult and counter as it happens, if you want to see how a GOATS fight plays out before you try it.
 
 | | |
 |---|---|
 | `W` `A` `S` `D`, `Space` | Move, jump |
 | Mouse | Look (click the game to lock the mouse) |
 | `LMB` | Rocket Hammer (hold to keep swinging; swings alternate direction) |
-| `RMB` | Barrier Field (hold; the camera goes third person, like the game) |
+| `RMB` | Barrier Field (hold; the camera goes third person, like the game). You can cancel a swing into the barrier once the hit has landed |
 | `Shift` | Charge (pins the first enemy it hits; 300 damage when the charge ends) |
 | `E` | Fire Strike (goes through barriers and heroes) |
 | `Q` | Earthshatter (blocked by a Reinhardt or Brigitte barrier in the way) |

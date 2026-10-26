@@ -151,13 +151,13 @@
           f.bubble.position.copy(u.center(f.bubble.position));
           f.bubble.scale.setScalar(Math.max(1.0, u.height * 0.62));
           f.bubble.material.uniforms.time.value = t;
-          f.bubble.material.uniforms.flash.value = Math.max(0, (f.bubble.userData.hit || 0) - t) * 4;
+          f.bubble.material.uniforms.flash.value = Math.min(0.35, Math.max(0, (f.bubble.userData.hit || 0) - t) * 3);
         }
         f.temp.visible = u.alive && (u.temp > 1 || u.tempArmor > 1);
         if (f.temp.visible) {
           const m = f.temp.material.uniforms;
           m.color.value.set(u.temp > 1 ? 0x59ffd8 : 0xffb340);
-          m.opacity.value = u.temp > 1 ? 0.35 + 0.4 * Math.min(1, u.temp / 750) : 0.25;
+          m.opacity.value = u.temp > 1 ? 0.3 + 0.35 * Math.min(1, u.temp / 750) : 0.12;
           m.time.value = t;
           f.temp.position.copy(u.center(f.temp.position));
           f.temp.scale.setScalar(u.height * 0.52);
@@ -290,7 +290,7 @@
       for (let i = 0; i < n; i++) seeds.push([Math.random() * 6.28, Math.random() * 6.28, 0.5 + Math.random() * 5.5, 0.6 + Math.random() * 1.6]);
       const pg = new T.BufferGeometry();
       pg.setAttribute('position', new T.BufferAttribute(pos, 3));
-      const pts = new T.Points(pg, new T.PointsMaterial({ color: 0xc58aff, size: 0.12, transparent: true, blending: T.AdditiveBlending, depthWrite: false }));
+      const pts = new T.Points(pg, new T.PointsMaterial({ color: 0xc58aff, map: GLOW, size: 0.22, transparent: true, opacity: 0.8, blending: T.AdditiveBlending, depthWrite: false }));
       grp.add(core, halo, glow, pts);
       grp.position.copy(field.pos);
       const R = G.HEROES.zarya.grav.radius, dur = G.HEROES.zarya.grav.dur;
@@ -334,12 +334,12 @@
     }
 
     explosion(p, radius) {
-      const s = new T.Mesh(SPHERE, add(0xff7ad0, 0.8));
+      const s = new T.Mesh(SPHERE, add(0xff7ad0, 0.45));
       s.position.copy(p);
-      this.spawn(s, 0.8, (dt, k) => { s.scale.setScalar(radius * Math.sqrt(k)); s.material.opacity = 0.8 * (1 - k); });
-      const flash = this.sprite(0xffffff, radius * 1.5, 1);
+      this.spawn(s, 0.7, (dt, k) => { s.scale.setScalar(radius * Math.sqrt(k)); s.material.opacity = 0.45 * (1 - k) * (1 - k); });
+      const flash = this.sprite(0xffd0f0, 9, 0.8);
       flash.position.copy(p);
-      this.spawn(flash, 0.4, (dt, k) => { flash.material.opacity = 1 - k; });
+      this.spawn(flash, 0.25, (dt, k) => { flash.material.opacity = 0.8 * (1 - k); });
       const ring = new T.Mesh(RING, add(0xffb0e0, 0.8));
       ring.rotation.x = -Math.PI / 2;
       ring.position.copy(p).y -= 0.8;

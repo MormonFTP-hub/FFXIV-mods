@@ -150,6 +150,32 @@
       return best;
     }
 
+    // the closest walkable spot to p (searching outward ring by ring), as a new point on the floor
+    nearestReachable(p, maxR = 24) {
+      const m = this.nm, cx = this.cellX(p.x), cy = this.cellY(p.z);
+      for (let r = 0; r <= maxR; r++) {
+        let best = null, bd = Infinity;
+        for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+          const ix = cx + dx, iy = cy + dy;
+          if (ix < 0 || iy < 0 || ix >= m.nx || iy >= m.ny) continue;
+          for (let l = 0; l < m.layers; l++) {
+            if (!this.reach[(ix * m.ny + iy) * m.layers + l]) continue;
+            const h = this.fh(ix, iy, l), d = Math.abs(h - p.y) * 2 + Math.hypot(dx, dy);
+            if (d < bd) { bd = d; best = { ix, iy, h }; }
+          }
+        }
+        if (best) { const c = this.cellCenter(best.ix, best.iy); return new THREE.Vector3(c.x, best.h, c.z); }
+      }
+      return p.clone();
+    }
+
+    // is p standing on a floor that's connected to the fight area?
+    reachable(p) {
+      const ix = this.cellX(p.x), iy = this.cellY(p.z), l = this.layerNear(ix, iy, p.y + 0.1, false);
+      return l >= 0 && Math.abs(this.fh(ix, iy, l) - p.y) < 1.0;
+    }
+
     // ground height under (x, z) for something at height y, or NaN if that spot is a wall / off the map
     groundAt(x, z, y) {
       const ix = this.cellX(x), iy = this.cellY(z);

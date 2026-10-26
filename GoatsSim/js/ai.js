@@ -102,6 +102,8 @@
         else if (pokeFor > 1.5 && Math.random() < 0.08) this.say(this.side === 'attack' ? 'zenyatta' : 'lucio', 'hold', null, 9);
       }
       if (this.phase === 'engage' && dist > 32 && t - this.phaseAt > 6) this.setPhase('poke');
+      // nobody has hurt anybody for a while: whoever is left goes to the point and settles it
+      if (t - (g.lastDamageAt || 0) > 10 && t > 20 && this.phase !== 'engage' && this.phase !== 'retreat') this.setPhase('engage');
     }
 
     engageValue(own, foes, dist) {

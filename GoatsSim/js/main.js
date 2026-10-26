@@ -19,7 +19,7 @@
     hold: [13.5, -1, -6],
     stage: [23.5, 0, -3],
     spawn: [[58, -1, 12], [2, 0, -6]],
-    blueStart: [[36, 0, 0], [35, 0, 2.5], [35.5, 0, -2.5], [38.5, 0, 1.5], [38, 0, -1], [41.5, 0, 3]],
+    blueStart: [[36, 0, 0], [35, 0, 2.5], [35.5, 0, -2.5], [38.5, 0, 1.5], [38, 0, -1], [39, 0, 3]],
     redStart: [[13.5, -1, -6], [12, -1, -9], [12.5, -1, -2.5], [9.5, -1, -7], [11, -1, -4.5], [6.5, -1, -8]],
   };
 
@@ -175,6 +175,7 @@
       this.log = [];
       this.result = null;
       this.lopsided = 0;
+      this.lastDamageAt = 0;
       for (const d of this.directors) { d.phase = 'setup'; d.phaseAt = 0; d.enemyUsed = {}; d.saveAt = -99; d.called = {}; d.bombAt = -99; d.lastUlt = -99; d.nextThink = 0; }
       const starts = { [this.blue]: MAP.blueStart, [this.red]: MAP.redStart };
       const order = G.COMP;
@@ -184,6 +185,7 @@
         G.Kits[u.hero].init(u);
         const s = starts[u.team][order.indexOf(u.hero)];
         u.pos.copy(this.vec([s[0] + rnd(-0.5, 0.5), s[1], s[2] + rnd(-0.5, 0.5)]));
+        if (!this.world.reachable(u.pos)) u.pos.copy(this.world.nearestReachable(u.pos));
         u.yaw = u.team === this.blue ? -Math.PI / 2 : Math.PI / 2;
         u.bodyYaw = u.yaw;
         u.pitch = 0;
@@ -212,12 +214,19 @@
       this.setupFight(false);
       this.hud.reset();
       this.player.specPos = null;
+      this.player.specAngle = undefined;
       this.hud.center(`FIGHT ${this.fightNo} · ${this.scenario.name.toUpperCase()}`, 3.5, 'big');
       $('coach-text').textContent = this.autopilot ? `Watching: ${this.scenario.brief}` : this.scenario.brief;
       this.hud.coachText = this.scenario.brief;
       this.hud.coachUntil = 6;
       this.hud.coachPrio = 5;
-      if (!this.autopilot) this.world.renderer.domElement.requestPointerLock();
+      if (!this.autopilot) this.lockMouse();
+    }
+
+    // newer browsers return a promise that rejects when the lock isn't allowed (no click yet, embedded page)
+    lockMouse() {
+      const p = this.world.renderer.domElement.requestPointerLock();
+      if (p && p.catch) p.catch(() => {});
     }
 
     pause(on) {
@@ -228,7 +237,7 @@
       } else if (!on && this.state === 'paused') {
         this.state = this.paused;
         $('pause').classList.add('hidden');
-        this.world.renderer.domElement.requestPointerLock();
+        this.lockMouse();
       }
     }
 
@@ -236,6 +245,7 @@
     bindEvents() {
       const P = () => this.playerUnit;
       this.on('damage', (e) => {
+        if (e.amount > 0) this.lastDamageAt = this.time;
         if (e.src === P() && e.amount > 0) { this.hud.hit(false); this.audio.play('hit'); }
         if (e.unit === P() && e.amount > 0) { this.hud.hurtFrom(e.src); if (Math.random() < 0.3) this.audio.play('hurt'); }
         if (e.kind === 'Rocket Hammer' && e.src) this.audio.play('hammerHit', e.unit.pos);
@@ -425,6 +435,11 @@
       if (!u.onGround) {
         u.pos.y += u.vel.y * dt;
         if (!isNaN(ground) && u.pos.y <= ground) { u.pos.y = ground; u.vel.y = 0; u.onGround = true; }
+      }
+      // a hero knocked onto a floor that isn't connected to the fight steps back onto one
+      if (u.onGround && !u.isPlayer && (u.stuckCheck = (u.stuckCheck || 0) + dt) > 1) {
+        u.stuckCheck = 0;
+        if (!W.reachable(u.pos)) { const p = W.nearestReachable(u.pos, 6); if (p.distanceTo(u.pos) < 4) u.pos.copy(p); }
       }
       // never lose a hero off the map: back to the last good spot
       if (!isNaN(ground) && u.onGround) (u.safe = u.safe || new T.Vector3()).copy(u.pos);

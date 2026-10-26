@@ -195,6 +195,8 @@
     shield(u, on) {
       const t = u.game.time;
       if (on) {
+        // the swing's recovery can be cancelled into the barrier once the hit has landed (swing-shield)
+        if (u.action && u.action.name === 'swing' && u.action.hit && u.action.t >= u.H.hammer.hitAt + 0.15) u.action = null;
         if (u.barrier.up || u.action || !u.canAct() || u.st.charging > t || !u.barrier.canRaise()) return false;
         u.barrier.up = true;
         return true;
