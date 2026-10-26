@@ -52,6 +52,7 @@ Two are not gear at all: **Hero Chaos Chao** replaces the Mammet #001 minion, an
 |---|---|
 | [PMP Viewer](PmpViewer/README.md) | Tests a `.pmp` without starting the game. It resolves every file the way Penumbra would, then draws the result with FFXIV's own shaders on every race, in the game's idle pose. |
 | [Pull Timer](PullTimer/README.md) | Dalamud plugin. Tells you how early or late a pull was against the countdown, who pulled and with what, with history and stats. |
+| [Black Mage Sim](BlackMageSim/README.md) | Browser game. Endwalker (6.5) Black Mage on a striking dummy, with the 6.x numbers, GCD, slidecast and queue timing, the Elemental Gauge, and a parse meter with a pull timeline. |
 | [Voice Link](VoiceLink/README.md) | Dalamud plugin. Turns what you type into natural-sounding speech and gets it to other players through mod sync, paired chat reading or Discord. |
 | [PF Merc Bot](PfMercBot/README.md) | Discord bot plus a Google Apps Script board. Watches the NA Party Finder for listings that pay gil for mercs and posts them to a channel. |
 | [Authenticator](Authenticator/README.md) | Windows app that shows the same 2-step verification codes as Google Authenticator on your phone. |

@@ -123,6 +123,22 @@
         "PmpViewer/work/gallery/site"
       ],
       "port": 8790
+    },
+    {
+      "name": "blm-sim",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8797",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "BlackMageSim"
+      ],
+      "port": 8797
     }
   ]
 }

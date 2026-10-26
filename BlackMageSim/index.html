@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Black Mage Dummy (Endwalker)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Sans:wght@400;500;600;700&family=Saira+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div id="hud">
+    <div id="menu" class="ia">
+      <button id="b-pull">Countdown<kbd>/cd</kbd></button>
+      <button id="b-reset">Reset</button>
+      <button id="b-actions">Actions<kbd>P</kbd></button>
+      <button id="b-keybind">Keybinds<kbd>K</kbd></button>
+      <button id="b-settings">Settings</button>
+      <button id="b-help">Help<kbd>F1</kbd></button>
+    </div>
+
+    <div id="party">
+      <div class="member">
+        <img id="party-job" alt="">
+        <div>
+          <div class="nm outline"><span>Lv90</span><em id="party-name" style="font-style:normal"></em></div>
+          <div class="bars2">
+            <div><div class="minibar hp"><i id="party-hp"></i></div><div class="barnum outline" id="party-hpn"></div></div>
+            <div><div class="minibar mp"><i id="party-mp"></i></div><div class="barnum outline" id="party-mpn"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="target" class="ia">
+      <div class="row outline"><div><span class="lv">Lv90</span>Striking Dummy</div><div class="pct" id="t-pct">100%</div></div>
+      <div class="hpbar"><b id="t-lag"></b><i id="t-hp"></i></div>
+      <div id="tdebuffs"></div>
+    </div>
+
+    <div id="meter" class="panel ia"></div>
+
+    <div id="buffs"></div>
+
+    <div id="castbar">
+      <div class="nm outline" id="cb-name"></div>
+      <div class="wrap">
+        <img id="cb-icon" alt="">
+        <div class="track"><div class="fill" id="cb-fill"></div><div class="slide" id="cb-slide"></div></div>
+      </div>
+      <div class="time outline" id="cb-time"></div>
+      <div class="msg outline" id="cb-msg"></div>
+    </div>
+
+    <div id="params">
+      <div class="param hp">
+        <div class="lbl outline"><b>HP</b><span id="p-hp"></span></div>
+        <div class="bar"><i id="p-hpbar"></i></div>
+      </div>
+      <div class="param mp">
+        <div class="lbl outline"><b>MP</b><span id="p-mp"></span></div>
+        <div class="bar"><i id="p-mpbar"></i><div class="ticks"></div></div>
+      </div>
+    </div>
+
+    <div id="hotbars"></div>
+    <div id="gauge"></div>
+
+    <div id="chat" class="panel ia">
+      <div class="tabs"><button class="on" data-tab="all">General</button><button data-tab="battle">Battle</button><button data-tab="system">System</button></div>
+      <div id="log"></div>
+      <input id="chatin" placeholder="Press Enter to chat. Try /countdown 15, /reset, /help" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div id="fly"></div>
+    <div id="error" class="outline"></div>
+    <div id="count"></div>
+    <div id="banner" class="panel"></div>
+    <div id="tip" class="panel"></div>
+
+    <div id="win-settings" class="win panel ia">
+      <div class="wt">Settings<button class="x" data-close>✕</button></div>
+      <div class="wb">
+        <div class="form">
+          <label for="s-name">Character name</label><input id="s-name" type="text" maxlength="24">
+          <label for="s-gcd">GCD (spell speed)</label><select id="s-gcd"></select>
+          <label for="s-lock">Animation lock</label>
+          <select id="s-lock">
+            <option value="0.6">0.60s (normal, ~50 ms ping)</option>
+            <option value="0.65">0.65s (higher ping)</option>
+            <option value="0.5">0.50s (XivAlexander-style)</option>
+          </select>
+          <label for="s-pull">Pull length</label>
+          <select id="s-pull">
+            <option value="0">Until you stop attacking</option>
+            <option value="60">1:00</option>
+            <option value="120">2:00</option>
+            <option value="180">3:00</option>
+            <option value="300">5:00</option>
+            <option value="420">7:00</option>
+          </select>
+          <label for="s-cd">Countdown length</label>
+          <select id="s-cd"><option>5</option><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
+          <label for="s-vol">Sound volume</label><input id="s-vol" type="range" min="0" max="1" step="0.05">
+          <label>Hotbar</label>
+          <div class="row2"><label><input id="s-mpcost" type="checkbox"> Show MP cost</label></div>
+          <label>Cast bar</label>
+          <div class="row2"><label><input id="s-slide" type="checkbox"> Slidecast marker</label></div>
+          <label>Results</label>
+          <div class="row2"><label><input id="s-timeline" type="checkbox"> Show cast timeline</label></div>
+          <div class="note">Stats are a 6.5 best-in-slot set (ilvl ~660). Changing the GCD only changes spell speed. Settings, hotbars and keybinds save in this browser.</div>
+          <div class="note"><button class="btn" id="s-resetbars">Restore default hotbars and keybinds</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="win-actions" class="win panel ia">
+      <div class="wt">Actions &amp; Traits<button class="x" data-close>✕</button></div>
+      <div class="wb" id="actlist"></div>
+    </div>
+
+    <div id="win-help" class="win panel ia">
+      <div class="wt">How to play<button class="x" data-close>✕</button></div>
+      <div class="wb help" id="helpbody"></div>
+    </div>
+
+    <div id="win-results" class="win panel ia">
+      <div class="wt"><span id="res-title">Encounter</span><button class="x" data-close>✕</button></div>
+      <div class="wb" id="resbody"></div>
+    </div>
+  </div>
+
+  <img id="ghost" alt="">
+
+  <script src="js/data.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
