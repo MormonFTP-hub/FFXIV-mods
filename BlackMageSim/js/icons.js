@@ -101,22 +101,34 @@
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 
+  // The game's own icons, when tools/extract_icons.py has pulled them from an install
+  // (work/game-icons.js sets BLM.GAME_ICONS). Otherwise the drawn ones below.
+  const gameIcon = (k) => (B.GAME_ICONS && B.GAME_ICONS[k]) || null;
+
   B.icon = function (id) {
+    const g = gameIcon(id);
+    if (g) return g;
     if (cache[id]) return cache[id];
     const art = ART[id] || ART.scathe;
     return (cache[id] = build(art, 64, 64, 7));
   };
 
-  B.statusIcon = function (key) {
+  // Stacking statuses (Triplecast) have one game icon per stack count, with the number drawn in.
+  B.statusHasStackArt = (key, stacks) => !!(stacks && gameIcon(`st:${key}:${stacks}`));
+
+  B.statusIcon = function (key, stacks) {
+    const g = (stacks && gameIcon(`st:${key}:${stacks}`)) || gameIcon('st:' + key);
+    if (g) return g;
     const k = 'st:' + key;
     if (cache[k]) return cache[k];
     const st = B.STATUSES[key];
     const art = STATUS_ART[st ? st.icon : ''] || ART.scathe;
-    return (cache[k] = build(art, 48, 60, 5));
+    return (cache[k] = build(art, 48, 64, 5));
   };
 
   // Black Mage job crest: the pointed hat.
   B.jobIcon = function () {
+    if (gameIcon('job')) return gameIcon('job');
     if (cache.job) return cache.job;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
       `<defs><radialGradient id="j" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#7b5cc4"/><stop offset="1" stop-color="#1c1035"/></radialGradient></defs>` +

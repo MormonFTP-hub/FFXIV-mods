@@ -26,6 +26,16 @@ then go to http://localhost:8797.
 
 Hotbars, keybinds and settings save in your browser.
 
+### Game icons
+
+The game's own action, status, item and job icons come from your FFXIV install. Run this once (it uses PMP Viewer's game reader, so the same Python with numpy and Pillow):
+
+```
+python -P -E BlackMageSim/tools/extract_icons.py
+```
+
+It reads the Action, Status and Item sheets, decodes each `_hr1` icon and writes `work/game-icons.js`. `work/` is git-ignored, so Square Enix's art never goes into the repo. Without that file the sim uses its own drawn icons. Sharpcast is pinned to its Endwalker icon (002657), because Dawntrail removed the action and points its row at the generic removed-action icon.
+
 To send it to someone, bundle it into one file and send them `build/BlackMageSim.html`; they double-click it to play:
 
 ```
@@ -55,7 +65,7 @@ Some things are reconstructed rather than read off a 6.x source:
 - Ice spells cost no MP while in Umbral Ice. Blizzard IV straight after Blizzard III at 0 MP needs this to work the way it did. Fire spells under Umbral Ice I/II, and ice spells under Astral Fire I/II, cost half and a quarter.
 - The gear set, the Grade 8 Tincture cap (262 INT) and the spell application delays are close approximations, so hits land within a few percent of what you remember, not to the point.
 - AoE spells (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV) are left out since there's one dummy. Aetherial Manipulation is left out because it needs a party member.
-- Icons, the dummy and the mage are drawn in code for this page. No game assets are used. The sounds are synthesised.
+- Icons come from your own game install when you've run `extract_icons.py`, and are drawn in code otherwise. The dummy and the mage are still drawn in code, and the sounds are synthesised. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
 
 ## Files
 
@@ -66,11 +76,14 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/scene.js` | Canvas scene: camera, arena, dummy, mage, spell effects |
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
 | `js/main.js` | Input, keybinds, drag and drop, countdown, parse tracking, frame loop |
-| `js/icons.js` | SVG icon art |
+| `js/icons.js` | Game icons when extracted, SVG icon art otherwise |
+| `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
+| `tools/build_single.py` | Bundles everything into one HTML file for sharing |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
 
+- **1.3.0**: The game's own icons for actions, statuses (Triplecast with its stack art), the Tincture and the job, extracted from your install by `tools/extract_icons.py`.
 - **1.2.1**: Action queue fixed. Triplecast then Fire IV no longer loses the Triplecast, a press during an animation lock queues instead of being dropped, and double weaves queue both abilities.
 - **1.2.0**: Ping is added to animation lock and caster tax like the vanilla client, with a NoClippy / XivAlexander toggle. GCD and spell speed boxes update each other. Single-file build script for sharing.
 - **1.1.0**: Spell speed is a number you type instead of a GCD dropdown. MP tick timer above the MP bar.

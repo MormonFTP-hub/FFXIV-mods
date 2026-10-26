@@ -70,7 +70,7 @@ canvas#scene { position: fixed; inset: 0; display: block; }
 #tdebuffs { display: flex; gap: 4px; margin-top: 6px; min-height: 52px; }
 
 .status { width: 32px; text-align: center; position: relative; }
-.status img { width: 32px; height: 40px; display: block; }
+.status img { width: 32px; height: auto; aspect-ratio: 3 / 4; display: block; }
 .status .t { font: 600 14px var(--num); line-height: 14px; margin-top: 1px; }
 .status .stk { position: absolute; right: -3px; top: -4px; font: 700 15px var(--num); color: #fff; }
 

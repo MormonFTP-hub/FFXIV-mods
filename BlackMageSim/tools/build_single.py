@@ -17,7 +17,11 @@ def inline(html: str) -> str:
         return "<style>\n" + (ROOT / m.group(1)).read_text(encoding="utf-8") + "\n</style>"
 
     def js(m):
-        src = (ROOT / m.group(1)).read_text(encoding="utf-8")
+        path = ROOT / m.group(1)
+        if not path.exists():           # work/game-icons.js is optional (made by extract_icons.py)
+            print(f"skipping {m.group(1)} (not found)")
+            return ""
+        src = path.read_text(encoding="utf-8")
         # A literal </script> inside the code would end the inline tag early.
         return "<script>\n" + src.replace("</script", "<\\/script") + "\n</script>"
 

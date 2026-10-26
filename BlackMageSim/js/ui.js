@@ -292,7 +292,11 @@
         const txt = s.permanent ? '' : rem >= 60 ? Math.ceil(rem / 60) + 'm' : String(Math.max(0, Math.ceil(rem - 1e-6)));
         if (el._tv !== txt) { el._tv = txt; el._t.textContent = txt; }
         const stk = s.stacks ? String(s.stacks) : '';
-        if (el._kv !== stk) { el._kv = stk; el._k.textContent = stk; }
+        if (el._kv !== stk) {
+          el._kv = stk;
+          el._k.textContent = B.statusHasStackArt(key, s.stacks) ? '' : stk;
+          if (s.stacks) el.querySelector('img').src = B.statusIcon(key, s.stacks);
+        }
       });
       for (const k of Object.keys(map)) if (!keep.has(k)) { map[k].remove(); delete map[k]; }
     }
@@ -626,7 +630,7 @@ ${seq(['blizzard3', 'blizzard4', 'paradox', 'fire3', 'fire4', 'fire4', 'fire4', 
 <h3>A typical 6.x opener</h3>
 ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire4', ['amplifier'], 'fire4', ['leyLines'], ['swiftcast'], 'despair', ['manafont'], 'fire4', 'despair', 'blizzard3', 'xenoglossy', 'paradox', 'blizzard4', 'fire3'])}
 <p>Sharpcast about 15s before the pull, then start Fire III so it lands as the countdown ends (around −3.3s at 2.37). Use the Tincture around then too. Stand in Ley Lines for the 15% cast and GCD speed.</p>
-<p style="color:#a9a3b4">Everything runs on the 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick. Icons are drawn for this page, not taken from the game.</p>`;
+<p style="color:#a9a3b4">Everything runs on the 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick. ${B.GAME_ICONS ? 'Icons are the game\'s own, read from your install. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made practice tool, not affiliated with Square Enix.' : 'Icons are drawn for this page, not taken from the game.'}</p>`;
     }
 
     buildSettings() {

@@ -139,6 +139,22 @@
         "BlackMageSim"
       ],
       "port": 8797
+    },
+    {
+      "name": "paper-crown",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8799",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "C:\\Users\\hltil\\AppData\\Local\\Temp\\claude\\E--FFXIV-mods\\9148372d-b88e-44bd-a44f-c58206521688\\scratchpad\\papercrown\\dist"
+      ],
+      "port": 8799
     }
   ]
 }
