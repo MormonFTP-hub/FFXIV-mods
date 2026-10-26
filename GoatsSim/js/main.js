@@ -23,15 +23,17 @@
     redStart: [[13.5, -1, -6], [12, -1, -9], [12.5, -1, -2.5], [9.5, -1, -7], [11, -1, -4.5], [6.5, -1, -8]],
   };
 
+  // Who walks in with which ults. Your own Shatter isn't set here: you start the first fight at 0% and
+  // whatever charge you end a fight with carries into the next one.
   const SCENARIOS = [
-    { name: 'Even fight', brief: 'Both teams walk in with every ult. Whoever wins the trade wins the fight: make them use their saves first.',
-      blue: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1, reinhardt: 1 }, red: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
+    { name: 'Even fight', brief: 'Both teams walk in with their ults; your Shatter you build yourself. Whoever wins the trade wins the fight: make them use their saves first.',
+      blue: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1 }, red: { zarya: 1, dva: 1, lucio: 1, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
     { name: 'Ult advantage', brief: 'You hold Grav and Bomb. They hold Trans and Beat. Bait a save out before you commit the combo.',
-      blue: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 0.7, zenyatta: 0.6, reinhardt: 0.85 }, red: { zarya: 0.5, dva: 0.55, lucio: 1, brigitte: 0.6, zenyatta: 1, reinhardt: 0.7 } },
-    { name: 'They have the combo', brief: 'They hold Grav and Bomb. You hold Trans, Beat and Shatter. Keep your shield on the bomb and make them waste ults.',
-      blue: { zarya: 0.45, dva: 0.5, lucio: 1, brigitte: 0.8, zenyatta: 1, reinhardt: 1 }, red: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 1, zenyatta: 0.6, reinhardt: 0.6 } },
-    { name: 'Shatter fight', brief: 'Both Reinhardts have Shatter. Don\'t swing in front of theirs with your shield down — and catch him when he does.',
-      blue: { zarya: 0.7, dva: 0.6, lucio: 1, brigitte: 1, zenyatta: 0.7, reinhardt: 1 }, red: { zarya: 0.7, dva: 0.7, lucio: 0.8, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
+      blue: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 0.7, zenyatta: 0.6 }, red: { zarya: 0.5, dva: 0.55, lucio: 1, brigitte: 0.6, zenyatta: 1, reinhardt: 0.7 } },
+    { name: 'They have the combo', brief: 'They hold Grav and Bomb. You hold Trans and Beat. Keep your shield on the bomb and make them waste ults.',
+      blue: { zarya: 0.45, dva: 0.5, lucio: 1, brigitte: 0.8, zenyatta: 1 }, red: { zarya: 1, dva: 1, lucio: 0.5, brigitte: 1, zenyatta: 0.6, reinhardt: 0.6 } },
+    { name: 'Their Shatter', brief: 'Their Reinhardt walks in with Shatter. Don’t swing in front of him with your shield down; make him throw it into your barrier.',
+      blue: { zarya: 0.7, dva: 0.6, lucio: 1, brigitte: 1, zenyatta: 0.7 }, red: { zarya: 0.7, dva: 0.7, lucio: 0.8, brigitte: 1, zenyatta: 1, reinhardt: 1 } },
   ];
 
   class Game {
@@ -189,9 +191,12 @@
         u.yaw = u.team === this.blue ? -Math.PI / 2 : Math.PI / 2;
         u.bodyYaw = u.yaw;
         u.pitch = 0;
-        const frac = (u.team === this.blue ? sc.blue : sc.red)[u.hero] || 0.7;
-        u.ult = Math.min(u.ultCost, u.ultCost * frac * rnd(0.97, 1.03));
-        if (frac >= 1) u.ult = u.ultCost;
+        if (u === this.playerUnit) u.ult = Math.min(u.ultCost, this.carryUlt || 0);
+        else {
+          const frac = (u.team === this.blue ? sc.blue : sc.red)[u.hero] || 0.7;
+          u.ult = Math.min(u.ultCost, u.ultCost * frac * rnd(0.97, 1.03));
+          if (frac >= 1) u.ult = u.ultCost;
+        }
         u.readyAt = -10;
         if (u.anim) { u.anim.last.copy(u.pos); u.anim.fall = 0; u.anim.alpha = 1; }
         if (u.rig) { u.rig.setOpacity(1); u.rig.root.visible = true; }
@@ -336,6 +341,9 @@
 
     toMenu() {
       this.state = 'menu';
+      this.carryUlt = 0;
+      this.fightNo = 0;
+      this.record = { won: 0, lost: 0 };
       document.exitPointerLock && document.exitPointerLock();
       for (const id of ['result', 'pause', 'howto']) $(id).classList.add('hidden');
       $('menu').classList.remove('hidden');
@@ -396,6 +404,7 @@
       const t = this.time, W = this.world;
       u.recentDmg *= Math.exp(-dt / 1.2);
       if (!u.alive) return;
+      if (this.state === 'fight') u.addUlt(G.ULT.passive * dt);
       // body faces the aim
       let d = u.yaw - u.bodyYaw;
       while (d > Math.PI) d -= 2 * Math.PI;
@@ -479,6 +488,7 @@
 
     showResult() {
       this.state = 'result';
+      this.carryUlt = this.playerUnit.ult;
       document.exitPointerLock && document.exitPointerLock();
       const r = this.result, p = this.playerUnit;
       $('res-kicker').textContent = `FIGHT ${this.fightNo} · ${this.scenario.name.toUpperCase()} · RECORD ${this.record.won}–${this.record.lost}`;
@@ -494,7 +504,8 @@
           <div><h3>Your Reinhardt</h3>
             <table class="mine"><tr><td>Damage blocked</td><td>${Math.round(st.blocked)}</td></tr><tr><td>Damage dealt</td><td>${Math.round(st.dmg)}</td></tr>
             <tr><td>Eliminations</td><td>${st.kills}</td></tr><tr><td>Deaths</td><td>${st.deaths}</td></tr><tr><td>Shatter targets</td><td>${this.shatterHits || 0}</td></tr></table>
-            <h3>Coach's notes</h3><ul class="notes">${notes.map((n) => `<li>${n}</li>`).join('')}</ul></div>
+            <h3>Coach's notes</h3><ul class="notes">${notes.map((n) => `<li>${n}</li>`).join('')}</ul>
+            <p class="carry">Earthshatter going into the next fight: <b>${p.ultPct()}%</b></p></div>
         </div>`;
       this.shatterHits = 0; this.shatterBlocked = false; this.result_bombBlocked = 0;
       $('result').classList.remove('hidden');

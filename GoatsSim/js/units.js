@@ -250,6 +250,7 @@
       this.lastHit = g.time;
       this.owner.stats.blocked += amount;
       if (src) src.addUlt(amount * G.ULT.perBarrier);
+      if (this.owner.hero === 'reinhardt') this.owner.addUlt(amount * G.ULT.perBlock);   // a Rein earns Shatter by tanking
       g.emit('barrierHit', { barrier: this, amount, src });
       if (this.hp <= 0) {
         this.hp = 0;

@@ -5,8 +5,8 @@
 # The rips are DataTool FBX exports with the material -> texture links stripped, so each material's
 # colour map is pinned here by texture id (found by matching each mesh's UV layout against the
 # painted area of every texture in its folder, then checked by eye). Meshes are decimated to a
-# game-sized budget, textures are scaled down, and weapons are baked to static meshes that the
-# game attaches to the hands at runtime.
+# game-sized budget, textures are scaled to 1024 or less, meshes are Draco-compressed, and weapons are
+# baked to static meshes that the game attaches to the hands at runtime.
 import bpy, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +25,7 @@ HEROES = {
         "fbx": "reinhardt/Raw Files/Model/Reinhardt Optimus Prime.fbx",
         "tris": 16000,
         "mats": {
-            "00000000F8DC": ("00000004DC2C", {"size": 2048, "emit": "00000004DC2D", "emit_color": (0.35, 0.75, 1.0)}),
+            "00000000F8DC": ("00000004DC2C", {"size": 1024, "emit": "00000004DC2D", "emit_color": (0.35, 0.75, 1.0)}),
             "00000000F900": ((0.75, 0.1, 0.08), {}),
             "00000000F8DF": ("00000004DC35", {"size": 128, "emit": "00000004DC37", "emit_color": (1.0, 0.6, 0.2)}),
         },
@@ -34,8 +34,8 @@ HEROES = {
         "fbx": "zarya/Raw Files/Model/Zarya OW2.fbx",
         "tris": 15000,
         "mats": {
-            "000000009925": ("00000002A652", {"size": 2048}),
-            "00000000A54F": ("00000002A652", {"size": 2048}),
+            "000000009925": ("00000002A652", {"size": 1024}),
+            "00000000A54F": ("00000002A652", {"size": 1024}),
             "00000000A5B4": ("00000002E048", {"size": 256}),
             "000000009932": ("00000002A68D", {"size": 128}),
             "000000009931": ("000000032A53", {"size": 512, "alpha": True}),
@@ -46,8 +46,8 @@ HEROES = {
         "fbx": "brigitte/Raw Files/Model/Brigitte ANTIFRAGILE BB.fbx",
         "tris": 15000,
         "mats": {
-            "00000000DB61": ("000000045559", {"size": 2048, "emit": "00000004555A", "emit_color": (1.0, 0.45, 0.9)}),
-            "00000000DB63": ("000000045559", {"size": 2048}),
+            "00000000DB61": ("000000045559", {"size": 1024, "emit": "00000004555A", "emit_color": (1.0, 0.45, 0.9)}),
+            "00000000DB63": ("000000045559", {"size": 1024}),
             "00000000DB62": ("00000004555F", {"size": 512, "alpha": True}),
             "0000000099FB": ("000000022149", {"size": 128}),
             "00000000DB64": (DARK, {}), "000000005B0C": (DARK, {}),
@@ -58,9 +58,9 @@ HEROES = {
         "fbx": "lucio/Raw Files/Model/Lucio Jazzy.fbx",
         "tris": 13000,
         "mats": {
-            "0000000041E1": ("00000000D563", {"size": 2048}),
-            "0000000041E3": ("00000000D563", {"size": 2048}),
-            "0000000046EA": ("00000000D563", {"size": 2048}),
+            "0000000041E1": ("00000000D563", {"size": 1024}),
+            "0000000041E3": ("00000000D563", {"size": 1024}),
+            "0000000046EA": ("00000000D563", {"size": 1024}),
             "0000000041E4": ("00000000D571", {"size": 1024}),
             "000000000AAB": ("000000003F69", {"size": 128}),
             "00000000196C": ("000000003F69", {"size": 128}),
@@ -72,7 +72,7 @@ HEROES = {
         "tris": 16000,
         "orbs_bone": "bone_0005",
         "mats": {
-            "00000000A3F9": ("00000002D528", {"size": 2048, "emit": "00000002D52D", "emit_color": (1.0, 0.85, 0.45)}),
+            "00000000A3F9": ("00000002D528", {"size": 1024, "emit": "00000002D52D", "emit_color": (1.0, 0.85, 0.45)}),
             "00000000AD76": ("000000031267", {"size": 512, "emit": "000000031217", "emit_color": (0.4, 0.9, 1.0)}),
         },
     },
@@ -80,7 +80,7 @@ HEROES = {
         "fbx": "dva/Raw Files/Mech/Tokki My Melody.fbx",
         "tris": 16000,
         "mats": {
-            "00000001382B": ("0000000659AE", {"size": 2048}),
+            "00000001382B": ("0000000659AE", {"size": 1024}),
             "00000001382C": ("0000000659A6", {"size": 1024}),
             "000000013828": (WHITE, {}),
         },
@@ -255,7 +255,11 @@ def export(path, objs):
     kw = dict(filepath=path, export_format="GLB", use_selection=True, export_animations=False,
               export_skins=True, export_all_influences=False, export_def_bones=False,
               export_image_format="AUTO", export_texcoords=True, export_normals=True,
-              export_tangents=False, export_materials="EXPORT", export_yup=True, export_extras=False)
+              export_tangents=False, export_materials="EXPORT", export_yup=True, export_extras=False,
+              # Draco keeps the shareable single-file build small; the game decodes it with three's DRACOLoader
+              export_draco_mesh_compression_enable=True, export_draco_mesh_compression_level=7,
+              export_draco_position_quantization=14, export_draco_normal_quantization=10,
+              export_draco_texcoord_quantization=12, export_draco_generic_quantization=12)
     try:
         bpy.ops.export_scene.gltf(**kw, export_vertex_color="NONE")
     except TypeError:

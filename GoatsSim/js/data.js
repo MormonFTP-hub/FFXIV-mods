@@ -67,7 +67,7 @@
 
   // Ult charge: points per damage dealt / healing done, scaled so one fight lets each side bring
   // one or two more ults online, the way a long brawl did.
-  G.ULT = { perDamage: 0.55, perBarrier: 0.25, perHeal: 0.55, passive: 5 };
+  G.ULT = { perDamage: 0.55, perBarrier: 0.25, perBlock: 0.3, perHeal: 0.55, passive: 5 };
 
   G.COMP = ['reinhardt', 'zarya', 'dva', 'lucio', 'brigitte', 'zenyatta'];
 

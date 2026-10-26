@@ -402,7 +402,7 @@
           if (!f.caught.has(e) && !g.world.los(f.pos, c, 0.3)) continue;
           f.caught.add(e);
           e.st.grav = f.until;
-          if (e.barrier && e.barrier.up && e.hero === 'reinhardt') { e.barrier.up = false; e.barrier.lastDown = g.time; }
+          // a gravved Reinhardt can still hold (or raise) his barrier; only movement is lost
           if (e.st.charging) { e.st.charging = 0; }
           // pull toward the centre and float
           const want = f.pos.clone().add(new T.Vector3(0, -e.height * 0.55, 0)).sub(e.pos);

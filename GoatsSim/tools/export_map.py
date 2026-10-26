@@ -322,7 +322,10 @@ def main():
     back_o.select_set(True)
     kw = dict(filepath=OUT, export_format="GLB", use_selection=True, export_animations=False, export_skins=False,
               export_image_format="AUTO", export_texcoords=bool(MATCHES), export_normals=True, export_tangents=False,
-              export_materials="EXPORT", export_yup=True, export_extras=False)
+              export_materials="EXPORT", export_yup=True, export_extras=False,
+              export_draco_mesh_compression_enable=True, export_draco_mesh_compression_level=7,
+              export_draco_position_quantization=16, export_draco_normal_quantization=10,
+              export_draco_texcoord_quantization=12, export_draco_color_quantization=8)
     try:
         bpy.ops.export_scene.gltf(**kw, export_vertex_color="ACTIVE")
     except TypeError:

@@ -1,6 +1,7 @@
 // Loads the converted Overwatch models and the map's navigation data from work/ (made by the tools/
 // scripts from the rips in source/). Served over http the GLBs are fetched directly; opened from disk
-// (file://, where fetch is blocked) they come from work/game-assets.js, which tools/pack_assets.py writes.
+// (file://, where fetch is blocked) they come from work/game-assets.js, which tools/pack_assets.py writes;
+// in the single-file build (build/GoatsSim.html) the same pack is already inline.
 (function (G) {
   const MODELS = ['hanamura', 'reinhardt', 'zarya', 'dva_mech', 'dva_pilot', 'lucio', 'brigitte', 'zenyatta',
     'hammer', 'cannon', 'amp', 'flail', 'shield', 'lightgun'];
@@ -40,12 +41,17 @@
     gltf: {},
     nav: null,
     async load(progress) {
-      const embedded = location.protocol === 'file:';
-      if (embedded) {
+      const inline = !!G.PACK;                         // the single-file build (tools/build_single.py)
+      const embedded = inline || location.protocol === 'file:';
+      if (embedded && !inline) {
         progress('Unpacking models…', 0.05);
         await loadScript('work/game-assets.js');
       }
       const loader = new THREE.GLTFLoader();
+      // the models are Draco-compressed; the decoder comes from Google's CDN (cached after the first visit)
+      const draco = new THREE.DRACOLoader();
+      draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
+      loader.setDRACOLoader(draco);
       for (let i = 0; i < MODELS.length; i++) {
         const name = MODELS[i];
         const base = i / MODELS.length, step = 1 / MODELS.length;

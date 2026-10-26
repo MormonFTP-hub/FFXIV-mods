@@ -335,7 +335,7 @@
         this.tip('grav', `Grav is down: get in and swing ${k('LMB')} on the pulled enemies, ${k('E')} Fire Strike the clump.`, 8, 2.5, 8);
         return;
       }
-      if (enemyGrav && p.has('grav')) { this.tip('gravved', 'You\'re in their grav. Your Zen trans or Lucio beat should save it.', 8, 2.5, 8); return; }
+      if (enemyGrav && p.has('grav')) { this.tip('gravved', `You're in their grav. Hold ${k('RMB')} and turn your shield at their damage; your Zen's Trans or Lúcio's Beat saves the rest.`, 8, 2.5, 8); return; }
       if (p.ultReady() && eRein && eRein.alive) {
         const shieldDown = !eRein.barrier.up || Math.abs(G.Combat.angleTo(eRein, p.pos)) > eRein.H.barrier.halfArc;
         const inCone = foes.filter((u) => u.pos.distanceTo(p.pos) < 18 && Math.abs(G.Combat.angleTo(p, u.pos)) < 0.45).length;
@@ -354,6 +354,11 @@
       if (p.ready('fire')) {
         const lined = foes.filter((u) => u.pos.distanceTo(p.pos) < 25 && Math.abs(G.Combat.angleTo(p, u.pos)) < 0.12).length;
         if (lined >= 2) { this.tip('fire', `${lined} of them lined up: ${k('E')} Fire Strike goes through shields.`, 5, 2.5, 12); return; }
+      }
+      const mates = g.team(g.blue).filter((u) => u.alive && u !== p);
+      if (mates.length && blueD.phase !== 'engage') {
+        const c = mates.reduce((a, u) => a.add(u.pos), new THREE.Vector3()).multiplyScalar(1 / mates.length);
+        if (c.distanceTo(p.pos) > 14) { this.tip('lag', 'Your team is setting up without you. Get to them: they won\'t go in for long without their Rein.', 5, 3.5, 12); return; }
       }
       if (blueD.phase === 'approach') this.tip('walk', `Lead with your shield (${k('RMB')}). Six people walk in behind it; Zen and Lucio need that cover.`, 3, 4, 30);
       else if (blueD.phase === 'poke') this.tip('poke', 'Poke phase: hold the shield, let Zen discord and D.Va poke. Wait for Lucio\'s speed — don\'t walk in alone.', 3, 4, 30);

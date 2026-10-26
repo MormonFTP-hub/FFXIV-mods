@@ -56,19 +56,66 @@
       return c.multiplyScalar(1 / a.length);
     }
 
-    // which direction the team faces: toward the enemy if they're close, else toward the objective
-    front() {
-      const g = this.g, a = this.anchor();
-      if (!a) return { pos: g.map.point.clone(), dir: new T.Vector3(1, 0, 0) };
-      const ec = this.centroid(this.enemies);
-      let target = ec && ec.distanceTo(a.pos) < 30 ? ec : (this.side === 'attack' ? g.map.point : g.map.hold);
-      // attackers take space first: through the gate and onto the platform over the point
-      if (this.side === 'attack' && this.phase !== 'engage' && a.pos.x > g.map.stage.x + 1.2 && (!ec || ec.distanceTo(a.pos) > 7)) {
-        target = a.pos.x > g.map.plaza.x + 4 ? g.map.plaza : (a.pos.x > g.map.gate.x - 0.5 ? g.map.gate : g.map.stage);
+    rein() { return this.units.find((u) => u.hero === 'reinhardt' && u.alive) || null; }
+
+    // Where the team means to be right now, whatever its Rein is doing. Attackers group at the gate (giving
+    // a slow Rein a few seconds to catch up), then take the platform over the point; defenders hold the point.
+    plan() {
+      const g = this.g, t = g.time, ec = this.centroid(this.enemies), oc = this.centroid(this.units);
+      if (this.phase === 'retreat') return g.map.spawn[this.team];
+      if (this.phase === 'engage') {
+        if (ec && oc) return oc.clone().lerp(ec, 0.5);
+        return this.side === 'attack' ? g.map.point : g.map.hold;
       }
-      const dir = target.clone().sub(a.pos).setY(0);
-      if (dir.lengthSq() < 0.01) dir.set(this.side === 'attack' ? -1 : 1, 0, 0);
-      return { pos: a.pos.clone(), dir: dir.normalize(), target };
+      if (this.side === 'defense') return g.map.hold;
+      const rein = this.rein();
+      if (rein && rein.pos.distanceTo(g.map.stage) > 16 && this.phase !== 'poke' && t - this.phaseAt < 6) return g.map.gate;
+      return g.map.stage;
+    }
+
+    // What the deathball forms on and which way it faces. If the Rein is with the plan (or in the fight),
+    // the team plays around him, behind his barrier when it's up; if he wanders off or lags, the team
+    // sticks to its plan instead of following him.
+    front() {
+      const g = this.g, ec = this.centroid(this.enemies), oc = this.centroid(this.units);
+      const plan = this.plan(), rein = this.rein();
+      const facing = (from) => {
+        const target = ec && ec.distanceTo(from) < 30 ? ec : (this.side === 'attack' ? g.map.point : g.map.hold);
+        const dir = target.clone().sub(from).setY(0);
+        if (dir.lengthSq() < 0.01) dir.set(this.side === 'attack' ? -1 : 1, 0, 0);
+        return { target, dir: dir.normalize() };
+      };
+      const withPlan = rein && (rein.pos.distanceTo(plan) < 10 || (this.phase === 'engage' && ec && rein.pos.distanceTo(ec) < 16));
+      if (withPlan) {
+        const f = facing(rein.pos);
+        if (rein.barrier.up) f.dir = rein.fwd(new T.Vector3());
+        return { pos: rein.pos.clone(), dir: f.dir, target: f.target, rein, shield: rein.barrier.up, plan };
+      }
+      const base = this.phase === 'engage' && oc ? oc.clone().lerp(plan, 0.5) : plan.clone();
+      const f = facing(base);
+      return { pos: base, dir: f.dir, target: f.target, rein: null, shield: false, plan };
+    }
+
+    // the enemy the team should kill, and anyone sitting on our supports
+    pickTargets() {
+      const own = this.alive(this.units), foes = this.alive(this.enemies), oc = this.centroid(this.units), t = this.g.time;
+      this.peel = null;
+      for (const s of own) {
+        if (s.hero !== 'zenyatta' && s.hero !== 'lucio') continue;
+        for (const e of foes) if (e.pos.distanceTo(s.pos) < 6.5 && (!this.peel || e.pos.distanceTo(s.pos) < this.peel.pos.distanceTo(s.pos))) { this.peel = e; this.peelFor = s; }
+      }
+      let best = null, bs = -1e9;
+      for (const e of foes) {
+        if (!oc || e.pos.distanceTo(oc) > 28) continue;
+        let sc = (1 - e.frac()) * 3 + (PRIORITY[e.hero] - 1) * 2.5 - e.pos.distanceTo(oc) * 0.05;
+        if (e.st.discord && e.st.discord.until > t) sc += 1.5;
+        if (e.has('grav') || e.has('knock') || e.has('stun')) sc += 2;
+        if (!foes.some((o) => o !== e && o.pos.distanceTo(e.pos) < 6)) sc += 1.2;          // caught out alone
+        if (e.temp > 50 || e.has('trans') || (e.st.bubble && e.st.bubble.until > t)) sc -= 2.5; // don't shoot the save
+        if (e === this.focus) sc += 0.8;                                                      // stick with the call
+        if (sc > bs) { bs = sc; best = e; }
+      }
+      this.focus = best;
     }
 
     believedReady(u) { return u.alive && u.ultReady() && u.game.time - (u.readyAt || 0) > 1.0; }
@@ -82,7 +129,7 @@
       this.nextThink = t + 0.25;
       const own = this.alive(this.units), foes = this.alive(this.enemies);
       if (!own.length) return;
-      const a = this.anchor();
+      this.pickTargets();
       const ec = this.centroid(this.enemies), oc = this.centroid(this.units);
       const dist = ec && oc ? ec.distanceTo(oc) : 99;
 
@@ -127,6 +174,10 @@
         if (near >= 1) s += 2.5 + near;
       }
       if (dist > 28) s -= 2;
+      // a GOATS team goes in with its Rein: if he's nowhere near, they hold a while longer before going without him
+      const rein = this.rein(), oc = this.centroid(this.units);
+      if (rein && oc && rein.pos.distanceTo(oc) > 14 && t - this.phaseAt < 12) s -= 2.5;
+      if (!rein) s -= 1;
       return s;
     }
 
@@ -294,6 +345,8 @@
         if (C().barrierBetween(this.g, u.eye(v1), e.center(v2), u.team)) s -= 3;
         if (e.has('grav') || e.has('knock')) s += 1.2;
         if (e === this.target) s += 0.8;
+        if (e === this.d.focus) s += 1.6;
+        if (e === this.d.peel && u !== this.d.peelFor && (u.hero === 'brigitte' || u.hero === 'zarya' || u.hero === 'lucio' || u.hero === 'dva')) s += 2.5;
         if (s > bs) { bs = s; best = e; }
       }
       return best;
@@ -318,8 +371,8 @@
     }
 
     slot(front) {
-      const u = this.u, d = this.d, a = d.anchor();
-      if (!a || a === u) return d.phase === 'engage' || d.phase === 'poke' ? this.objective() : front.target;
+      const u = this.u, d = this.d;
+      if (front.rein === u) return front.plan;
       const f = front.dir, l = new T.Vector3(f.z, 0, -f.x);   // left of facing
       // the deathball: tight behind the shield, but spread wider when they have a grav up
       let tight = d.phase === 'approach' || d.phase === 'setup' ? 1.15 : 1;
@@ -327,9 +380,12 @@
       const S = {
         zarya: [-1.5, 2.2], dva: [-0.8, -2.8], brigitte: [-1.6, -0.9], lucio: [-3.4, 1.2], zenyatta: [-5.5, -0.5], reinhardt: [0.5, 0],
       }[u.hero] || [-2, 0];
-      const p = a.pos.clone().addScaledVector(f, S[0] * tight).addScaledVector(l, S[1] * tight);
-      const gy = this.g.world.groundAt(p.x, p.z, a.pos.y + 1);
-      if (isNaN(gy)) return a.pos.clone().addScaledVector(f, -2);
+      let side = S[1] * tight, back = S[0] * tight;
+      if (front.shield) { side *= 0.6; back = Math.min(back, -1.3); }   // stay in the barrier's shadow
+      if (!front.rein) back -= 0.5;
+      const p = front.pos.clone().addScaledVector(f, back).addScaledVector(l, side);
+      const gy = this.g.world.groundAt(p.x, p.z, front.pos.y + 1.5);
+      if (isNaN(gy)) return this.g.world.nearestReachable(p, 8);
       p.y = gy;
       return p;
     }
@@ -388,9 +444,19 @@
       if (d.phase === 'retreat') goal = g.map.spawn[u.team];
       else if (d.phase === 'engage') goal = foe && fd < 30 ? foe.pos : this.objective();
       else if (d.side === 'defense') goal = g.map.hold;
-      else goal = fd > 8 ? (u.pos.distanceTo(g.map.stage) > 1.5 && u.pos.x > g.map.stage.x - 1 ? front.target : null) : null;
+      else { const plan = d.plan(); goal = fd > 8 && u.pos.distanceTo(plan) > 1.5 ? plan : null; }
       if (goal && (d.phase !== 'engage' || fd > 3.2)) this.goTo(goal, dt, d.phase === 'engage' ? 2.6 : 1.2);
-      if (foe) this.aimAt(foe.center(v1), dt, 5);
+      // aim: the shield faces where the damage comes from (their team), the hammer goes at the call
+      const ec = d.centroid(d.enemies);
+      const swingAt = d.focus && d.focus.pos.distanceTo(u.pos) < H.hammer.range + 0.6 ? d.focus : foe;
+      if (u.barrier.up && ec) this.aimAt(ec.clone().add(new T.Vector3(0, 1.2, 0)), dt, 5);
+      else if (swingAt) this.aimAt(swingAt.center(v1), dt, 5);
+      // caught in a grav: can't move, so the barrier goes up toward their team and stays up
+      if (u.has('grav')) {
+        if (ec) this.aimAt(ec.clone().add(new T.Vector3(0, 1.2, 0)), dt, 8);
+        if (u.barrier.canRaise() && u.barrier.hp > 100) R.shield(u, true);
+        return;
+      }
       // Earthshatter
       if (u.ultReady() && !u.action && (u.reactAt || 0) < t) {
         const hits = this.shatterWouldHit();
@@ -535,8 +601,7 @@
       if (!u.mech) {   // baby D.Va: stay back, plink, call mech when it's up
         if (u.ult >= u.ultCost) D.callMech(u);
         const tgt = this.pickTarget(25);
-        const a = d.anchor();
-        const goal = a && a !== u ? a.pos.clone().addScaledVector(front.dir, -5) : g.map.spawn[u.team];
+        const goal = front.pos.clone().addScaledVector(front.dir, -5);
         this.goTo(goal, dt, 1.5);
         if (tgt) { this.aimAt(tgt.center(v1), dt, 7); D.shoot(u, tgt); }
         return;
@@ -679,13 +744,14 @@
       const nd = near ? near.pos.distanceTo(u.pos) : 99;
       // bash: stop a charging Rein, a boosting D.Va diving our Zen, or a Zarya about to grav
       if (u.ready('bash') && near && nd < 8) {
-        const threat = this.enemies(9).find((e) => e.has('charging') || (e.hero === 'dva' && e.st.boost > t) || (e.hero === 'zarya' && e.ultReady()));
+        const threat = this.enemies(9).find((e) => e.has('charging') || (e.hero === 'dva' && e.st.boost > t) || (e.hero === 'zarya' && e.ultReady())) || (d.peel && d.peel.pos.distanceTo(u.pos) < 8 ? d.peel : null);
         const tg = threat || (d.phase === 'engage' && Math.random() < dt * 0.4 ? near : null);
         if (tg) { B.shield(u, true); if (B.bash(u, tg)) { this.aimAt(tg.center(v1), 1, 99); return; } }
       }
       let goal = this.slot(front);
       if (d.phase === 'retreat') goal = g.map.spawn[u.team];
-      if (d.phase === 'engage') goal = near && nd < 14 ? near.pos : (d.anchor() && d.anchor() !== u ? goal : this.objective());
+      if (d.peel && d.peel.pos.distanceTo(u.pos) < 18) goal = d.peel.pos;   // peel for Zen / Lucio first
+      else if (d.phase === 'engage') goal = near && nd < 14 ? near.pos : goal;
       this.goTo(goal, dt, d.phase === 'engage' ? 3.5 : 1.0);
       // whip shot squishies or a target near a ledge
       const whipT = this.pickTarget(19, { zenyatta: 0.8, lucio: 0.6 });
@@ -729,18 +795,17 @@
       const foes = this.enemies(38).filter((e) => this.visible(e));
       let disc = null;
       if (foes.length) {
-        if (d.phase === 'engage') disc = foes.find((e) => e.hero === 'dva' && e.pos.distanceTo(u.pos) < 15) || foes.sort((a, b) => a.frac() - b.frac())[0];
+        if (d.phase === 'engage') disc = (d.focus && foes.includes(d.focus) ? d.focus : null) || foes.find((e) => e.hero === 'dva' && e.pos.distanceTo(u.pos) < 15) || foes.sort((a, b) => a.frac() - b.frac())[0];
         else disc = foes.find((e) => e.hero === 'reinhardt') || foes.find((e) => e.hero === 'dva') || foes[0];
       }
       if (disc && u.discordT !== disc && (!u.discordT || !u.discordT.alive || Math.random() < dt * 0.6)) { if (Z.discord(u, disc)) d.say('zenyatta', 'discord', { t: disc.H.name }, 10); }
       let goal = this.slot(front);
       if (d.phase === 'retreat') goal = g.map.spawn[u.team];
-      const a = d.anchor();
-      if (d.phase === 'engage' && a && a !== u) goal = a.pos.clone().addScaledVector(front.dir, -5).add(new T.Vector3(Math.sin(t * 0.5 + 1) * 1.5, 0, 0));
+      if (d.phase === 'engage') goal = front.pos.clone().addScaledVector(front.dir, -5).add(new T.Vector3(Math.sin(t * 0.5 + 1) * 1.5, 0, 0));
       // a Zen who can't see the fight is doing nothing: walk up until he can
       const sees = foes.length > 0 || (u.harmonyT && this.visible(u.harmonyT));
       if (sees) this.sawAt = t;
-      if (a && a !== u && t - (this.sawAt || 0) > 1.0) goal = a.pos.clone().addScaledVector(front.dir, -2);
+      if (t - (this.sawAt || 0) > 1.0) goal = front.pos.clone().addScaledVector(front.dir, -2);
       // keep away from a diving D.Va
       const diver = this.enemies(7)[0];
       if (diver) goal = u.pos.clone().add(u.pos.clone().sub(diver.pos).setY(0).normalize().multiplyScalar(5));
