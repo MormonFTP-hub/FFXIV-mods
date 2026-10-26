@@ -81,6 +81,7 @@ Each project's readme covers what's specific to that character, with a changelog
   tools/         the scripts that build the mod from its source
   out/           previews and Glamourer designs (the .pmp itself is in the mods release)
 tools/backup.py  rebuilds the gallery above, commits, pushes and uploads the .pmp and .exe files
+tools/autobackup_hook.py  runs backup.py in the background after every Claude turn that changed something
 IN-GAME-CHECKS.md
 ```
 
@@ -92,7 +93,9 @@ Some things stay on the local machine and aren't in this repo: `source/` (the or
 python tools/backup.py
 ```
 
-This rebuilds the gallery from the `.pmp` files, commits and pushes any changes, and uploads every new or changed `.pmp` and `.exe` to the releases. `--readme` only rebuilds the gallery. `--no-push` commits without sending anything.
+This rebuilds the gallery from the `.pmp` files, commits and pushes any changes, and uploads every new or changed `.pmp` and `.exe` to the releases. `--readme` only rebuilds the gallery. `--no-push` commits without sending anything. Before committing it checks the new lines for anything that looks like a token, webhook or key, and stops if it finds one.
+
+It also runs by itself: `tools/autobackup_hook.py` is a Claude Code Stop hook that runs at the end of every Claude turn. If anything in this folder changed, it starts a backup in the background. The log is `.git/autobackup.log`, and a failed backup shows up as a message at the end of the next turn.
 
 ## Credits
 
