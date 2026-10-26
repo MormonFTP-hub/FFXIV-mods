@@ -17,6 +17,8 @@ def inline(html: str) -> str:
         return "<style>\n" + (ROOT / m.group(1)).read_text(encoding="utf-8") + "\n</style>"
 
     def js(m):
+        if m.group(1).startswith("http"):    # CDN libraries (three.js) stay as links
+            return m.group(0)
         path = ROOT / m.group(1)
         if not path.exists():           # work/game-icons.js is optional (made by extract_icons.py)
             print(f"skipping {m.group(1)} (not found)")

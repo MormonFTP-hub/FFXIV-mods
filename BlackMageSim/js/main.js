@@ -143,7 +143,9 @@
       this.engine = new B.Engine(this.store.settings);
       this.sfx = new B.Sfx();
       this.sfx.setVolume(this.store.settings.volume);
-      this.scene = new B.Scene(document.getElementById('scene'), this.engine);
+      this.scene = new B.Scene(document.getElementById('scene'), this.engine, document.getElementById('fx'));
+      this.models = new B.ModelLayer(document.getElementById('models'), this.engine, this.scene, this.store.settings);
+      this.scene.models = this.models;
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
       this.ui.fillSettings();
@@ -163,6 +165,7 @@
 
     applySettings() {
       this.sfx.setVolume(this.store.settings.volume);
+      this.models.setEnabled();
       this.ui.updateMeter(true);
     },
 
@@ -318,7 +321,7 @@
 
     fullReset() {
       this.engine.reset();
-      this.engine.pos.x = 0; this.engine.pos.z = -14;
+      this.engine.pos.x = 0; this.engine.pos.z = -10;
       this.enc = null;
       this.cd = null;
       this.cdEndedAt = null;
@@ -505,6 +508,7 @@
 
       this.scene.update(dt, dx !== 0 || dz !== 0);
       this.scene.draw();
+      this.models.update(dt);
       const hpK = this.enc ? Math.max(1, DUMMY_HP - this.enc.total) / DUMMY_HP : 1;
       this.ui.update(hpK);
       requestAnimationFrame(tt => this.frame(tt));

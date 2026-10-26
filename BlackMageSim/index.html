@@ -11,6 +11,8 @@
 </head>
 <body>
   <canvas id="scene"></canvas>
+  <canvas id="models"></canvas>
+  <canvas id="fx"></canvas>
 
   <div id="hud">
     <div id="menu" class="ia">
@@ -107,6 +109,10 @@
           <label for="s-cd">Countdown length</label>
           <select id="s-cd"><option>5</option><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
           <label for="s-vol">Sound volume</label><input id="s-vol" type="range" min="0" max="1" step="0.05">
+          <label for="s-models">Models</label>
+          <div class="row2"><label><input id="s-models" type="checkbox"> Use the game's own models (made by tools/export_models.py)</label></div>
+          <label for="s-dummy">Striking dummy</label>
+          <select id="s-dummy"></select>
           <label>Hotbar</label>
           <div class="row2"><label><input id="s-mpcost" type="checkbox"> Show MP cost</label></div>
           <label>Cast bar</label>
@@ -137,13 +143,17 @@
 
   <img id="ghost" alt="">
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/data.js"></script>
-  <!-- Made by tools/extract_icons.py from your own game install; without it the drawn icons are used. -->
+  <!-- Made by tools/extract_icons.py and tools/export_models.py from your own game install; without them the
+       drawn icons and figures are used. -->
   <script src="work/game-icons.js"></script>
+  <script src="work/game-models.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/scene.js"></script>
+  <script src="js/models.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
 </body>

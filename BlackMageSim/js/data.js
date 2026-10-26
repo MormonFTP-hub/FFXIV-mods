@@ -185,6 +185,8 @@ window.BLM = window.BLM || {};
     showMpCost: true,
     slidecastMarker: true,
     showTimeline: true,
+    gameModels: true,     // use work/game-models.js when it's there
+    dummy: 'thavnair',
   };
 
   // Rough dummy colour bands for a single target parse with no raid buffs.

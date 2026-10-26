@@ -21,9 +21,14 @@
   const norm = (a) => { const l = Math.hypot(a.x, a.y, a.z) || 1; return { x: a.x / l, y: a.y / l, z: a.z / l }; };
 
   class Scene {
-    constructor(canvas, engine) {
+    // canvas: sky, ground and anything behind the figures; fxCanvas: spell effects drawn over them.
+    constructor(canvas, engine, fxCanvas) {
       this.c = canvas;
-      this.ctx = canvas.getContext('2d');
+      this.bgCtx = canvas.getContext('2d');
+      this.fxc = fxCanvas;
+      this.fxCtx = fxCanvas.getContext('2d');
+      this.ctx = this.bgCtx;
+      this.models = null;
       this.e = engine;
       this.particles = [];
       this.fx = [];
@@ -44,9 +49,13 @@
     resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       this.W = window.innerWidth; this.H = window.innerHeight;
-      this.c.width = Math.round(this.W * dpr); this.c.height = Math.round(this.H * dpr);
-      this.c.style.width = this.W + 'px'; this.c.style.height = this.H + 'px';
-      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      this.dpr = dpr;
+      for (const [c, ctx] of [[this.c, this.bgCtx], [this.fxc, this.fxCtx]]) {
+        c.width = Math.round(this.W * dpr); c.height = Math.round(this.H * dpr);
+        c.style.width = this.W + 'px'; c.style.height = this.H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      if (this.models) this.models.resize(this.W, this.H, dpr);
       if (this.cam) this.updateCamera(0);
     }
 
@@ -86,20 +95,27 @@
       }
       const fx = Math.sin(this.camYaw), fz = Math.cos(this.camYaw);
       const sx = (Math.random() - 0.5) * this.shake, sy = (Math.random() - 0.5) * this.shake;
-      const cam = { x: p.x - fx * 11.5 + sx, y: 4.9 + sy, z: p.z - fz * 11.5 };
-      const look = { x: p.x + fx * 8, y: 1.1, z: p.z + fz * 8 };
+      // The game's models are life-size (about 1.9 tall with the hat), so the camera sits closer to them,
+      // about where the game's own default zoom puts it.
+      const m = this.modelsOn();
+      const back = m ? 7.2 : 11.5, high = m ? 3.6 : 4.9, ahead = m ? 3 : 8, lookY = m ? 0.6 : 1.1;
+      const cam = { x: p.x - fx * back + sx, y: high + sy, z: p.z - fz * back };
+      const look = { x: p.x + fx * ahead, y: lookY, z: p.z + fz * ahead };
+      // Right-handed like three.js and the game, so the 2D scene and the 3D models line up.
       const f = norm(sub(look, cam));
-      const r = norm(cross({ x: 0, y: 1, z: 0 }, f));
-      const u = cross(f, r);
-      this.cam = { pos: cam, f, r, u };
+      const r = norm(cross(f, { x: 0, y: 1, z: 0 }));
+      const u = cross(r, f);
+      this.cam = { pos: cam, look, f, r, u };
       this.F = this.H * 0.95;
     }
 
     // Movement keys are relative to the camera, like standard controls.
     moveBasis() {
       const fx = Math.sin(this.camYaw), fz = Math.cos(this.camYaw);
-      return { fx, fz, rx: fz, rz: -fx };
+      return { fx, fz, rx: -fz, rz: fx };
     }
+
+    modelsOn() { return !!(this.models && this.models.active()); }
 
     toCam(x, y, z) {
       const d = { x: x - this.cam.pos.x, y: y - this.cam.pos.y, z: z - this.cam.pos.z };
@@ -288,6 +304,7 @@
     }
 
     staffTip() {
+      if (this.modelsOn()) return this.models.staffTip();
       const p = this.e.pos;
       const b = this.moveBasis();
       const up = this.e.casting || this.release > 0 ? 2.35 : 1.9;
@@ -352,26 +369,34 @@
 
     // ---------- drawing ----------
     draw() {
-      const ctx = this.ctx, W = this.W, H = this.H;
+      const W = this.W, H = this.H;
+      const models = this.modelsOn();
+      this.ctx = this.bgCtx;
       const far = this.toCam(this.cam.pos.x + Math.sin(this.camYaw) * 1e4, 0, this.cam.pos.z + Math.cos(this.camYaw) * 1e4);
       const horizon = this.fromCam(far).y;
       this.drawSky(horizon);
       this.drawGround(horizon);
 
-      // Billboards sorted far to near.
-      const items = [];
-      for (const d of this.decor) {
-        const c = this.toCam(d.x, 0, d.z);
-        if (c.z > 0.5 && c.z < 70) items.push({ z: c.z, draw: () => this.drawDecor(d, this.fromCam(c)) });
-      }
-      const dc = this.toCam(0, 0, 0);
-      if (dc.z > 0.5) items.push({ z: dc.z, draw: () => this.drawDummy(this.fromCam(dc)) });
+      // Billboards sorted far to near. With the game's models drawn in 3D between the two canvases, decor nearer
+      // than the mage goes on the effects canvas so it still covers him.
       const p = this.e.pos;
       const pc = this.toCam(p.x, this.jumpY(), p.z);
-      if (pc.z > 0.5) items.push({ z: pc.z, draw: () => this.drawMage(this.fromCam(pc), this.toCam(p.x, 0, p.z)) });
-      items.sort((a, b) => b.z - a.z);
-      items.forEach(it => it.draw());
+      const back = [], front = [];
+      for (const d of this.decor) {
+        const c = this.toCam(d.x, 0, d.z);
+        if (c.z > 0.5 && c.z < 70) (models && c.z < pc.z - 0.6 ? front : back).push({ z: c.z, draw: () => this.drawDecor(d, this.fromCam(c)) });
+      }
+      if (!models) {
+        const dc = this.toCam(0, 0, 0);
+        if (dc.z > 0.5) back.push({ z: dc.z, draw: () => this.drawDummy(this.fromCam(dc)) });
+        if (pc.z > 0.5) back.push({ z: pc.z, draw: () => this.drawMage(this.fromCam(pc), this.toCam(p.x, 0, p.z)) });
+      }
+      back.sort((a, b) => b.z - a.z).forEach(it => it.draw());
 
+      this.ctx = this.fxCtx;
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, W, H);
+      front.sort((a, b) => b.z - a.z).forEach(it => it.draw());
       this.drawFx();
       this.drawParticles();
 
@@ -384,6 +409,7 @@
       v.addColorStop(0, 'rgba(0,0,0,0)');
       v.addColorStop(1, 'rgba(0,0,0,0.55)');
       ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+      this.ctx = this.bgCtx;
     }
 
     drawSky(horizon) {
@@ -399,14 +425,14 @@
       // Stars wheel with the camera.
       const off = this.camYaw / (Math.PI * 2);
       for (const s of this.stars) {
-        let u = (s.u - off) % 1; if (u < 0) u += 1;
+        let u = (s.u + off) % 1; if (u < 0) u += 1;
         const x = u * W * 1.6 - W * 0.3, y = s.v * horizon * 0.85;
         const a = 0.35 + 0.35 * Math.sin(this.time * 1.5 + s.tw);
         ctx.fillStyle = `rgba(255,255,255,${a})`;
         ctx.fillRect(x, y, s.s, s.s);
       }
       // Moon.
-      let mu = (0.68 - off) % 1; if (mu < 0) mu += 1;
+      let mu = (0.68 + off) % 1; if (mu < 0) mu += 1;
       const mx = mu * W * 1.6 - W * 0.3, my = horizon * 0.32;
       const mg = ctx.createRadialGradient(mx, my, 0, mx, my, 120);
       mg.addColorStop(0, 'rgba(255,240,220,0.35)'); mg.addColorStop(1, 'rgba(255,240,220,0)');
@@ -427,7 +453,7 @@
       ctx.beginPath();
       ctx.moveTo(0, horizon + 2);
       for (let x = 0; x <= W; x += 8) {
-        const u = x / W + off;
+        const u = x / W - off;
         const h = Math.sin(u * 11 + seed) * 0.45 + Math.sin(u * 27 + seed * 2) * 0.25 + Math.sin(u * 61 + seed) * 0.1 + 0.6;
         ctx.lineTo(x, horizon - h * amp * (this.H / 1080));
       }
@@ -866,7 +892,7 @@
 
     // Screen point where flytext for the dummy starts.
     dummyHead() { return this.project(0, 2.7, 0); }
-    mageHead() { const p = this.e.pos; return this.project(p.x, 2.9 + this.jumpY(), p.z); }
+    mageHead() { const p = this.e.pos; return this.project(p.x, (this.modelsOn() ? 2.4 : 2.9) + this.jumpY(), p.z); }
 
     hitDummy(x, y) {
       const b = this.project(0, 0, 0), t = this.project(0, 2.5, 0);

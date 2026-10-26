@@ -41,6 +41,9 @@ STAFF_BONE = "n_buki_r"
 STANCE = "bt_rod_emp"           # two-handed staff battle stance
 DUMMIES = {"thavnair": ("Thavnairian", 236), "glade": ("Glade", 46), "oasis": ("Oasis", 45),
            "crystarium": ("Crystarium", 193)}
+# PMP Viewer's EQP visibility tables are pre-Dawntrail approximations. With these hand-only gloves they hide the
+# coat's arm section (atr_ude), which leaves the upper arms empty; in game the sleeves show.
+ATTR_OVERRIDES = {"top": {"atr_ude": True}}
 COLOR_MAX, NORMAL_MAX = 512, 256
 ANIM_DIR = f"chara/human/{RACE}/animation/a0001/"
 
@@ -64,22 +67,24 @@ class Pack:
 
 
 def image_url(name, limit, keep_alpha):
+    """Lossy WebP (with alpha where the material uses it): a fraction of PNG's size, so the bundle fits on Discord."""
     img = Image.open(os.path.join(shade.BAKED, name))
     img.thumbnail((limit, limit), Image.LANCZOS)
+    alpha = keep_alpha and img.mode == "RGBA" and np.asarray(img)[..., 3].min() < 250
+    img = img.convert("RGBA" if alpha else "RGB")
     buf = io.BytesIO()
-    if keep_alpha and img.mode == "RGBA" and np.asarray(img)[..., 3].min() < 250:
-        img.save(buf, "PNG", optimize=True)
-        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
-    img.convert("RGB").save(buf, "JPEG", quality=85, optimize=True)
-    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    img.save(buf, "WEBP", quality=82, alpha_quality=90, method=6)
+    return "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def material_out(mat):
+def material_out(mat, opaque=False):
+    """opaque: background (bg.shpk) textures keep other data in alpha, so it isn't coverage there."""
     if not mat or mat.get("missing") or mat.get("visible") is False or not mat.get("color"):
         return None
-    alpha = bool(mat.get("alphaUsed"))
+    alpha = bool(mat.get("alphaUsed")) and not opaque
     return {"color": image_url(mat["color"], COLOR_MAX, alpha),
             "normal": image_url(mat["normal"], NORMAL_MAX, False) if mat.get("normal") else None,
+            "alpha": alpha,
             "alphaTest": float(mat.get("alphaTest") or 0) if alpha else 0,
             "transparent": bool(mat.get("transparent")) and alpha,
             "doubleSided": bool(mat.get("doubleSided"))}
@@ -134,6 +139,8 @@ def export_character(pack):
     for m in sc["models"]:
         if m["hidden"]:
             continue
+        for a, show in ATTR_OVERRIDES.get(m["slot"], {}).items():
+            m["attrs"].setdefault(a, {})["show"] = show
         nb = len(m["bones"])
         gidx = np.array(m["bones"] + [-1], np.int64)
         deform = [np.array(d).reshape(4, 4).T for d in m["deform"]] if m.get("deform") else None
@@ -175,7 +182,7 @@ def export_character(pack):
             "meshes": meshes, "materials": materials}
 
 
-def export_rigid(pack, sc, blob, label):
+def export_rigid(pack, sc, blob, label, opaque=False):
     mats, mat_index, meshes = [], {}, []
     for m in sc["models"]:
         for me in m["meshes"]:
@@ -183,7 +190,7 @@ def export_rigid(pack, sc, blob, label):
             if mi < 0:
                 continue
             if mi not in mat_index:
-                mo = material_out(sc["materials"][mi])
+                mo = material_out(sc["materials"][mi], opaque)
                 mat_index[mi] = len(mats) if mo else -1
                 if mo:
                     mats.append(mo)
@@ -234,7 +241,7 @@ def export_dummy(pack, key):
                                           "pos": put(me["pos"].astype(np.float32)), "nrm": put(me["nrm"].astype(np.float32)),
                                           "uv": put(me["uv"].astype(np.float32)), "idx": put(me["idx"].astype(np.uint32)),
                                           "shapes": [], "submeshes": []})
-    meshes, mats = export_rigid(pack, sc, bytes(blob), f"dummy m{key:04d}")
+    meshes, mats = export_rigid(pack, sc, bytes(blob), f"dummy m{key:04d}", opaque=True)
     pts = np.concatenate([me["pos"] for me in mdl["meshes"]])
     return {"meshes": meshes, "materials": mats, "height": float(pts[:, 1].max())}
 

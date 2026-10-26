@@ -26,15 +26,25 @@ then go to http://localhost:8797.
 
 Hotbars, keybinds and settings save in your browser.
 
-### Game icons
+### Game icons and models
 
-The game's own action, status, item and job icons come from your FFXIV install. Run this once (it uses PMP Viewer's game reader, so the same Python with numpy and Pillow):
+The game's own icons, models and animations come from your FFXIV install. Run these once (they use PMP Viewer's game reader, so the same Python with numpy and Pillow):
 
 ```
 python -P -E BlackMageSim/tools/extract_icons.py
 ```
 
-It reads the Action, Status and Item sheets, decodes each `_hr1` icon and writes `work/game-icons.js`. `work/` is git-ignored, so Square Enix's art never goes into the repo. Without that file the sim uses its own drawn icons. Sharpcast is pinned to its Endwalker icon (002657), because Dawntrail removed the action and points its row at the generic removed-action icon.
+```
+python -P -E BlackMageSim/tools/export_models.py
+```
+
+- **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets, with each `_hr1` icon decoded. Sharpcast is pinned to its Endwalker icon (002657), because Dawntrail removed the action and points its row at the generic removed-action icon.
+- **Models** (`work/game-models.js`, about 4.5 MB):
+  - **The mage:** a Hyur Midlander man in the Endwalker artifact gear (Archmage's, set 778) holding a Moonward Rod. He's resolved and baked by PMP Viewer and skinned to the game's skeleton.
+  - **Dummies:** the Thavnairian, Glade, Oasis and Crystarium housing striking dummies. Pick one in Settings.
+  - **Animations:** the game's own. That's the two-handed staff battle stance and run (`bt_rod_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV, for example, plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`, and Triplecast `cbbm_abl152`.
+
+`work/` is git-ignored, so Square Enix's files never go into the repo. Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
 
 To send it to someone, bundle it into one file and send them `build/BlackMageSim.html`; they double-click it to play:
 
@@ -65,7 +75,7 @@ Some things are reconstructed rather than read off a 6.x source:
 - Ice spells cost no MP while in Umbral Ice. Blizzard IV straight after Blizzard III at 0 MP needs this to work the way it did. Fire spells under Umbral Ice I/II, and ice spells under Astral Fire I/II, cost half and a quarter.
 - The gear set, the Grade 8 Tincture cap (262 INT) and the spell application delays are close approximations, so hits land within a few percent of what you remember, not to the point.
 - AoE spells (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV) are left out since there's one dummy. Aetherial Manipulation is left out because it needs a party member.
-- Icons come from your own game install when you've run `extract_icons.py`, and are drawn in code otherwise. The dummy and the mage are still drawn in code, and the sounds are synthesised. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
+- Icons, models and animations come from your own game install when you've run the two tools, and are drawn in code otherwise. Spell effects and sounds are made for this page, not the game's VFX and audio. Two of the exporter's choices: it shows the coat's sleeves (PMP Viewer's pre-Dawntrail visibility tables hide them under these gloves, which left the arms empty), and it draws the housing dummies fully opaque (background textures keep other data in alpha). FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
 
 ## Files
 
@@ -77,12 +87,15 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
 | `js/main.js` | Input, keybinds, drag and drop, countdown, parse tracking, frame loop |
 | `js/icons.js` | Game icons when extracted, SVG icon art otherwise |
+| `js/models.js` | Draws the game's models with three.js and plays their animations |
 | `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
+| `tools/export_models.py` | Pulls the mage, staff, dummies and animations into `work/game-models.js` |
 | `tools/build_single.py` | Bundles everything into one HTML file for sharing |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
 
+- **1.4.0**: The game's own models and animations: the Black Mage in Archmage's gear with a Moonward Rod, a choice of four striking dummies, and every action's real cast and ability motion. Exported from your install by `tools/export_models.py`. The camera sits closer and you start 10 yalms from the dummy.
 - **1.3.0**: The game's own icons for actions, statuses (Triplecast with its stack art), the Tincture and the job, extracted from your install by `tools/extract_icons.py`.
 - **1.2.1**: Action queue fixed. Triplecast then Fire IV no longer loses the Triplecast, a press during an animation lock queues instead of being dropped, and double weaves queue both abilities.
 - **1.2.0**: Ping is added to animation lock and caster tax like the vanilla client, with a NoClippy / XivAlexander toggle. GCD and spell speed boxes update each other. Single-file build script for sharing.

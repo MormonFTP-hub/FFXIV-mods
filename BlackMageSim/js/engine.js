@@ -14,7 +14,7 @@
       this.listeners = {};
       this.now = 0;
       this.settings = settings;
-      this.pos = { x: 0, z: -14 };
+      this.pos = { x: 0, z: -10 };
       this.reset();
     }
 

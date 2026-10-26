@@ -630,7 +630,7 @@ ${seq(['blizzard3', 'blizzard4', 'paradox', 'fire3', 'fire4', 'fire4', 'fire4', 
 <h3>A typical 6.x opener</h3>
 ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire4', ['amplifier'], 'fire4', ['leyLines'], ['swiftcast'], 'despair', ['manafont'], 'fire4', 'despair', 'blizzard3', 'xenoglossy', 'paradox', 'blizzard4', 'fire3'])}
 <p>Sharpcast about 15s before the pull, then start Fire III so it lands as the countdown ends (around −3.3s at 2.37). Use the Tincture around then too. Stand in Ley Lines for the 15% cast and GCD speed.</p>
-<p style="color:#a9a3b4">Everything runs on the 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick. ${B.GAME_ICONS ? 'Icons are the game\'s own, read from your install. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made practice tool, not affiliated with Square Enix.' : 'Icons are drawn for this page, not taken from the game.'}</p>`;
+<p style="color:#a9a3b4">Everything runs on the 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick. ${B.GAME_ICONS || B.GAME_MODELS ? `${B.GAME_MODELS ? 'Icons, models and animations' : 'Icons'} are the game's own, read from your install. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made practice tool, not affiliated with Square Enix.` : 'Icons are drawn for this page, not taken from the game.'}</p>`;
     }
 
     buildSettings() {
@@ -701,6 +701,11 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       bind('#s-mpcost', 'showMpCost', el => el.checked);
       bind('#s-slide', 'slidecastMarker', el => el.checked);
       bind('#s-timeline', 'showTimeline', el => el.checked);
+      bind('#s-models', 'gameModels', el => el.checked);
+      const dummies = (B.GAME_MODELS && B.GAME_MODELS.dummies) || {};
+      $('#s-dummy').innerHTML = Object.entries(dummies).map(([k, d]) => `<option value="${k}">${esc(d.label)} Striking Dummy</option>`).join('')
+        || '<option value="">Drawn (no game models exported)</option>';
+      bind('#s-dummy', 'dummy');
       $('#s-resetbars').addEventListener('click', () => this.app.resetLayout());
     }
 
@@ -718,6 +723,9 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       $('#s-mpcost').checked = s.showMpCost;
       $('#s-slide').checked = s.slidecastMarker;
       $('#s-timeline').checked = s.showTimeline;
+      $('#s-models').checked = s.gameModels;
+      $('#s-models').disabled = !(B.GAME_MODELS && window.THREE);
+      $('#s-dummy').value = s.dummy;
     }
 
     showGcdInfo() {
