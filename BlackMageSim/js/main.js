@@ -186,8 +186,7 @@
 
     // Rough single-target dummy benchmark for the chosen GCD (no raid buffs).
     referenceDps() {
-      const tier = B.GCD_TIERS.find(t => t.label === this.store.settings.gcdTier) || B.GCD_TIERS[4];
-      return B.REFERENCE_DPS * (2.37 / parseFloat(tier.label)) ** 0.85;
+      return B.REFERENCE_DPS * (2.37 / this.engine.speedScale(2.5)) ** 0.85;
     },
     parseColor(dps) {
       const k = dps / this.referenceDps();
@@ -281,6 +280,7 @@
         if (ev.expired) ui.log(`${ev.prev > 0 ? 'Astral Fire' : 'Umbral Ice'} wore off. Enochian lost.`, 'lose', 'system');
       });
       e.on('teleport', ev => sc.onTeleport(ev.from, ev.to));
+      e.on('mpTick', () => ui.flashTick());
       e.on('reset', () => { this.ui && this.ui.refreshBars && this.ui.refreshBars(); });
     },
 

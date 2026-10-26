@@ -360,6 +360,26 @@
       put('hpk', hpK, v => { $('#p-hpbar').style.transform = `scaleX(${v})`; $('#party-hp').style.transform = `scaleX(${v})`; });
       put('mpk', mpK, v => { $('#p-mpbar').style.transform = `scaleX(${v})`; $('#party-mp').style.transform = `scaleX(${v})`; });
       put('name', this.app.store.settings.name, v => { $('#party-name').textContent = v; });
+
+      // MP tick timer: fills over the 3s server tick, labelled with what the tick will give.
+      const left = Math.max(0, e.mpTickNext - e.now);
+      $('#p-tick').style.transform = `scaleX(${(1 - left / 3).toFixed(3)})`;
+      let gain = 0;
+      if (e.element <= 0) {
+        gain = e.element < 0 ? B.UI_REGEN[-e.element - 1] : B.BASE_REGEN;
+        if (e.has('lucidDreaming')) gain += B.LUCID_REGEN;
+      }
+      const af = e.element > 0;
+      const txt = af ? `tick ${left.toFixed(1)}s · no regen in Astral Fire` : `+${gain} in ${left.toFixed(1)}s`;
+      put('tick', txt, v => { $('#p-ticktxt').textContent = v; });
+      put('tickaf', af, v => { $('#p-ticktxt').classList.toggle('af', v); $('#p-tickbar').classList.toggle('af', v); });
+    }
+
+    flashTick() {
+      const bar = $('#p-tickbar');
+      bar.classList.add('flash');
+      clearTimeout(this.tickT);
+      this.tickT = setTimeout(() => bar.classList.remove('flash'), 220);
     }
 
     updateTarget(hpK) {
@@ -610,9 +630,24 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
     }
 
     buildSettings() {
-      const sel = $('#s-gcd');
-      sel.innerHTML = B.GCD_TIERS.map(t => `<option value="${t.label}">${t.label} (${t.sps} spell speed)</option>`).join('');
       const st = () => this.app.store.settings;
+      const sps = $('#s-sps');
+      sps.addEventListener('input', () => {
+        const v = parseInt(sps.value, 10);
+        if (!(v >= B.SPS_MIN && v <= B.SPS_MAX)) { $('#s-gcdinfo').textContent = `Enter ${B.SPS_MIN}–${B.SPS_MAX}`; return; }
+        st().sps = v;
+        this.app.save();
+        this.app.applySettings();
+        this.showGcdInfo();
+      });
+      sps.addEventListener('change', () => {
+        const v = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, parseInt(sps.value, 10) || st().sps));
+        st().sps = v;
+        sps.value = String(v);
+        this.app.save();
+        this.app.applySettings();
+        this.showGcdInfo();
+      });
       const bind = (id, key, conv, evt) => {
         const el = $(id);
         el.addEventListener(evt || 'change', () => {
@@ -622,7 +657,6 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
         });
       };
       bind('#s-name', 'name', el => el.value.trim().slice(0, 24) || 'Warrior of Light', 'input');
-      bind('#s-gcd', 'gcdTier');
       bind('#s-lock', 'animLock', el => parseFloat(el.value));
       bind('#s-pull', 'pullLength', el => parseInt(el.value, 10));
       bind('#s-cd', 'countdown', el => parseInt(el.value, 10));
@@ -636,7 +670,8 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
     fillSettings() {
       const s = this.app.store.settings;
       $('#s-name').value = s.name;
-      $('#s-gcd').value = s.gcdTier;
+      $('#s-sps').value = String(s.sps);
+      this.showGcdInfo();
       $('#s-lock').value = String(s.animLock);
       $('#s-pull').value = String(s.pullLength);
       $('#s-cd').value = String(s.countdown);
@@ -644,6 +679,11 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       $('#s-mpcost').checked = s.showMpCost;
       $('#s-slide').checked = s.slidecastMarker;
       $('#s-timeline').checked = s.showTimeline;
+    }
+
+    showGcdInfo() {
+      const e = this.e;
+      $('#s-gcdinfo').textContent = `GCD ${e.speedScale(2.5).toFixed(2)} · Fire IV ${e.speedScale(2.8).toFixed(2)}s · Despair ${e.speedScale(3).toFixed(2)}s`;
     }
 
     update(hpK) {

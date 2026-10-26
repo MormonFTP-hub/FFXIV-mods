@@ -61,7 +61,8 @@
         <div class="bar"><i id="p-hpbar"></i></div>
       </div>
       <div class="param mp">
-        <div class="lbl outline"><b>MP</b><span id="p-mp"></span></div>
+        <div class="lbl outline"><b>MP</b><em id="p-ticktxt"></em><span id="p-mp"></span></div>
+        <div class="mptick" id="p-tickbar" title="Next MP tick (every 3s)"><i id="p-tick"></i></div>
         <div class="bar"><i id="p-mpbar"></i><div class="ticks"></div></div>
       </div>
     </div>
@@ -86,7 +87,8 @@
       <div class="wb">
         <div class="form">
           <label for="s-name">Character name</label><input id="s-name" type="text" maxlength="24">
-          <label for="s-gcd">GCD (spell speed)</label><select id="s-gcd"></select>
+          <label for="s-sps">Spell speed</label>
+          <div class="row2 sps"><input id="s-sps" type="number" min="400" max="4000" step="1" inputmode="numeric"><span id="s-gcdinfo"></span></div>
           <label for="s-lock">Animation lock</label>
           <select id="s-lock">
             <option value="0.6">0.60s (normal, ~50 ms ping)</option>
@@ -111,7 +113,7 @@
           <div class="row2"><label><input id="s-slide" type="checkbox"> Slidecast marker</label></div>
           <label>Results</label>
           <div class="row2"><label><input id="s-timeline" type="checkbox"> Show cast timeline</label></div>
-          <div class="note">Stats are a 6.5 best-in-slot set (ilvl ~660). Changing the GCD only changes spell speed. Settings, hotbars and keybinds save in this browser.</div>
+          <div class="note">Stats are a 6.5 best-in-slot set (ilvl ~660). Spell speed is the only stat you can change; 1160 is a 2.37 GCD, 400 is a 2.50. Settings, hotbars and keybinds save in this browser.</div>
           <div class="note"><button class="btn" id="s-resetbars">Restore default hotbars and keybinds</button></div>
         </div>
       </div>

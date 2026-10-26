@@ -2,19 +2,10 @@
 window.BLM = window.BLM || {};
 
 (function (B) {
-  // Rough 6.5 best-in-slot stats. Spell speed is chosen in settings (it sets the GCD).
-  B.BASE_STATS = { int: 3375, wd: 132, det: 1886, crit: 2541, dh: 1435, sps: 1160 };
-
-  // Spell speed values that land exactly on each GCD tier.
-  B.GCD_TIERS = [
-    { label: '2.50', sps: 400 },
-    { label: '2.48', sps: 517 },
-    { label: '2.45', sps: 693 },
-    { label: '2.40', sps: 985 },
-    { label: '2.37', sps: 1160 },
-    { label: '2.31', sps: 1512 },
-    { label: '2.28', sps: 1688 },
-  ];
+  // Rough 6.5 best-in-slot stats. Spell speed is typed in settings (it sets the GCD).
+  B.BASE_STATS = { int: 3375, wd: 132, det: 1886, crit: 2541, dh: 1435 };
+  B.SPS_MIN = 400;   // level 90 base
+  B.SPS_MAX = 4000;
 
   B.MAX_MP = 10000;
   B.ENOCHIAN = 1.23;           // Enhanced Enochian III after 6.4
@@ -183,7 +174,7 @@ window.BLM = window.BLM || {};
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
-    gcdTier: '2.37',
+    sps: 1160,            // 2.37 GCD
     animLock: 0.6,
     volume: 0.5,
     pullLength: 0,        // seconds, 0 = until you stop

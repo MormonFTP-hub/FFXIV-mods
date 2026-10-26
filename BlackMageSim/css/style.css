@@ -91,7 +91,14 @@ canvas#scene { position: fixed; inset: 0; display: block; }
 #castbar .msg { position: absolute; left: 52px; right: 0; top: 22px; text-align: center; font: 700 13px var(--ui); letter-spacing: 2px; color: #ffb3b3; }
 
 /* ---------- HP / MP parameter bar ---------- */
-#params { position: absolute; left: 590px; top: 800px; width: 740px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+#params { position: absolute; left: 590px; top: 794px; width: 740px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.param { display: flex; flex-direction: column; justify-content: flex-end; }
+.param .lbl em { margin: 0 auto 0 12px; font: 600 14px var(--num); font-style: normal; color: #bfe6ff; }
+.param .lbl em.af { color: var(--muted); }
+.mptick { position: relative; height: 5px; margin: 1px 0 3px; background: rgba(0, 0, 0, 0.55); border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.mptick > i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(90deg, #4aa3e0, #dff6ff); }
+.mptick.af > i { background: linear-gradient(90deg, #4b4757, #8a8496); }
+.mptick.flash { box-shadow: 0 0 0 1px rgba(200, 240, 255, 0.9), 0 0 10px rgba(140, 210, 255, 0.9); }
 .param .lbl { display: flex; justify-content: space-between; align-items: baseline; }
 .param .lbl b { font: 700 14px var(--num); color: var(--muted); letter-spacing: 1px; }
 .param .lbl span { font: 600 24px var(--num); }
@@ -236,6 +243,9 @@ canvas#scene { position: fixed; inset: 0; display: block; }
 .form input[type=range] { width: 100%; }
 .form .note { grid-column: 1 / -1; font-size: 13px; color: var(--muted); line-height: 1.5; }
 .form .row2 { display: flex; gap: 8px; }
+.form .row2.sps { align-items: center; gap: 12px; }
+.form input[type=number] { width: 96px; font: 600 16px var(--num); color: var(--text); background: #0e0d13; border: 1px solid var(--edge-strong); border-radius: 5px; padding: 5px 8px; }
+#s-gcdinfo { font: 500 14px var(--num); color: var(--gold); }
 
 #win-actions { width: 760px; }
 .agrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }

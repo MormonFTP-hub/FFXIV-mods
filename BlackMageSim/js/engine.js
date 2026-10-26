@@ -22,8 +22,8 @@
     emit(type, data) { (this.listeners[type] || []).forEach(fn => fn(data || {})); }
 
     get stats() {
-      const tier = B.GCD_TIERS.find(t => t.label === this.settings.gcdTier) || B.GCD_TIERS[4];
-      return Object.assign({}, B.BASE_STATS, { sps: tier.sps });
+      const sps = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, Math.round(this.settings.sps) || B.DEFAULT_SETTINGS.sps));
+      return Object.assign({}, B.BASE_STATS, { sps });
     }
 
     reset() {
