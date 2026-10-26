@@ -549,6 +549,7 @@
 <table>
 <tr><td>Hotbars</td><td>Keys <kbd>1</kbd>–<kbd>=</kbd>, <kbd>Shift</kbd>+<kbd>1</kbd>–<kbd>=</kbd>, and <kbd>Q</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>F</kbd> … for bar 3, or click a slot. Rebind with <kbd>K</kbd>.</td></tr>
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
+<tr><td>Camera</td><td>Hold the right mouse button and drag to turn the camera and your character: while it's held, <kbd>A</kbd> <kbd>D</kbd> strafe and <kbd>S</kbd> backpedals at walking pace. Drag with the left button to turn just the camera. Hold both buttons to run forward. The wheel zooms.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>
 <tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>.</td></tr>
 <tr><td>Windows</td><td><kbd>J</kbd> Job, <kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
@@ -632,6 +633,8 @@ ${job.helpHtml(seq, ic)}
       bind('#s-slide', 'slidecastMarker', el => el.checked);
       bind('#s-timeline', 'showTimeline', el => el.checked);
       bind('#s-models', 'gameModels', el => el.checked);
+      bind('#s-follow', 'cameraFollow', el => el.checked);
+      bind('#s-mouse', 'mouseSpeed', el => parseFloat(el.value), 'input');
       const dummies = (B.GAME_MODELS && B.GAME_MODELS.dummies) || {};
       $('#s-dummy').innerHTML = Object.entries(dummies).map(([k, d]) => `<option value="${k}">${esc(d.label)} Striking Dummy</option>`).join('')
         || '<option value="">Drawn (no game models exported)</option>';
@@ -655,6 +658,8 @@ ${job.helpHtml(seq, ic)}
       $('#s-slide').checked = s.slidecastMarker;
       $('#s-timeline').checked = s.showTimeline;
       $('#s-models').checked = s.gameModels;
+      $('#s-follow').checked = s.cameraFollow;
+      $('#s-mouse').value = String(s.mouseSpeed);
       $('#s-models').disabled = !(B.GAME_MODELS && window.THREE);
       $('#s-dummy').value = s.dummy;
     }

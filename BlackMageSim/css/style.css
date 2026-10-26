@@ -19,7 +19,8 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #07060d; color: var(--text); font-family: var(--ui); }
-canvas#scene { position: fixed; inset: 0; display: block; }
+canvas#scene { position: fixed; inset: 0; display: block; touch-action: none; }
+body.camdrag, body.camdrag * { cursor: none !important; }
 canvas#models, canvas#fx { position: fixed; inset: 0; display: block; pointer-events: none; }
 
 #hud { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; pointer-events: none; user-select: none; }

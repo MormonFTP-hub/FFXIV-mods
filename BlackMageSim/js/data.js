@@ -166,6 +166,8 @@ window.BLM = window.BLM || {};
     showTimeline: true,
     gameModels: true,     // use work/game-models.js when it's there
     dummy: 'thavnair',
+    cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)
+    mouseSpeed: 1,        // camera turn speed for mouse drags
   };
 
   // Rough dummy colour bands for a single target parse with no raid buffs, relative to the job's benchmark.

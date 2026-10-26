@@ -4,6 +4,7 @@
   const A = B.ACTIONS;
   const STORE_KEY = 'blm-ew-sim.v1';
   const DUMMY_HP = 25000000;
+  const BACKPEDAL = 0.4;      // backpedalling is a walk: 2.4 yalms a second against a 6 yalm run
   const MOVE_KEYS = { KeyW: 'f', ArrowUp: 'f', KeyS: 'b', ArrowDown: 'b', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
   const RESERVED = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter', 'Tab', 'Escape', 'F1']);
   const MOD_KEYS = new Set(['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight']);
@@ -141,6 +142,7 @@
     recentUses: [],
     keybindMode: false,
     held: new Set(),
+    mouse: { left: false, right: false, x: 0, y: 0, moved: 0 },
     cd: null,
     cdEndedAt: null,
     noNewUntil: 0,
@@ -199,6 +201,7 @@
       this.job = B.setJob(jobId, st.versions[jobId]);
       this.engine.setJob(this.job);
       this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
+      this.scene.resetCamera();
       this.cd = null; this.cdEndedAt = null; this.recentUses = [];
       this.ui.setJob();
       this.models.setJob();
@@ -360,6 +363,7 @@
     fullReset() {
       this.engine.reset();
       this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
+      this.scene.resetCamera();
       this.enc = null;
       this.cd = null;
       this.cdEndedAt = null;
@@ -474,11 +478,53 @@
       window.addEventListener('keyup', ev => { this.held.delete(ev.code); });
       window.addEventListener('blur', () => this.held.clear());
 
+      // The mouse, as in the game's standard controls. Left drag turns the camera; right drag turns the camera
+      // and your character with it, and while the right button is down A/D strafe and S backpedals; both
+      // buttons run forward; the wheel zooms. A click without a drag targets the dummy.
       const canvas = document.getElementById('scene');
+      const mouse = this.mouse;
+      const setButtons = (ev) => { mouse.left = !!(ev.buttons & 1); mouse.right = !!(ev.buttons & 2); };
+      const release = () => {
+        mouse.left = mouse.right = false; mouse.moved = 0;
+        this.scene.dragging = false;
+        document.body.classList.remove('camdrag');
+      };
+      canvas.addEventListener('contextmenu', ev => ev.preventDefault());
       canvas.addEventListener('pointerdown', ev => {
         this.sfx.ensure();
-        if (this.scene.hitDummy(ev.clientX, ev.clientY)) this.engine.targeted = true;
+        if (ev.pointerType !== 'mouse' && ev.pointerType !== 'pen') {      // touch: just target
+          if (this.scene.hitDummy(ev.clientX, ev.clientY)) this.engine.targeted = true;
+          return;
+        }
+        ev.preventDefault();
+        if (!mouse.left && !mouse.right) { mouse.moved = 0; try { canvas.setPointerCapture(ev.pointerId); } catch (e) { /* ok */ } }
+        setButtons(ev);
+        mouse.x = ev.clientX; mouse.y = ev.clientY;
       });
+      canvas.addEventListener('pointermove', ev => {
+        if (ev.pointerType !== 'mouse' && ev.pointerType !== 'pen') return;
+        setButtons(ev);              // a second button pressed or let go mid-drag arrives as a move
+        if (!mouse.left && !mouse.right) { if (this.scene.dragging) release(); return; }
+        const dx = ev.clientX - mouse.x, dy = ev.clientY - mouse.y;
+        mouse.x = ev.clientX; mouse.y = ev.clientY;
+        mouse.moved += Math.abs(dx) + Math.abs(dy);
+        if (mouse.moved > 3) {
+          this.scene.dragging = true;
+          document.body.classList.add('camdrag');
+          this.scene.turnCamera(dx, dy);
+        }
+      });
+      canvas.addEventListener('pointerup', ev => {
+        if (ev.pointerType !== 'mouse' && ev.pointerType !== 'pen') return;
+        const click = mouse.moved <= 3;
+        setButtons(ev);
+        if (click && this.scene.hitDummy(ev.clientX, ev.clientY)) this.engine.targeted = true;
+        if (!mouse.left && !mouse.right) { release(); try { canvas.releasePointerCapture(ev.pointerId); } catch (e) { /* ok */ } }
+      });
+      canvas.addEventListener('pointercancel', release);
+      canvas.addEventListener('lostpointercapture', () => { if (!mouse.left && !mouse.right) release(); });
+      window.addEventListener('blur', release);
+      canvas.addEventListener('wheel', ev => { ev.preventDefault(); this.scene.zoomCamera(ev.deltaY); }, { passive: false });
 
       const on = (id, fn) => document.getElementById(id).addEventListener('click', fn);
       on('b-job', () => { this.ui.buildJobs(); this.toggleWindow('win-job'); });
@@ -524,18 +570,25 @@
       this.last = t;
       const e = this.engine;
 
-      // Movement relative to the camera.
+      // Movement relative to the camera. Both mouse buttons run forward. With the right button held your
+      // character faces the camera's way, so A/D strafe and moving backward is a slow backpedal.
       const mb = this.scene.moveBasis();
-      let dx = 0, dz = 0;
+      let fwd = 0, side = 0;
       for (const k of this.held) {
         const d = MOVE_KEYS[k];
-        if (d === 'f') { dx += mb.fx; dz += mb.fz; }
-        if (d === 'b') { dx -= mb.fx; dz -= mb.fz; }
-        if (d === 'r') { dx += mb.rx; dz += mb.rz; }
-        if (d === 'l') { dx -= mb.rx; dz -= mb.rz; }
+        if (d === 'f') fwd++;
+        if (d === 'b') fwd--;
+        if (d === 'r') side++;
+        if (d === 'l') side--;
       }
+      const mouselook = this.mouse.right;
+      if (this.mouse.left && this.mouse.right) fwd = Math.min(1, fwd + 1);
+      fwd = Math.max(-1, Math.min(1, fwd)); side = Math.max(-1, Math.min(1, side));
+      let dx = mb.fx * fwd + mb.rx * side, dz = mb.fz * fwd + mb.rz * side;
       if (Math.abs(dx) < 1e-6 && Math.abs(dz) < 1e-6) { dx = 0; dz = 0; }
-      e.move(dx, dz, dt);
+      this.scene.mouselook = mouselook;
+      this.scene.backpedal = mouselook && fwd < 0;
+      e.move(dx, dz, dt, this.scene.backpedal ? BACKPEDAL : 1);
       e.advance(dt);
       e.frame();
       this.updateCountdown();

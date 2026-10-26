@@ -465,10 +465,11 @@
     }
 
     // ---------- movement ----------
-    move(dx, dz, dt) {
+    // speedMul: below 1 for backpedalling.
+    move(dx, dz, dt, speedMul) {
       const moving = dx !== 0 || dz !== 0;
       if (moving) {
-        const speed = 6 * (this.has('sprint') ? 1.3 : 1);
+        const speed = 6 * (this.has('sprint') ? 1.3 : 1) * (speedMul || 1);
         const len = Math.hypot(dx, dz);
         this.pos.x += dx / len * speed * dt;
         this.pos.z += dz / len * speed * dt;

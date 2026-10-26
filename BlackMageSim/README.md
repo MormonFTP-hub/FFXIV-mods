@@ -31,6 +31,7 @@ then go to http://localhost:8797.
 | Hotbar 2 | `Shift` + `1` – `=`. Black Mage: Sharpcast, Triplecast, Swiftcast, Ley Lines, Between the Lines, Amplifier, Manafont, Transpose, Lucid Dreaming, Tincture, Addle, Manaward. Samurai: Kaiten, Shinten, Senei, Shoha, Meikyo Shisui, Ikishoten, Gyoten, Yaten, True North, Tincture, Feint, Third Eye |
 | Hotbar 3 | `Q` `E` `R` `F` `T` `G` `Z` `X` `C` `V` `B` `Y`: role actions and Sprint (Samurai also has Guren here) |
 | Move | `W` `A` `S` `D` or arrows, `Space` to jump |
+| Camera | Hold the right mouse button and drag to turn the camera and your character. While it's held, `A` `D` strafe and `S` backpedals at walking pace. Left drag turns just the camera, both buttons run forward, the wheel zooms. The camera stays where you put it; Settings can make it follow the dummy |
 | Target | `Tab` or click the dummy, `Esc` to clear |
 | Chat | `Enter`, then `/countdown 15` (`/cd`), `/reset`, `/help` |
 | Windows | `J` job and version, `P` Actions & Traits (drag actions onto the bars), `K` keybind mode, `F1` help (with the job's opener) |
@@ -123,6 +124,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **1.5.1**: Mouse camera like the game's standard controls. Right drag turns the camera and your character (A/D strafe, S backpedals at 2.4 yalms a second), left drag turns only the camera, both buttons run forward, and the wheel zooms. The camera no longer swings round to the dummy on its own (a Settings switch brings that back), and Settings has a mouse camera speed.
 - **1.5.0**: Jobs and versions. Pick a job and the patch to play it at (`J`); each version keeps its own hotbars. Samurai joins as Endwalker 6.08, the last patch with Hissatsu: Kaiten. It comes with its gauge, combos and positionals, auto-attacks, Iaijutsu and Tsubame-gaeshi, game icons, model and animations, sword effects and sounds, and its opener in the help. The engine is now shared, with each job version in its own file.
 - **1.4.0**: The game's own models and animations: the Black Mage in Archmage's gear with a Moonward Rod, a choice of four striking dummies, and every action's real cast and ability motion. Exported from your install by `tools/export_models.py`. The camera sits closer and you start 10 yalms from the dummy.
 - **1.3.0**: The game's own icons for actions, statuses (Triplecast with its stack art), the Tincture and the job, extracted from your install by `tools/extract_icons.py`.

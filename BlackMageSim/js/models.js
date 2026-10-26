@@ -280,6 +280,8 @@
 
     wire() {
       const e = this.e;
+      this.faceUntil = 0;
+      e.on('use', () => { this.faceUntil = e.now + 0.8; });
       e.on('castStart', (ev) => {
         if (!this.ch) return;
         const a = this.actionAnims(ev.id);
@@ -325,17 +327,22 @@
       if (!this.active()) return;
       const e = this.e, sc = this.sc, ch = this.ch;
 
-      // Face the way you run; face the dummy while casting or standing.
+      // Facing, as in the game: with the right mouse button held you face the way the camera looks (and strafe
+      // or backpedal); otherwise you turn to the way you run. Using an action turns you to the dummy, and
+      // standing still keeps whatever way you were facing.
       const vx = e.pos.x - ch.lastPos.x, vz = e.pos.z - ch.lastPos.z;
       ch.lastPos.x = e.pos.x; ch.lastPos.z = e.pos.z;
-      let want = Math.atan2(-e.pos.x, -e.pos.z);
-      if (e.moving && !e.casting && Math.hypot(vx, vz) > 1e-4) want = Math.atan2(vx, vz);
+      const toDummy = Math.atan2(-e.pos.x, -e.pos.z);
+      const step = Math.hypot(vx, vz);
+      let want = ch.facing, rate = 14;
+      if (sc.mouselook) { want = sc.camYaw; rate = 30; }
+      else if (e.moving && !e.casting && step > 1e-4) want = Math.atan2(vx, vz);
+      else if (e.casting || e.now < this.faceUntil) want = toDummy;
+      if (step > 1.5) want = toDummy;     // dashes and backsteps (Gyoten, Yaten) keep you facing the dummy
       let diff = want - ch.facing;
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
-      // Dashes and backsteps (Gyoten, Yaten) jump the position; keep facing the dummy through them.
-      if (Math.hypot(vx, vz) > 1.5) diff = Math.atan2(-e.pos.x, -e.pos.z) - ch.facing;
-      ch.facing += diff * Math.min(1, dt * 14);
+      ch.facing += diff * Math.min(1, dt * rate);
       ch.group.position.set(e.pos.x, sc.jumpY(), e.pos.z);
       ch.group.rotation.y = ch.facing;
 

@@ -35,6 +35,10 @@
       this.fx = [];
       this.time = 0;
       this.camYaw = 0;
+      this.camPitch = 0.33;      // radians above the horizon
+      this.camZoom = 1;
+      this.dragging = false;     // a mouse button is turning the camera
+      this.mouselook = false;    // right button held: the character faces the way the camera looks
       this.shake = 0;
       this.dummyFlash = 0;
       this.dummyWobble = 0;
@@ -84,10 +88,13 @@
     }
 
     // ---------- camera ----------
+    // Like the game's camera: it orbits your character, turned by dragging with either mouse button, tilted by
+    // dragging up and down, and zoomed with the wheel. It stays where you put it unless "Camera follows the
+    // dummy" is on in Settings, which swings it round behind you toward the dummy.
     updateCamera(dt) {
       const p = this.e.pos;
       const d = Math.hypot(p.x, p.z);
-      if (d > 2.2) {
+      if (this.e.settings.cameraFollow && !this.dragging && d > 2.2) {
         const want = Math.atan2(-p.x, -p.z);
         let diff = want - this.camYaw;
         while (diff > Math.PI) diff -= Math.PI * 2;
@@ -97,17 +104,37 @@
       const fx = Math.sin(this.camYaw), fz = Math.cos(this.camYaw);
       const sx = (Math.random() - 0.5) * this.shake, sy = (Math.random() - 0.5) * this.shake;
       // The game's models are life-size (about 1.9 tall with the hat), so the camera sits closer to them,
-      // about where the game's own default zoom puts it.
+      // about where the game's own default zoom puts it. It aims a little above the head, which keeps you in
+      // the lower half of the screen with the dummy ahead.
       const m = this.modelsOn();
-      const back = m ? 7.2 : 11.5, high = m ? 3.6 : 4.9, ahead = m ? 3 : 8, lookY = m ? 0.6 : 1.1;
-      const cam = { x: p.x - fx * back + sx, y: high + sy, z: p.z - fz * back };
-      const look = { x: p.x + fx * ahead, y: lookY, z: p.z + fz * ahead };
+      const dist = (m ? 8 : 12.5) * this.camZoom, pivotY = (m ? 1.6 : 2.0) + this.jumpY() * 0.3, lift = m ? 0.55 : 0.8;
+      const ch = Math.cos(this.camPitch), sh = Math.sin(this.camPitch);
+      const cam = { x: p.x - fx * dist * ch + sx, y: Math.max(0.35, pivotY + dist * sh) + sy, z: p.z - fz * dist * ch };
+      const look = { x: p.x, y: pivotY + lift, z: p.z };
       // Right-handed like three.js and the game, so the 2D scene and the 3D models line up.
       const f = norm(sub(look, cam));
       const r = norm(cross(f, { x: 0, y: 1, z: 0 }));
       const u = cross(r, f);
       this.cam = { pos: cam, look, f, r, u };
       this.F = this.H * 0.95;
+    }
+
+    // Mouse drags (pixels) turn and tilt the camera; the wheel zooms.
+    turnCamera(dx, dy) {
+      const k = 0.0042 * (this.e.settings.mouseSpeed || 1);
+      this.camYaw -= dx * k;      // drag right, look right
+      this.camPitch = Math.max(-0.2, Math.min(1.35, this.camPitch + dy * k * 0.8));
+    }
+    zoomCamera(delta) {
+      this.camZoom = Math.max(0.35, Math.min(2, this.camZoom * Math.pow(1.1, Math.sign(delta) * Math.min(3, Math.abs(delta) / 100))));
+    }
+    // Behind you, looking at the dummy, at the default tilt and zoom.
+    resetCamera() {
+      const p = this.e.pos;
+      this.camYaw = Math.atan2(-p.x, -p.z);
+      this.camPitch = 0.33;
+      this.camZoom = 1;
+      this.updateCamera(0);
     }
 
     // Movement keys are relative to the camera, like standard controls.
