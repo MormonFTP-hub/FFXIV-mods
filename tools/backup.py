@@ -29,6 +29,17 @@ START, END = '<!-- mods:start -->', '<!-- mods:end -->'
 APPS = ['PmpViewer/PMP Viewer.exe', 'Authenticator/Authenticator.exe', 'InstaViewer/Insta Viewer.exe']
 THUMB_SIZE = (800, 400)
 COLUMNS = 3
+# The repo is public and commits go up unattended, so anything that looks like a live credential stops the commit
+SECRET_PATTERNS = {
+    'Discord bot token': r'[MN][A-Za-z\d]{23,25}\.[\w-]{6}\.[\w-]{27,}',
+    'Discord webhook URL': r'discord(?:app)?\.com/api/webhooks/\d+/[\w-]{20,}',
+    'GitHub token': r'\bgh[pousr]_[A-Za-z0-9]{36,}',
+    'API key (sk-)': r'\bsk-(?:ant-)?[A-Za-z0-9_-]{32,}',
+    'Google API key': r'\bAIza[0-9A-Za-z_-]{35}\b',
+    'AWS access key': r'\bAKIA[0-9A-Z]{16}\b',
+    'Slack token': r'\bxox[baprs]-[A-Za-z0-9-]{10,}',
+    'private key': r'-----BEGIN [A-Z ]*PRIVATE KEY-----',
+}
 
 
 def gh_exe():
@@ -40,10 +51,22 @@ def gh_exe():
 
 
 def run(*cmd, check=True, capture=False):
-    r = subprocess.run(cmd, cwd=ROOT, text=True, encoding='utf-8', capture_output=capture)
+    r = subprocess.run(cmd, cwd=ROOT, text=True, encoding='utf-8', errors='replace', capture_output=capture)
     if check and r.returncode:
         sys.exit(f'failed ({r.returncode}): {" ".join(cmd)}\n{r.stderr or ""}')
     return r.stdout if capture else r.returncode
+
+
+def staged_secrets():
+    """Added lines in the staged diff that look like a credential: [(file, kind)]."""
+    diff = run('git', 'diff', '--cached', '-U0', '--no-color', '--diff-filter=AM', capture=True)
+    hits, current = set(), None
+    for line in diff.splitlines():
+        if line.startswith('+++ '):
+            current = line[6:] if line.startswith('+++ b/') else None
+        elif line.startswith('+') and current:
+            hits.update((current, kind) for kind, pat in SECRET_PATTERNS.items() if re.search(pat, line))
+    return sorted(hits)
 
 
 def slug(text):
@@ -176,6 +199,12 @@ def main():
         return
 
     run('git', 'add', '-A')
+    leaks = staged_secrets()
+    if leaks:
+        run('git', 'reset', '-q')
+        sys.exit('Not committed: these look like credentials, and the repo is public.\n'
+                 + '\n'.join(f'  {f}: {kind}' for f, kind in leaks)
+                 + '\nRemove the secret or add the file to .gitignore, then run again.')
     if run('git', 'diff', '--cached', '--quiet', check=False):
         run('git', 'commit', '-q', '-m', f'Backup {dt.datetime.now():%Y-%m-%d %H:%M}')
         print('committed')
