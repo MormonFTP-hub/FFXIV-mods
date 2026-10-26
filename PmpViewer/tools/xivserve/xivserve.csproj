@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>xivserve</AssemblyName>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <PenumbraDir>$(APPDATA)\XIVLauncher\installedPlugins\Penumbra\1.7.2.1</PenumbraDir>
+    <DalamudDir>$(APPDATA)\XIVLauncher\addon\Hooks\dev</DalamudDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Lumina"><HintPath>$(DalamudDir)\Lumina.dll</HintPath></Reference>
+    <Reference Include="Lumina.Excel"><HintPath>$(DalamudDir)\Lumina.Excel.dll</HintPath></Reference>
+    <Reference Include="Penumbra"><HintPath>$(PenumbraDir)\Penumbra.dll</HintPath></Reference>
+    <Reference Include="Penumbra.GameData"><HintPath>$(PenumbraDir)\Penumbra.GameData.dll</HintPath></Reference>
+    <Reference Include="Penumbra.String"><HintPath>$(PenumbraDir)\Penumbra.String.dll</HintPath></Reference>
+    <Reference Include="Luna"><HintPath>$(PenumbraDir)\Luna.dll</HintPath></Reference>
+    <Reference Include="SharpGLTF.Core"><HintPath>$(PenumbraDir)\SharpGLTF.Core.dll</HintPath></Reference>
+    <Reference Include="SharpGLTF.Toolkit"><HintPath>$(PenumbraDir)\SharpGLTF.Toolkit.dll</HintPath></Reference>
+    <Reference Include="SharpGLTF.Runtime"><HintPath>$(PenumbraDir)\SharpGLTF.Runtime.dll</HintPath></Reference>
+    <Reference Include="OtterTex"><HintPath>$(PenumbraDir)\OtterTex.dll</HintPath></Reference>
+    <Reference Include="Dalamud"><HintPath>$(DalamudDir)\Dalamud.dll</HintPath></Reference>
+    <Reference Include="Serilog"><HintPath>$(DalamudDir)\Serilog.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(DalamudDir)\Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="BCnEncoder"><HintPath>$(DalamudDir)\BCnEncoder.dll</HintPath></Reference>
+    <Reference Include="CommunityToolkit.HighPerformance"><HintPath>$(DalamudDir)\CommunityToolkit.HighPerformance.dll</HintPath></Reference>
+  </ItemGroup>
+
+</Project>

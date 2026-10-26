@@ -1,0 +1,57 @@
+# What lives in the repo: build scripts, docs, app source, previews and Glamourer designs.
+# The .pmp mods and the app .exe files go up as GitHub Release assets instead (see tools/publish.ps1),
+# so a clone stays small and every version keeps its download link.
+
+# Finished mods and built apps: attached to Releases, not committed
+*.pmp
+*.exe
+*.zip
+*.7z
+
+# Per-project scratch, ripped source assets and bundled third-party apps (huge, rebuildable or not ours)
+/*/work/
+/*/source/
+/*/apps/
+/*/build/
+/*/out/*/
+/*/out_*/*/
+/*/tools/blender/
+/*/tools/xivtool/
+/*/tools/tt/
+/*/tools/ttgame/
+/*/tools/fbxconv/
+/DonQuixote/mod/
+/DonQuixote/mod_c1701/
+/Authenticator/publish/
+
+# Local Dalamud build used to test Pull Timer: only the injector script is ours
+/_dalamud-test/*
+!/_dalamud-test/inject-test.ps1
+
+# Pull Timer's old standalone repo (one commit, folded into this one)
+/PullTimer/.git-standalone/
+
+# Secrets and per-machine state
+.env
+*.env
+state.json
+state.tmp
+*.log
+*.log.*
+
+# Build and tool output
+bin/
+obj/
+.vs/
+*.user
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+*.blend1
+*.pdb
+*.o
+*.ilk
+Thumbs.db
+desktop.ini

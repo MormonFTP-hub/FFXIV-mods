@@ -1,0 +1,16 @@
+## Interface: 120105
+## Title: SlimUI
+## Notes: Lightweight ElvUI-style unit frames, action bar skin, chat/minimap/tooltip cleanup and a matching Edit Mode layout. Never touches nameplates.
+## Author: Mormonft
+## Version: 1.1.0
+## SavedVariables: SlimUIDB
+## OptionalDeps: Details
+## IconTexture: Interface\Icons\INV_Misc_Gear_01
+
+Core.lua
+Units.lua
+ActionBars.lua
+Chat.lua
+Minimap.lua
+Skins.lua
+Layout.lua

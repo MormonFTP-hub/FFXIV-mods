@@ -1,0 +1,319 @@
+{
+  "FileVersion": 2,
+  "Identifier": "2a015328-d3da-5494-af32-2335b6779abe",
+  "CreationDate": "2026-10-21T00:00:00+00:00",
+  "LastEdit": "2026-10-21T00:00:00+00:00",
+  "Name": "The Lich King",
+  "Description": "Archfiend set and Deathbringer as the Lich King and Frostmourne. Needs the 'The Lich King (WoW)' Penumbra mod.",
+  "ForcedRedraw": false,
+  "ResetAdvancedDyes": false,
+  "ResetTemporarySettings": false,
+  "Color": "",
+  "QuickDesign": true,
+  "Tags": [
+    "World of Warcraft"
+  ],
+  "WriteProtected": false,
+  "Equipment": {
+    "OffHand": {
+      "ItemId": 4294967165,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Ears": {
+      "ItemId": 4294967158,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Neck": {
+      "ItemId": 4294967157,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Wrists": {
+      "ItemId": 4294967156,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "RFinger": {
+      "ItemId": 4294967155,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "LFinger": {
+      "ItemId": 4294967153,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Head": {
+      "ItemId": 36821,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Body": {
+      "ItemId": 36822,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Hands": {
+      "ItemId": 36823,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Legs": {
+      "ItemId": 36824,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Feet": {
+      "ItemId": 36825,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "MainHand": {
+      "ItemId": 11771,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Hat": {
+      "Show": true,
+      "Apply": true
+    },
+    "VieraEars": {
+      "Show": true,
+      "Apply": false
+    },
+    "Visor": {
+      "IsToggled": false,
+      "Apply": false
+    },
+    "Weapon": {
+      "Show": true,
+      "Apply": false
+    }
+  },
+  "Bonus": {
+    "Glasses": {
+      "BonusId": 0,
+      "Apply": false
+    }
+  },
+  "Customize": {
+    "ModelId": 0,
+    "Race": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Gender": {
+      "Value": 0,
+      "Apply": false
+    },
+    "BodyType": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Height": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Clan": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Face": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Hairstyle": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Highlights": {
+      "Value": 0,
+      "Apply": false
+    },
+    "SkinColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeColorRight": {
+      "Value": 0,
+      "Apply": false
+    },
+    "HairColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "HighlightsColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature1": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature2": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature3": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature4": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature5": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature6": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature7": {
+      "Value": 0,
+      "Apply": false
+    },
+    "LegacyTattoo": {
+      "Value": 0,
+      "Apply": false
+    },
+    "TattooColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Eyebrows": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeColorLeft": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeShape": {
+      "Value": 0,
+      "Apply": false
+    },
+    "SmallIris": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Nose": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Jaw": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Mouth": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Lipstick": {
+      "Value": 0,
+      "Apply": false
+    },
+    "LipColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "MuscleMass": {
+      "Value": 0,
+      "Apply": false
+    },
+    "TailShape": {
+      "Value": 0,
+      "Apply": false
+    },
+    "BustSize": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaint": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaintReversed": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaintColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Wetness": {
+      "Value": false,
+      "Apply": false
+    }
+  },
+  "Parameters": {},
+  "Materials": {},
+  "Mods": [
+    {
+      "Name": "The Lich King (WoW)",
+      "Directory": "The Lich King (WoW)",
+      "Enabled": true,
+      "Priority": 0,
+      "Settings": {
+        "Frostmourne": [
+          "Frostmourne on the Deathbringer"
+        ]
+      }
+    }
+  ],
+  "Links": {
+    "Before": [],
+    "After": []
+  }
+}

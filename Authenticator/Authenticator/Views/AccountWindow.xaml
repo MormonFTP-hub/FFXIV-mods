@@ -1,0 +1,66 @@
+<Window x:Class="Authenticator.AccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Authenticator" Width="420" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" UseLayoutRounding="True"
+        Background="{DynamicResource WindowBg}" Foreground="{DynamicResource Text}"
+        FontFamily="{StaticResource UiFont}" FontSize="13">
+    <StackPanel Margin="22,16,22,18">
+        <TextBlock x:Name="HeadingText" Text="Add an account" FontSize="17" FontWeight="SemiBold"/>
+        <TextBlock x:Name="IntroText" TextWrapping="Wrap" Foreground="{DynamicResource SubText}" Margin="0,6,0,0" LineHeight="18"
+                   Text="On the site's 2-step verification page, choose to set up an authenticator app. If it offers &quot;Can't scan it?&quot; or &quot;Enter a key manually&quot;, that shows the setup key. You can also paste an otpauth:// link into the key box."/>
+
+        <TextBlock Style="{StaticResource FieldLabel}" Text="Service"/>
+        <TextBox x:Name="IssuerBox" Tag="e.g. Google, Discord, GitHub"/>
+        <TextBlock Style="{StaticResource FieldLabel}" Text="Account"/>
+        <TextBox x:Name="NameBox" Tag="e.g. you@gmail.com"/>
+
+        <StackPanel x:Name="KeySection">
+            <TextBlock Style="{StaticResource FieldLabel}" Text="Setup key"/>
+            <TextBox x:Name="KeyBox" Tag="e.g. JBSW Y3DP EHPK 3PXP" FontFamily="Consolas" FontSize="14" TextChanged="KeyBox_TextChanged"/>
+
+            <Button x:Name="OptionsButton" Style="{StaticResource FlatButton}" BorderThickness="0" Padding="6,4" Margin="-6,10,0,0"
+                    HorizontalAlignment="Left" Click="Options_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="OptionsChevron" Text="&#xE76C;" FontFamily="{StaticResource IconFont}" FontSize="10"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="More options" Foreground="{DynamicResource Accent}"/>
+                </StackPanel>
+            </Button>
+            <StackPanel x:Name="OptionsPanel" Visibility="Collapsed">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Type" Margin="0,4,0,4"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="TotpRadio" Style="{StaticResource Segment}" GroupName="Type" Content="Time-based" IsChecked="True" Checked="Type_Checked"/>
+                    <RadioButton x:Name="HotpRadio" Style="{StaticResource Segment}" GroupName="Type" Content="Counter-based" Checked="Type_Checked"/>
+                </StackPanel>
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Digits"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="Digits6" Style="{StaticResource Segment}" GroupName="Digits" Content="6" MinWidth="40" IsChecked="True"/>
+                    <RadioButton x:Name="Digits7" Style="{StaticResource Segment}" GroupName="Digits" Content="7" MinWidth="40"/>
+                    <RadioButton x:Name="Digits8" Style="{StaticResource Segment}" GroupName="Digits" Content="8" MinWidth="40"/>
+                </StackPanel>
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Algorithm"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="Sha1Radio" Style="{StaticResource Segment}" GroupName="Algorithm" Content="SHA1" IsChecked="True"/>
+                    <RadioButton x:Name="Sha256Radio" Style="{StaticResource Segment}" GroupName="Algorithm" Content="SHA256"/>
+                    <RadioButton x:Name="Sha512Radio" Style="{StaticResource Segment}" GroupName="Algorithm" Content="SHA512"/>
+                </StackPanel>
+                <StackPanel x:Name="PeriodPanel">
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="New code every (seconds)"/>
+                    <TextBox x:Name="PeriodBox" Text="30" Width="80" HorizontalAlignment="Left"/>
+                </StackPanel>
+                <StackPanel x:Name="CounterPanel" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Counter"/>
+                    <TextBox x:Name="CounterBox" Text="0" Width="120" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock x:Name="ErrorText" Foreground="{DynamicResource Danger}" TextWrapping="Wrap" Margin="0,12,0,0" Visibility="Collapsed"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button Style="{StaticResource FlatButton}" Content="Cancel" IsCancel="True" MinWidth="90" Margin="0,0,8,0"/>
+            <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" Content="Add" IsDefault="True" MinWidth="90" Click="Save_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

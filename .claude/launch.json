@@ -1,0 +1,128 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pmp-viewer",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8765"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "pmp-viewer-2",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8767"
+      ],
+      "port": 8767
+    },
+    {
+      "name": "pmp-viewer-3",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8769"
+      ],
+      "port": 8769
+    },
+    {
+      "name": "pmp-viewer-mantis",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8781"
+      ],
+      "port": 8781
+    },
+    {
+      "name": "pmp-viewer-iw",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8783"
+      ],
+      "port": 8783
+    },
+    {
+      "name": "pmp-viewer-asuka",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8785"
+      ],
+      "port": 8785
+    },
+    {
+      "name": "pmp-viewer-loki",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "PmpViewer/server/app.py",
+        "--port",
+        "8787"
+      ],
+      "port": 8787
+    },
+    {
+      "name": "insta-viewer",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "InstaViewer/server/app.py",
+        "--port",
+        "8771"
+      ],
+      "port": 8771
+    },
+    {
+      "name": "jehuty-receiver",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-I",
+        "C:\\Users\\hltil\\AppData\\Local\\Temp\\claude\\E--FFXIV-mods\\03466c1c-6c07-4f38-86bc-3a309df7b1b8\\scratchpad\\receiver.py",
+        "8793",
+        "E:\\FFXIV-mods\\Jehuty\\source"
+      ],
+      "port": 8793
+    },
+    {
+      "name": "gallery",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8790",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "PmpViewer/work/gallery/site"
+      ],
+      "port": 8790
+    }
+  ]
+}

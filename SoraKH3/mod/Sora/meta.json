@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Name": "Sora (Kingdom Hearts III)",
+  "Author": "Square Enix (model); FFXIV port",
+  "Description": "Sora from Kingdom Hearts III, as a full-body costume on the Air Cell set.\n\nWEAR: the Air Cell set (all classes, level 1): Hood, Jacket, Armlets, Halfslops and Shoes. Glamourer can put it on\nwithout owning it; out/Sora - Glamourer import code.txt has a ready design.\n  Air Cell Hood      -> his head: face, blue eyes and spiky hair (hides your hair and ears)\n  Air Cell Jacket    -> jacket, shirt, hood, crown necklace, arms\n  Air Cell Armlets   -> his hands and fingerless gloves\n  Air Cell Halfslops -> belt, pockets, baggy shorts\n  Air Cell Shoes     -> his big shoes\n\nRACES: every race and gender. Built on the Midlander man, the Midlander woman, the Roegadyn man and the Lalafell;\nthe other races are reshaped from those by the game (Hrothgar men from the Roegadyn fit). Lalafell get a little Sora\nwith a big head. Your own tail is hidden while the set is on. His skin keeps its own colour on every race.\n\nOPTION\n  Hide your own face: only if your face shows through his head (for most races it barely does; Au Ra horns\n        may poke out at the sides). Blanks every player face in this mod's collection, so use a collection that's\n        only for your character.\n\nHis face is static: no blinking, expressions or lip movement. His hair has no physics.\n\nEveryone in this mod's collection who wears the Air Cell set looks like Sora.\n\nKingdom Hearts and Sora belong to Square Enix / Disney (model). Fan port, personal use only.",
+  "Image": "",
+  "Version": "2.0.0",
+  "Website": "",
+  "ModTags": [
+    "Kingdom Hearts",
+    "Sora",
+    "Port",
+    "Full Body",
+    "Air Cell"
+  ]
+}

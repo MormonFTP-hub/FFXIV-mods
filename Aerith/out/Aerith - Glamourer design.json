@@ -1,0 +1,335 @@
+{
+  "FileVersion": 2,
+  "Identifier": "80b0c42e-559f-597f-8997-559ad0d6d4f1",
+  "CreationDate": "2026-10-21T00:00:00+00:00",
+  "LastEdit": "2026-10-21T00:00:00+00:00",
+  "Name": "Aerith Gainsborough",
+  "Description": "Spring Dress set as Aerith (FF7 Remake) with her green eyes. Needs the 'Aerith Gainsborough (FF7 Remake)' Penumbra mod.",
+  "ForcedRedraw": false,
+  "ResetAdvancedDyes": false,
+  "ResetTemporarySettings": false,
+  "Color": "",
+  "QuickDesign": true,
+  "Tags": [
+    "Final Fantasy VII"
+  ],
+  "WriteProtected": false,
+  "Equipment": {
+    "MainHand": {
+      "ItemId": 4294967166,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "OffHand": {
+      "ItemId": 4294967165,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Ears": {
+      "ItemId": 4294967158,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Neck": {
+      "ItemId": 4294967157,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Wrists": {
+      "ItemId": 4294967156,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "RFinger": {
+      "ItemId": 4294967155,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "LFinger": {
+      "ItemId": 4294967153,
+      "Crest": false,
+      "Apply": false,
+      "ApplyStain": false,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Head": {
+      "ItemId": 7539,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Body": {
+      "ItemId": 7540,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Hands": {
+      "ItemId": 7536,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Legs": {
+      "ItemId": 7541,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Feet": {
+      "ItemId": 7542,
+      "Crest": false,
+      "Apply": true,
+      "ApplyStain": true,
+      "ApplyCrest": false,
+      "Stain": 0,
+      "Stain2": 0
+    },
+    "Hat": {
+      "Show": true,
+      "Apply": true
+    },
+    "VieraEars": {
+      "Show": true,
+      "Apply": false
+    },
+    "Visor": {
+      "IsToggled": false,
+      "Apply": false
+    },
+    "Weapon": {
+      "Show": true,
+      "Apply": false
+    }
+  },
+  "Bonus": {
+    "Glasses": {
+      "BonusId": 0,
+      "Apply": false
+    }
+  },
+  "Customize": {
+    "ModelId": 0,
+    "Race": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Gender": {
+      "Value": 0,
+      "Apply": false
+    },
+    "BodyType": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Height": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Clan": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Face": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Hairstyle": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Highlights": {
+      "Value": 0,
+      "Apply": false
+    },
+    "SkinColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeColorRight": {
+      "Value": 0,
+      "Apply": false
+    },
+    "HairColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "HighlightsColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature1": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature2": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature3": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature4": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature5": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature6": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacialFeature7": {
+      "Value": 0,
+      "Apply": false
+    },
+    "LegacyTattoo": {
+      "Value": 0,
+      "Apply": false
+    },
+    "TattooColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Eyebrows": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeColorLeft": {
+      "Value": 0,
+      "Apply": false
+    },
+    "EyeShape": {
+      "Value": 0,
+      "Apply": false
+    },
+    "SmallIris": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Nose": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Jaw": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Mouth": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Lipstick": {
+      "Value": 0,
+      "Apply": false
+    },
+    "LipColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "MuscleMass": {
+      "Value": 0,
+      "Apply": false
+    },
+    "TailShape": {
+      "Value": 0,
+      "Apply": false
+    },
+    "BustSize": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaint": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaintReversed": {
+      "Value": 0,
+      "Apply": false
+    },
+    "FacePaintColor": {
+      "Value": 0,
+      "Apply": false
+    },
+    "Wetness": {
+      "Value": false,
+      "Apply": false
+    }
+  },
+  "Parameters": {
+    "LeftEye": {
+      "Red": 0.2901960784313726,
+      "Green": 0.5176470588235295,
+      "Blue": 0.4235294117647059,
+      "Apply": true
+    },
+    "RightEye": {
+      "Red": 0.2901960784313726,
+      "Green": 0.5176470588235295,
+      "Blue": 0.4235294117647059,
+      "Apply": true
+    }
+  },
+  "Materials": {},
+  "Mods": [
+    {
+      "Name": "Aerith Gainsborough (FF7 Remake)",
+      "Directory": "Aerith Gainsborough (FF7 Remake)",
+      "Enabled": true,
+      "Priority": 0,
+      "Settings": {
+        "Head": [
+          "Aerith's hair"
+        ],
+        "Face": [
+          "Your own face"
+        ]
+      }
+    }
+  ],
+  "Links": {
+    "Before": [],
+    "After": []
+  }
+}

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMP Viewer</title>
+<link rel="stylesheet" href="style.css?v=21">
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <header class="brand">PMP Viewer <span class="sub">Penumbra mods, loaded like the game would</span></header>
+
+    <section>
+      <h2>Mod</h2>
+      <select id="modList"><option value="">(no mod: vanilla)</option></select>
+      <div class="row"><input id="modPath" placeholder="or a .pmp / mod folder path (or drop a .pmp on the page)"><button id="openBtn">Open</button></div>
+      <div id="modInfo" class="muted"></div>
+    </section>
+
+    <section id="optionsSec" hidden>
+      <h2>Options</h2>
+      <div id="options"></div>
+    </section>
+
+    <section>
+      <h2>Subject</h2>
+      <div class="row">
+        <select id="subjectKind">
+          <option value="character">Character</option>
+          <option value="monster">Monster / minion</option>
+          <option value="demihuman">Demihuman / mount</option>
+          <option value="weapon">Weapon</option>
+        </select>
+        <button id="modItemsBtn" title="Wear what the mod changes">Use mod's items</button>
+      </div>
+      <div id="charForm">
+        <div class="row"><button id="glamBtn" title="In Glamourer: Designs (or Actors) tab, export / copy to clipboard, then paste here">Paste Glamourer design</button>
+          <span id="glamInfo" class="muted"></span></div>
+        <div class="grid2">
+          <label>Race <select id="race"></select></label>
+          <label>Clan <select id="clan"></select></label>
+          <label>Face <input id="face" type="number" min="1" value="1"></label>
+          <label>Hair <input id="hair" type="number" min="1" value="1"></label>
+        </div>
+        <div class="grid2b">
+          <label>Tail / ears <input id="tail" type="number" min="1" value="1"></label>
+          <label>Height <span id="heightVal" class="muted">50</span><input id="height" type="range" min="0" max="100" value="50"></label>
+          <label title="Women only: the game scales the breast bones between the clan's bust minimum and maximum">Bust <span id="bustVal" class="muted">50</span><input id="bust" type="range" min="0" max="100" value="50"></label>
+        </div>
+        <div class="grid4">
+          <label>Skin <button class="sw" data-kind="skin" title="the game's skin colours for this clan"></button></label>
+          <label>Hair <button class="sw" data-kind="hair"></button></label>
+          <label><span><input type="checkbox" id="hlOn"> Highlights</span><button class="sw" data-kind="highlight"></button></label>
+          <label>Eyes <button class="sw" data-kind="eye"></button></label>
+        </div>
+        <div class="grid2b" title="Face paint: the game binds it as the decal of whatever is drawn in the face slot (game shaders only)">
+          <label>Face paint <input id="facePaint" type="number" min="0" max="99" value="0" title="0 = none"></label>
+          <label>colour <input id="paintColor" type="number" min="0" max="255" value="0" title="0-127 dark colours, 128-255 light"></label>
+          <label class="inline"><input type="checkbox" id="paintFlip"> flipped</label>
+        </div>
+        <div id="palPop" class="palpop" hidden></div>
+        <div class="row wrap checks" id="featureBox" title="Facial features from character creation (atr_fv_a..g) and facial hair (atr_hig)">
+          <span class="muted">Facial features</span>
+          <label class="inline"><input type="checkbox" class="feat" data-bit="0"> 1</label><label class="inline"><input type="checkbox" class="feat" data-bit="1"> 2</label><label class="inline"><input type="checkbox" class="feat" data-bit="2"> 3</label><label class="inline"><input type="checkbox" class="feat" data-bit="3"> 4</label><label class="inline"><input type="checkbox" class="feat" data-bit="4"> 5</label><label class="inline"><input type="checkbox" class="feat" data-bit="5"> 6</label><label class="inline"><input type="checkbox" class="feat" data-bit="6"> 7</label><label class="inline"><input type="checkbox" id="beard"> beard</label>
+        </div>
+        <table id="gear" class="gear"></table>
+        <datalist id="itemList"></datalist>
+      </div>
+      <div id="creatureForm" hidden>
+        <div class="grid3">
+          <label>Id <input id="cId" type="number" min="0" value="1"></label>
+          <label><span id="cBodyLabel">Body</span> <input id="cBody" type="number" min="0" value="1"></label>
+          <label>Variant <input id="cVar" type="number" min="0" value="1"></label>
+        </div>
+        <div id="creatureTargets" class="muted"></div>
+      </div>
+      <div class="row">
+        <label class="inline" title="Draw it the way your game does: every other mod enabled in your Penumbra collection (the one for Yourself, else Default) underneath this one, by priority, with the options you picked. Off: this mod alone over vanilla files (missing materials and textures still come from the collection)."><input id="useCollection" type="checkbox" checked> my collection</label>
+        <label class="inline"><input id="texFull" type="checkbox"> full-size textures</label>
+        <button id="loadBtn" class="primary">Load</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>View</h2>
+      <div class="row wrap">
+        <select id="renderer" title="Game shaders: the game's own compiled shaders (from its .shpk files and the mod's), run on your GPU by xivrender, with the game's G-buffer, lighting, shadow and composite passes. Preview: the older WebGL approximation (needed for the diagnostic colourings).">
+          <option value="game" selected>Game shaders</option>
+          <option value="preview">WebGL preview</option>
+        </select>
+        <select id="pose" title="Game poses are the race's own animations from the game files">
+          <optgroup label="Game animations (this race)">
+            <option value="g:idle" selected>Idle</option>
+            <option value="g:idle:anim">Idle (animated)</option>
+            <option value="g:pose1">/cpose 1</option>
+            <option value="g:pose2">/cpose 2</option>
+            <option value="g:pose3">/cpose 3</option>
+            <option value="g:pose4">/cpose 4</option>
+            <option value="g:walk:anim">Walk (animated)</option>
+            <option value="g:run:anim">Run (animated)</option>
+          </optgroup>
+          <optgroup label="Test poses">
+            <option value="bind">Bind pose</option>
+            <option value="idle">Arms down</option>
+            <option value="run">Run (stiff)</option>
+            <option value="armsup">Arms up</option>
+            <option value="sit">Sit</option>
+          </optgroup>
+        </select>
+        <select id="light" title="Lighting. In game the light colour depends on the zone and time of day.">
+          <option value="neutral">Neutral studio</option>
+          <option value="day">Day (outdoors)</option>
+          <option value="dusk">Dusk</option>
+          <option value="night">Night</option>
+          <option value="indoor">Indoor (warm)</option>
+          <option value="unlit">Unlit (texture colours)</option>
+        </select>
+        <label class="inline" title="Where the sun or moon stands: 0 = behind the camera, 90 = the figure's left, 180 = behind the figure. Match it to an in-game shot to get its shadows (a cap brim shading the face).">Light from <input id="lightAz" type="range" min="-180" max="180" value="31"></label>
+        <label class="inline" title="How high the sun or moon stands (degrees above the horizon)">height <input id="lightEl" type="range" min="5" max="85" value="46"></label>
+        <label class="inline" title="Light from the sky (fills the shade). Lower it for spots where cliffs, trees or roofs block the sky: shade there is much darker in game.">sky light <input id="lightAmb" type="range" min="0" max="200" value="100"></label>
+        <select id="colorMode">
+          <option value="material">Materials</option>
+          <option value="source">Colour by source</option>
+          <option value="slot">Colour by slot</option>
+          <option value="weights">Weights of selected bone</option>
+        </select>
+      </div>
+      <div class="row wrap checks">
+        <label class="inline"><input id="vSkel" type="checkbox"> skeleton</label>
+        <label class="inline"><input id="vWire" type="checkbox"> wireframe</label>
+        <label class="inline"><input id="vHidden" type="checkbox"> show hidden parts</label>
+        <label class="inline"><input id="vVanilla" type="checkbox"> vanilla side by side</label>
+        <label class="inline"><input id="vGrid" type="checkbox" checked> floor</label>
+        <label class="inline" title="The key light (sun or moon) casts shadows, as in game: cap brims darken faces"><input id="vShadow" type="checkbox" checked> shadows</label>
+        <label class="inline" title="Ambient occlusion, like the game's: creases, and a face under a cap brim, get less sky light"><input id="vAo" type="checkbox" checked> ambient occlusion</label>
+      </div>
+      <div class="row"><input id="boneSearch" list="boneList" placeholder="bone (for weights / highlight)"><datalist id="boneList"></datalist></div>
+      <div id="legend" class="legend"></div>
+    </section>
+
+    <section>
+      <h2>Models</h2>
+      <div id="models" class="models"></div>
+    </section>
+  </aside>
+
+  <main>
+    <div id="viewport"><canvas id="canvas"></canvas><canvas id="xr" hidden></canvas>
+      <div id="xrInfo" class="xrinfo"></div>
+      <div id="status" class="status">Pick a mod, then Load.</div>
+      <div id="hud" class="hud"></div>
+      <div class="camtools"><button data-view="front">Front</button><button data-view="side">Side</button>
+        <button data-view="back">Back</button><button data-view="head">Head</button><button data-view="feet">Feet</button></div>
+    </div>
+    <div id="dock">
+      <nav class="tabs">
+        <button data-tab="problems" class="on">Problems <span id="nProblems" class="badge"></span></button>
+        <button data-tab="trace">Load trace</button>
+        <button data-tab="files">Mod files</button>
+        <button data-tab="meta">Meta</button>
+        <button data-tab="materials">Materials</button>
+        <button data-tab="races">All races</button>
+        <span class="grow"></span>
+        <input id="filter" placeholder="filter">
+        <button id="dockToggle" title="Resize panel">▾</button>
+      </nav>
+      <div id="tab-problems" class="tab on"></div>
+      <div id="tab-trace" class="tab"></div>
+      <div id="tab-files" class="tab"></div>
+      <div id="tab-meta" class="tab"></div>
+      <div id="tab-materials" class="tab"></div>
+      <div id="tab-races" class="tab"><div class="row"><button id="racesBtn">Check every race</button>
+        <span class="muted">Resolves the current gear for all 18 race/gender combinations (models and materials only).</span></div><div id="racesOut"></div></div>
+    </div>
+  </main>
+</div>
+<div id="glamDlg" class="dlg" hidden><div class="dlgbox">
+  <h2>Glamourer design</h2>
+  <p class="muted">Paste the clipboard code or JSON. Whatever the design applies is used: race, clan, face, hair, colours, height, bust and gear (dyes aren't shown).</p>
+  <textarea id="glamText" rows="6"></textarea>
+  <div class="row"><span class="grow"></span><button id="glamCancel">Cancel</button><button id="glamApply" class="primary">Use it</button></div>
+</div></div>
+<script type="module" src="app.js?v=25"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pmp-viewer",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": ["-P", "-E", "E:\\FFXIV-mods\\PmpViewer\\server\\app.py", "--port", "8765"],
+      "port": 8765
+    }
+  ]
+}

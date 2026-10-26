@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Authenticator/Authenticator.csproj" />
+  <Project Path="Tests/AuthTools.csproj" />
+</Solution>

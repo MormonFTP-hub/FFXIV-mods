@@ -1,0 +1,136 @@
+"""Package the built models, materials and textures as a Penumbra modpack (out/Viper (Valorant).pmp).
+
+Default files: the Scientist's set's (e9233) five models for Hyur Midlander male (c0101), Hyur Midlander female
+(c0201), Roegadyn male (c0901) and Lalafell (c1101), with the gas-mask head, their materials and every texture.
+Manipulations:
+  EQDP  every other race loads the model the game falls back to (Midlander of its gender; Hrothgar men the Roegadyn
+        man's, Lalafell women the Lalafell one) and the racial deformer reshapes it; the four fitted races load
+        their own model and material for every slot (vanilla has no women's Scientist's Gloves). Roegadyn men get
+        their own fit because the deformer from the Midlander man scales arms and hands 2.7x
+  EQP   head as the vanilla Moogle Head (hides hair, scalp and every race's ears); body shows the other four
+        pieces but no necklace, bracelets or tail, and turns breast physics off; legs show the feet, no tail;
+        hands and feet plain (no rings or bracelets)
+Option groups: the mask (gas mask / mask off / the ult's full hood: the head models swapped) and an opt-in face
+hider.
+"""
+import os
+import pickle
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import meta  # noqa: E402
+import xivdata as xd  # noqa: E402
+from build import RACES, SET, SLOTS, STATES, letters  # noqa: E402
+from xiv_files import write_pmp  # noqa: E402
+
+ROOT = xd.ROOT
+B = os.path.join(ROOT, "work", "build")
+NAME = "Viper (Valorant)"
+PMP = os.path.join(ROOT, "out", f"{NAME}.pmp")
+VERSION = "1.1.1"
+MOOGLE_HEAD = 236
+OTHER = ["Highlander", "Elezen", "Miqote", "Roegadyn", "AuRa", "Hrothgar", "Viera"]
+OWN = [("Male", "Midlander"), ("Female", "Midlander"), ("Male", "Roegadyn"), ("Male", "Lalafell")]
+FALLBACK = [(g, r) for g in ("Male", "Female") for r in OTHER if (g, r) not in OWN] + [("Female", "Lalafell")]
+EQP = {"top": 0x0001 | 0x0100 | 0x0200 | 0x0400 | 0x4000,   # enabled, show legs / hands / head, no breast physics
+       "dwn": (0x01 | 0x20) << 16,                          # enabled, show feet
+       "glv": 0x01 << 24,
+       "sho": 0x01 << 32}
+
+DESCRIPTION = """Viper from Valorant, as a full-body costume on the Scientist's set.
+
+WEAR: the Scientist's set (all classes, level 1): Monocle, Coat, Gloves, Breeches and Boots.
+Glamourer can put it on without owning it; out/Viper - Glamourer import code.txt has a ready design.
+  Scientist's Monocle   -> her head, hair and mask (hides your hair and ears)
+  Scientist's Coat      -> suit torso, collar, mask tubes, the backpack canister, upper arms
+  Scientist's Gloves    -> forearms, gloves and the toxin gauntlet on her right arm
+  Scientist's Breeches  -> hips, belt and the vial at her hip, thighs
+  Scientist's Boots     -> shins, knee guards and boots
+
+RACES: every race and gender. Built on the Midlander woman, the Midlander man, the Roegadyn man and the Lalafell;
+the other races are reshaped from those by the game (Hrothgar men from the Roegadyn fit). Lalafell get a little
+Viper with a big head.
+
+OPTIONS
+  Mask: Gas mask (default, her usual look), Mask off (her bare face), or Viper's Pit (the ult's full hood with the
+        glowing yellow lenses, no hair).
+  Hide your own face: only if your face shows through her head (Au Ra horns can). Blanks every player face in this
+        mod's collection, so use a collection that's only for your character.
+
+Her face is static: no blinking or lip movement. The hair has no physics.
+
+Everyone in this mod's collection who wears the Scientist's set looks like Viper.
+
+Viper and Valorant belong to Riot Games (model from the Kingdom Archives viewer). Fan port, personal use only."""
+
+
+def build():
+    models = pickle.load(open(os.path.join(B, "mdl", "index.pkl"), "rb"))
+    textures = pickle.load(open(os.path.join(B, "tex", "index.pkl"), "rb"))
+    L = letters()
+    mtrls = {t: os.path.join(B, "mtrl", f"{t}.mtrl") for ts in L.values() for t in ts}
+    files = {}
+
+    def add(inner, local):
+        files[inner] = local
+        return inner.replace("/", "\\")
+
+    default_files = {}
+    for _, (local, game) in textures.items():
+        default_files[game] = add(game, local)
+    for race in RACES:
+        for slot in SLOTS:
+            local, game = models[f"{race}_{slot}"]
+            default_files[game] = add(f"models/{race}_{slot}.mdl", local)
+            for i, texset in enumerate(L[slot]):
+                g = f"chara/equipment/e{SET:04d}/material/v0001/mt_{race}e{SET:04d}_{slot}_{'abcdefgh'[i]}.mtrl"
+                default_files[g] = add(f"materials/{texset}.mtrl", mtrls[texset])
+
+    manips = []
+    for gender, race in FALLBACK:
+        for slot in SLOTS:
+            manips.append(meta.eqdp_manip(SET, slot, gender, race, 0))
+    for gender, race in OWN:
+        for slot in SLOTS:
+            manips.append(meta.eqdp_manip(SET, slot, gender, race, 0x3FF))
+    manips.append(meta.eqp_manip(SET, "met", meta.eqp(MOOGLE_HEAD)))
+    for slot, entry in EQP.items():
+        manips.append(meta.eqp_manip(SET, slot, entry))
+
+    def option(name, desc, f):
+        return {"Name": name, "Description": desc, "Priority": 0, "Image": "", "Files": f, "FileSwaps": {},
+                "Manipulations": []}
+
+    masks = {}
+    for state in STATES[1:]:
+        masks[state] = {}
+        for race in RACES:
+            local, game = models[f"{race}_met_{state}"]
+            masks[state][game] = add(f"models/{race}_met_{state}.mdl", local)
+
+    hide = {}
+    for name, (local, game) in models.items():
+        if name.startswith("hide_"):
+            hide[game] = add(f"hide/{name[5:]}.mdl", local)
+
+    groups = [
+        {"Name": "Mask", "Type": "Single", "DefaultSettings": 0,
+         "Description": "Which of Viper's looks the Scientist's Monocle shows.",
+         "Options": [option("Gas mask", "Her usual look: the respirator over her mouth and nose.", {}),
+                     option("Mask off", "Her bare face.", masks["bare"]),
+                     option("Viper's Pit", "Her ultimate's full hood with the glowing yellow lenses (no hair).",
+                            masks["hood"])]},
+        {"Name": "Hide your own face", "Type": "Multi", "DefaultSettings": 0,
+         "Description": "Only if your face shows through Viper's head. Blanks every player face in this collection.",
+         "Options": [option("Hide every player face", "", hide)]},
+    ]
+    meta_json = {"Name": NAME, "Author": "Model by Riot Games (Valorant, via Kingdom Archives); FFXIV port",
+                 "Description": DESCRIPTION, "Version": VERSION, "Website": "",
+                 "ModTags": ["Viper", "Valorant", "Port", "Full Body", "Scientist's"]}
+    write_pmp(PMP, meta_json, {"Files": default_files, "FileSwaps": {}, "Manipulations": manips}, groups, files)
+    print(f"wrote {PMP} ({os.path.getsize(PMP) / 1e6:.1f} MB): {len(default_files)} default files, "
+          f"{sum(len(o['Files']) for g in groups for o in g['Options'])} option files, {len(manips)} manipulations")
+
+
+if __name__ == "__main__":
+    build()

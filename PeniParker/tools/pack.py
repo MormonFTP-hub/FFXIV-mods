@@ -1,0 +1,133 @@
+"""Package the built models, materials and textures as a Penumbra modpack
+(out/Peni Parker - Floral Frights (Marvel Rivals).pmp).
+
+Default files: the Night of Devilry set's (e6191) five models for Hyur Midlander female (c0201), Hyur Midlander male
+(c0101), Roegadyn male (c0901) and Lalafell (c1101), their materials and every texture.
+Manipulations:
+  EQDP  every other race loads the model the game falls back to (the Midlander of its gender; Hrothgar men the
+        Roegadyn man's, Lalafell women the Lalafell's; the game's racial deformer reshapes it), and the four fitted
+        races load their own model and material for every slot. Roegadyn men get their own fit because the deformer
+        from the Midlander man doesn't reproduce their skeleton (vanilla gear always ships Roegadyn models)
+  EQP   head as the vanilla Moogle Head (hides hair, scalp and every race's ears); body shows the other four
+        pieces but no necklace, bracelets or tail, and turns breast physics off; legs show the feet, no tail;
+        hands and feet plain (no rings or bracelets)
+Option groups: the spider on her back, and an opt-in face hider.
+"""
+import os
+import pickle
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import meta  # noqa: E402
+import xivdata as xd  # noqa: E402
+from build import RACES, SET, SLOTS  # noqa: E402
+from xiv_files import write_pmp  # noqa: E402
+
+ROOT = xd.ROOT
+B = os.path.join(ROOT, "work", "build")
+NAME = "Peni Parker - Floral Frights (Marvel Rivals)"
+PMP = os.path.join(ROOT, "out", f"{NAME}.pmp")
+VERSION = "1.0.3"
+MOOGLE_HEAD = 236
+OTHER = ["Highlander", "Elezen", "Miqote", "Roegadyn", "AuRa", "Hrothgar", "Viera"]
+OWN = [("Female", "Midlander"), ("Male", "Midlander"), ("Male", "Roegadyn"), ("Male", "Lalafell")]
+FALLBACK = [(g, r) for g in ("Male", "Female") for r in OTHER if (g, r) not in OWN] + [("Female", "Lalafell")]
+EQP = {"top": 0x0001 | 0x0100 | 0x0200 | 0x0400 | 0x4000,   # enabled, show legs / hands / head, no breast physics
+       "dwn": (0x01 | 0x20) << 16,                          # enabled, show feet
+       "glv": 0x01 << 24,
+       "sho": 0x01 << 32}
+
+DESCRIPTION = """Peni Parker in her Floral Frights skin from Marvel Rivals (just Peni, no SP//dr), as a full-body
+costume on the Night of Devilry set.
+
+WEAR: the Night of Devilry set (all classes, level 1): Horns, Shirt, Fingerless Gloves, Trousers and Boots.
+Glamourer can put it on without owning it; out/Peni Parker - Glamourer import code.txt has a ready design.
+  Horns              -> Peni's head: sugar-skull face paint, braids, the flower crown and the monarch butterfly
+                        (hides your hair and ears)
+  Shirt              -> the yellow dress top, shoulder ruffles, choker, pearls, sleeves to the elbow, and the
+                        little spider on her back
+  Fingerless Gloves  -> sleeves from the elbow, cuffs, hands
+  Trousers           -> the orange wrap skirt (skirt physics) and the bone-print stockings
+  Boots              -> her shoes and ankle ruffles
+
+RACES: every race and gender. Built on the Midlander woman, the Midlander man, the Roegadyn man and the Lalafell;
+the other races are reshaped from those by the game (Hrothgar men from the Roegadyn man). Men get Peni on a broader
+frame; Lalafell get a little Peni with a big head.
+
+OPTIONS
+  Spider pack: with the spider on her back (default) or without.
+  Hide your own face: only if your face shows through her head (it doesn't for Midlanders, Viera or Lalafell).
+        Blanks every player face in this mod's collection, so use a collection that's only for your character.
+
+Her face is static: no blinking, expressions or lip movement. Her hair and braids have no physics; her skirt uses
+the game's skirt physics.
+
+Everyone in this mod's collection who wears the Night of Devilry set looks like Peni.
+
+Peni Parker is Marvel's; the model and textures are NetEase's (Marvel Rivals). Fan port, personal use only."""
+
+
+def build():
+    idx = pickle.load(open(os.path.join(B, "mdl", "index.pkl"), "rb"))
+    models, letters = idx["models"], idx["letters"]
+    textures = pickle.load(open(os.path.join(B, "tex", "index.pkl"), "rb"))
+    mtrls = {t: os.path.join(B, "mtrl", f"{t}.mtrl") for ts in letters.values() for t in ts}
+    files = {}
+
+    def add(inner, local):
+        files[inner] = local
+        return inner.replace("/", "\\")
+
+    default_files = {}
+    for _, (local, game) in textures.items():
+        default_files[game] = add(game, local)
+    for race in RACES:
+        for slot in SLOTS:
+            local, game = models[f"{race}_{slot}"]
+            default_files[game] = add(f"models/{race}_{slot}.mdl", local)
+            for i, texset in enumerate(letters[slot]):
+                g = f"chara/equipment/e{SET:04d}/material/v0001/mt_{race}e{SET:04d}_{slot}_{'abcdefgh'[i]}.mtrl"
+                default_files[g] = add(f"materials/{texset}.mtrl", mtrls[texset])
+
+    manips = []
+    for gender, race in FALLBACK:
+        for slot in SLOTS:
+            manips.append(meta.eqdp_manip(SET, slot, gender, race, 0))
+    for gender, race in OWN:
+        for slot in SLOTS:
+            manips.append(meta.eqdp_manip(SET, slot, gender, race, 0x3FF))
+    manips.append(meta.eqp_manip(SET, "met", meta.eqp(MOOGLE_HEAD)))
+    for slot, entry in EQP.items():
+        manips.append(meta.eqp_manip(SET, slot, entry))
+
+    def option(name, desc, f):
+        return {"Name": name, "Description": desc, "Priority": 0, "Image": "", "Files": f, "FileSwaps": {},
+                "Manipulations": []}
+
+    nospider = {}
+    for name, (local, game) in models.items():
+        if name.endswith("_nospider"):
+            nospider[game] = add(f"models/{name}.mdl", local)
+    hide = {}
+    for name, (local, game) in models.items():
+        if name.startswith("hide_"):
+            hide[game] = add(f"hide/{name[5:]}.mdl", local)
+
+    groups = [
+        {"Name": "Spider pack", "Description": "The little spider she wears on her back.", "Type": "Single",
+         "DefaultSettings": 0, "Priority": 1,
+         "Options": [option("With the spider", "", {}), option("No spider", "", nospider)]},
+        {"Name": "Hide your own face", "Type": "Multi", "DefaultSettings": 0,
+         "Description": "Only if your face shows through Peni's head. Blanks every player face in this collection.",
+         "Options": [option("Hide every player face", "", hide)]},
+    ]
+    meta_json = {"Name": NAME, "Author": "Model by NetEase (Marvel Rivals); FFXIV port",
+                 "Description": DESCRIPTION, "Version": VERSION, "Website": "",
+                 "ModTags": ["Peni Parker", "Marvel Rivals", "Port", "Full Body", "Night of Devilry"]}
+    write_pmp(PMP, meta_json, {"Files": default_files, "FileSwaps": {}, "Manipulations": manips}, groups, files)
+    print(f"wrote {PMP} ({os.path.getsize(PMP) / 1e6:.1f} MB): {len(default_files)} default files, "
+          f"{sum(len(o['Files']) for g in groups for o in g['Options'])} option files, {len(manips)} manipulations")
+
+
+if __name__ == "__main__":
+    build()

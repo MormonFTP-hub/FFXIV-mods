@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>Arcadia</Author>
+    <Name>Pull Timer</Name>
+    <Punchline>Shows how early or late the pull was compared to the countdown.</Punchline>
+    <Description>Watches the countdown and tells you who pulled, with what, and how far off zero it was.
+Also shows when each party member's first hit landed, your own pre-pull timings, a live overlay, history and stats.</Description>
+    <Tags>countdown;pull;timer;prepull;raid;utility</Tags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>

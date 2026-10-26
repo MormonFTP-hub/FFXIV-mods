@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16171a">
+<script>
+  // theme before first paint: saved choice (dark, light or system), dark by default
+  (function () {
+    var pref = "dark";
+    try { pref = JSON.parse(localStorage.getItem("iv.theme")) || "dark"; } catch (e) { }
+    var t = pref === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : pref;
+    document.documentElement.dataset.theme = t;
+    document.querySelector('meta[name="theme-color"]').content = t === "light" ? "#fbfbfc" : "#16171a";
+  })();
+</script>
+<title>Insta Viewer</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="toolbar">
+    <div class="tb-group">
+      <button class="tb-btn" id="btnSidebar" title="Show or hide history (Ctrl+B)" data-icon="sidebar"></button>
+      <button class="tb-btn" id="btnBack" title="Back (Alt+Left)" data-icon="back"></button>
+      <button class="tb-btn" id="btnFwd" title="Forward (Alt+Right)" data-icon="fwd"></button>
+    </div>
+    <form class="urlbar" id="urlForm" autocomplete="off">
+      <span class="urlbar-icon" data-icon="link"></span>
+      <input id="url" type="text" spellcheck="false" placeholder="Paste an Instagram link: post, reel, carousel or profile">
+      <kbd class="urlbar-kbd">Ctrl L</kbd>
+      <button class="urlbar-go" type="submit" title="Open (Enter)">Open</button>
+    </form>
+    <div class="tb-group">
+      <button class="tb-btn" id="btnReload" title="Reload from Instagram (F5)" data-icon="refresh"></button>
+    </div>
+    <div class="tb-spacer"></div>
+    <button class="clip-chip" id="clipChip" hidden title="Open the link on your clipboard">
+      <span data-icon="clipboard"></span>
+      <span class="clip-label">Open copied link</span>
+      <span class="clip-sub" id="clipSub"></span>
+      <span class="clip-x" id="clipX" title="Dismiss" data-icon="x"></span>
+    </button>
+    <button class="tb-btn" id="btnTheme" title="Theme"></button>
+    <button class="tb-btn" id="btnSettings" title="Settings (Ctrl+,)" data-icon="gear"></button>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <div class="side-title">Recent</div>
+      <label class="side-search"><span data-icon="search"></span><input id="histFilter" placeholder="Filter" spellcheck="false"></label>
+    </div>
+    <div class="hist-list" id="histList"></div>
+    <div class="side-foot">
+      <button class="link-btn" id="btnDownloads"><span data-icon="folder"></span>Saved files</button>
+      <button class="link-btn" id="btnClear"><span data-icon="trash"></span>Clear</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <section class="view view-empty" id="viewEmpty">
+      <div class="empty-card">
+        <div class="empty-mark"><img src="icon.svg" alt=""></div>
+        <h1>Paste a link to view it</h1>
+        <p>Press <kbd>Ctrl</kbd> <kbd>V</kbd> anywhere, drop a link on the window, or type it above. No Instagram account needed.</p>
+        <div class="empty-kinds">
+          <div><span data-icon="image"></span><b>Posts</b><small>full resolution</small></div>
+          <div><span data-icon="reel"></span><b>Reels</b><small>with sound, HD</small></div>
+          <div><span data-icon="carousel"></span><b>Carousels</b><small>every slide</small></div>
+          <div><span data-icon="user"></span><b>Profiles</b><small>latest 12 posts</small></div>
+        </div>
+        <div class="empty-recent" id="emptyRecent"></div>
+      </div>
+    </section>
+
+    <section class="view view-loading" id="viewLoading" hidden>
+      <div class="skel-stage"><div class="spinner"></div></div>
+      <div class="skel-info">
+        <div class="skel-row"><i class="skel-av"></i><i class="skel-line w40"></i></div>
+        <i class="skel-line w70"></i><i class="skel-line w90"></i><i class="skel-line w60"></i><i class="skel-line w80"></i>
+      </div>
+    </section>
+
+    <section class="view view-error" id="viewError" hidden>
+      <div class="error-card">
+        <div class="error-icon" id="errIcon" data-icon="alert"></div>
+        <h2 id="errTitle">Couldn't open that</h2>
+        <p id="errText"></p>
+        <div class="error-actions">
+          <button class="btn" id="errRetry"><span data-icon="refresh"></span>Try again</button>
+          <button class="btn ghost" id="errOpen"><span data-icon="external"></span>Open on Instagram</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view view-post" id="viewPost" hidden>
+      <div class="stage" id="stage">
+        <div class="ambient" id="ambient"></div>
+        <div class="frame-area" id="frameArea"><div class="frame" id="frame"></div></div>
+        <button class="nav nav-prev" id="navPrev" title="Previous (Left)" data-icon="back"></button>
+        <button class="nav nav-next" id="navNext" title="Next (Right)" data-icon="fwd"></button>
+        <div class="stage-top">
+          <div class="pill" id="counter"></div>
+          <button class="pill pill-btn" id="btnTags" title="Show tagged people (T)"><span data-icon="user"></span><span id="tagCount"></span></button>
+          <div class="pill" id="zoomPill" hidden></div>
+        </div>
+        <div class="filmstrip" id="filmstrip"></div>
+      </div>
+      <div class="splitter" id="splitter" title="Drag to resize"></div>
+      <aside class="info" id="info">
+        <div class="info-scroll" id="infoScroll"></div>
+        <div class="info-actions" id="infoActions">
+          <button class="btn primary" id="btnSave" title="Save to Downloads\Instagram (Ctrl+S)"><span data-icon="download"></span><span id="saveLabel">Save</span></button>
+          <button class="btn icon-only" id="btnSaveMenu" title="More save options" data-icon="chevron"></button>
+          <button class="btn" id="btnDiscord" title="Copy for Discord (Ctrl+Shift+D). Change what it copies in Settings."><span data-icon="send"></span>Discord</button>
+          <button class="btn icon-only" id="btnCopyLink" title="Copy link (Ctrl+Shift+C)" data-icon="copy"></button>
+          <button class="btn icon-only" id="btnExternal" title="Open on Instagram in your browser" data-icon="external"></button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="view view-profile" id="viewProfile" hidden></section>
+  </main>
+</div>
+
+<div class="ctx" id="ctx" hidden></div>
+<div class="modal-back" id="settings" hidden>
+  <div class="modal" role="dialog" aria-labelledby="setTitle">
+    <div class="modal-head">
+      <h2 id="setTitle">Settings</h2>
+      <button class="tb-btn" id="setClose" title="Close (Esc)" data-icon="x"></button>
+    </div>
+    <div class="modal-body">
+      <section>
+        <h3>Discord</h3>
+        <p class="hint">What <b>Copy for Discord</b> (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>D</kbd>) puts on your clipboard, ready to paste into a chat.</p>
+        <label class="opt"><input type="radio" name="dcMode" value="link">
+          <div><b>Embed link</b><small>A link Discord turns into a playable video. No size limit. Goes through a free "fixer" site, because Discord can't embed instagram.com links.</small></div></label>
+        <label class="opt"><input type="radio" name="dcMode" value="file">
+          <div><b>The video file</b><small>Paste it to upload it as an attachment. Keeps working forever, but without Nitro Discord takes files up to 10 MB.</small></div></label>
+        <div class="field" id="dcServiceRow">
+          <span>Embed site</span>
+          <select id="dcService"></select>
+          <input id="dcCustom" type="text" spellcheck="false" placeholder="kkinstagram.com" hidden>
+          <button class="btn" id="dcTest">Test</button>
+        </div>
+        <div class="test-out" id="dcTestOut"></div>
+      </section>
+      <section>
+        <h3>Videos</h3>
+        <label class="check"><input type="checkbox" id="optHD"><span>Switch videos to HD (1080p) automatically when ffmpeg is installed</span></label>
+      </section>
+      <section>
+        <h3>Appearance</h3>
+        <div class="seg" id="themeSeg"></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="toasts" id="toasts"></div>
+<div class="drop-hint" id="dropHint" hidden><div><span data-icon="link"></span>Drop to open</div></div>
+
+<script src="app.js"></script>
+</body>
+</html>

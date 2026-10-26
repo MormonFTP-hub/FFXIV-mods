@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>Arcadia</Author>
+    <Name>Voice Link</Name>
+    <Punchline>Type, and the players synced with you hear it in a natural voice.</Punchline>
+    <Description>/vl &lt;message&gt; turns your message into speech (Microsoft's neural voices, with the Windows voice as an offline fallback) and sends it through Lightless Sync: your character does /photograph and everyone nearby who's synced with you hears your message instead of the camera. They don't need Voice Link.
+It can also read paired friends' chat aloud (when they run Voice Link too), with a voice per player, channel choice, speed, pitch, volume and output device.</Description>
+    <Tags>tts;text to speech;voice;chat;party;accessibility</Tags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Audio output (device choice, volume) and the Windows MP3 decoder. -->
+    <PackageReference Include="NAudio.WinMM" Version="2.2.1" />
+    <!-- Typed wrappers for Penumbra's IPC (temporary mods, collections, redraw). -->
+    <PackageReference Include="Penumbra.Api" Version="5.19.2" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1067 @@
+{
+  "Name": "",
+  "Priority": 0,
+  "Files": {
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_dwn_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_dwn_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_dwn_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_dwn_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_glv_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_glv_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_glv_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_glv_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_met_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_met_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_met_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_sho_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_sho_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_sho_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_sho_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_top_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_top_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_top_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0101e0907_top_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_dwn_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_dwn_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_dwn_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_dwn_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_glv_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_glv_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_glv_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_glv_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_met_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_met_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_met_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_sho_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_sho_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_sho_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_sho_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_top_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_top_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_top_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0201e0907_top_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_dwn_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_dwn_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_dwn_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_dwn_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_glv_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_glv_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_glv_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_glv_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_met_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_met_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_met_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_sho_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_sho_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_sho_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_sho_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_top_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_top_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_top_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c0901e0907_top_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_dwn_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_dwn_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_dwn_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_dwn_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_glv_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_glv_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_glv_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_glv_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_met_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_met_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_met_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_met_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_sho_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_sho_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_sho_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_sho_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_top_a.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_a.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_top_b.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_b.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_top_c.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_c.mtrl",
+    "chara/equipment/e0907/material/v0001/mt_c1101e0907_top_d.mtrl": "chara\\equipment\\e0907\\material\\v0001\\mt_c0101e0907_top_d.mtrl",
+    "chara/equipment/e0907/model/c0101e0907_dwn.mdl": "chara\\equipment\\e0907\\model\\c0101e0907_dwn.mdl",
+    "chara/equipment/e0907/model/c0101e0907_glv.mdl": "chara\\equipment\\e0907\\model\\c0101e0907_glv.mdl",
+    "chara/equipment/e0907/model/c0101e0907_met.mdl": "chara\\equipment\\e0907\\model\\c0101e0907_met.mdl",
+    "chara/equipment/e0907/model/c0101e0907_sho.mdl": "chara\\equipment\\e0907\\model\\c0101e0907_sho.mdl",
+    "chara/equipment/e0907/model/c0101e0907_top.mdl": "chara\\equipment\\e0907\\model\\c0101e0907_top.mdl",
+    "chara/equipment/e0907/model/c0201e0907_dwn.mdl": "chara\\equipment\\e0907\\model\\c0201e0907_dwn.mdl",
+    "chara/equipment/e0907/model/c0201e0907_glv.mdl": "chara\\equipment\\e0907\\model\\c0201e0907_glv.mdl",
+    "chara/equipment/e0907/model/c0201e0907_met.mdl": "chara\\equipment\\e0907\\model\\c0201e0907_met.mdl",
+    "chara/equipment/e0907/model/c0201e0907_sho.mdl": "chara\\equipment\\e0907\\model\\c0201e0907_sho.mdl",
+    "chara/equipment/e0907/model/c0201e0907_top.mdl": "chara\\equipment\\e0907\\model\\c0201e0907_top.mdl",
+    "chara/equipment/e0907/model/c0901e0907_dwn.mdl": "chara\\equipment\\e0907\\model\\c0901e0907_dwn.mdl",
+    "chara/equipment/e0907/model/c0901e0907_glv.mdl": "chara\\equipment\\e0907\\model\\c0901e0907_glv.mdl",
+    "chara/equipment/e0907/model/c0901e0907_met.mdl": "chara\\equipment\\e0907\\model\\c0901e0907_met.mdl",
+    "chara/equipment/e0907/model/c0901e0907_sho.mdl": "chara\\equipment\\e0907\\model\\c0901e0907_sho.mdl",
+    "chara/equipment/e0907/model/c0901e0907_top.mdl": "chara\\equipment\\e0907\\model\\c0901e0907_top.mdl",
+    "chara/equipment/e0907/model/c1101e0907_dwn.mdl": "chara\\equipment\\e0907\\model\\c1101e0907_dwn.mdl",
+    "chara/equipment/e0907/model/c1101e0907_glv.mdl": "chara\\equipment\\e0907\\model\\c1101e0907_glv.mdl",
+    "chara/equipment/e0907/model/c1101e0907_met.mdl": "chara\\equipment\\e0907\\model\\c1101e0907_met.mdl",
+    "chara/equipment/e0907/model/c1101e0907_sho.mdl": "chara\\equipment\\e0907\\model\\c1101e0907_sho.mdl",
+    "chara/equipment/e0907/model/c1101e0907_top.mdl": "chara\\equipment\\e0907\\model\\c1101e0907_top.mdl",
+    "chara/equipment/e0907/texture/sora_a_base.tex": "chara\\equipment\\e0907\\texture\\sora_a_base.tex",
+    "chara/equipment/e0907/texture/sora_a_mask.tex": "chara\\equipment\\e0907\\texture\\sora_a_mask.tex",
+    "chara/equipment/e0907/texture/sora_a_norm.tex": "chara\\equipment\\e0907\\texture\\sora_a_norm.tex",
+    "chara/equipment/e0907/texture/sora_b_base.tex": "chara\\equipment\\e0907\\texture\\sora_b_base.tex",
+    "chara/equipment/e0907/texture/sora_b_mask.tex": "chara\\equipment\\e0907\\texture\\sora_b_mask.tex",
+    "chara/equipment/e0907/texture/sora_b_norm.tex": "chara\\equipment\\e0907\\texture\\sora_b_norm.tex",
+    "chara/equipment/e0907/texture/sora_c_base.tex": "chara\\equipment\\e0907\\texture\\sora_c_base.tex",
+    "chara/equipment/e0907/texture/sora_c_mask.tex": "chara\\equipment\\e0907\\texture\\sora_c_mask.tex",
+    "chara/equipment/e0907/texture/sora_c_norm.tex": "chara\\equipment\\e0907\\texture\\sora_c_norm.tex",
+    "chara/equipment/e0907/texture/sora_eyes_base.tex": "chara\\equipment\\e0907\\texture\\sora_eyes_base.tex",
+    "chara/equipment/e0907/texture/sora_eyes_mask.tex": "chara\\equipment\\e0907\\texture\\sora_eyes_mask.tex",
+    "chara/equipment/e0907/texture/sora_eyes_norm.tex": "chara\\equipment\\e0907\\texture\\sora_eyes_norm.tex",
+    "chara/equipment/e0907/texture/sora_fac_skin_base.tex": "chara\\equipment\\e0907\\texture\\sora_fac_skin_base.tex",
+    "chara/equipment/e0907/texture/sora_fac_skin_mask.tex": "chara\\equipment\\e0907\\texture\\sora_fac_skin_mask.tex",
+    "chara/equipment/e0907/texture/sora_fac_skin_norm.tex": "chara\\equipment\\e0907\\texture\\sora_fac_skin_norm.tex",
+    "chara/equipment/e0907/texture/sora_hair_d.tex": "chara\\equipment\\e0907\\texture\\sora_hair_d.tex",
+    "chara/equipment/e0907/texture/sora_hair_id.tex": "chara\\equipment\\e0907\\texture\\sora_hair_id.tex",
+    "chara/equipment/e0907/texture/sora_hair_n.tex": "chara\\equipment\\e0907\\texture\\sora_hair_n.tex",
+    "chara/equipment/e0907/texture/sora_hair_s.tex": "chara\\equipment\\e0907\\texture\\sora_hair_s.tex",
+    "chara/equipment/e0907/texture/sora_id.tex": "chara\\equipment\\e0907\\texture\\sora_id.tex",
+    "chara/equipment/e0907/texture/sora_s_base.tex": "chara\\equipment\\e0907\\texture\\sora_s_base.tex",
+    "chara/equipment/e0907/texture/sora_s_norm.tex": "chara\\equipment\\e0907\\texture\\sora_s_norm.tex"
+  },
+  "FileSwaps": {},
+  "Manipulations": [
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Highlander",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Elezen",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Miqote",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "AuRa",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Hrothgar",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Viera",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 0
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 3
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 12
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 48
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 192
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 768
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 3
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 12
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 48
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 192
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Female",
+        "Race": "Midlander",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 768
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 3
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 12
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 48
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 192
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Roegadyn",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 768
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 3
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 12
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 48
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 192
+      }
+    },
+    {
+      "Type": "Eqdp",
+      "Manipulation": {
+        "Gender": "Male",
+        "Race": "Lalafell",
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 768
+      }
+    },
+    {
+      "Type": "Eqp",
+      "Manipulation": {
+        "SetId": 907,
+        "Slot": "Head",
+        "Entry": 270223674223624192
+      }
+    },
+    {
+      "Type": "Eqp",
+      "Manipulation": {
+        "SetId": 907,
+        "Slot": "Body",
+        "Entry": 18177
+      }
+    },
+    {
+      "Type": "Eqp",
+      "Manipulation": {
+        "SetId": 907,
+        "Slot": "Legs",
+        "Entry": 2162688
+      }
+    },
+    {
+      "Type": "Eqp",
+      "Manipulation": {
+        "SetId": 907,
+        "Slot": "Hands",
+        "Entry": 16777216
+      }
+    },
+    {
+      "Type": "Eqp",
+      "Manipulation": {
+        "SetId": 907,
+        "Slot": "Feet",
+        "Entry": 4294967296
+      }
+    }
+  ]
+}
