@@ -155,6 +155,22 @@
         "C:\\Users\\hltil\\AppData\\Local\\Temp\\claude\\E--FFXIV-mods\\9148372d-b88e-44bd-a44f-c58206521688\\scratchpad\\papercrown\\dist"
       ],
       "port": 8799
+    },
+    {
+      "name": "goats-sim",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8803",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "GoatsSim"
+      ],
+      "port": 8803
     }
   ]
 }

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GOATS Model Check</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; overflow: hidden; font: 13px/1.4 system-ui, sans-serif; color: #eee; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #info { position: fixed; left: 10px; top: 10px; background: rgba(0,0,0,.6); padding: 6px 10px; border-radius: 4px; white-space: pre; }
+  </style>
+</head>
+<body>
+  <!-- Dev page: every hero in the courtyard with its weapons, posed by the rig, to check bone maps and weapon axes.
+       Drag to orbit, wheel to zoom, 1-6 to pick a pose. -->
+  <canvas id="c"></canvas>
+  <div id="info">loading…</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/rig.js"></script>
+  <script>
+  (async function () {
+    const info = document.getElementById('info');
+    await G.Assets.load((t, p) => { info.textContent = t + ' ' + Math.round(p * 100) + '%'; });
+    const W = new G.World(document.getElementById('c'));
+    const nomap = location.search.includes('nomap');
+    const base = new THREE.Vector3(12, 0, -2);
+    if (nomap) {
+      base.set(0, 0, 0);
+      const g = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshLambertMaterial({ color: 0x8a9a7a }));
+      g.rotation.x = -Math.PI / 2;
+      W.scene.add(g, new THREE.GridHelper(60, 60, 0x444444, 0x666666));
+    } else {
+      W.addMap(G.Assets.gltf.hanamura);
+      W.loadNav(G.Assets.nav);
+      W.buildReach([base]);
+      base.y = W.groundAt(base.x, base.z, 1);
+      if (isNaN(base.y)) base.y = 0;
+    }
+    const names = ['reinhardt', 'zarya', 'dva_mech', 'lucio', 'brigitte', 'zenyatta', 'dva_pilot'];
+    const weapons = { reinhardt: ['hammer'], zarya: ['cannon'], lucio: ['amp'], brigitte: ['flail', 'shield'], dva_pilot: ['lightgun'] };
+    const rigs = names.map((n, i) => {
+      const r = new G.Rig(G.Assets.gltf[n]);
+      r.root.position.set(base.x - 9 + i * 3, base.y, base.z);
+      r.root.rotation.y = Math.PI;
+      W.scene.add(r.root);
+      for (const w of weapons[n] || []) W.scene.add(r.addWeapon(G.Assets.gltf[w], w));
+      r.name = n;
+      return r;
+    });
+    const lines = rigs.map((r) => `${r.name}: size ${r.size.x.toFixed(2)} x ${r.size.y.toFixed(2)} x ${r.size.z.toFixed(2)}  minY ${r.minY.toFixed(2)}  bones ${Object.keys(r.b).filter((k) => !r.b[k]).join(',') || 'all found'}`);
+    info.textContent = lines.join('\n');
+    let yaw = Math.PI, pitch = 0.2, dist = 12, drag = null, pose = 1, t = 0;
+    addEventListener('mousedown', (e) => { drag = [e.clientX, e.clientY]; });
+    addEventListener('mouseup', () => { drag = null; });
+    addEventListener('mousemove', (e) => { if (!drag) return; yaw -= (e.clientX - drag[0]) * 0.005; pitch = Math.max(-0.2, Math.min(1.3, pitch + (e.clientY - drag[1]) * 0.005)); drag = [e.clientX, e.clientY]; });
+    addEventListener('wheel', (e) => { dist = Math.max(2, Math.min(60, dist * (e.deltaY > 0 ? 1.1 : 0.9))); });
+    addEventListener('keydown', (e) => { if (e.key >= '1' && e.key <= '6') pose = +e.key; });
+    addEventListener('resize', () => W.resize());
+    const { qa, X, Y, Z } = G.RigUtil;
+    window.V = { W, rigs, base, cam: (y, p, d) => { yaw = y; pitch = p; dist = d; }, setPose: (p) => { pose = p; }, frame: () => frame(true) };
+    function frame(manual) {
+      t += 1 / 60;
+      for (const r of rigs) {
+        r.pose = {};
+        const ph = t * 6;
+        if (pose === 2) {   // run
+          const A = 0.55;
+          r.rot('lThigh', X, -A * Math.sin(ph)); r.rot('rThigh', X, A * Math.sin(ph));
+          r.rot('lCalf', X, 0.7 * Math.max(0, Math.cos(ph))); r.rot('rCalf', X, 0.7 * Math.max(0, -Math.cos(ph)));
+        }
+        r.applyFK();
+        const m = r.root.matrixWorld;
+        const at = (x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(m);
+        const h = r.hipsY;
+        if (pose >= 1) {
+          const chest = h * 1.25;
+          r.reach('r', at(-0.35, chest - 0.15, 0.55), at(-1, chest - 0.6, -0.3));
+          r.reach('l', at(0.25, chest - 0.1, 0.75), at(1, chest - 0.6, -0.3));
+          r.applyArms();
+          const gripR = r.bonePos('rHand'), fwd = new THREE.Vector3(0, 0, 1).transformDirection(m), up = new THREE.Vector3(0, 1, 0);
+          r.weapons.forEach((w, i) => {
+            if (r.name === 'reinhardt') r.placeWeapon(w, gripR, new THREE.Vector3(0.3, 1, 0.4).normalize(), fwd);
+            else if (r.name === 'brigitte' && i === 1) r.placeWeapon(w, r.bonePos('lHand'), fwd, up);
+            else if (r.name === 'brigitte') r.placeWeapon(w, gripR, up, fwd);
+            else r.placeWeapon(w, gripR, fwd, up);
+          });
+        }
+      }
+      const c = base.clone().add(new THREE.Vector3(0, 1.2, 0));
+      W.camera.position.set(c.x + Math.sin(yaw) * Math.cos(pitch) * dist, c.y + Math.sin(pitch) * dist, c.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+      W.camera.lookAt(c);
+      W.renderer.render(W.scene, W.camera);
+      if (!manual) requestAnimationFrame(() => frame());
+    }
+    frame();
+  })();
+  </script>
+</body>
+</html>

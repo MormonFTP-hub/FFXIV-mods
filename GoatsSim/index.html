@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GOATS on Hanamura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Saira+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <canvas id="overlay"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="objective">
+      <div id="team-blue" class="teambar"></div>
+      <div id="point">
+        <svg viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="34"/><circle id="cap-ring" class="ring" cx="40" cy="40" r="34"/></svg>
+        <div id="point-label">A</div>
+        <div id="round-time">2:00</div>
+        <div id="point-state">ATTACK</div>
+      </div>
+      <div id="team-red" class="teambar"></div>
+    </div>
+
+    <div id="killfeed"></div>
+    <div id="comms"></div>
+    <div id="ultlines"></div>
+
+    <div id="crosshair"><i></i><b id="hitmark"></b></div>
+    <div id="barrier-hp"><div class="lbl">BARRIER</div><div class="bar"><i id="barrier-fill"></i></div><div id="barrier-num">2000</div></div>
+    <div id="dmgdir"></div>
+    <div id="vignette"></div>
+
+    <div id="player">
+      <div id="portrait">REIN</div>
+      <div>
+        <div id="hp-num"><b id="hp-cur">500</b><span>/ <i id="hp-max">500</i></span></div>
+        <div id="hp-segs"></div>
+      </div>
+    </div>
+
+    <div id="ult"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle id="ult-ring" class="ring" cx="50" cy="50" r="42"/></svg><div id="ult-pct">0%</div><kbd>Q</kbd></div>
+
+    <div id="abilities">
+      <div class="ab" id="ab-charge"><div class="ico">CHARGE</div><div class="cd"></div><kbd>SHIFT</kbd></div>
+      <div class="ab" id="ab-fire"><div class="ico">FIRE STRIKE</div><div class="cd"></div><kbd>E</kbd></div>
+      <div class="ab" id="ab-shield"><div class="ico">BARRIER</div><div class="cd"></div><kbd>RMB</kbd></div>
+    </div>
+
+    <div id="coach"><div class="tag">COACH</div><div id="coach-text"></div></div>
+    <div id="status-banner"></div>
+    <div id="center-msg"></div>
+  </div>
+
+  <div id="ult-tracker" class="hidden">
+    <div class="ut-col"><div class="ut-h blue">OUR ULTS</div><div id="ut-blue"></div></div>
+    <div class="ut-col"><div class="ut-h red">THEIR ULTS (TRACKED)</div><div id="ut-red"></div></div>
+  </div>
+
+  <div id="scoreboard" class="hidden"></div>
+
+  <div id="menu" class="screen">
+    <div class="menu-card">
+      <div class="kicker">OVERWATCH · SEASON 13 · LATE 2018</div>
+      <h1>GOATS <span>on</span> Hanamura</h1>
+      <p class="lead">You're the Reinhardt in a 3-3 mirror: Reinhardt, Zarya, D.Va, Lúcio, Brigitte, Zenyatta on both sides. Your team attacks Point A through the main gate. Hold the shield, wait for the speed, brawl, and win the ult trade.</p>
+      <div id="load-state">Loading models…</div>
+      <div id="load-bar"><i></i></div>
+      <div class="menu-row">
+        <button id="b-play" disabled>Play</button>
+        <button id="b-watch" class="ghost" disabled>Watch the bots</button>
+        <button id="b-howto" class="ghost">How GOATS fights went</button>
+      </div>
+      <div class="settings">
+        <label>Mouse sensitivity <input id="s-sens" type="range" min="0.2" max="3" step="0.05" value="1"></label>
+        <label>Field of view <input id="s-fov" type="range" min="70" max="103" step="1" value="90"></label>
+        <label><input id="s-coach" type="checkbox" checked> Coach tips</label>
+        <label><input id="s-voice" type="checkbox"> Read comms aloud</label>
+        <label>Bot skill <select id="s-skill"><option value="0.7">Gold</option><option value="0.85" selected>Masters</option><option value="1">OWL</option></select></label>
+      </div>
+      <table class="keys">
+        <tr><td><kbd>WASD</kbd></td><td>Move</td><td><kbd>Space</kbd></td><td>Jump</td></tr>
+        <tr><td><kbd>LMB</kbd></td><td>Rocket Hammer</td><td><kbd>RMB</kbd></td><td>Barrier Field (hold)</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>Charge</td><td><kbd>E</kbd></td><td>Fire Strike</td></tr>
+        <tr><td><kbd>Q</kbd></td><td>Earthshatter</td><td><kbd>Tab</kbd></td><td>Fight stats</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Coach on/off</td><td><kbd>Esc</kbd></td><td>Pause</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="howto" class="screen hidden">
+    <div class="menu-card wide">
+      <h2>How a GOATS fight on Hanamura A went</h2>
+      <ol class="howto">
+        <li><b>Group up and walk in behind the shield.</b> Six players move as one ball. Lúcio plays speed song on the walk, the Rein leads with Barrier Field up, Brig hugs the Rein, Zen stays a few metres back with line of sight.</li>
+        <li><b>Poke at the gate.</b> Both shields face each other through the main gate. D.Va and Zen poke, Zen discords a tank, Zarya fishes for energy. Nobody steps out alone: the side that over-extends dies first.</li>
+        <li><b>The engage.</b> When someone calls it, Lúcio hits Amp It Up with speed song and all six run in at once. The Rein drops shield only when he's on top of the enemy and swings, Brig whips and bashes, D.Va flies onto their Zen.</li>
+        <li><b>The ult trade.</b> The fight is decided by the order ults go out. A Graviton Surge baits a Transcendence or a Sound Barrier; the next big ult (a D.Va bomb into grav, or an Earthshatter) lands when they have no save left. Track what they've used: "Trans is down!" is the call that wins fights.</li>
+        <li><b>Saves.</b> Zarya bubbles absorb a Shatter or a bomb hit outright. Beat counters the bomb, Trans counters the sustained damage of a grav. Your Rein shield blocks a bomb and an enemy Shatter. Face it the right way.</li>
+        <li><b>As Reinhardt:</b> don't swing with your shield down in front of a Rein with Shatter; Shatter when their shield is down or turned, or right after their saves are gone; use Fire Strike through their shield when they bunch up; Charge only to pin an isolated Zen or Lúcio, never into five people.</li>
+      </ol>
+      <button id="b-howto-close">Back</button>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="menu-card">
+      <h2>Paused</h2>
+      <div class="menu-row"><button id="b-resume">Resume</button><button id="b-restart" class="ghost">Restart fight</button><button id="b-quit" class="ghost">Main menu</button></div>
+    </div>
+  </div>
+
+  <div id="result" class="screen hidden">
+    <div class="menu-card wide">
+      <div class="kicker" id="res-kicker">FIGHT 1</div>
+      <h2 id="res-title">Fight won</h2>
+      <div id="res-body"></div>
+      <div class="menu-row"><button id="b-next">Next fight <kbd>Enter</kbd></button><button id="b-res-menu" class="ghost">Main menu</button></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/rig.js"></script>
+  <script src="js/anim.js"></script>
+  <script src="js/fx.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/units.js"></script>
+  <script src="js/kits.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
