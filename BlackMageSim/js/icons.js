@@ -105,8 +105,9 @@
   // (work/game-icons.js sets BLM.GAME_ICONS). Otherwise the drawn ones below.
   const gameIcon = (k) => (B.GAME_ICONS && B.GAME_ICONS[k]) || null;
 
+  // Game icon keys are prefixed with the job ("sam:hakaze"); Black Mage's predate that and have none.
   B.icon = function (id) {
-    const g = gameIcon(id);
+    const g = gameIcon(`${B.jobId}:${id}`) || gameIcon(id);
     if (g) return g;
     if (cache[id]) return cache[id];
     const art = ART[id] || ART.scathe;
@@ -114,10 +115,12 @@
   };
 
   // Stacking statuses (Triplecast) have one game icon per stack count, with the number drawn in.
-  B.statusHasStackArt = (key, stacks) => !!(stacks && gameIcon(`st:${key}:${stacks}`));
+  const stIcon = (key, stacks) => (stacks && (gameIcon(`st:${B.jobId}:${key}:${stacks}`) || gameIcon(`st:${key}:${stacks}`)))
+    || gameIcon(`st:${B.jobId}:${key}`) || gameIcon('st:' + key);
+  B.statusHasStackArt = (key, stacks) => !!(stacks && (gameIcon(`st:${B.jobId}:${key}:${stacks}`) || gameIcon(`st:${key}:${stacks}`)));
 
   B.statusIcon = function (key, stacks) {
-    const g = (stacks && gameIcon(`st:${key}:${stacks}`)) || gameIcon('st:' + key);
+    const g = stIcon(key, stacks);
     if (g) return g;
     const k = 'st:' + key;
     if (cache[k]) return cache[k];
@@ -126,9 +129,12 @@
     return (cache[k] = build(art, 48, 64, 5));
   };
 
-  // Black Mage job crest: the pointed hat.
-  B.jobIcon = function () {
-    if (gameIcon('job')) return gameIcon('job');
+  // Job crests: the game's when extracted, otherwise a drawn one (the pointed hat, or a katana for Samurai).
+  B.jobIcon = function (jobId) {
+    jobId = jobId || B.jobId;
+    const g = gameIcon('job:' + jobId) || (jobId === 'blm' && gameIcon('job'));
+    if (g) return g;
+    if (jobId === 'sam') return samCrest();
     if (cache.job) return cache.job;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
       `<defs><radialGradient id="j" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#7b5cc4"/><stop offset="1" stop-color="#1c1035"/></radialGradient></defs>` +
@@ -139,4 +145,14 @@
       `<circle cx="27" cy="48" r="2.4" fill="#ffd84d"/><circle cx="37" cy="48" r="2.4" fill="#ffd84d"/></svg>`;
     return (cache.job = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
   };
+
+  function samCrest() {
+    if (cache.samJob) return cache.samJob;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
+      `<defs><radialGradient id="j" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#c0503c"/><stop offset="1" stop-color="#3a0d0a"/></radialGradient></defs>` +
+      `<circle cx="32" cy="32" r="30" fill="url(#j)" stroke="#f3d9c4" stroke-width="2"/>` +
+      `<path d="M14 50 C26 36 38 24 52 12 L54 14 C42 28 30 40 17 53 Z" fill="#eef2f6" stroke="#2a1a14" stroke-width="1"/>` +
+      `<path d="M14 50 L20 44 L23 47 L17 53 Z" fill="#2a1a14"/><rect x="19" y="41" width="9" height="3" transform="rotate(-45 23 42)" fill="#d9b24a"/></svg>`;
+    return (cache.samJob = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+  }
 })(window.BLM);

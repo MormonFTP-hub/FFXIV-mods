@@ -1,172 +1,149 @@
-// Endwalker (patch 6.5x) Black Mage at level 90: actions, numbers and default layout.
+// Shared numbers, role actions, the job registry and default settings. Each job version lives in js/jobs/*.js
+// and registers itself here; B.setJob swaps the current job's actions and statuses into B.ACTIONS / B.STATUSES.
 window.BLM = window.BLM || {};
 
 (function (B) {
-  // Rough 6.5 best-in-slot stats. Spell speed is typed in settings (it sets the GCD).
-  B.BASE_STATS = { int: 3375, wd: 132, det: 1886, crit: 2541, dh: 1435 };
-  B.SPS_MIN = 400;   // level 90 base
-  B.SPS_MAX = 4000;
-
+  B.SPEED_MIN = 400;           // level 90 base for spell / skill speed
+  B.SPEED_MAX = 4000;
   B.MAX_MP = 10000;
-  B.ENOCHIAN = 1.23;           // Enhanced Enochian III after 6.4
-  B.TRAIT = 130;               // Maim and Mend II
-  B.ELEMENT_DURATION = 15;
-  B.POLYGLOT_TIME = 30;
-  B.POLYGLOT_MAX = 2;
-  B.UI_REGEN = [3200, 4700, 6200];
   B.BASE_REGEN = 200;
   B.LUCID_REGEN = 550;
   B.QUEUE_WINDOW = 0.5;
   B.CASTER_TAX = 0.1;
-  B.BASE_LOCK = 0.6;          // server-side animation lock for most actions
+  B.BASE_LOCK = 0.6;           // server-side animation lock for most actions
   B.PING_MAX = 500;
   B.SLIDECAST = 0.5;
-  B.TINCTURE_INT = 262;        // Grade 8 Tincture of Intelligence cap
   B.RANGE = 25;
+  B.MELEE_RANGE = 3;
+  B.AUTO_RANGE = 2.1;
   B.DUMMY_RADIUS = 0.8;
+  B.COMBO_TIME = 30;
 
-  // kind: gcd | ogcd | item. school drives Astral Fire / Umbral Ice math.
-  // delay is how long after the cast resolves the damage lands.
-  B.ACTIONS = {
-    fire: {
-      name: 'Fire', kind: 'gcd', school: 'fire', potency: 180, mp: 800, cast: 2.5, delay: 0.8, target: true,
-      desc: 'Deals fire damage with a potency of 180.\nAdditional Effect: Grants Astral Fire or removes Umbral Ice\nDuration: 15s\nAdditional Effect: 40% chance next Fire III will cost no MP and have no cast time\nDuration: 30s',
+  // The current job's tables. These objects stay the same; their contents change with the job.
+  B.ACTIONS = {};
+  B.STATUSES = {};
+
+  // ---------- role and general actions ----------
+  B.ROLE_ACTIONS = {
+    caster: {
+      swiftcast: {
+        name: 'Swiftcast', kind: 'ogcd', recast: 60, role: true,
+        desc: 'Next spell is cast immediately.\nDuration: 10s',
+      },
+      lucidDreaming: {
+        name: 'Lucid Dreaming', kind: 'ogcd', recast: 60, role: true,
+        desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s',
+      },
+      addle: {
+        name: 'Addle', kind: 'ogcd', recast: 90, role: true, target: true,
+        desc: 'Lowers target\'s physical damage dealt by 5% and magic damage dealt by 10%.\nDuration: 10s',
+      },
+      surecast: {
+        name: 'Surecast', kind: 'ogcd', recast: 120, role: true,
+        desc: 'Spells can be cast without interruption.\nAdditional Effect: Nullifies most knockback and draw-in effects\nDuration: 6s',
+      },
     },
-    blizzard: {
-      name: 'Blizzard', kind: 'gcd', school: 'ice', potency: 180, mp: 400, cast: 2.5, delay: 0.8, target: true,
-      desc: 'Deals ice damage with a potency of 180.\nAdditional Effect: Grants Umbral Ice or removes Astral Fire\nDuration: 15s',
+    melee: {
+      trueNorth: {
+        name: 'True North', kind: 'ogcd', recast: 45, charges: 2, role: true,
+        desc: 'Nullifies all action direction requirements.\nDuration: 10s\nMaximum Charges: 2',
+      },
+      feint: {
+        name: 'Feint', kind: 'ogcd', recast: 90, role: true, target: true, range: 10,
+        desc: 'Lowers target\'s physical damage dealt by 10% and magic damage dealt by 5%.\nDuration: 10s',
+      },
+      bloodbath: {
+        name: 'Bloodbath', kind: 'ogcd', recast: 90, role: true,
+        desc: 'Converts a portion of physical damage dealt into HP.\nDuration: 20s',
+      },
+      secondWind: {
+        name: 'Second Wind', kind: 'ogcd', recast: 120, role: true,
+        desc: 'Instantly restores own HP.\nCure Potency: 500',
+      },
+      armsLength: {
+        name: 'Arm\'s Length', kind: 'ogcd', recast: 120, role: true,
+        desc: 'Creates a barrier nullifying most knockback and draw-in effects.\nDuration: 6s',
+      },
+      legSweep: {
+        name: 'Leg Sweep', kind: 'ogcd', recast: 40, role: true, target: true, range: 3,
+        desc: 'Stuns target.\nDuration: 3s',
+      },
     },
-    fire3: {
-      name: 'Fire III', kind: 'gcd', school: 'fire', potency: 260, mp: 2000, cast: 3.5, delay: 1.3, target: true,
-      desc: 'Deals fire damage with a potency of 260.\nAdditional Effect: Grants Astral Fire III and removes Umbral Ice\nDuration: 15s',
-    },
-    blizzard3: {
-      name: 'Blizzard III', kind: 'gcd', school: 'ice', potency: 260, mp: 800, cast: 3.5, delay: 0.9, target: true,
-      desc: 'Deals ice damage with a potency of 260.\nAdditional Effect: Grants Umbral Ice III and removes Astral Fire\nDuration: 15s',
-    },
-    thunder3: {
-      name: 'Thunder III', kind: 'gcd', school: 'thunder', potency: 50, mp: 400, cast: 2.5, delay: 0.8, target: true,
-      dot: { potency: 35, duration: 30 },
-      desc: 'Deals lightning damage with a potency of 50.\nAdditional Effect: Lightning damage over time\nPotency: 35\nDuration: 30s\nAdditional Effect: 10% chance after each tick that the next Thunder spell will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 40s\nOnly one Thunder spell-induced damage over time effect per caster can be inflicted upon a single target.',
-    },
-    fire4: {
-      name: 'Fire IV', kind: 'gcd', school: 'fire', potency: 310, mp: 800, cast: 2.8, delay: 1.16, target: true,
-      desc: 'Deals fire damage with a potency of 310.\nCan only be executed while under the effect of Astral Fire.',
-    },
-    blizzard4: {
-      name: 'Blizzard IV', kind: 'gcd', school: 'ice', potency: 310, mp: 800, cast: 2.5, delay: 1.16, target: true,
-      desc: 'Deals ice damage with a potency of 310.\nAdditional Effect: Grants 3 Umbral Hearts\nUmbral Heart Bonus: Nullifies Astral Fire\'s MP cost increase for Fire spells and reduces MP cost for Flare by one-third\nCan only be executed while under the effect of Umbral Ice.',
-    },
-    despair: {
-      name: 'Despair', kind: 'gcd', school: 'fire', potency: 340, mp: 800, cast: 3.0, delay: 0.56, target: true,
-      desc: 'Deals fire damage with a potency of 340.\nAdditional Effect: Grants Astral Fire III\nDuration: 15s\nCan only be executed while under the effect of Astral Fire.\nRequires at least 800 MP and consumes all remaining MP.',
-    },
-    paradox: {
-      name: 'Paradox', kind: 'gcd', school: 'none', potency: 500, mp: 1600, cast: 2.5, delay: 0.62, target: true,
-      desc: 'Deals unaspected damage with a potency of 500.\nAstral Fire Bonus: Extends Astral Fire duration to maximum. 40% chance next Fire III will cost no MP and have no cast time.\nUmbral Ice Bonus: Cast immediately, costs no MP, and extends Umbral Ice duration to maximum.\nOnly available while the Paradox marker is active.',
-    },
-    xenoglossy: {
-      name: 'Xenoglossy', kind: 'gcd', school: 'none', potency: 880, mp: 0, cast: 0, delay: 0.63, target: true,
-      desc: 'Deals unaspected damage with a potency of 880.\nPolyglot Cost: 1',
-    },
-    foul: {
-      name: 'Foul', kind: 'gcd', school: 'none', potency: 600, mp: 0, cast: 0, delay: 1.16, target: true,
-      desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 600 for the first enemy, and 60% less for all remaining enemies.\nPolyglot Cost: 1',
-    },
-    scathe: {
-      name: 'Scathe', kind: 'gcd', school: 'none', potency: 100, mp: 800, cast: 0, delay: 0.67, target: true,
-      desc: 'Deals unaspected damage with a potency of 100.\nAdditional Effect: 20% chance potency will double',
-    },
-    umbralSoul: {
-      name: 'Umbral Soul', kind: 'gcd', school: 'none', potency: 0, mp: 0, cast: 0,
-      desc: 'Grants Umbral Ice and 1 Umbral Heart.\nDuration: 15s\nCan only be executed while under the effect of Umbral Ice.',
-    },
-    transpose: {
-      name: 'Transpose', kind: 'ogcd', recast: 5,
-      desc: 'Swaps Astral Fire with a single Umbral Ice, or Umbral Ice with a single Astral Fire.\nDuration: 15s',
-    },
-    sharpcast: {
-      name: 'Sharpcast', kind: 'ogcd', recast: 30, charges: 2,
-      desc: 'Ensures the next Scathe, Fire, Paradox, or Thunder spell cast will, for the first hit, trigger Scathe\'s additional effect, Firestarter, or Thundercloud.\nDuration: 30s\nMaximum Charges: 2',
-    },
-    triplecast: {
-      name: 'Triplecast', kind: 'ogcd', recast: 60, charges: 2,
-      desc: 'The next three spells will require no cast time.\nDuration: 15s\nMaximum Charges: 2',
-    },
-    manafont: {
-      name: 'Manafont', kind: 'ogcd', recast: 120,
-      desc: 'Restores 30% of maximum MP.',
-    },
-    amplifier: {
-      name: 'Amplifier', kind: 'ogcd', recast: 120,
-      desc: 'Grants a Polyglot.\nCan only be executed while under the effect of Astral Fire or Umbral Ice.',
-    },
-    leyLines: {
-      name: 'Ley Lines', kind: 'ogcd', recast: 120,
-      desc: 'Connects naturally occurring ley lines to create a circle of power which, while standing within it, reduces spell cast time and recast time, and auto-attack delay by 15%.\nDuration: 30s',
-    },
-    betweenTheLines: {
-      name: 'Between the Lines', kind: 'ogcd', recast: 3,
-      desc: 'Move instantly to Ley Lines drawn by you.\nCannot be executed while bound.',
-    },
-    manaward: {
-      name: 'Manaward', kind: 'ogcd', recast: 120,
-      desc: 'Creates a barrier that nullifies damage totaling up to 30% of maximum HP.\nDuration: 20s',
-    },
-    swiftcast: {
-      name: 'Swiftcast', kind: 'ogcd', recast: 60, role: true,
-      desc: 'Next spell is cast immediately.\nDuration: 10s',
-    },
-    lucidDreaming: {
-      name: 'Lucid Dreaming', kind: 'ogcd', recast: 60, role: true,
-      desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s',
-    },
-    addle: {
-      name: 'Addle', kind: 'ogcd', recast: 90, role: true, target: true,
-      desc: 'Lowers target\'s physical damage dealt by 5% and magic damage dealt by 10%.\nDuration: 10s',
-    },
-    surecast: {
-      name: 'Surecast', kind: 'ogcd', recast: 120, role: true,
-      desc: 'Spells can be cast without interruption.\nAdditional Effect: Nullifies most knockback and draw-in effects\nDuration: 6s',
-    },
+  };
+
+  B.GENERAL_ACTIONS = {
     sprint: {
       name: 'Sprint', kind: 'ogcd', recast: 60,
       desc: 'Increases movement speed.\nDuration: 10s',
     },
-    tincture: {
-      name: 'Grade 8 Tincture of Intelligence', short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
-      desc: 'This diluted brew temporarily increases intelligence for twice the duration of similar potions.\nIntelligence +10% (Max 262)\nDuration: 30s',
-    },
   };
 
-  // Status display info. self: true sits on the player, false on the target.
-  B.STATUSES = {
-    firestarter: { name: 'Firestarter', self: true, icon: 'st_firestarter' },
-    thundercloud: { name: 'Thundercloud', self: true, icon: 'st_thundercloud' },
-    sharpcast: { name: 'Sharpcast', self: true, icon: 'st_sharpcast' },
-    triplecast: { name: 'Triplecast', self: true, icon: 'st_triplecast' },
-    swiftcast: { name: 'Swiftcast', self: true, icon: 'st_swiftcast' },
-    leyLines: { name: 'Ley Lines', self: true, icon: 'st_leylines' },
-    circleOfPower: { name: 'Circle of Power', self: true, icon: 'st_circle' },
-    lucidDreaming: { name: 'Lucid Dreaming', self: true, icon: 'st_lucid' },
-    manaward: { name: 'Manaward', self: true, icon: 'st_manaward' },
-    surecast: { name: 'Surecast', self: true, icon: 'st_surecast' },
+  // Grade 8 tinctures (patch 6.4): +10%, capped.
+  B.TINCTURES = {
+    int: { name: 'Grade 8 Tincture of Intelligence', cap: 262 },
+    str: { name: 'Grade 8 Tincture of Strength', cap: 262 },
+    str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
+  };
+  B.tincture = (stat) => ({
+    name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
+    desc: `This diluted brew temporarily increases ${stat === 'int' ? 'intelligence' : 'strength'} for twice the duration of similar potions.\n${stat === 'int' ? 'Intelligence' : 'Strength'} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,
+  });
+
+  B.COMMON_STATUSES = {
     sprint: { name: 'Sprint', self: true, icon: 'st_sprint' },
     medicated: { name: 'Medicated', self: true, icon: 'st_medicated' },
-    thunder3: { name: 'Thunder III', self: false, icon: 'st_thunder3' },
+    swiftcast: { name: 'Swiftcast', self: true, icon: 'st_swiftcast' },
+    lucidDreaming: { name: 'Lucid Dreaming', self: true, icon: 'st_lucid' },
+    surecast: { name: 'Surecast', self: true, icon: 'st_surecast' },
     addle: { name: 'Addle', self: false, icon: 'st_addle' },
+    trueNorth: { name: 'True North', self: true, icon: 'st_truenorth' },
+    bloodbath: { name: 'Bloodbath', self: true, icon: 'st_bloodbath' },
+    armsLength: { name: 'Arm\'s Length', self: true, icon: 'st_armslength' },
+    feint: { name: 'Feint', self: false, icon: 'st_feint' },
   };
 
-  // Order matters for the buff row, like the game's own sort.
-  B.SELF_STATUS_ORDER = ['circleOfPower', 'leyLines', 'triplecast', 'swiftcast', 'sharpcast', 'firestarter',
-    'thundercloud', 'medicated', 'lucidDreaming', 'manaward', 'surecast', 'sprint'];
+  // Role actions that just put a status up.
+  B.ROLE_EFFECTS = {
+    swiftcast: (e) => e.addStatus('swiftcast', 10),
+    lucidDreaming: (e) => e.addStatus('lucidDreaming', 21),
+    addle: (e) => e.addTStatus('addle', 10),
+    surecast: (e) => e.addStatus('surecast', 6),
+    trueNorth: (e) => e.addStatus('trueNorth', 10),
+    feint: (e) => e.addTStatus('feint', 10),
+    bloodbath: (e) => e.addStatus('bloodbath', 20),
+    secondWind: () => {},
+    armsLength: (e) => e.addStatus('armsLength', 6),
+    legSweep: () => {},
+    sprint: (e) => e.addStatus('sprint', 10),
+    tincture: (e) => e.addStatus('medicated', 30),
+  };
 
-  B.DEFAULT_BARS = [
-    ['fire3', 'fire4', 'despair', 'fire', 'blizzard3', 'blizzard4', 'blizzard', 'thunder3', 'xenoglossy', 'foul', 'umbralSoul', 'scathe'],
-    ['sharpcast', 'triplecast', 'swiftcast', 'leyLines', 'betweenTheLines', 'amplifier', 'manafont', 'transpose', 'lucidDreaming', 'tincture', 'addle', 'manaward'],
-    ['surecast', 'sprint', null, null, null, null, null, null, null, null, null, null],
-  ];
+  // ---------- job registry ----------
+  // B.JOBS[id] = { id, name, abbr, role, classJob, versions: [{ id, label, note, create() }] }
+  B.JOBS = {};
+  B.JOB_ORDER = [];
+  B.registerJob = function (job) {
+    if (!B.JOBS[job.id]) B.JOB_ORDER.push(job.id);
+    const prev = B.JOBS[job.id];
+    B.JOBS[job.id] = Object.assign({}, job, { versions: (prev ? prev.versions : []).concat(job.versions || []) });
+  };
 
+  // Make a job version current: fill B.ACTIONS / B.STATUSES and return the job object.
+  B.setJob = function (jobId, versionId) {
+    const def = B.JOBS[jobId] || B.JOBS[B.JOB_ORDER[0]];
+    const ver = def.versions.find(v => v.id === versionId) || def.versions[def.versions.length - 1];
+    const job = ver.create();
+    job.id = def.id; job.version = ver.id; job.versionLabel = ver.label; job.def = def;
+    for (const k of Object.keys(B.ACTIONS)) delete B.ACTIONS[k];
+    Object.assign(B.ACTIONS, job.actions);
+    for (const k of Object.keys(B.STATUSES)) delete B.STATUSES[k];
+    Object.assign(B.STATUSES, B.COMMON_STATUSES, job.statuses);
+    B.job = job;
+    B.jobId = def.id;
+    return job;
+  };
+
+  // ---------- defaults ----------
   const ROW = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal'];
   B.DEFAULT_BINDS = [
     ROW.slice(),
@@ -176,7 +153,9 @@ window.BLM = window.BLM || {};
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
-    sps: 1160,            // 2.37 GCD
+    job: 'blm',
+    versions: {},         // job id -> version id
+    speed: {},            // job id -> spell / skill speed
     ping: 70,             // ms; the vanilla client adds it to every lock
     latencyComp: false,   // NoClippy / XivAlexander
     volume: 0.5,
@@ -189,7 +168,7 @@ window.BLM = window.BLM || {};
     dummy: 'thavnair',
   };
 
-  // Rough dummy colour bands for a single target parse with no raid buffs.
+  // Rough dummy colour bands for a single target parse with no raid buffs, relative to the job's benchmark.
   B.PARSE_BANDS = [
     { min: 0, color: '#9d9d9d' },
     { min: 0.75, color: '#1eff00' },

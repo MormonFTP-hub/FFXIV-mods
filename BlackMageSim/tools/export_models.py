@@ -1,12 +1,14 @@
 """Export the in-game models and animations the sim draws, from your FFXIV install.
 
-  - a Hyur Midlander man in the Endwalker Black Mage artifact gear (Archmage's, set 778) holding a Moonward Rod
-  - the housing striking dummies (Thavnairian, Glade, Oasis, Crystarium)
-  - the game's own animations for him: the two-handed staff battle stance, running, and for every action the sim
-    uses, the cast start / loop / release or ability motion its ActionTimeline names
+For each job (see JOB_MODELS):
+  - a Hyur Midlander man in that job's Endwalker artifact gear, holding its weapon (and sheath, for Samurai)
+  - the game's own animations for him: the weapon's battle stance and run, and for every action the sim uses, the
+    cast start / loop / release, weaponskill or ability motion its ActionTimeline names
+Plus the housing striking dummies (Thavnairian, Glade, Oasis, Crystarium).
 
 Characters, materials and textures go through PMP Viewer's resolver and material bake (the same path as its WebGL
-preview); animations are decoded from the game's .pap files by its Havok reader. Writes
+preview); animations are decoded from the game's .pap files by its Havok reader. Identical textures (the face, skin
+and hair every job shares) are stored once. Writes
   BlackMageSim/work/game-models.js   BLM.GAME_MODELS = {...} (loaded by index.html, inlined by the build)
 work/ is git-ignored, so Square Enix's data stays out of the repo. Without the file the sim draws its own figures.
 
@@ -31,19 +33,32 @@ import game                     # noqa: E402
 import resolve                  # noqa: E402
 import shade                    # noqa: E402
 import skeleton as S            # noqa: E402
-from extract_icons import Sheet, ACTIONS   # noqa: E402
+from extract_icons import Sheet, JOBS as ICON_JOBS   # noqa: E402
 
 OUT = ROOT / "work"
 RACE = "c0101"
-GEAR = {slot: [778, 1] for slot in ("met", "top", "glv", "dwn", "sho")}     # Archmage's (Endwalker AF)
-STAFF = {"kind": "weapon", "id": 1001, "body": 99, "variant": 1}            # Moonward Rod
-STAFF_BONE = "n_buki_r"
-STANCE = "bt_rod_emp"           # two-handed staff battle stance
+SLOTS = ("met", "top", "glv", "dwn", "sho")
+
+# weapons: (label, creature spec, character bone it hangs from)
+JOB_MODELS = {
+    "blm": {
+        "gear": {s: [778, 1] for s in SLOTS},                              # Archmage's (Endwalker AF)
+        "weapons": [("main", {"kind": "weapon", "id": 1001, "body": 99, "variant": 1}, "n_buki_r")],   # Moonward Rod
+        "stance": "bt_rod_emp",                                            # two-handed staff
+        # PMP Viewer's EQP visibility tables are pre-Dawntrail approximations. With these hand-only gloves they hide
+        # the coat's arm section (atr_ude), which leaves the upper arms empty; in game the sleeves show.
+        "attrs": {"top": {"atr_ude": True}},
+    },
+    "sam": {
+        "gear": {s: [785, 1] for s in SLOTS},                              # Sakonji (Endwalker AF)
+        "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 63, "variant": 1}, "n_buki_r"),   # Classical Samurai Blade (6.1)
+                    ("sheath", {"kind": "weapon", "id": 2251, "body": 81, "variant": 1}, "j_buki_kosi_l")],
+        "stance": "bt_2kt_emp",                                            # katana
+        "attrs": {},
+    },
+}
 DUMMIES = {"thavnair": ("Thavnairian", 236), "glade": ("Glade", 46), "oasis": ("Oasis", 45),
            "crystarium": ("Crystarium", 193)}
-# PMP Viewer's EQP visibility tables are pre-Dawntrail approximations. With these hand-only gloves they hide the
-# coat's arm section (atr_ude), which leaves the upper arms empty; in game the sleeves show.
-ATTR_OVERRIDES = {"top": {"atr_ude": True}}
 COLOR_MAX, NORMAL_MAX = 512, 256
 ANIM_DIR = f"chara/human/{RACE}/animation/a0001/"
 
@@ -66,15 +81,22 @@ class Pack:
         return base64.b64encode(bytes(self.buf)).decode()
 
 
-def image_url(name, limit, keep_alpha):
-    """Lossy WebP (with alpha where the material uses it): a fraction of PNG's size, so the bundle fits on Discord."""
+TEXTURES, _tex_index = [], {}
+
+
+def texture(name, limit, keep_alpha):
+    """Lossy WebP (with alpha where the material uses it), stored once however many materials use it."""
     img = Image.open(os.path.join(shade.BAKED, name))
     img.thumbnail((limit, limit), Image.LANCZOS)
     alpha = keep_alpha and img.mode == "RGBA" and np.asarray(img)[..., 3].min() < 250
     img = img.convert("RGBA" if alpha else "RGB")
     buf = io.BytesIO()
     img.save(buf, "WEBP", quality=82, alpha_quality=90, method=6)
-    return "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
+    url = "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
+    if url not in _tex_index:
+        _tex_index[url] = len(TEXTURES)
+        TEXTURES.append(url)
+    return _tex_index[url]
 
 
 def material_out(mat, opaque=False):
@@ -82,8 +104,8 @@ def material_out(mat, opaque=False):
     if not mat or mat.get("missing") or mat.get("visible") is False or not mat.get("color"):
         return None
     alpha = bool(mat.get("alphaUsed")) and not opaque
-    return {"color": image_url(mat["color"], COLOR_MAX, alpha),
-            "normal": image_url(mat["normal"], NORMAL_MAX, False) if mat.get("normal") else None,
+    return {"color": texture(mat["color"], COLOR_MAX, alpha),
+            "normal": texture(mat["normal"], NORMAL_MAX, False) if mat.get("normal") else None,
             "alpha": alpha,
             "alphaTest": float(mat.get("alphaTest") or 0) if alpha else 0,
             "transparent": bool(mat.get("transparent")) and alpha,
@@ -114,7 +136,7 @@ def mesh_out(pack, pos, nrm, uv, idx, material, bones=None, weights=None):
     return out
 
 
-# ---------- the mage ----------
+# ---------- characters ----------
 def visible_triangles(m, me, blob):
     """The model's index buffer with shape keys applied and hidden submeshes (attributes) dropped."""
     idx = np.frombuffer(blob, np.uint32, me["idx"][1], me["idx"][0]).copy()
@@ -129,8 +151,8 @@ def visible_triangles(m, me, blob):
     return idx.reshape(-1, 3)[keep].reshape(-1)
 
 
-def export_character(pack):
-    spec = {"subject": "character", "race": RACE, "face": 1, "hair": 1, "gear": GEAR, "collection": False}
+def export_character(pack, job, cfg):
+    spec = {"subject": "character", "race": RACE, "face": 1, "hair": 1, "gear": cfg["gear"], "collection": False}
     sc, blob = resolve.character(None, spec)
     sk = sc["skeleton"]
     mats_in = sc["materials"]
@@ -139,7 +161,7 @@ def export_character(pack):
     for m in sc["models"]:
         if m["hidden"]:
             continue
-        for a, show in ATTR_OVERRIDES.get(m["slot"], {}).items():
+        for a, show in cfg["attrs"].get(m["slot"], {}).items():
             m["attrs"].setdefault(a, {})["show"] = show
         nb = len(m["bones"])
         gidx = np.array(m["bones"] + [-1], np.int64)
@@ -177,7 +199,7 @@ def export_character(pack):
             gb = gidx[bi]
             meshes.append(mesh_out(pack, pos, nrm, uv, idx, mat_index[mi], gb, bw.astype(np.float32)))
             verts += meshes[-1]["count"]
-    print(f"mage: {len(meshes)} meshes, {verts} vertices, {len(materials)} materials, {len(sk['names'])} bones")
+    print(f"{job}: {len(meshes)} meshes, {verts} vertices, {len(materials)} materials, {len(sk['names'])} bones")
     return {"skeleton": {"names": sk["names"], "parents": sk["parents"], "world": sk["world"]},
             "meshes": meshes, "materials": materials}
 
@@ -202,17 +224,17 @@ def export_rigid(pack, sc, blob, label, opaque=False):
             uv = np.frombuffer(blob, np.float32, n * 4, me["uv"][0]).reshape(n, 4)
             idx = visible_triangles(m, me, blob)
             meshes.append(mesh_out(pack, pos, nrm, uv, idx, mat_index[mi]))
-    print(f"{label}: {len(meshes)} meshes, {sum(x['count'] for x in meshes)} vertices")
+    print(f"  {label}: {len(meshes)} meshes, {sum(x['count'] for x in meshes)} vertices")
     return meshes, mats
 
 
-def export_staff(pack):
-    sc, blob = resolve.creature(None, STAFF)
-    meshes, mats = export_rigid(pack, sc, blob, "staff")
+def export_weapon(pack, label, spec, bone):
+    sc, blob = resolve.creature(None, spec)
+    meshes, mats = export_rigid(pack, sc, blob, label)
     pts = np.concatenate([np.frombuffer(blob, np.float32, me["pos"][1], me["pos"][0]).reshape(-1, 3)
                           for m in sc["models"] for me in m["meshes"]])
     tip = pts[np.argmax(np.linalg.norm(pts, axis=1))]
-    return {"meshes": meshes, "materials": mats, "bone": STAFF_BONE, "tip": tip.round(4).tolist()}
+    return {"label": label, "meshes": meshes, "materials": mats, "bone": bone, "tip": tip.round(4).tolist()}
 
 
 def export_dummy(pack, key):
@@ -276,15 +298,18 @@ def anim_out(pack, path, name, base_names):
     F, T, _ = frames.shape
     t, q = frames[..., 0:3], frames[..., 3:7]
     tscale = max(float(np.abs(t).max()), 1e-6) / 32767
-    const = (np.abs(frames[..., 0:7] - frames[0:1, :, 0:7]).max(axis=0).max(axis=1) < 1e-4)
+    # Most bones only rotate, so position and rotation are each stored once when they don't change.
+    t_const = np.abs(t - t[0:1]).max(axis=0).max(axis=1) < 1e-4
+    q_const = np.abs(q - q[0:1]).max(axis=0).max(axis=1) < 1e-4
+    # A rotation and its negative are the same, so keep w >= 0 and store only x, y, z (the page rebuilds w).
+    q = q * np.where(q[..., 3:4] < 0, -1, 1)
     chunks = []
     for k in range(T):
-        rows = slice(0, 1) if const[k] else slice(0, F)
-        tt = np.round(t[rows, k] / tscale).astype("<i2")
-        qq = np.round(q[rows, k] * 32767).astype("<i2")
-        chunks.append(np.concatenate([tt, qq], axis=1).reshape(-1))
+        chunks.append(np.round(t[0:1 if t_const[k] else F, k] / tscale).astype("<i2").reshape(-1))
+        chunks.append(np.round(q[0:1 if q_const[k] else F, k, 0:3] * 32767).astype("<i2").reshape(-1))
     data = np.concatenate(chunks)
-    return {"name": name, "fps": float(fps), "frames": int(F), "tracks": tracks, "const": const.astype(int).tolist(),
+    return {"name": name, "fps": float(fps), "frames": int(F), "tracks": tracks,
+            "tConst": t_const.astype(int).tolist(), "qConst": q_const.astype(int).tolist(),
             "tScale": tscale, "data": pack.put(data, "i16"), "seconds": round(F / fps, 3)}
 
 
@@ -297,21 +322,25 @@ def tmb_anim(key):
     return names[0].decode() if names else None
 
 
-def export_anims(pack):
+_seen = {}      # animations shared between jobs (the item motion, role actions) are stored once
+
+
+def export_anims(pack, job, cfg):
     base = [n for n, _, _ in S.load_sklb(game.game_file(f"chara/human/{RACE}/skeleton/base/b0001/skl_{RACE}b0001.sklb"))]
+    stance = cfg["stance"]
     out = {"basic": {}, "actions": {}}
-    basic = {"idle": (STANCE + "/resident/idle.pap", "cbbm_id0"),
-             "run": (STANCE + "/resident/move_a.pap", "cbbm_02f_lp0"),
-             "walkBack": (STANCE + "/resident/move_a.pap", "cbbm_01b_lp0"),
-             "jump": (STANCE + "/resident/move_a.pap", "cbbm_jump_1"),
+    basic = {"idle": (stance + "/resident/idle.pap", "cbbm_id0"),
+             "run": (stance + "/resident/move_a.pap", "cbbm_02f_lp0"),
              "item": ("bt_common/resident/action.pap", "cbbm_itm_1")}
+    seen = _seen
     for k, (rel, name) in basic.items():
-        out["basic"][k] = anim_out(pack, ANIM_DIR + rel, name, base)
+        key = rel + ":" + name
+        out["basic"][k] = seen.get(key) or anim_out(pack, ANIM_DIR + rel, name, base)
+        seen[key] = out["basic"][k]
 
     action, timeline, cast = Sheet("Action"), Sheet("ActionTimeline"), Sheet("ActionCastTimeline")
     key_col = timeline.string_cols()[0]
-    seen = {}
-    for sim_id, (row, _) in ACTIONS.items():
+    for sim_id, (row, _) in ICON_JOBS[job]["actions"].items():
         entry = {}
         end_key = timeline.value(action.value(row, 7), key_col) if action.value(row, 7) > 0 else ""
         start_row = action.value(row, 5)
@@ -328,30 +357,35 @@ def export_anims(pack):
         if end_key:
             nm = tmb_anim(end_key)
             if nm:
-                p = find_anim(nm, [ANIM_DIR + f"bt_common/{end_key}.pap", ANIM_DIR + f"{STANCE}/{end_key}.pap"])
+                p = find_anim(nm, [ANIM_DIR + f"bt_common/{end_key}.pap", ANIM_DIR + f"{stance}/{end_key}.pap"])
                 if p:
                     entry["release"] = seen.get(nm) or anim_out(pack, p, nm, base)
                     seen[nm] = entry["release"]
         if entry:
             out["actions"][sim_id] = entry
         got = ", ".join(k + ":" + v["name"] for k, v in entry.items()) or "none"
-        print(f"  {sim_id:16s} start={start_key or '-':28s} end={end_key or '-':30s} -> {got}")
+        print(f"  {sim_id:18s} start={start_key or '-':28s} end={end_key or '-':30s} -> {got}")
     return out
 
 
 def main():
     OUT.mkdir(exist_ok=True)
     pack = Pack()
-    data = {"version": 1, "race": RACE}
-    data["mage"] = export_character(pack)
-    data["staff"] = export_staff(pack)
+    data = {"version": 2, "race": RACE, "jobs": {}}
+    for job, cfg in JOB_MODELS.items():
+        ch = export_character(pack, job, cfg)
+        ch["weapons"] = [export_weapon(pack, label, spec, bone) for label, spec, bone in cfg["weapons"]]
+        ch["anims"] = export_anims(pack, job, cfg)
+        data["jobs"][job] = ch
     data["dummies"] = {k: dict(export_dummy(pack, mid), label=label) for k, (label, mid) in DUMMIES.items()}
-    data["anims"] = export_anims(pack)
+    data["textures"] = TEXTURES
     data["bin"] = pack.b64()
     js = ("// Generated by tools/export_models.py from your FFXIV install. FINAL FANTASY XIV (c) SQUARE ENIX.\n"
           "window.BLM = window.BLM || {};\nBLM.GAME_MODELS = " + json.dumps(data, separators=(",", ":")) + ";\n")
     (OUT / "game-models.js").write_text(js, encoding="utf-8")
-    print(f"\nbinary {len(pack.buf) / 1048576:.1f} MB, file {len(js) / 1048576:.1f} MB -> {OUT / 'game-models.js'}")
+    tex = sum(len(t) for t in TEXTURES)
+    print(f"\nbinary {len(pack.buf) / 1048576:.1f} MB, {len(TEXTURES)} textures {tex / 1048576:.1f} MB, "
+          f"file {len(js) / 1048576:.1f} MB -> {OUT / 'game-models.js'}")
 
 
 if __name__ == "__main__":

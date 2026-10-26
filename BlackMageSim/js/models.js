@@ -1,10 +1,10 @@
-// The game's own models, drawn with three.js on a transparent layer between the 2D scene's ground and its spell
-// effects: the Black Mage (skinned, playing the game's animations for each action), the staff in his right hand,
-// and a housing striking dummy. Data comes from work/game-models.js (tools/export_models.py); without it, or
-// without three.js, the scene keeps drawing its own figures.
+// The game's own models, drawn with three.js on a transparent layer between the 2D scene's ground and its effects:
+// the current job's character (skinned, playing the game's animations for each action) with its weapons on their
+// bones, and a housing striking dummy. Data comes from work/game-models.js (tools/export_models.py); without it,
+// without three.js, or for a job it has no character for, the scene keeps drawing its own figures.
 (function (B) {
   const FADE = 0.18;
-  const ELEMENT_LIGHT = { fire: 0xff7a30, ice: 0x6cc6ff, thunder: 0xc8a0ff, none: 0xd8a8ff };
+  const ELEMENT_LIGHT = { fire: 0xff7a30, ice: 0x6cc6ff, thunder: 0xc8a0ff, iai: 0xffd890, none: 0xd8a8ff };
 
   class ModelLayer {
     constructor(canvas, engine, scene, settings) {
@@ -12,14 +12,32 @@
       this.e = engine;
       this.sc = scene;
       this.settings = settings;
-      this.ok = !!(window.THREE && B.GAME_MODELS);
+      this.ch = null;
+      this.ok = !!(window.THREE && B.GAME_MODELS && B.GAME_MODELS.jobs);
       if (this.ok) {
         try { this.build(); } catch (err) { console.error('Game models failed to load:', err); this.ok = false; }
       }
       this.canvas.style.display = this.active() ? '' : 'none';
     }
 
-    active() { return this.ok && this.settings.gameModels !== false; }
+    active() { return this.ok && this.settings.gameModels !== false && !!this.ch; }
+
+    // Show the current job's character, building it the first time.
+    setJob() {
+      if (!this.ok) return;
+      const id = B.jobId, G = B.GAME_MODELS;
+      if (this.ch) this.ch.group.visible = false;
+      this.ch = null;
+      if (G.jobs[id]) {
+        try {
+          this.chars[id] = this.chars[id] || this.buildCharacter(G.jobs[id]);
+          this.ch = this.chars[id];
+          this.ch.group.visible = true;
+          this.play(this.ch.anims.basic.idle, true);
+        } catch (err) { console.error(`Game model for ${id} failed to load:`, err); }
+      }
+      this.setEnabled();
+    }
 
     setEnabled() {
       this.canvas.style.display = this.active() ? '' : 'none';
@@ -55,8 +73,8 @@
       this.scene3.add(this.castLight);
 
       this.texLoader = new T.TextureLoader();
-      this.buildMage(G);
-      this.buildStaff(G);
+      this.textures = {};
+      this.chars = {};
       this.dummies = {};
       for (const [k, d] of Object.entries(G.dummies)) {
         const grp = new T.Group();
@@ -68,23 +86,20 @@
         this.dummies[k] = grp;
       }
       this.showDummy(this.settings.dummy);
-
-      this.anims = G.anims;
-      this.cur = null; this.prev = null; this.after = null;
-      this.poseA = { p: new Float32Array(this.nb * 3), q: new Float32Array(this.nb * 4) };
-      this.poseB = { p: new Float32Array(this.nb * 3), q: new Float32Array(this.nb * 4) };
-      this.facing = Math.atan2(-this.e.pos.x, -this.e.pos.z);
-      this.lastPos = { x: this.e.pos.x, z: this.e.pos.z };
-      this.play(this.anims.basic.idle, true);
+      this.tipWorld = new T.Vector3();
       this.wire();
+      this.setJob();
     }
 
-    texture(url, srgb) {
-      const t = this.texLoader.load(url);
+    // Textures are shared between materials and characters (G.textures holds each once).
+    texture(index, srgb) {
+      const key = index + (srgb ? 's' : 'l');
+      if (this.textures[key]) return this.textures[key];
+      const t = this.texLoader.load(B.GAME_MODELS.textures[index]);
       t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.anisotropy = 4;
-      return t;
+      return (this.textures[key] = t);
     }
 
     material(m, skinning) {
@@ -93,7 +108,7 @@
         map: this.texture(m.color, true), roughness: 0.78, metalness: 0, skinning,
         side: m.doubleSided ? T.DoubleSide : T.FrontSide,
       });
-      if (m.normal) { mat.normalMap = this.texture(m.normal, false); mat.normalScale = new T.Vector2(1, -1); }
+      if (m.normal !== null && m.normal !== undefined) { mat.normalMap = this.texture(m.normal, false); mat.normalScale = new T.Vector2(1, -1); }
       if (m.alpha) {              // as PMP Viewer's preview treats the game's alpha
         if (m.transparent) { mat.transparent = true; mat.depthWrite = !m.alphaTest; mat.alphaTest = Math.min(m.alphaTest || 0.02, 0.5); }
         else mat.alphaTest = m.alphaTest > 0 ? m.alphaTest : 0.5;
@@ -114,49 +129,53 @@
       return g;
     }
 
-    buildMage(G) {
-      const T = THREE, sk = G.mage.skeleton;
-      this.mage = new T.Group();
-      this.scene3.add(this.mage);
+    buildCharacter(J) {
+      const T = THREE, sk = J.skeleton;
+      const ch = { group: new T.Group(), anims: J.anims, cur: null, prev: null, after: null, fade0: 0 };
+      this.scene3.add(ch.group);
       const world = sk.world.map((w) => new T.Matrix4().fromArray(w));
       const inv = world.map((m) => m.clone().invert());
-      this.nb = sk.names.length;
-      this.boneIndex = Object.fromEntries(sk.names.map((n, i) => [n, i]));
-      this.bones = sk.names.map((n) => { const b = new T.Bone(); b.name = n; return b; });
-      this.bindP = new Float32Array(this.nb * 3);
-      this.bindQ = new Float32Array(this.nb * 4);
+      ch.nb = sk.names.length;
+      ch.boneIndex = Object.fromEntries(sk.names.map((n, i) => [n, i]));
+      ch.bones = sk.names.map((n) => { const b = new T.Bone(); b.name = n; return b; });
+      ch.bindP = new Float32Array(ch.nb * 3);
+      ch.bindQ = new Float32Array(ch.nb * 4);
       sk.parents.forEach((p, i) => {
         const local = p >= 0 ? inv[p].clone().multiply(world[i]) : world[i].clone();
         const pos = new T.Vector3(), q = new T.Quaternion(), s = new T.Vector3();
         local.decompose(pos, q, s);
-        this.bones[i].position.copy(pos); this.bones[i].quaternion.copy(q); this.bones[i].scale.copy(s);
-        this.bindP.set([pos.x, pos.y, pos.z], i * 3);
-        this.bindQ.set([q.x, q.y, q.z, q.w], i * 4);
-        (p >= 0 ? this.bones[p] : this.mage).add(this.bones[i]);
+        ch.bones[i].position.copy(pos); ch.bones[i].quaternion.copy(q); ch.bones[i].scale.copy(s);
+        ch.bindP.set([pos.x, pos.y, pos.z], i * 3);
+        ch.bindQ.set([q.x, q.y, q.z, q.w], i * 4);
+        (p >= 0 ? ch.bones[p] : ch.group).add(ch.bones[i]);
       });
-      this.skeleton = new T.Skeleton(this.bones, inv);
-      const mats = G.mage.materials.map((m) => this.material(m, true));
-      for (const me of G.mage.meshes) {
+      ch.skeleton = new T.Skeleton(ch.bones, inv);
+      const mats = J.materials.map((m) => this.material(m, true));
+      for (const me of J.meshes) {
         const mesh = new T.SkinnedMesh(this.geometry(me, true), mats[me.material]);
         mesh.frustumCulled = false;
-        this.mage.add(mesh);
-        mesh.bind(this.skeleton, new T.Matrix4());
+        ch.group.add(mesh);
+        mesh.bind(ch.skeleton, new T.Matrix4());
       }
-    }
-
-    buildStaff(G) {
-      const T = THREE, s = G.staff;
-      this.staff = new T.Group();
-      const mats = s.materials.map((m) => this.material(m, false));
-      for (const me of s.meshes) {
-        const mesh = new T.Mesh(this.geometry(me, false), mats[me.material]);
-        mesh.frustumCulled = false;
-        this.staff.add(mesh);
-      }
-      const bone = this.bones[this.boneIndex[s.bone]];
-      (bone || this.mage).add(this.staff);
-      this.tipLocal = new T.Vector3(...s.tip);
-      this.tipWorld = new T.Vector3();
+      // Weapons ride their bones (the staff or katana in the right hand, the scabbard at the left hip).
+      ch.weapons = J.weapons.map((w) => {
+        const grp = new T.Group();
+        const wm = w.materials.map((m) => this.material(m, false));
+        for (const me of w.meshes) {
+          const mesh = new T.Mesh(this.geometry(me, false), wm[me.material]);
+          mesh.frustumCulled = false;
+          grp.add(mesh);
+        }
+        const bone = ch.bones[ch.boneIndex[w.bone]];
+        (bone || ch.group).add(grp);
+        return { label: w.label, group: grp, tip: new T.Vector3(...w.tip) };
+      });
+      ch.poseA = { p: new Float32Array(ch.nb * 3), q: new Float32Array(ch.nb * 4) };
+      ch.poseB = { p: new Float32Array(ch.nb * 3), q: new Float32Array(ch.nb * 4) };
+      ch.facing = Math.atan2(-this.e.pos.x, -this.e.pos.z);
+      ch.lastPos = { x: this.e.pos.x, z: this.e.pos.z };
+      ch.group.visible = false;
+      return ch;
     }
 
     showDummy(key) {
@@ -168,32 +187,48 @@
     }
 
     // ---------- animation ----------
+    // Each track stores its translation then its rotation (x, y, z; w >= 0 is rebuilt), every frame or once when
+    // it doesn't change.
     prep(a) {
       if (a._prep) return a;
       const d = this.view(a.data), tracks = [];
       let off = 0;
       a.tracks.forEach((name, k) => {
-        const c = a.const[k];
-        tracks.push({ bi: this.boneIndex[name] ?? -1, off, c });
-        off += (c ? 1 : a.frames) * 7;
+        const tc = !!a.tConst[k], qc = !!a.qConst[k];
+        const tOff = off; off += (tc ? 1 : a.frames) * 3;
+        const qOff = off; off += (qc ? 1 : a.frames) * 3;
+        tracks.push({ name, tOff, tc, qOff, qc });
       });
-      a._prep = { d, tracks };
+      a._prep = { d, tracks, bones: new WeakMap() };
       return a;
     }
 
+    // Bone indices for an animation's tracks on this character (animations are shared between jobs).
+    trackBones(a, ch) {
+      let bi = a._prep.bones.get(ch);
+      if (!bi) {
+        bi = a._prep.tracks.map((tr) => ch.boneIndex[tr.name] ?? -1);
+        a._prep.bones.set(ch, bi);
+      }
+      return bi;
+    }
+
     play(anim, loop, after) {
-      if (!anim) return;
-      if (this.cur && this.cur.anim === anim && loop && this.cur.loop) return;
-      this.prev = this.cur;
-      this.cur = { anim: this.prep(anim), t0: this.e.now, loop };
-      this.fade0 = this.e.now;
-      this.after = after || null;
+      const ch = this.ch;
+      if (!anim || !ch) return;
+      if (ch.cur && ch.cur.anim === anim && loop && ch.cur.loop) return;
+      ch.prev = ch.cur;
+      ch.cur = { anim: this.prep(anim), t0: this.e.now, loop };
+      ch.fade0 = this.e.now;
+      ch.after = after || null;
     }
 
     sample(state, pose) {
-      pose.p.set(this.bindP);
-      pose.q.set(this.bindQ);
-      const a = state.anim, { d, tracks } = a._prep, ts = a.tScale;
+      const ch = this.ch;
+      pose.p.set(ch.bindP);
+      pose.q.set(ch.bindQ);
+      const a = state.anim, { d, tracks } = a._prep, ts = a.tScale, qs = 1 / 32767;
+      const bis = this.trackBones(a, ch);
       const t = Math.max(0, this.e.now - state.t0);
       let f = t * a.fps, i0, i1, u;
       if (state.loop) {
@@ -201,30 +236,33 @@
       } else {
         f = Math.min(f, a.frames - 1); i0 = Math.floor(f); i1 = Math.min(i0 + 1, a.frames - 1); u = f - i0;
       }
-      for (const tr of tracks) {
-        if (tr.bi < 0) continue;
-        const o0 = tr.off + (tr.c ? 0 : i0 * 7), o1 = tr.off + (tr.c ? 0 : i1 * 7);
-        const pi = tr.bi * 3, qi = tr.bi * 4;
-        for (let k = 0; k < 3; k++) pose.p[pi + k] = (d[o0 + k] + (d[o1 + k] - d[o0 + k]) * u) * ts;
-        let x0 = d[o0 + 3], y0 = d[o0 + 4], z0 = d[o0 + 5], w0 = d[o0 + 6];
-        let x1 = d[o1 + 3], y1 = d[o1 + 4], z1 = d[o1 + 5], w1 = d[o1 + 6];
+      const W = (x, y, z) => Math.sqrt(Math.max(0, 1 - x * x - y * y - z * z));
+      tracks.forEach((tr, k) => {
+        const bi = bis[k];
+        if (bi < 0) return;
+        const pi = bi * 3, qi = bi * 4;
+        const t0 = tr.tOff + (tr.tc ? 0 : i0 * 3), t1 = tr.tOff + (tr.tc ? 0 : i1 * 3);
+        for (let c = 0; c < 3; c++) pose.p[pi + c] = (d[t0 + c] + (d[t1 + c] - d[t0 + c]) * u) * ts;
+        const q0 = tr.qOff + (tr.qc ? 0 : i0 * 3), q1 = tr.qOff + (tr.qc ? 0 : i1 * 3);
+        const x0 = d[q0] * qs, y0 = d[q0 + 1] * qs, z0 = d[q0 + 2] * qs, w0 = W(x0, y0, z0);
+        let x1 = d[q1] * qs, y1 = d[q1 + 1] * qs, z1 = d[q1 + 2] * qs, w1 = W(x1, y1, z1);
         if (x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1 < 0) { x1 = -x1; y1 = -y1; z1 = -z1; w1 = -w1; }
         const x = x0 + (x1 - x0) * u, y = y0 + (y1 - y0) * u, z = z0 + (z1 - z0) * u, w = w0 + (w1 - w0) * u;
         const l = Math.hypot(x, y, z, w) || 1;
         pose.q[qi] = x / l; pose.q[qi + 1] = y / l; pose.q[qi + 2] = z / l; pose.q[qi + 3] = w / l;
-      }
+      });
     }
 
     applyPose() {
-      const A = this.poseA, Bp = this.poseB;
-      this.sample(this.cur, Bp);
+      const ch = this.ch, A = ch.poseA, Bp = ch.poseB;
+      this.sample(ch.cur, Bp);
       let w = 1;
-      if (this.prev && this.e.now - this.fade0 < FADE) {
-        this.sample(this.prev, A);
-        w = (this.e.now - this.fade0) / FADE;
+      if (ch.prev && this.e.now - ch.fade0 < FADE) {
+        this.sample(ch.prev, A);
+        w = (this.e.now - ch.fade0) / FADE;
       }
-      for (let i = 0; i < this.nb; i++) {
-        const b = this.bones[i], pi = i * 3, qi = i * 4;
+      for (let i = 0; i < ch.nb; i++) {
+        const b = ch.bones[i], pi = i * 3, qi = i * 4;
         if (w < 1) {
           b.position.set(A.p[pi] + (Bp.p[pi] - A.p[pi]) * w, A.p[pi + 1] + (Bp.p[pi + 1] - A.p[pi + 1]) * w, A.p[pi + 2] + (Bp.p[pi + 2] - A.p[pi + 2]) * w);
           let x1 = Bp.q[qi], y1 = Bp.q[qi + 1], z1 = Bp.q[qi + 2], w1 = Bp.q[qi + 3];
@@ -238,36 +276,38 @@
       }
     }
 
-    actionAnims(id) { return (this.anims.actions && this.anims.actions[id]) || {}; }
+    actionAnims(id) { return (this.ch && this.ch.anims.actions && this.ch.anims.actions[id]) || {}; }
 
     wire() {
       const e = this.e;
       e.on('castStart', (ev) => {
+        if (!this.ch) return;
         const a = this.actionAnims(ev.id);
         if (a.start) this.play(a.start, false, a.loop ? () => this.play(a.loop, true) : null);
         else if (a.loop) this.play(a.loop, true);
       });
       e.on('resolve', (ev) => {
+        if (!this.ch) return;
         const kind = B.ACTIONS[ev.id].kind;
-        const a = ev.id === 'tincture' ? { release: this.anims.basic.item } : this.actionAnims(ev.id);
+        const a = ev.id === 'tincture' ? { release: this.ch.anims.basic.item } : this.actionAnims(ev.id);
         if (!a.release) return;
         if (kind !== 'gcd' && e.moving) return;       // running keeps the run; the game layers this, we don't
         this.play(a.release, false);
       });
-      e.on('interrupt', () => this.play(this.anims.basic.idle, true));
-      e.on('reset', () => this.play(this.anims.basic.idle, true));
+      e.on('interrupt', () => this.ch && this.play(this.ch.anims.basic.idle, true));
+      e.on('reset', () => this.ch && this.play(this.ch.anims.basic.idle, true));
     }
 
     stateMachine() {
-      const e = this.e, basic = this.anims.basic;
-      const cur = this.cur;
+      const e = this.e, ch = this.ch, basic = ch.anims.basic;
+      const cur = ch.cur;
       if (e.moving && !e.casting) {
         if (cur.anim !== basic.run) this.play(basic.run, true);
         return;
       }
       if (!e.moving && cur.anim === basic.run) { this.play(basic.idle, true); return; }
       if (!cur.loop && e.now - cur.t0 >= cur.anim.seconds) {
-        if (this.after) { const f = this.after; this.after = null; f(); }
+        if (ch.after) { const f = ch.after; ch.after = null; f(); }
         else this.play(e.casting ? (this.actionAnims(e.casting.id).loop || basic.idle) : basic.idle, true);
       }
     }
@@ -283,19 +323,21 @@
 
     update(dt) {
       if (!this.active()) return;
-      const e = this.e, sc = this.sc;
+      const e = this.e, sc = this.sc, ch = this.ch;
 
       // Face the way you run; face the dummy while casting or standing.
-      const vx = e.pos.x - this.lastPos.x, vz = e.pos.z - this.lastPos.z;
-      this.lastPos.x = e.pos.x; this.lastPos.z = e.pos.z;
+      const vx = e.pos.x - ch.lastPos.x, vz = e.pos.z - ch.lastPos.z;
+      ch.lastPos.x = e.pos.x; ch.lastPos.z = e.pos.z;
       let want = Math.atan2(-e.pos.x, -e.pos.z);
       if (e.moving && !e.casting && Math.hypot(vx, vz) > 1e-4) want = Math.atan2(vx, vz);
-      let diff = want - this.facing;
+      let diff = want - ch.facing;
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
-      this.facing += diff * Math.min(1, dt * 14);
-      this.mage.position.set(e.pos.x, sc.jumpY(), e.pos.z);
-      this.mage.rotation.y = this.facing;
+      // Dashes and backsteps (Gyoten, Yaten) jump the position; keep facing the dummy through them.
+      if (Math.hypot(vx, vz) > 1.5) diff = Math.atan2(-e.pos.x, -e.pos.z) - ch.facing;
+      ch.facing += diff * Math.min(1, dt * 14);
+      ch.group.position.set(e.pos.x, sc.jumpY(), e.pos.z);
+      ch.group.rotation.y = ch.facing;
 
       this.stateMachine();
       this.applyPose();
@@ -308,11 +350,13 @@
         for (const m of this.dummy.userData.mats) m.emissive.setRGB(flash, flash, flash);
       }
 
-      // A glow at the staff while casting, in the spell's colour.
-      this.mage.updateMatrixWorld(true);
-      this.tipWorld.copy(this.tipLocal).applyMatrix4(this.staff.matrixWorld);
+      // A glow at the weapon while casting, in the spell's colour.
+      ch.group.updateMatrixWorld(true);
+      const w = ch.weapons[0];
+      if (w) this.tipWorld.copy(w.tip).applyMatrix4(w.group.matrixWorld);
+      else this.tipWorld.set(e.pos.x, 1.6, e.pos.z);
       const school = e.casting ? (B.ACTIONS[e.casting.id].school || 'none') : null;
-      const target = school ? 2.2 : sc.release > 0 ? 1.2 : 0;
+      const target = school ? 2.2 : sc.release > 0 && e.job.role === 'caster' ? 1.2 : 0;
       this.castLight.intensity += (target - this.castLight.intensity) * Math.min(1, dt * 10);
       if (school) this.castLight.color.setHex(ELEMENT_LIGHT[school] || ELEMENT_LIGHT.none);
       this.castLight.position.copy(this.tipWorld);

@@ -16,6 +16,7 @@
 
   <div id="hud">
     <div id="menu" class="ia">
+      <button id="b-job"><span id="b-job-name">Job</span><kbd>J</kbd></button>
       <button id="b-pull">Countdown<kbd>/cd</kbd></button>
       <button id="b-reset">Reset</button>
       <button id="b-actions">Actions<kbd>P</kbd></button>
@@ -28,7 +29,7 @@
       <div class="member">
         <img id="party-job" alt="">
         <div>
-          <div class="nm outline"><span>Lv90</span><em id="party-name" style="font-style:normal"></em></div>
+          <div class="nm outline"><span>Lv90</span><em id="party-name" style="font-style:normal"></em><small id="party-ver"></small></div>
           <div class="bars2">
             <div><div class="minibar hp"><i id="party-hp"></i></div><div class="barnum outline" id="party-hpn"></div></div>
             <div><div class="minibar mp"><i id="party-mp"></i></div><div class="barnum outline" id="party-mpn"></div></div>
@@ -89,7 +90,7 @@
       <div class="wb">
         <div class="form">
           <label for="s-name">Character name</label><input id="s-name" type="text" maxlength="24">
-          <label for="s-sps">Spell speed</label>
+          <label for="s-sps" id="s-sps-label">Spell speed</label>
           <div class="row2 sps"><input id="s-sps" type="number" min="400" max="4000" step="1" inputmode="numeric"><span id="s-gcdinfo"></span></div>
           <label for="s-gcd">GCD</label>
           <div class="row2 sps"><input id="s-gcd" type="number" min="1.88" max="2.50" step="0.01" inputmode="decimal"><span class="hint">Type a GCD to set the spell speed for it</span></div>
@@ -119,7 +120,7 @@
           <div class="row2"><label><input id="s-slide" type="checkbox"> Slidecast marker</label></div>
           <label>Results</label>
           <div class="row2"><label><input id="s-timeline" type="checkbox"> Show cast timeline</label></div>
-          <div class="note">Stats are a 6.5 best-in-slot set (ilvl ~660). Spell speed is the only stat you can change; 1160 is a 2.37 GCD, 400 is a 2.50. Settings, hotbars and keybinds save in this browser.</div>
+          <div class="note">Stats are a best-in-slot set for the job's version. Spell or skill speed is the only stat you can change, per job. Settings, hotbars and keybinds save in this browser.</div>
           <div class="note"><button class="btn" id="s-resetbars">Restore default hotbars and keybinds</button></div>
         </div>
       </div>
@@ -130,8 +131,13 @@
       <div class="wb" id="actlist"></div>
     </div>
 
+    <div id="win-job" class="win panel ia">
+      <div class="wt">Job<button class="x" data-close>✕</button></div>
+      <div class="wb" id="joblist"></div>
+    </div>
+
     <div id="win-help" class="win panel ia">
-      <div class="wt">How to play<button class="x" data-close>✕</button></div>
+      <div class="wt"><span id="help-title">How to play</span><button class="x" data-close>✕</button></div>
       <div class="wb help" id="helpbody"></div>
     </div>
 
@@ -151,6 +157,8 @@
   <script src="work/game-models.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/engine.js"></script>
+  <script src="js/jobs/blm_ew.js"></script>
+  <script src="js/jobs/sam_ew.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/scene.js"></script>
   <script src="js/models.js"></script>

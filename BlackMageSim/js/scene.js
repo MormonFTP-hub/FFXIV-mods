@@ -8,6 +8,7 @@
     ice: ['140,210,255', '80,160,255', '235,250,255'],
     thunder: ['200,150,255', '255,240,120', '255,255,255'],
     none: ['230,170,255', '170,90,255', '255,240,255'],
+    iai: ['255,225,150', '255,255,255', '255,150,110'],
   };
 
   function rng(seed) {
@@ -201,6 +202,7 @@
       this.release = 0.45;
       const a = A[id];
       if (!a) return;
+      if (this.e.job.role !== 'caster') { this.onMeleeRelease(id, a); return; }
       const school = a.school && ELEMENT_COLORS[a.school] ? a.school : 'none';
       const p = this.e.pos;
       const tip = this.staffTip();
@@ -230,8 +232,38 @@
       }
     }
 
+    // Melee abilities flare at the player; weaponskills draw at the dummy when they land (onHit).
+    onMeleeRelease(id, a) {
+      const p = this.e.pos;
+      if (a.kind === 'gcd') {
+        if (a.school === 'iai') this.emit(18, { x: p.x, y: 1.1, z: p.z, spread: 0.5, speed: 2.5, flatY: 0.4, life: 0.4, size: 0.2, colors: ELEMENT_COLORS.iai });
+        if (id === 'meditate') {
+          this.emit(30, { x: p.x, y: 0.3, z: p.z, spread: 1.2, spreadY: 0.1, speed: 0.4, vy: 1.6, life: 1.2, size: 0.2, colors: ['255,220,140', '255,250,220'] });
+          this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 1.6, r1: 0.4, dur: 0.8, color: '255,210,120' });
+        }
+        return;
+      }
+      if (a.potency) return;
+      const colors = {
+        kaiten: ['255,80,50', '255,200,110', '255,255,230'], ikishoten: ['255,200,90', '255,110,60', '255,255,220'],
+        meikyoShisui: ['150,200,255', '255,255,255', '200,230,255'], hagakure: ['200,230,255', '255,255,255'],
+        thirdEye: ['255,255,255', '200,220,255'], trueNorth: ['150,255,200', '255,255,255'], bloodbath: ['220,40,60', '255,120,120'],
+        feint: ['230,180,120'], secondWind: ['150,255,170', '255,255,255'], armsLength: ['200,200,255'], legSweep: ['255,230,150'],
+        tincture: ['255,120,190', '255,220,240'], sprint: ['255,220,120'],
+      }[id] || ['255,220,180'];
+      if (id === 'ikishoten' || id === 'kaiten') {
+        this.emit(id === 'ikishoten' ? 60 : 34, { x: p.x, y: 0.2, z: p.z, spread: 1.0, spreadY: 0.1, speed: 0.6, vy: id === 'ikishoten' ? 5 : 3.5, life: 0.8, size: 0.24, colors, grav: -1 });
+        this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 0.4, r1: id === 'ikishoten' ? 3 : 2, dur: 0.5, color: colors[0] });
+      } else if (id === 'feint' || id === 'legSweep') {
+        this.emit(20, { x: 0, y: 1.8, z: 0, spread: 0.8, speed: 0.6, vy: -1.5, life: 0.8, size: 0.3, colors });
+      } else {
+        this.emit(26, { x: p.x, y: 1.0, z: p.z, spread: 0.6, speed: 2.2, flatY: 0.3, vy: 1.5, life: 0.7, size: 0.22, colors });
+        this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 0.4, r1: 2.0, dur: 0.5, color: colors[0] });
+      }
+    }
+
     onTeleport(from, to) {
-      const colors = ['200,140,255', '255,255,255'];
+      const colors = this.e.job.role === 'caster' ? ['200,140,255', '255,255,255'] : ['255,230,180', '255,255,255'];
       this.emit(30, { x: from.x, y: 1, z: from.z, spread: 0.8, speed: 2, vy: 1, life: 0.6, size: 0.25, colors });
       this.emit(30, { x: to.x, y: 1, z: to.z, spread: 0.8, speed: 2, vy: 1, life: 0.6, size: 0.25, colors });
     }
@@ -242,10 +274,13 @@
       this.dummyFlash = 0.18;
       this.dummyWobble = Math.min(1, this.dummyWobble + (ev.dot ? 0.15 : 0.6));
       const T = { x: 0, y: 1.3, z: 0 };
+      const fx = A[id] && A[id].fx;
       if (ev.dot) {
-        this.emit(8, { x: T.x, y: T.y, z: T.z, spread: 0.6, speed: 2, life: 0.3, size: 0.15, colors: ['255,240,120', '220,180,255'] });
+        const colors = fx === 'higanbana' ? ['255,60,60', '255,170,150'] : ['255,240,120', '220,180,255'];
+        this.emit(8, { x: T.x, y: T.y, z: T.z, spread: 0.6, speed: 2, life: 0.3, size: 0.15, colors });
         return;
       }
+      if (fx) { this.weaponHit(fx, ev, big); return; }
       switch (id) {
         case 'fire': case 'fire3': case 'fire4': {
           const k = id === 'fire' ? 1 : id === 'fire3' ? 1.4 : 1.7;
@@ -303,6 +338,119 @@
       }
     }
 
+    // Sword arcs and the rest of a melee hit. Each slash is an arc in front of the dummy (drawSlash).
+    weaponHit(fx, ev, big) {
+      const T = { x: 0, y: 1.3, z: 0 };
+      const S = (o) => {
+        const f = Object.assign({ type: 'slash', r: 1.3, y: 1.3, w: 0.3, dur: 0.42, color: '220,235,255', tilt: 0, a0: 2.7, a1: -0.5 }, o);
+        this.addFx(f);
+        if (o.delay) f.t0 += o.delay;
+      };
+      const sparks = (n, colors, o) => this.emit(Math.round(n * big), Object.assign({ ...T, spread: 0.4, speed: 3.5, life: 0.45, size: 0.18, colors, drag: 2.5 }, o));
+      const flash = (r, color) => this.addFx({ type: 'flash', ...T, r, dur: 0.3, color });
+      const petals = (n, colors) => this.emit(n, { ...T, spread: 1.2, speed: 1.6, vy: 1.5, life: 1.6, size: 0.16, colors, grav: 1.2, drag: 1.2 });
+      switch (fx) {
+        case 'auto':
+          S({ r: 1.0, w: 0.12, dur: 0.26, color: '190,200,220', tilt: (Math.random() - 0.5) * 1.4 });
+          sparks(5, ['255,240,210']);
+          break;
+        case 'slash':
+          S({ tilt: -0.45 });
+          sparks(14, ['255,255,255', '200,220,255']);
+          this.shake = Math.max(this.shake, 0.03);
+          break;
+        case 'slash2':
+          S({ tilt: 0.5, a0: -0.5, a1: 2.7 });
+          S({ tilt: -0.35, delay: 0.09 });
+          sparks(18, ['255,255,255', '200,220,255']);
+          this.shake = Math.max(this.shake, 0.035);
+          break;
+        case 'slash3':   // Gekko: the moon
+          S({ tilt: 0.7, r: 1.5, w: 0.42, color: '170,165,255' });
+          S({ tilt: -0.6, r: 1.2, delay: 0.1, color: '220,220,255' });
+          flash(1.8, '190,190,255');
+          sparks(24, ['200,200,255', '255,255,255', '140,130,255']);
+          this.shake = Math.max(this.shake, 0.05);
+          break;
+        case 'slashFire':   // Kasha: the flower, in flame
+          S({ tilt: -0.7, r: 1.5, w: 0.42, color: '255,120,70' });
+          S({ tilt: 0.5, r: 1.2, delay: 0.1, color: '255,200,140' });
+          flash(1.8, '255,150,90');
+          sparks(26, ELEMENT_COLORS.fire, { grav: -2, speed: 3 });
+          this.shake = Math.max(this.shake, 0.05);
+          break;
+        case 'slashIce':   // Yukikaze: the snow
+          S({ tilt: 0.1, r: 1.45, w: 0.4, color: '150,215,255' });
+          flash(1.6, '200,240,255');
+          sparks(30, ELEMENT_COLORS.ice, { grav: 2.5, speed: 2.8, life: 0.8 });
+          this.shake = Math.max(this.shake, 0.04);
+          break;
+        case 'enpi':
+          S({ tilt: 1.3, r: 0.9, w: 0.22, dur: 0.3, color: '255,220,170' });
+          flash(1.2, '255,210,150');
+          sparks(14, ['255,230,180', '255,255,255']);
+          break;
+        case 'higanbana':
+          S({ tilt: -0.2, r: 1.6, w: 0.45, color: '255,60,60' });
+          flash(2, '255,70,70');
+          petals(36, ['255,40,50', '230,20,40', '255,150,150']);
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.5, r1: 3, dur: 0.6, color: '255,70,70' });
+          this.shake = Math.max(this.shake, 0.06);
+          break;
+        case 'tenka':
+          for (let i = 0; i < 4; i++) S({ tilt: -0.9 + i * 0.6, r: 1.4 + i * 0.1, w: 0.32, delay: i * 0.05, color: i % 2 ? '255,220,140' : '255,245,220' });
+          flash(2.2, '255,220,140');
+          sparks(40, ['255,220,140', '255,255,255', '255,180,90']);
+          this.shake = Math.max(this.shake, 0.07);
+          break;
+        case 'midare': {
+          const k = ev.id === 'kaeshiSetsugekka' ? 1.2 : 1;
+          S({ tilt: -0.6, r: 1.7 * k, w: 0.5, color: '140,200,255' });
+          S({ tilt: 0.65, r: 1.6 * k, w: 0.5, delay: 0.07, color: '180,150,255' });
+          S({ tilt: 0.02, r: 1.9 * k, w: 0.6, delay: 0.14, color: '255,110,90', a0: 3.0, a1: -0.8 });
+          flash(3 * k, '255,240,230');
+          petals(30, ['255,90,90', '255,220,230']);
+          sparks(Math.round(50 * k), ['150,210,255', '255,255,255', '200,170,255'], { speed: 5 });
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.6, r1: 4.5 * k, dur: 0.6, color: '255,230,220' });
+          this.shake = 0.13 * k;
+          if (k > 1) this.screenFlash = 0.1;
+          break;
+        }
+        case 'ogi': {
+          const k = ev.id === 'kaeshiNamikiri' ? 1.25 : 1;
+          S({ tilt: 0.04, r: 2.6 * k, w: 0.75, dur: 0.55, color: '150,190,255', a0: 3.3, a1: -0.2 });
+          S({ tilt: -0.08, r: 2.2 * k, w: 0.4, dur: 0.5, delay: 0.06, color: '255,255,255', a0: 3.2, a1: -0.1 });
+          if (k > 1) S({ tilt: 0.12, r: 2.9, w: 0.5, dur: 0.6, delay: 0.12, color: '120,160,255', a0: -0.2, a1: 3.3 });
+          flash(3.4 * k, '170,200,255');
+          sparks(Math.round(70 * k), ['160,200,255', '255,255,255', '90,140,255'], { speed: 6, spread: 1 });
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.6, r1: 5.5 * k, dur: 0.7, color: '150,190,255' });
+          this.shake = 0.15 * k;
+          this.screenFlash = 0.08 * k;
+          break;
+        }
+        case 'shinten':
+          S({ tilt: 0.9, r: 1.2, w: 0.26, dur: 0.3, color: '255,210,120' });
+          sparks(16, ['255,220,140', '255,255,255']);
+          this.shake = Math.max(this.shake, 0.035);
+          break;
+        case 'senei':
+          S({ tilt: 0.85, r: 1.8, w: 0.55, color: '255,90,60' });
+          S({ tilt: -0.85, r: 1.8, w: 0.55, delay: 0.1, color: '255,200,110' });
+          flash(2.8, '255,140,80');
+          sparks(60, ['255,90,60', '255,210,120', '255,255,255'], { speed: 5 });
+          this.shake = 0.12;
+          break;
+        case 'shoha':
+          S({ tilt: 0.3, r: 1.5, w: 0.4, color: '255,220,120' });
+          S({ tilt: -0.5, r: 1.4, w: 0.4, delay: 0.08, color: '140,180,255' });
+          this.addFx({ type: 'flash', ...T, r: 2.6, dur: 0.45, color: '170,190,255' });
+          sparks(50, ['140,180,255', '255,220,120', '255,255,255'], { speed: 4.5 });
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.5, r1: 4, dur: 0.6, color: '170,190,255' });
+          this.shake = 0.09;
+          break;
+      }
+    }
+
     staffTip() {
       if (this.modelsOn()) return this.models.staffTip();
       const p = this.e.pos;
@@ -340,8 +488,9 @@
         }
       }
       // Astral Fire embers or Umbral Ice snow around the mage.
-      if (e.element !== 0 && Math.random() < dt * 6 * Math.abs(e.element)) {
-        const fire = e.element > 0;
+      const aura = e.job.aura ? e.job.aura(e) : 0;
+      if (aura !== 0 && Math.random() < dt * 6 * Math.abs(aura)) {
+        const fire = aura > 0;
         this.particles.push({
           x: e.pos.x + (Math.random() - 0.5) * 1.2, y: fire ? 0.4 + Math.random() : 2 + Math.random() * 0.5, z: e.pos.z + (Math.random() - 0.5) * 1.2,
           vx: 0, vy: fire ? 1.1 : -0.7, vz: 0, life: 1.4, age: 0, size: 0.1,
@@ -389,7 +538,7 @@
       if (!models) {
         const dc = this.toCam(0, 0, 0);
         if (dc.z > 0.5) back.push({ z: dc.z, draw: () => this.drawDummy(this.fromCam(dc)) });
-        if (pc.z > 0.5) back.push({ z: pc.z, draw: () => this.drawMage(this.fromCam(pc), this.toCam(p.x, 0, p.z)) });
+        if (pc.z > 0.5) back.push({ z: pc.z, draw: () => this.drawPlayer(this.fromCam(pc)) });
       }
       back.sort((a, b) => b.z - a.z).forEach(it => it.draw());
 
@@ -508,6 +657,34 @@
       this.shadow(this.e.pos.x, this.e.pos.z, 0.55 * (1 - this.jumpY() * 0.4));
     }
 
+    // Melee range around the dummy, split into its rear and flank quarters (the dummy faces -Z). The quarter
+    // you're standing in lights up; True North lights them all.
+    drawPositionals() {
+      const ctx = this.ctx, e = this.e;
+      const R = B.MELEE_RANGE + B.DUMMY_RADIUS;
+      const side = e.side(), tn = e.has('trueNorth');
+      const arc = (a0, a1, r) => {
+        let open = false;
+        ctx.beginPath();
+        for (let i = 0; i <= 24; i++) {
+          const a = a0 + (a1 - a0) * i / 24;
+          const q = this.project(Math.cos(a) * r, 0.02, Math.sin(a) * r);
+          if (!q) { open = false; continue; }
+          if (open) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y);
+          open = true;
+        }
+      };
+      const d = Math.PI / 180;
+      const inRange = e.distToTarget() - B.DUMMY_RADIUS <= B.MELEE_RANGE;
+      for (const [k, a0, a1] of [['rear', 45, 135], ['flank', -45, 45], ['flank', 135, 225], ['front', 225, 315]]) {
+        const on = k !== 'front' && (tn || side === k);
+        arc((a0 + 3) * d, (a1 - 3) * d, R);
+        ctx.strokeStyle = on ? (inRange ? 'rgba(255,214,110,0.85)' : 'rgba(255,214,110,0.4)') : k === 'front' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.22)';
+        ctx.lineWidth = on ? 3 : 1.5;
+        ctx.stroke();
+      }
+    }
+
     shadow(x, z, r) {
       const ctx = this.ctx;
       if (this.groundPath(x, z, r, 24)) { ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill(); }
@@ -588,6 +765,7 @@
       if (!this.e.targeted) return;
       const ctx = this.ctx;
       ctx.save();
+      if (this.e.job.role === 'melee') this.drawPositionals();
       if (this.groundPath(0, 0, 1.6, 48, 0.02)) { ctx.strokeStyle = 'rgba(255,90,60,0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); }
       if (this.groundPath(0, 0, 1.75, 48, 0.02)) { ctx.strokeStyle = 'rgba(255,170,120,0.35)'; ctx.lineWidth = 1; ctx.stroke(); }
       const rot = this.time * 0.6;
@@ -711,10 +889,11 @@
       ctx.translate(p.x, p.y - bob);
 
       // Element glow behind the mage.
-      if (e.element !== 0) {
-        const col = e.element > 0 ? '255,110,40' : '100,180,255';
+      const aura = e.job.aura ? e.job.aura(e) : 0;
+      if (aura !== 0) {
+        const col = aura > 0 ? '255,110,40' : '100,180,255';
         const g = ctx.createRadialGradient(0, -1 * U, 0, 0, -1 * U, 1.4 * U);
-        g.addColorStop(0, `rgba(${col},${0.12 * Math.abs(e.element)})`); g.addColorStop(1, `rgba(${col},0)`);
+        g.addColorStop(0, `rgba(${col},${0.12 * Math.abs(aura)})`); g.addColorStop(1, `rgba(${col},0)`);
         ctx.fillStyle = g; ctx.fillRect(-1.5 * U, -2.5 * U, 3 * U, 3 * U);
       }
 
@@ -794,14 +973,107 @@
       ctx.restore();
     }
 
+    drawPlayer(p) {
+      if (this.e.job.id === 'sam') this.drawSamurai(p);
+      else this.drawMage(p);
+    }
+
+    // The drawn Samurai, for when the game's models aren't loaded: hakama, kimono, the katana and its sheath.
+    // Iaijutsu holds the blade sheathed with a hand on the hilt; a weaponskill swings it up.
+    drawSamurai(p) {
+      const ctx = this.ctx, U = p.s, e = this.e;
+      const iai = !!e.casting;
+      const swing = this.release > 0 ? this.release / 0.45 : 0;
+      const bob = Math.abs(Math.sin(this.walkPhase)) * 0.04 * U;
+      const sway = Math.sin(this.walkPhase) * 0.05 * U;
+      ctx.save();
+      ctx.translate(p.x, p.y - bob);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+      // Sheath at the left hip, angled back.
+      ctx.strokeStyle = '#1a0f0c'; ctx.lineWidth = Math.max(2, 0.075 * U);
+      ctx.beginPath(); ctx.moveTo(-0.12 * U, -0.98 * U); ctx.lineTo(-0.82 * U, -0.62 * U); ctx.stroke();
+      ctx.strokeStyle = '#b8902f'; ctx.lineWidth = Math.max(1, 0.02 * U);
+      ctx.beginPath(); ctx.moveTo(-0.7 * U, -0.68 * U); ctx.lineTo(-0.74 * U, -0.6 * U); ctx.stroke();
+
+      // Hakama: wide pleated trousers.
+      ctx.fillStyle = '#1c2133';
+      ctx.beginPath();
+      ctx.moveTo(-0.27 * U, -0.98 * U);
+      ctx.lineTo(-0.52 * U + sway, -0.02 * U); ctx.lineTo(-0.06 * U + sway * 0.5, -0.02 * U);
+      ctx.lineTo(0, -0.55 * U);
+      ctx.lineTo(0.06 * U - sway * 0.5, -0.02 * U); ctx.lineTo(0.52 * U - sway, -0.02 * U);
+      ctx.lineTo(0.27 * U, -0.98 * U);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(120,130,170,0.35)'; ctx.lineWidth = Math.max(1, 0.015 * U);
+      for (const x of [-0.3, -0.16, 0.16, 0.3]) { ctx.beginPath(); ctx.moveTo(x * 0.7 * U, -0.9 * U); ctx.lineTo(x * 1.4 * U, -0.05 * U); ctx.stroke(); }
+
+      // Kimono top with a red collar, and the obi.
+      ctx.fillStyle = '#d8d0bf';
+      ctx.beginPath();
+      ctx.moveTo(-0.31 * U, -1.5 * U); ctx.lineTo(-0.34 * U, -0.94 * U); ctx.lineTo(0.34 * U, -0.94 * U); ctx.lineTo(0.31 * U, -1.5 * U);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#a3262a'; ctx.lineWidth = Math.max(1.5, 0.04 * U);
+      ctx.beginPath(); ctx.moveTo(-0.15 * U, -1.5 * U); ctx.lineTo(0.03 * U, -1.1 * U); ctx.lineTo(0.15 * U, -1.5 * U); ctx.stroke();
+      ctx.fillStyle = '#8c1c20';
+      ctx.fillRect(-0.34 * U, -1.04 * U, 0.68 * U, 0.11 * U);
+
+      // Right arm and the katana. Iaijutsu: hand on the hilt at the hip. Otherwise the blade is out, low and
+      // forward, and swings up after a weaponskill.
+      const shX = 0.29 * U, shY = -1.44 * U;
+      let handX, handY, tipX, tipY;
+      if (iai) {
+        handX = -0.08 * U; handY = -1.02 * U;
+        tipX = handX + 0.22 * U; tipY = handY - 0.08 * U;
+      } else {
+        const ang = -0.35 - swing * 1.9;   // from horizontal; negative is up
+        handX = (0.46 + swing * 0.08) * U; handY = (-1.0 - swing * 0.35) * U;
+        tipX = handX + Math.cos(ang) * 1.05 * U; tipY = handY + Math.sin(ang) * 1.05 * U;
+        ctx.strokeStyle = '#c9ced8'; ctx.lineWidth = Math.max(1.5, 0.035 * U);
+        ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(tipX, tipY); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = Math.max(1, 0.012 * U);
+        ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(tipX, tipY); ctx.stroke();
+      }
+      // Hilt and guard.
+      const hx = handX - (tipX - handX) * 0.2, hy = handY - (tipY - handY) * 0.2;
+      ctx.strokeStyle = '#2a1a14'; ctx.lineWidth = Math.max(2, 0.05 * U);
+      ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(handX, handY); ctx.stroke();
+      ctx.fillStyle = '#b8902f';
+      ctx.beginPath(); ctx.arc(handX, handY, 0.04 * U, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#c9c1af';
+      ctx.beginPath();
+      ctx.moveTo(shX, shY); ctx.lineTo(handX + 0.05 * U, handY - 0.02 * U); ctx.lineTo(handX - 0.04 * U, handY + 0.08 * U); ctx.lineTo(0.22 * U, -1.26 * U);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e0c2a0';
+      ctx.beginPath(); ctx.arc(handX, handY + 0.02 * U, 0.05 * U, 0, Math.PI * 2); ctx.fill();
+      // Left arm hangs by the sheath.
+      ctx.fillStyle = '#c9c1af';
+      ctx.beginPath();
+      ctx.moveTo(-0.29 * U, -1.44 * U); ctx.lineTo(-0.44 * U, -0.92 * U); ctx.lineTo(-0.33 * U, -0.88 * U); ctx.lineTo(-0.2 * U, -1.26 * U);
+      ctx.closePath(); ctx.fill();
+
+      // Head: face, dark hair tied up in a topknot.
+      ctx.fillStyle = '#e3c4a2';
+      ctx.beginPath(); ctx.ellipse(0, -1.68 * U, 0.15 * U, 0.18 * U, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#16121a';
+      ctx.beginPath(); ctx.ellipse(0, -1.76 * U, 0.165 * U, 0.12 * U, 0, Math.PI, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0.02 * U, -1.93 * U, 0.06 * U, 0.08 * U, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#a3262a'; ctx.lineWidth = Math.max(1, 0.025 * U);
+      ctx.beginPath(); ctx.moveTo(-0.04 * U, -1.88 * U); ctx.lineTo(0.08 * U, -1.86 * U); ctx.stroke();
+      ctx.restore();
+    }
+
     drawFx() {
       const ctx = this.ctx;
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       for (const f of this.fx) {
         const k = (this.time - f.t0) / f.dur;
+        if (k < 0) continue;
         const fade = 1 - k;
-        if (f.type === 'flash') {
+        if (f.type === 'slash') {
+          this.drawSlash(f, k);
+        } else if (f.type === 'flash') {
           const p = this.project(f.x, f.y, f.z);
           if (!p) continue;
           const r = f.r * p.s * (0.5 + k * 0.8);
@@ -872,6 +1144,44 @@
         }
       }
       ctx.restore();
+    }
+
+    // A sword trail: an arc around the dummy in a plane facing the camera, leaned back so it bulges toward you.
+    // The head sweeps from a0 to a1, the tail follows, and the trail thins out behind the head.
+    drawSlash(f, k) {
+      const ctx = this.ctx, C = this.cam;
+      const ct = Math.cos(f.tilt), st = Math.sin(f.tilt);
+      const U = { x: C.r.x * ct, y: C.r.y * ct + st, z: C.r.z * ct };
+      const V0 = { x: -C.r.x * st, y: -C.r.y * st + ct, z: -C.r.z * st };
+      const V = { x: V0.x * 0.4 - C.f.x * 0.85, y: V0.y * 0.4 - C.f.y * 0.85, z: V0.z * 0.4 - C.f.z * 0.85 };
+      const c0 = { x: -C.f.x * 0.5, y: f.y, z: -C.f.z * 0.5 };
+      const head = Math.min(1, k / 0.3), tail = Math.max(0, (k - 0.25) / 0.75);
+      if (head - tail < 0.02) return;
+      const at = (s, r) => {
+        const t = f.a0 + (f.a1 - f.a0) * s;
+        const cs = Math.cos(t), sn = Math.sin(t);
+        return this.project(c0.x + r * (cs * U.x + sn * V.x), c0.y + r * (cs * U.y + sn * V.y), c0.z + r * (cs * U.z + sn * V.z));
+      };
+      const n = 26;
+      const band = (wk, style) => {
+        const outer = [], inner = [];
+        for (let i = 0; i <= n; i++) {
+          const s = tail + (head - tail) * i / n;
+          const w = f.w * wk * Math.pow(i / n, 0.7);
+          const o = at(s, f.r + w / 2), q = at(s, f.r - w / 2);
+          if (!o || !q) return;
+          outer.push(o); inner.push(q);
+        }
+        ctx.fillStyle = style;
+        ctx.beginPath();
+        outer.forEach((q, i) => i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y));
+        for (let i = inner.length - 1; i >= 0; i--) ctx.lineTo(inner[i].x, inner[i].y);
+        ctx.closePath(); ctx.fill();
+      };
+      const alpha = k < 0.3 ? 1 : 1 - (k - 0.3) / 0.7;
+      band(1.6, `rgba(${f.color},${0.22 * alpha})`);
+      band(1, `rgba(${f.color},${0.65 * alpha})`);
+      band(0.3, `rgba(255,255,255,${0.95 * alpha})`);
     }
 
     drawParticles() {

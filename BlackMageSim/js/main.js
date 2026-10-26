@@ -9,30 +9,37 @@
   const MOD_KEYS = new Set(['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight']);
   const fmt = (n) => Math.round(n).toLocaleString('en-US');
 
+  const okGrid = (g, ok) => Array.isArray(g) && g.length === 3 && g.every(r => Array.isArray(r) && r.length === 12 && r.every(ok));
+
+  // Hotbars are saved per job version (like the game saves them per job); keybinds are shared.
   function loadStore() {
     const store = {
-      settings: Object.assign({}, B.DEFAULT_SETTINGS),
-      bars: B.DEFAULT_BARS.map(r => r.slice()),
+      settings: Object.assign({}, B.DEFAULT_SETTINGS, { versions: {}, speed: {} }),
+      barsByJob: {},
       binds: B.DEFAULT_BINDS.map(r => r.slice()),
     };
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
     if (saved && typeof saved === 'object') {
-      if (saved.settings) {
-        for (const k of Object.keys(B.DEFAULT_SETTINGS)) {
-          if (k in saved.settings && typeof saved.settings[k] === typeof B.DEFAULT_SETTINGS[k]) store.settings[k] = saved.settings[k];
-        }
+      const s = saved.settings || {};
+      for (const k of Object.keys(B.DEFAULT_SETTINGS)) {
+        if (k in s && typeof s[k] === typeof B.DEFAULT_SETTINGS[k]) store.settings[k] = s[k];
       }
-      const okGrid = (g, ok) => Array.isArray(g) && g.length === 3 && g.every(r => Array.isArray(r) && r.length === 12 && r.every(ok));
-      if (okGrid(saved.bars, v => v === null || !!A[v])) store.bars = saved.bars;
+      if (typeof s.sps === 'number' && !store.settings.speed.blm) store.settings.speed.blm = s.sps;   // from 1.2.x
+      if (saved.barsByJob && typeof saved.barsByJob === 'object') store.barsByJob = saved.barsByJob;
+      else if (saved.bars) store.barsByJob['blm:ew65'] = saved.bars;                                  // from 1.x
       if (okGrid(saved.binds, v => v === null || typeof v === 'string')) store.binds = saved.binds;
     }
+    if (!B.JOBS[store.settings.job]) store.settings.job = B.JOB_ORDER[0];
     return store;
   }
 
   class Encounter {
     constructor(n, start, preUses) {
       this.n = n; this.start = start; this.end = null;
+      this.actions = Object.assign({}, B.ACTIONS);    // this pull's job, for its results later
+      this.job = B.job ? `${B.job.abbr} · ${B.job.versionLabel}` : '';
+      this.jobId = B.jobId; this.abbr = B.job ? B.job.abbr : '';
       this.total = 0; this.hits = 0; this.crits = 0; this.dhs = 0; this.maxHit = null;
       this.byAction = {};
       this.uses = preUses || [];
@@ -60,7 +67,7 @@
     // Share of the fight spent casting or with the GCD rolling.
     uptime(now) {
       const end = this.end !== null ? this.end : now;
-      const iv = this.uses.filter(u => A[u.id].kind === 'gcd').map(u => {
+      const iv = this.uses.filter(u => (this.actions[u.id] || {}).kind === 'gcd').map(u => {
         const len = u.interrupted ? u.cut : Math.max(u.recast, u.cast ? u.cast + (u.tax || B.CASTER_TAX) : 0);
         return [Math.max(this.start, u.t), Math.min(end, u.t + len)];
       }).filter(([a, b]) => b > a).sort((a, b) => a[0] - b[0]);
@@ -110,7 +117,7 @@
       document.getElementById('ghost').classList.remove('show');
       if (this.over) this.over.el.classList.remove('droptarget');
       const s = app.ui.slotAt(ev.clientX, ev.clientY);
-      const bars = app.store.bars;
+      const bars = app.bars();
       if (s) {
         if (src.from === 'slot') {
           const prev = bars[s.b][s.i];
@@ -140,7 +147,10 @@
 
     init() {
       this.store = loadStore();
-      this.engine = new B.Engine(this.store.settings);
+      const st = this.store.settings;
+      this.job = B.setJob(st.job, st.versions[st.job]);
+      this.engine = new B.Engine(st, this.job);
+      this.engine.pos.z = -this.job.startDistance;
       this.sfx = new B.Sfx();
       this.sfx.setVolume(this.store.settings.volume);
       this.scene = new B.Scene(document.getElementById('scene'), this.engine, document.getElementById('fx'));
@@ -148,12 +158,12 @@
       this.scene.models = this.models;
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
-      this.ui.fillSettings();
+      this.ui.setJob();
       this.wireEngine();
       this.wireInput();
       this.layout();
       window.addEventListener('resize', () => this.layout());
-      this.ui.log('Welcome to the Endwalker training ground. Press F1 for controls and the 6.x rotation.', 'sys', 'system');
+      this.ui.log(`Welcome to the training ground. You're a ${this.job.name} (${this.job.versionLabel}). Press J to change job or version, F1 for controls and the rotation.`, 'sys', 'system');
       this.ui.log('Tip: /countdown 15 starts a pull. The parse meter starts on your first hit.', 'dim', 'system');
       this.last = performance.now();
       requestAnimationFrame(t => this.frame(t));
@@ -169,8 +179,34 @@
       this.ui.updateMeter(true);
     },
 
+    jobKey() { return this.job.id + ':' + this.job.version; },
+
+    // This job version's hotbars, from its defaults the first time (or if a saved slot names an unknown action).
+    bars() {
+      const key = this.jobKey();
+      const have = this.store.barsByJob[key];
+      if (!okGrid(have, v => v === null || !!A[v])) this.store.barsByJob[key] = this.job.defaultBars.map(r => r.slice());
+      return this.store.barsByJob[key];
+    },
+
+    // Change job or version: a fresh engine state, the job's hotbars, gauge, help and model.
+    switchJob(jobId, versionId) {
+      const st = this.store.settings;
+      st.job = jobId;
+      if (versionId) st.versions[jobId] = versionId;
+      this.save();
+      this.enc = null;
+      this.job = B.setJob(jobId, st.versions[jobId]);
+      this.engine.setJob(this.job);
+      this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
+      this.cd = null; this.cdEndedAt = null; this.recentUses = [];
+      this.ui.setJob();
+      this.models.setJob();
+      this.ui.log(`You change to ${this.job.name} (${this.job.versionLabel}).`, 'sys', 'system');
+    },
+
     resetLayout() {
-      this.store.bars = B.DEFAULT_BARS.map(r => r.slice());
+      this.store.barsByJob[this.jobKey()] = this.job.defaultBars.map(r => r.slice());
       this.store.binds = B.DEFAULT_BINDS.map(r => r.slice());
       this.save();
       this.ui.refreshBars();
@@ -189,9 +225,9 @@
 
     // Rough single-target dummy benchmark for the chosen GCD (no raid buffs).
     referenceDps() {
-      // Most GCDs are hardcasts, so ping stretches each one by about its own length.
-      const cycle = 2.65 + B.CASTER_TAX;
-      return B.REFERENCE_DPS * (2.37 / this.engine.speedScale(2.5)) ** 0.85 * cycle / (cycle + this.engine.latency(true));
+      // Each GCD (hardcast or weaponskill plus its lock) gets stretched by about the ping.
+      const j = this.job, cycle = 2.65 + B.CASTER_TAX;
+      return j.referenceDps * (j.referenceGcd / this.engine.gcdRecast()) ** 0.85 * cycle / (cycle + this.engine.latency(true));
     },
     parseColor(dps) {
       const k = dps / this.referenceDps();
@@ -215,15 +251,17 @@
         this.recentUses = this.recentUses.filter(x => ev.t - x.t < 40);
         if (this.enc) { this.enc.uses.push(u); this.enc.lastActivity = ev.t; }
       });
+      // Spells are cast; weaponskills are readied (a cast) and used.
+      const caster = () => e.job.role === 'caster';
       e.on('castStart', ev => {
         sc.onCastStart(ev.id);
-        sfx.play('cast');
-        ui.log(`You begin casting ${A[ev.id].name}.`, 'act');
+        sfx.play(caster() ? 'cast' : 'draw');
+        ui.log(caster() ? `You begin casting ${A[ev.id].name}.` : `You ready ${A[ev.id].name}.`, 'act');
       });
       e.on('resolve', ev => {
         const a = A[ev.id];
         sc.onRelease(ev.id);
-        if (a.kind === 'gcd') ui.log(`You cast ${a.name}.`, 'act');
+        if (a.kind === 'gcd') ui.log(caster() ? `You cast ${a.name}.` : `You use ${a.name}.`, 'act');
         else if (a.kind === 'item') ui.log(`You use a ${a.name}.`, 'act');
         else ui.log(`You use ${a.name}.`, 'act');
         if (a.kind !== 'gcd') sfx.play(ev.id === 'manafont' ? 'manafont' : 'ogcd');
@@ -258,7 +296,7 @@
         sc.onHit(ev);
         if (ev.dot) sfx.play('dot');
         else {
-          const snd = { fire: 'fire', fire3: 'fire', fire4: 'fire4', despair: 'despair', blizzard: 'ice', blizzard3: 'ice', blizzard4: 'ice4', thunder3: 'thunder', xenoglossy: 'xeno', foul: 'xeno', paradox: 'paradox', scathe: 'xeno' }[ev.id];
+          const snd = a.fx || { fire: 'fire', fire3: 'fire', fire4: 'fire4', despair: 'despair', blizzard: 'ice', blizzard3: 'ice', blizzard4: 'ice4', thunder3: 'thunder', xenoglossy: 'xeno', foul: 'xeno', paradox: 'paradox', scathe: 'xeno' }[ev.id];
           if (snd) sfx.play(snd);
         }
       });
@@ -321,7 +359,7 @@
 
     fullReset() {
       this.engine.reset();
-      this.engine.pos.x = 0; this.engine.pos.z = -10;
+      this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
       this.enc = null;
       this.cd = null;
       this.cdEndedAt = null;
@@ -381,7 +419,7 @@
 
     useSlot(b, i) {
       if (this.keybindMode) return;
-      const id = this.store.bars[b][i];
+      const id = this.bars()[b][i];
       if (!id) return;
       this.sfx.ensure();
       this.ui.flashSlot(b, i);
@@ -429,6 +467,7 @@
         }
         if (!ev.ctrlKey && !ev.altKey && !ev.shiftKey) {
           if (code === 'KeyP') { this.toggleWindow('win-actions'); return; }
+          if (code === 'KeyJ') { this.ui.buildJobs(); this.toggleWindow('win-job'); return; }
           if (code === 'KeyK') { this.toggleKeybind(); return; }
         }
       });
@@ -442,6 +481,7 @@
       });
 
       const on = (id, fn) => document.getElementById(id).addEventListener('click', fn);
+      on('b-job', () => { this.ui.buildJobs(); this.toggleWindow('win-job'); });
       on('b-pull', () => this.toggleCountdown());
       on('b-reset', () => this.fullReset());
       on('b-actions', () => this.toggleWindow('win-actions'));
@@ -497,7 +537,7 @@
       if (Math.abs(dx) < 1e-6 && Math.abs(dz) < 1e-6) { dx = 0; dz = 0; }
       e.move(dx, dz, dt);
       e.advance(dt);
-      e.syncCircle();
+      e.frame();
       this.updateCountdown();
 
       if (this.enc) {
@@ -516,7 +556,5 @@
   };
 
   B.app = app;
-  // A scripted bot playing the 6.x loop averages ~13.5k at 2.37 over 5 minutes.
-  B.REFERENCE_DPS = 14300;
   window.addEventListener('DOMContentLoaded', () => app.init());
 })(window.BLM);

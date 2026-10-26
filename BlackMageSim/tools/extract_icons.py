@@ -24,7 +24,9 @@ import game  # noqa: E402  (PmpViewer/server/game.py)
 
 OUT = ROOT / "work"
 
-# Sim id -> (sheet row, expected English name). Ids are the PvE rows; names are checked so a wrong id shows up.
+# Per job: sim action id -> (Action row, expected English name), statuses (row id or name), icon overrides for
+# actions Dawntrail removed (their rows now point at the generic removed-action icon, 000786), the tincture and
+# the ClassJob row for the job crest. Ids are the PvE rows; names are checked so a wrong id shows up.
 ACTIONS = {
     "fire": (141, "Fire"), "blizzard": (142, "Blizzard"), "transpose": (149, "Transpose"),
     "fire3": (152, "Fire III"), "thunder3": (153, "Thunder III"), "blizzard3": (154, "Blizzard III"),
@@ -36,18 +38,44 @@ ACTIONS = {
     "surecast": (7559, "Surecast"), "addle": (7560, "Addle"), "swiftcast": (7561, "Swiftcast"),
     "lucidDreaming": (7562, "Lucid Dreaming"), "sprint": (3, "Sprint"),
 }
-STATUSES = {
+BLM_STATUSES = {
     "firestarter": "Firestarter", "thundercloud": "Thundercloud", "sharpcast": "Sharpcast",
     "triplecast": "Triplecast", "swiftcast": "Swiftcast", "leyLines": "Ley Lines",
     "circleOfPower": "Circle of Power", "lucidDreaming": "Lucid Dreaming", "manaward": "Manaward",
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated", "thunder3": "Thunder III",
     "addle": "Addle",
 }
-# Dawntrail removed Sharpcast and pointed its row at the generic removed-action icon (000786);
-# its Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
-ICON_OVERRIDES = {"sharpcast": 2657}
-TINCTURE = "Grade 8 Tincture of Intelligence"
-BLM_JOB = 25
+SAM_ACTIONS = {
+    "hakaze": (7477, "Hakaze"), "jinpu": (7478, "Jinpu"), "shifu": (7479, "Shifu"), "yukikaze": (7480, "Yukikaze"),
+    "gekko": (7481, "Gekko"), "kasha": (7482, "Kasha"), "enpi": (7486, "Enpi"), "iaijutsu": (7867, "Iaijutsu"),
+    "midareSetsugekka": (7487, "Midare Setsugekka"), "tenkaGoken": (7488, "Tenka Goken"), "higanbana": (7489, "Higanbana"),
+    "shinten": (7490, "Hissatsu: Shinten"), "kyuten": (7491, "Hissatsu: Kyuten"), "gyoten": (7492, "Hissatsu: Gyoten"),
+    "yaten": (7493, "Hissatsu: Yaten"), "kaiten": (7494, "Hissatsu: Kaiten"), "hagakure": (7495, "Hagakure"),
+    "guren": (7496, "Hissatsu: Guren"), "meditate": (7497, "Meditate"), "thirdEye": (7498, "Third Eye"),
+    "meikyoShisui": (7499, "Meikyo Shisui"), "senei": (16481, "Hissatsu: Senei"), "ikishoten": (16482, "Ikishoten"),
+    "tsubameGaeshi": (16483, "Tsubame-gaeshi"), "kaeshiHiganbana": (16484, "Kaeshi: Higanbana"),
+    "kaeshiGoken": (16485, "Kaeshi: Goken"), "kaeshiSetsugekka": (16486, "Kaeshi: Setsugekka"), "shoha": (16487, "Shoha"),
+    "ogiNamikiri": (25781, "Ogi Namikiri"), "kaeshiNamikiri": (25782, "Kaeshi: Namikiri"),
+    "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
+    "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+# Dawntrail renamed some of these, so they go by row (1298 Fugetsu, 1299 Fuka).
+SAM_STATUSES = {
+    "fugetsu": 1298, "fuka": 1299, "kaiten": 1229, "meikyoShisui": 1233, "enhancedEnpi": 1236, "higanbana": 1228,
+    "ogiNamikiriReady": 2959, "thirdEye": 1232, "meditate": 1231, "trueNorth": 1250, "bloodbath": 84, "feint": 1195,
+    "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+}
+
+JOBS = {
+    # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
+    "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
+            "tincture": "Grade 8 Tincture of Intelligence", "classjob": 25},
+    # Kaiten (Lv52) sits between Meikyo Shisui (003167) and Gyoten (003169); Kaeshi: Higanbana between
+    # Tsubame-gaeshi (003180) and Kaeshi: Goken (003182). No current action uses either icon.
+    "sam": {"actions": SAM_ACTIONS, "statuses": SAM_STATUSES, "overrides": {"kaiten": 3168, "kaeshiHiganbana": 3181},
+            "tincture": "Grade 6 Tincture of Strength", "classjob": 34},
+}
 
 
 # ---------- Excel sheets (EXH/EXD, big-endian) ----------
@@ -140,52 +168,49 @@ def main():
         img, url = png_data_url(icon)
         icons[key] = url
         img.save(OUT / "icons" / f"{key.replace(':', '_')}.png")
-        report.append(f"{key:24s} {icon:06d}  {img.width}x{img.height}")
+        report.append(f"{key:30s} {icon:06d}  {img.width}x{img.height}")
 
-    action = Sheet("Action")
+    action, status, item = Sheet("Action"), Sheet("Status"), Sheet("Item")
     ncol = name_col(action, 141, "Fire")
-    for key, (rid, name) in ACTIONS.items():
-        got = action.value(rid, ncol)
-        if got != name:
-            raise RuntimeError(f"Action {rid} is {got!r}, expected {name!r}")
-    icol = icon_col(action, [r for r, _ in ACTIONS.values()])
-    for key, (rid, _) in ACTIONS.items():
-        put(key, ICON_OVERRIDES.get(key) or action.value(rid, icol))
-
-    status = Sheet("Status")
-    rows = status.rows()
-    scol = next(c for c in status.string_cols() if any(status.value(r, c) == "Firestarter" for r in rows))
+    srows = status.rows()
+    scol = next(c for c in status.string_cols() if any(status.value(r, c) == "Firestarter" for r in srows))
     by_name = {}
-    for r in sorted(rows):
+    for r in sorted(srows):
         by_name.setdefault(status.value(r, scol), r)        # lowest row = the original PvE status
-    sids = {key: by_name[name] for key, name in STATUSES.items()}
-    sicol = icon_col(status, list(sids.values()), 10000)
     stacks_col = None
     for c, (t, _) in enumerate(status.cols):              # MaxStacks: the u8 that is 3 for Triplecast, 0 for Swiftcast
-        if t == 3 and status.value(sids["triplecast"], c) == 3 and status.value(sids["swiftcast"], c) == 0:
+        if t == 3 and status.value(1211, c) == 3 and status.value(167, c) == 0:
             stacks_col = c
             break
-    for key, rid in sids.items():
-        base = status.value(rid, sicol)
-        put("st:" + key, base)
-        stacks = status.value(rid, stacks_col) if stacks_col is not None else 0
-        for n in range(1, stacks + 1):                    # stacking statuses carry one icon per stack count
-            put(f"st:{key}:{n}", base + n - 1)
-
-    item = Sheet("Item")
     irows = item.rows()
-    tid = incol = None
-    for c in item.string_cols():
-        tid = next((r for r in irows if item.value(r, c) == TINCTURE), None)
-        if tid is not None:
-            incol = c
-            break
-    if tid is None:
-        raise RuntimeError(f"no item named {TINCTURE!r}")
-    potions = [r for r in irows if str(item.value(r, incol)).startswith("Grade 8 Tincture of")][:4]
-    put("tincture", item.value(tid, icon_col(item, potions, 20000, 100000)))
+    incol = next(c for c in item.string_cols() if item.value(1, c) == "Gil")
+    icol = None
+    for job, cfg in JOBS.items():
+        acts = cfg["actions"]
+        for key, (rid, name) in acts.items():
+            got = action.value(rid, ncol)
+            if got != name:
+                raise RuntimeError(f"Action {rid} is {got!r}, expected {name!r}")
+        if icol is None:
+            icol = icon_col(action, [r for r, _ in acts.values()])
+        for key, (rid, _) in acts.items():
+            put(f"{job}:{key}", cfg["overrides"].get(key) or action.value(rid, icol))
 
-    put("job", 62100 + BLM_JOB)                            # job icons: 062100 + ClassJob row
+        sids = {k: (v if isinstance(v, int) else by_name[v]) for k, v in cfg["statuses"].items()}
+        sicol = icon_col(status, list(sids.values()), 10000)
+        for key, rid in sids.items():
+            base = status.value(rid, sicol)
+            put(f"st:{job}:{key}", base)
+            stacks = status.value(rid, stacks_col) if stacks_col is not None else 0
+            for n in range(1, stacks + 1):                    # stacking statuses carry one icon per stack count
+                put(f"st:{job}:{key}:{n}", base + n - 1)
+
+        tid = next((r for r in irows if item.value(r, incol) == cfg["tincture"]), None)
+        if tid is None:
+            raise RuntimeError(f"no item named {cfg['tincture']!r}")
+        potions = [r for r in irows if str(item.value(r, incol)).startswith("Grade 8 Tincture of")][:4]
+        put(f"{job}:tincture", item.value(tid, icon_col(item, potions, 20000, 100000)))
+        put(f"job:{job}", 62100 + cfg["classjob"])           # job icons: 062100 + ClassJob row
 
     js = "// Generated by tools/extract_icons.py from your FFXIV install. FINAL FANTASY XIV (c) SQUARE ENIX.\n"
     js += "window.BLM = window.BLM || {};\nBLM.GAME_ICONS = " + json.dumps(icons, indent=0) + ";\n"

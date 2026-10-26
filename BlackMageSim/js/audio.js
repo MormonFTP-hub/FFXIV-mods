@@ -62,6 +62,28 @@
         case 'xeno': this.tone('sine', 260, 55, 0.7, 0.5); this.noise('lowpass', 600, 1, 0.6, 0.4); this.tone('triangle', 880, 660, 0.4, 0.06); break;
         case 'paradox': [880, 1320, 1760, 2640].forEach((f, i) => this.tone('sine', f, f, 0.45, 0.07, i * 0.04)); this.noise('highpass', 6000, 1, 0.2, 0.1); break;
         case 'dot': this.noise('bandpass', 3500, 3, 0.08, 0.12); break;
+        // Samurai: a blade leaving the sheath, swishes, and heavier cuts for Iaijutsu and the big oGCDs.
+        case 'draw': this.noise('highpass', 5000, 1, 0.25, 0.08); this.tone('triangle', 2800, 3100, 0.2, 0.03); break;
+        case 'auto': this.noise('bandpass', 2600, 1.2, 0.07, 0.12); break;
+        case 'slash': case 'slash2': case 'shinten': case 'enpi':
+          this.noise('bandpass', 3800, 1.2, 0.14, 0.32); this.tone('sawtooth', 900, 280, 0.12, 0.04);
+          if (kind === 'slash2') this.noise('bandpass', 4400, 1.2, 0.12, 0.25, 0.09);
+          break;
+        case 'slash3': case 'slashFire': case 'slashIce':
+          this.noise('bandpass', 3400, 1, 0.18, 0.38); this.noise('bandpass', 4200, 1.2, 0.14, 0.28, 0.1);
+          this.tone('sine', 160, 70, 0.25, 0.18);
+          if (kind === 'slashIce') this.tone('sine', 2200, 2100, 0.4, 0.06, 0.05);
+          if (kind === 'slashFire') this.noise('lowpass', 900, 1, 0.4, 0.25, 0.05);
+          break;
+        case 'higanbana': case 'tenka':
+          this.noise('bandpass', 3000, 1, 0.22, 0.45); this.tone('sine', 120, 50, 0.4, 0.3);
+          this.tone('triangle', 2400, 2350, 0.5, 0.04, 0.05);
+          break;
+        case 'midare': case 'ogi': case 'senei': case 'shoha':
+          [0, 0.07, 0.14].forEach(d => this.noise('bandpass', 3200 + d * 6000, 1, 0.16, 0.4, d));
+          this.noise('lowpass', 1100, 0.8, 0.6, 0.5, 0.1); this.tone('sine', 90, 35, 0.6, 0.45, 0.1);
+          this.tone('triangle', 2600, 2550, 0.8, 0.05, 0.15);
+          break;
         case 'ogcd': this.tone('sine', 1300, 1700, 0.18, 0.06); this.tone('sine', 1950, 2300, 0.15, 0.03, 0.03); break;
         case 'manafont': this.tone('sine', 400, 1200, 0.6, 0.12); this.noise('highpass', 3000, 1, 0.5, 0.08); break;
         case 'error': this.tone('square', 180, 160, 0.12, 0.04); break;

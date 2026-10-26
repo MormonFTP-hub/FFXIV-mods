@@ -43,7 +43,6 @@
       this.buildActions();
       this.buildHelp();
       this.buildSettings();
-      $('#party-job').src = B.jobIcon();
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => this.closeWindows()));
     }
 
@@ -78,7 +77,7 @@
     }
 
     refreshBars() {
-      const { bars, binds } = this.app.store;
+      const bars = this.app.bars(), binds = this.app.store.binds;
       for (let b = 0; b < 3; b++) for (let i = 0; i < 12; i++) {
         const s = this.slots[b][i];
         s.id = bars[b][i];
@@ -129,7 +128,7 @@
         this.set(s, 'un', !!err, v => s.el.classList.toggle('unusable', v));
         const oor = !!a.target && e.distToTarget() - B.DUMMY_RADIUS > B.RANGE;
         this.set(s, 'oor', oor, v => s.el.classList.toggle('oor', v));
-        const proc = (rid === 'fire3' && e.has('firestarter')) || (rid === 'thunder3' && e.has('thundercloud')) || rid === 'paradox';
+        const proc = !!(e.job.proc && e.job.proc(rid, e));
         this.set(s, 'proc', proc, v => s.el.classList.toggle('proc', v));
         const q = e.queue.length > 0 && e.queuedIds().includes(rid);
         this.set(s, 'q', q, v => s.el.classList.toggle('queued', v));
@@ -208,70 +207,9 @@
     }
     hideTip() { $('#tip').classList.remove('show'); }
 
-    // ---------- Elemental Gauge ----------
-    buildGauge() {
-      const C = 2 * Math.PI * 78;
-      this.enoC = C;
-      const heart = 'M0 6 C-10 -2 -9 -12 -3 -12 C-1 -12 0 -10 0 -9 C0 -10 1 -12 3 -12 C9 -12 10 -2 0 6 Z';
-      const cryst = 'M0 -16 L8 -2 L0 16 L-8 -2 Z';
-      $('#gauge').innerHTML = `
-<svg width="360" height="220" viewBox="0 0 360 220">
-  <defs>
-    <radialGradient id="oAF" cx="45%" cy="38%" r="70%"><stop offset="0" stop-color="#ffe2a8"/><stop offset=".35" stop-color="#ff7a2a"/><stop offset="1" stop-color="#5a0b04"/></radialGradient>
-    <radialGradient id="oUI" cx="45%" cy="38%" r="70%"><stop offset="0" stop-color="#eaffff"/><stop offset=".35" stop-color="#5fb8ff"/><stop offset="1" stop-color="#06204a"/></radialGradient>
-    <radialGradient id="oNo" cx="45%" cy="38%" r="70%"><stop offset="0" stop-color="#5a5468"/><stop offset="1" stop-color="#121018"/></radialGradient>
-    <linearGradient id="eno" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2d0ff"/><stop offset="1" stop-color="#8d3cff"/></linearGradient>
-    <radialGradient id="poly" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#fbe9ff"/><stop offset=".5" stop-color="#b860ff"/><stop offset="1" stop-color="#3d0a6e"/></radialGradient>
-    <linearGradient id="para" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7b7b"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#6fb8ff"/></linearGradient>
-    <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <path d="M110 18 L330 18 Q346 18 346 34 L346 184 Q346 200 330 200 L110 200" fill="rgba(14,12,20,.86)" stroke="rgba(255,255,255,.22)"/>
-  <circle cx="110" cy="109" r="92" fill="#0b0912" stroke="rgba(230,196,122,.55)" stroke-width="2"/>
-  <circle cx="110" cy="109" r="78" fill="none" stroke="#221b33" stroke-width="10"/>
-  <circle id="g-eno" cx="110" cy="109" r="78" fill="none" stroke="url(#eno)" stroke-width="10" stroke-dasharray="0 ${C}" transform="rotate(-90 110 109)" filter="url(#gl)"/>
-  <circle id="g-orb" cx="110" cy="109" r="64" fill="url(#oNo)" stroke="rgba(0,0,0,.8)" stroke-width="2"/>
-  <g id="g-flame" opacity="0" transform="translate(110 100) scale(1.15)"><path d="M0 -38 C4 -26 18 -18 18 -2 C18 12 10 22 0 22 C-10 22 -18 12 -18 0 C-18 -10 -12 -14 -10 -22 C-7 -16 -5 -12 -3 -10 C-2 -20 -4 -28 0 -38 Z" fill="#fff4cf" opacity=".85"/></g>
-  <g id="g-ice" opacity="0" transform="translate(110 100) scale(1.1)"><path d="M0 -38 L11 -6 L0 26 L-11 -6 Z" fill="#f2fdff" opacity=".9"/><path d="M-20 -14 L-11 -6 L-16 8 Z M20 -14 L11 -6 L16 8 Z" fill="#dff7ff" opacity=".7"/></g>
-  <text id="g-time" class="eltime" x="110" y="122" text-anchor="middle"></text>
-  ${[0, 1, 2].map(k => `<path id="g-stk${k}" d="M0 -10 L7 0 L0 10 L-7 0 Z" transform="translate(${82 + k * 28} ${k === 1 ? 187 : 182})" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}
-  ${[0, 1].map(k => `<g transform="translate(${226 + k * 36} 66)"><path id="g-poly${k}" d="${cryst}" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>`).join('')}
-  <g transform="translate(314 66)"><rect id="g-para" x="-12" y="-12" width="24" height="24" transform="rotate(45)" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>
-  ${[0, 1, 2].map(k => `<g transform="translate(${226 + k * 34} 152) scale(1.35)"><path id="g-ht${k}" d="${heart}" fill="#1c2233" stroke="rgba(255,255,255,.25)" stroke-width="1.1"/></g>`).join('')}
-  <text x="244" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">POLYGLOT</text>
-  <text x="314" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">PARADOX</text>
-  <text x="260" y="186" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">UMBRAL HEARTS</text>
-</svg>`;
-      this.g = {
-        eno: $('#g-eno'), orb: $('#g-orb'), flame: $('#g-flame'), ice: $('#g-ice'), time: $('#g-time'),
-        stk: [0, 1, 2].map(k => $('#g-stk' + k)), poly: [0, 1].map(k => $('#g-poly' + k)), para: $('#g-para'),
-        ht: [0, 1, 2].map(k => $('#g-ht' + k)), cache: {},
-      };
-    }
-
-    updateGauge() {
-      const e = this.e, g = this.g, c = g.cache;
-      const el = e.element;
-      const put = (k, v, fn) => { if (c[k] !== v) { c[k] = v; fn(v); } };
-      put('orb', el > 0 ? 'af' : el < 0 ? 'ui' : 'no', v => g.orb.setAttribute('fill', v === 'af' ? 'url(#oAF)' : v === 'ui' ? 'url(#oUI)' : 'url(#oNo)'));
-      put('fl', el > 0 ? 1 : 0, v => g.flame.setAttribute('opacity', v * 0.95));
-      put('ic', el < 0 ? 1 : 0, v => g.ice.setAttribute('opacity', v * 0.95));
-      const left = el !== 0 ? Math.max(0, e.elementUntil - e.now) : 0;
-      put('t', el !== 0 ? String(Math.ceil(left - 1e-6)) : '', v => { g.time.textContent = v; });
-      put('tc', left > 0 && left < 4 ? 'warn' : 'ok', v => g.time.setAttribute('fill', v === 'warn' ? '#ffd36b' : '#fff'));
-      for (let k = 0; k < 3; k++) {
-        const on = Math.abs(el) > k;
-        put('s' + k, on ? (el > 0 ? 'f' : 'i') : 'n', v => {
-          g.stk[k].setAttribute('fill', v === 'f' ? '#ff6a3d' : v === 'i' ? '#6cc6ff' : '#2a2535');
-          g.stk[k].setAttribute('filter', v === 'n' ? '' : 'url(#gl)');
-        });
-        put('h' + k, e.hearts > k, v => { g.ht[k].setAttribute('fill', v ? '#8fd8ff' : '#1c2233'); g.ht[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
-      }
-      for (let k = 0; k < 2; k++) put('p' + k, e.polyglot > k, v => { g.poly[k].setAttribute('fill', v ? 'url(#poly)' : '#251d33'); g.poly[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
-      put('para', e.paradox, v => { g.para.setAttribute('fill', v ? 'url(#para)' : '#251d33'); g.para.setAttribute('filter', v ? 'url(#gl)' : ''); });
-      const prog = e.enoStart !== null ? Math.min(1, (e.now - e.enoStart) / B.POLYGLOT_TIME) : 0;
-      const dash = (prog * this.enoC).toFixed(1);
-      put('eno', dash, v => g.eno.setAttribute('stroke-dasharray', `${v} ${this.enoC}`));
-    }
+    // ---------- job gauge (drawn by the job module) ----------
+    buildGauge() { this.e.job.gaugeBuild($('#gauge')); }
+    updateGauge() { this.e.job.gaugeUpdate(this.e); }
 
     // ---------- statuses ----------
     syncStatusRow(container, map, list, now) {
@@ -303,9 +241,9 @@
 
     updateStatuses() {
       const e = this.e, now = e.now;
-      const self = B.SELF_STATUS_ORDER.filter(k => e.statuses[k] && e.statuses[k].until > now).map(k => ({ key: k, s: e.statuses[k] }));
+      const self = e.job.selfStatusOrder.filter(k => e.statuses[k] && e.statuses[k].until > now).map(k => ({ key: k, s: e.statuses[k] }));
       this.syncStatusRow($('#buffs'), this.statusEls, self, now);
-      const tl = ['thunder3', 'addle'].filter(k => e.tStatuses[k] && e.tStatuses[k].until > now).map(k => ({ key: k, s: e.tStatuses[k] }));
+      const tl = e.job.targetStatusOrder.filter(k => e.tStatuses[k] && e.tStatuses[k].until > now).map(k => ({ key: k, s: e.tStatuses[k] }));
       this.syncStatusRow($('#tdebuffs'), this.tStatusEls, tl, now);
     }
 
@@ -368,13 +306,10 @@
       // MP tick timer: fills over the 3s server tick, labelled with what the tick will give.
       const left = Math.max(0, e.mpTickNext - e.now);
       $('#p-tick').style.transform = `scaleX(${(1 - left / 3).toFixed(3)})`;
-      let gain = 0;
-      if (e.element <= 0) {
-        gain = e.element < 0 ? B.UI_REGEN[-e.element - 1] : B.BASE_REGEN;
-        if (e.has('lucidDreaming')) gain += B.LUCID_REGEN;
-      }
-      const af = e.element > 0;
-      const txt = af ? `tick ${left.toFixed(1)}s · no regen in Astral Fire` : `+${gain} in ${left.toFixed(1)}s`;
+      const gain = e.mpTickGain();
+      const note = e.job.mpTickNote ? e.job.mpTickNote(e) : null;
+      const af = !!note;
+      const txt = note ? `tick ${left.toFixed(1)}s · ${note}` : `+${gain} in ${left.toFixed(1)}s`;
       put('tick', txt, v => { $('#p-ticktxt').textContent = v; });
       put('tickaf', af, v => { $('#p-ticktxt').classList.toggle('af', v); $('#p-tickbar').classList.toggle('af', v); });
     }
@@ -473,7 +408,7 @@
       const name = esc(app.store.settings.name);
       if (!enc) {
         m.innerHTML = `<div class="hd"><span>Striking Dummy</span><b>00:00</b></div>` +
-          `<div class="row"><i style="transform:scaleX(0)"></i><div class="in"><img src="${B.jobIcon()}" alt=""><div class="who">${name}<small>BLM</small></div><div class="dps outline">0</div></div></div>` +
+          `<div class="row"><i style="transform:scaleX(0)"></i><div class="in"><img src="${B.jobIcon()}" alt=""><div class="who">${name}<small>${esc(this.e.job.abbr)}</small></div><div class="dps outline">0</div></div></div>` +
           `<div class="maxhit">Hit the dummy to start a parse. Use <b>/countdown</b> for a pull.</div>` + this.histHtml() + this.meterActs();
         this.bindMeter();
         return;
@@ -486,9 +421,9 @@
       const dh = enc.hits ? (enc.dhs / enc.hits * 100).toFixed(1) : '0.0';
       const max = enc.maxHit;
       m.innerHTML = `<div class="hd"><span>${enc.end ? 'Last pull' : 'Striking Dummy'}</span><b>${mm}:${ss}</b></div>` +
-        `<div class="row"><i style="transform:scaleX(1)"></i><div class="in"><img src="${B.jobIcon()}" alt=""><div class="who">${name}<small>BLM · ${fmt(enc.total)} dmg</small></div><div class="dps outline" style="color:${color}">${fmt(dps)}</div></div></div>` +
+        `<div class="row"><i style="transform:scaleX(1)"></i><div class="in"><img src="${B.jobIcon(enc.jobId)}" alt=""><div class="who">${name}<small>${esc(enc.abbr || '')} · ${fmt(enc.total)} dmg</small></div><div class="dps outline" style="color:${color}">${fmt(dps)}</div></div></div>` +
         `<div class="sub"><div>Crit<b>${crit}%</b></div><div>Direct hit<b>${dh}%</b></div><div>GCD uptime<b>${enc.uptime(now).toFixed(1)}%</b></div></div>` +
-        (max ? `<div class="maxhit">Max hit: ${esc(A[max.id].name)} <b>${fmt(max.amount)}${max.crit ? '!' : ''}${max.dh ? '!' : ''}</b></div>` : '') +
+        (max ? `<div class="maxhit">Max hit: ${esc(((enc.actions || A)[max.id] || {}).name || max.id)} <b>${fmt(max.amount)}${max.crit ? '!' : ''}${max.dh ? '!' : ''}</b></div>` : '') +
         this.histHtml() + this.meterActs();
       this.bindMeter();
     }
@@ -524,6 +459,7 @@
     anyWindow() { return !!document.querySelector('.win.show'); }
 
     showResults(enc) {
+      const EA = (enc && enc.actions) || A;
       const now = this.e.now;
       const dur = enc.duration(now);
       const dps = enc.total / dur;
@@ -542,14 +478,14 @@
       html += `<table class="brk"><thead><tr><th>Action</th><th>Casts</th><th>Hits</th><th>Damage</th><th>%</th><th>Average</th><th>Crit %</th><th>DH %</th><th>Max</th></tr></thead><tbody>`;
       for (const [id, r] of rows) {
         const pct = r.total / Math.max(1, enc.total) * 100;
-        html += `<tr><td><img src="${B.icon(id)}" alt="">${esc(A[id].name)}${r.dotHits ? ' <span style="color:#a9a3b4">(+DoT)</span>' : ''}</td>` +
+        html += `<tr><td><img src="${B.icon(id)}" alt="">${esc(EA[id].name)}${r.dotHits ? ' <span style="color:#a9a3b4">(+DoT)</span>' : ''}</td>` +
           `<td>${casts[id] || 0}</td><td>${r.hits}</td><td>${fmt(r.total)}</td><td>${pct.toFixed(1)}<span class="pbar"><i style="width:${pct}%"></i></span></td>` +
           `<td>${fmt(r.total / r.hits)}</td><td>${(r.crits / r.hits * 100).toFixed(0)}</td><td>${(r.dhs / r.hits * 100).toFixed(0)}</td><td>${fmt(r.max)}</td></tr>`;
       }
-      const ogcds = Object.entries(casts).filter(([id]) => A[id].kind !== 'gcd');
+      const ogcds = Object.entries(casts).filter(([id]) => EA[id].kind !== 'gcd');
       if (ogcds.length) {
         html += `<tr><td colspan="9" style="padding-top:10px;color:#a9a3b4;font-size:12.5px">Abilities used: ` +
-          ogcds.map(([id, n]) => `${esc(A[id].name)} ×${n}`).join(' · ') + (ints ? ` · Interrupted casts: ${ints}` : '') + `</td></tr>`;
+          ogcds.map(([id, n]) => `${esc(EA[id].name)} ×${n}`).join(' · ') + (ints ? ` · Interrupted casts: ${ints}` : '') + `</td></tr>`;
       }
       html += '</tbody></table>';
       if (this.app.store.settings.showTimeline) html += this.timelineHtml(enc, now);
@@ -558,6 +494,7 @@
     }
 
     timelineHtml(enc, now) {
+      const EA = (enc && enc.actions) || A;
       const pxs = 46;
       const t0 = Math.min(enc.start, enc.uses.length ? enc.uses[0].t : enc.start);
       const t1 = enc.end || now;
@@ -570,11 +507,11 @@
       }
       for (const u of enc.uses) {
         const x = (u.t - t0) * pxs + 20;
-        if (A[u.id].kind === 'gcd') {
+        if (EA[u.id].kind === 'gcd') {
           if (u.cast) h += `<div class="castbar" style="left:${x}px;width:${(u.interrupted ? u.cut : u.cast) * pxs}px;${u.interrupted ? 'background:#c0392b' : ''}"></div>`;
-          h += `<img src="${B.icon(u.id)}" title="${esc(A[u.id].name)} @ ${(u.t - enc.start).toFixed(2)}s" style="left:${x}px;top:22px;width:34px;height:34px;${u.interrupted ? 'opacity:.4' : ''}">`;
+          h += `<img src="${B.icon(u.id)}" title="${esc(EA[u.id].name)} @ ${(u.t - enc.start).toFixed(2)}s" style="left:${x}px;top:22px;width:34px;height:34px;${u.interrupted ? 'opacity:.4' : ''}">`;
         } else {
-          h += `<img src="${B.icon(u.id)}" title="${esc(A[u.id].name)} @ ${(u.t - enc.start).toFixed(2)}s" style="left:${x}px;top:66px;width:26px;height:26px">`;
+          h += `<img src="${B.icon(u.id)}" title="${esc(EA[u.id].name)} @ ${(u.t - enc.start).toFixed(2)}s" style="left:${x}px;top:66px;width:26px;height:26px">`;
         }
       }
       h += '</div></div><div class="tlhint">Top row: spells (gold line = cast time). Bottom row: abilities. Hover an icon for its time.</div>';
@@ -582,11 +519,7 @@
     }
 
     buildActions() {
-      const groups = [
-        ['Black Mage', ['fire', 'fire3', 'fire4', 'despair', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'paradox', 'xenoglossy', 'foul', 'scathe', 'umbralSoul', 'transpose', 'sharpcast', 'triplecast', 'manafont', 'amplifier', 'leyLines', 'betweenTheLines', 'manaward']],
-        ['Role Actions', ['swiftcast', 'lucidDreaming', 'addle', 'surecast']],
-        ['General', ['sprint', 'tincture']],
-      ];
+      const groups = this.e.job.actionGroups;
       let html = '<div style="color:#a9a3b4;font-size:13.5px;margin-bottom:10px">Drag an action onto a hotbar slot. Drag a slot onto another to swap them, or off the bars to clear it.</div>';
       for (const [title, ids] of groups) {
         html += `<div class="ahead">${title}</div><div class="agrid">`;
@@ -606,9 +539,11 @@
     }
 
     buildHelp() {
+      const job = this.e.job;
       const ic = (id, og) => `<img class="${og ? 'og' : ''}" src="${B.icon(id)}" title="${esc(A[id].name)}" alt="${esc(A[id].name)}">`;
       const ar = '<span class="ar">›</span>';
       const seq = (items) => '<div class="seq">' + items.map(x => Array.isArray(x) ? ic(x[0], true) : ic(x)).join(ar) + '</div>';
+      $('#help-title').textContent = `How to play: ${job.name}, ${job.versionLabel}`;
       $('#helpbody').innerHTML = `
 <h3>Controls</h3>
 <table>
@@ -616,21 +551,12 @@
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>
 <tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>.</td></tr>
-<tr><td>Windows</td><td><kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
+<tr><td>Windows</td><td><kbd>J</kbd> Job, <kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
 </table>
-
-<h3>How it plays (Endwalker 6.5)</h3>
-<p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Buttons queue like the game: a spell queues in the last 0.5s of the GCD or of a cast, and anything pressed during an animation lock waits for it. The queue keeps one spell and two abilities in the order you pressed them, so Triplecast then Fire IV comes out instant. Without NoClippy or XivAlexander your ping sits on top of every animation lock and every caster tax, so set your real ping in Settings: that's what makes double weaves clip. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
-<p>Paradox lights up when you swap from Astral Fire III into ice, or from Umbral Ice III with 3 Umbral Hearts into fire. Fire and Blizzard become Paradox. In ice it's instant and free; in fire it refreshes Astral Fire and can proc Firestarter. Thunder III ticks can proc Thundercloud (instant Thunder III with the whole DoT added up front).</p>
-
-<h3>Standard rotation</h3>
-${seq(['blizzard3', 'blizzard4', 'paradox', 'fire3', 'fire4', 'fire4', 'fire4', 'paradox', 'fire4', 'fire4', 'fire4', 'despair'])}
-<p>Keep Thunder III up (refresh around every 30s, ideally with Thundercloud), spend Polyglot on Xenoglossy before it overcaps, and use Sharpcast on Thunder III or Paradox. Manafont after Despair buys one more Fire IV and Despair.</p>
-
-<h3>A typical 6.x opener</h3>
-${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire4', ['amplifier'], 'fire4', ['leyLines'], ['swiftcast'], 'despair', ['manafont'], 'fire4', 'despair', 'blizzard3', 'xenoglossy', 'paradox', 'blizzard4', 'fire3'])}
-<p>Sharpcast about 15s before the pull, then start Fire III so it lands as the countdown ends (around −3.3s at 2.37). Use the Tincture around then too. Stand in Ley Lines for the 15% cast and GCD speed.</p>
-<p style="color:#a9a3b4">Everything runs on the 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick. ${B.GAME_ICONS || B.GAME_MODELS ? `${B.GAME_MODELS ? 'Icons, models and animations' : 'Icons'} are the game's own, read from your install. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made practice tool, not affiliated with Square Enix.` : 'Icons are drawn for this page, not taken from the game.'}</p>`;
+<h3>Timing</h3>
+<p>GCD actions share a 2.5s recast (faster with ${job.speedName.toLowerCase()}). Abilities are oGCDs: weave them between GCDs. Buttons queue like the game: a GCD queues in its last 0.5s or a cast's last 0.5s, and anything pressed during an animation lock waits for it. The queue keeps one GCD and two abilities in the order you pressed them. Without NoClippy or XivAlexander your ping sits on top of every animation lock and every caster tax, so set your real ping in Settings: that's what makes double weaves clip.</p>
+${job.helpHtml(seq, ic)}
+<p style="color:#a9a3b4">${B.GAME_ICONS || B.GAME_MODELS ? `${B.GAME_MODELS ? 'Icons, models and animations' : 'Icons'} are the game's own, read from your install. FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made practice tool, not affiliated with Square Enix.` : 'Icons are drawn for this page, not taken from the game.'}</p>`;
     }
 
     buildSettings() {
@@ -638,39 +564,43 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       const e = this.e;
       const commit = () => { this.app.save(); this.app.applySettings(); this.showGcdInfo(); };
       const sps = $('#s-sps'), gcd = $('#s-gcd'), ping = $('#s-ping');
-      const minGcd = e.gcdForSps(B.SPS_MAX);
+      const minGcd = e.gcdForSpeed(B.SPEED_MAX, e.job.tierHaste);
+      const maxGcd = e.gcdForSpeed(B.SPEED_MIN, e.job.tierHaste);
+      // Each job keeps its own spell or skill speed.
+      const getSpeed = () => this.speed();
+      const setSpeed = (v) => { (st().speed = st().speed || {})[e.job.id] = v; };
 
-      // Spell speed and GCD drive each other: type either one and the other follows.
+      // Speed and GCD drive each other: type either one and the other follows.
       sps.addEventListener('input', () => {
         const v = parseInt(sps.value, 10);
-        if (!(v >= B.SPS_MIN && v <= B.SPS_MAX)) { $('#s-gcdinfo').textContent = `Enter ${B.SPS_MIN}–${B.SPS_MAX}`; return; }
-        st().sps = v;
-        gcd.value = e.gcdForSps(v).toFixed(2);
+        if (!(v >= B.SPEED_MIN && v <= B.SPEED_MAX)) { $('#s-gcdinfo').textContent = `Enter ${B.SPEED_MIN}–${B.SPEED_MAX}`; return; }
+        setSpeed(v);
+        gcd.value = e.gcdForSpeed(v, e.job.tierHaste).toFixed(2);
         commit();
       });
       sps.addEventListener('change', () => {
-        st().sps = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, parseInt(sps.value, 10) || st().sps));
-        sps.value = String(st().sps);
-        gcd.value = e.gcdForSps(st().sps).toFixed(2);
+        setSpeed(Math.max(B.SPEED_MIN, Math.min(B.SPEED_MAX, parseInt(sps.value, 10) || getSpeed())));
+        sps.value = String(getSpeed());
+        gcd.value = e.gcdForSpeed(getSpeed(), e.job.tierHaste).toFixed(2);
         commit();
       });
-      // A GCD applies once it has two decimals (2.31), so half-typed values don't jump the spell speed.
+      // A GCD applies once it has two decimals (2.31), so half-typed values don't jump the speed.
       const setGcd = (v) => {
-        st().sps = e.spsForGcd(Math.max(minGcd, Math.min(2.5, v)));
-        sps.value = String(st().sps);
+        setSpeed(e.speedForGcd(Math.max(minGcd, Math.min(maxGcd, v)), e.job.tierHaste));
+        sps.value = String(getSpeed());
         commit();
       };
       gcd.addEventListener('input', () => {
         const raw = gcd.value.trim();
         const v = parseFloat(raw);
         if (!/^\d\.\d\d$/.test(raw)) return;
-        if (!(v >= minGcd && v <= 2.5)) { $('#s-gcdinfo').textContent = `Enter ${minGcd.toFixed(2)}–2.50`; return; }
+        if (!(v >= minGcd && v <= maxGcd)) { $('#s-gcdinfo').textContent = `Enter ${minGcd.toFixed(2)}–${maxGcd.toFixed(2)}`; return; }
         setGcd(v);
       });
       gcd.addEventListener('change', () => {
         const v = parseFloat(gcd.value);
-        setGcd(Number.isFinite(v) ? v : e.gcdForSps(st().sps));
-        gcd.value = e.gcdForSps(st().sps).toFixed(2);
+        setGcd(Number.isFinite(v) ? v : e.gcdForSpeed(getSpeed(), e.job.tierHaste));
+        gcd.value = e.gcdForSpeed(getSpeed(), e.job.tierHaste).toFixed(2);
       });
 
       ping.addEventListener('input', () => {
@@ -712,8 +642,9 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
     fillSettings() {
       const s = this.app.store.settings;
       $('#s-name').value = s.name;
-      $('#s-sps').value = String(s.sps);
-      $('#s-gcd').value = this.e.gcdForSps(s.sps).toFixed(2);
+      $('#s-sps-label').textContent = this.e.job.speedName;
+      $('#s-sps').value = String(this.speed());
+      $('#s-gcd').value = this.e.gcdForSpeed(this.speed(), this.e.job.tierHaste).toFixed(2);
       $('#s-ping').value = String(s.ping);
       $('#s-comp').checked = s.latencyComp;
       this.showGcdInfo();
@@ -728,10 +659,52 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
       $('#s-dummy').value = s.dummy;
     }
 
+    speed() {
+      const e = this.e;
+      return (this.app.store.settings.speed || {})[e.job.id] || e.job.stats.speed;
+    }
+
     showGcdInfo() {
       const e = this.e;
-      $('#s-gcdinfo').textContent = `Fire IV ${e.speedScale(2.8).toFixed(2)}s · Despair ${e.speedScale(3).toFixed(2)}s · Fire III ${e.speedScale(3.5).toFixed(2)}s`;
+      $('#s-gcdinfo').textContent = e.job.speedInfo ? e.job.speedInfo(e) : '';
       $('#s-lockinfo').textContent = `Abilities lock ${e.animLock(0, true).toFixed(2)}s · casts add ${e.casterTax(true).toFixed(2)}s`;
+    }
+
+    // The Job window: every job, and under it each game version it can be played as.
+    buildJobs() {
+      const cur = this.e.job;
+      let html = '<div class="jobnote">Pick a job, then the version of the game to play it as. Each version keeps its own hotbars.</div><div class="jobgrid">';
+      for (const id of B.JOB_ORDER) {
+        const def = B.JOBS[id];
+        html += `<div class="jobcard${id === cur.id ? ' on' : ''}"><div class="jh"><img src="${B.jobIcon(id)}" alt=""><div><b>${esc(def.name)}</b><small>${esc(def.abbr)} · ${def.role === 'caster' ? 'Magical ranged DPS' : def.role === 'melee' ? 'Melee DPS' : esc(def.role)}</small></div></div>`;
+        for (const v of def.versions) {
+          const on = id === cur.id && v.id === cur.version;
+          html += `<button class="ver${on ? ' on' : ''}" data-job="${id}" data-ver="${v.id}"><b>${esc(v.label)}</b><small>${esc(v.note || '')}</small></button>`;
+        }
+        html += '</div>';
+      }
+      html += '</div><div class="jobnote">More jobs and expansions slot in here as they\'re added.</div>';
+      $('#joblist').innerHTML = html;
+      $('#joblist').querySelectorAll('button.ver').forEach(b => b.addEventListener('click', () => {
+        this.closeWindows();
+        if (b.dataset.job !== this.e.job.id || b.dataset.ver !== this.e.job.version) this.app.switchJob(b.dataset.job, b.dataset.ver);
+      }));
+    }
+
+    // Everything on screen that depends on the job: hotbars, gauge, action list, help, settings labels.
+    setJob() {
+      $('#b-job-name').textContent = this.e.job.abbr;
+      $('#party-ver').textContent = this.e.job.versionLabel;
+      document.title = `${this.e.job.name} Dummy · ${this.e.job.versionLabel}`;
+      this.statusEls = {}; this.tStatusEls = {};
+      $('#buffs').innerHTML = ''; $('#tdebuffs').innerHTML = '';
+      $('#party-job').src = B.jobIcon();
+      this.buildGauge();
+      this.refreshBars();
+      this.buildActions();
+      this.buildHelp();
+      this.fillSettings();
+      this.updateMeter(true);
     }
 
     update(hpK) {

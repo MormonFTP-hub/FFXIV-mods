@@ -1,6 +1,17 @@
-# Black Mage Sim (Endwalker)
+# Striking Dummy Sim (Black Mage, Samurai)
 
-A browser game: play Endwalker-era (patch 6.5) Black Mage at level 90 on a striking dummy. It has the 6.x kit and numbers and the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise the opener and the fire/ice loop the way it played before Dawntrail.
+A browser game: play a job the way it was in an older patch, at level 90 on a striking dummy. Each job version has that patch's kit and numbers, and they all share the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise openers and loops the way they played back then.
+
+## Jobs and versions
+
+Press `J` (or the job button, top left) to pick a job, then the patch to play it at. Each job version keeps its own hotbars.
+
+| Job | Version | What makes it that version |
+|---|---|---|
+| Black Mage | Endwalker 6.5 | Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23% |
+| Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
+
+More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files).
 
 ## Playing
 
@@ -16,13 +27,13 @@ then go to http://localhost:8797.
 
 | | |
 |---|---|
-| Hotbar 1 | `1` – `=`: Fire III, Fire IV, Despair, Fire, Blizzard III, Blizzard IV, Blizzard, Thunder III, Xenoglossy, Foul, Umbral Soul, Scathe |
-| Hotbar 2 | `Shift` + `1` – `=`: Sharpcast, Triplecast, Swiftcast, Ley Lines, Between the Lines, Amplifier, Manafont, Transpose, Lucid Dreaming, Tincture, Addle, Manaward |
-| Hotbar 3 | `Q` `E` `R` `F` `T` `G` `Z` `X` `C` `V` `B` `Y`: Surecast, Sprint, then empty |
+| Hotbar 1 | `1` – `=`. Black Mage: Fire III, Fire IV, Despair, Fire, Blizzard III, Blizzard IV, Blizzard, Thunder III, Xenoglossy, Foul, Umbral Soul, Scathe. Samurai: Hakaze, Jinpu, Gekko, Shifu, Kasha, Yukikaze, Iaijutsu, Tsubame-gaeshi, Ogi Namikiri, Enpi, Hagakure, Meditate |
+| Hotbar 2 | `Shift` + `1` – `=`. Black Mage: Sharpcast, Triplecast, Swiftcast, Ley Lines, Between the Lines, Amplifier, Manafont, Transpose, Lucid Dreaming, Tincture, Addle, Manaward. Samurai: Kaiten, Shinten, Senei, Shoha, Meikyo Shisui, Ikishoten, Gyoten, Yaten, True North, Tincture, Feint, Third Eye |
+| Hotbar 3 | `Q` `E` `R` `F` `T` `G` `Z` `X` `C` `V` `B` `Y`: role actions and Sprint (Samurai also has Guren here) |
 | Move | `W` `A` `S` `D` or arrows, `Space` to jump |
 | Target | `Tab` or click the dummy, `Esc` to clear |
 | Chat | `Enter`, then `/countdown 15` (`/cd`), `/reset`, `/help` |
-| Windows | `P` Actions & Traits (drag actions onto the bars), `K` keybind mode, `F1` help |
+| Windows | `J` job and version, `P` Actions & Traits (drag actions onto the bars), `K` keybind mode, `F1` help (with the job's opener) |
 
 Hotbars, keybinds and settings save in your browser.
 
@@ -38,11 +49,12 @@ python -P -E BlackMageSim/tools/extract_icons.py
 python -P -E BlackMageSim/tools/export_models.py
 ```
 
-- **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets, with each `_hr1` icon decoded. Sharpcast is pinned to its Endwalker icon (002657), because Dawntrail removed the action and points its row at the generic removed-action icon.
-- **Models** (`work/game-models.js`, about 4.5 MB):
-  - **The mage:** a Hyur Midlander man in the Endwalker artifact gear (Archmage's, set 778) holding a Moonward Rod. He's resolved and baked by PMP Viewer and skinned to the game's skeleton.
+- **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets for each job, with each `_hr1` icon decoded. Dawntrail points the rows of actions it removed at the generic removed-action icon, so their Endwalker icons are pinned by number: Sharpcast (002657), Hissatsu: Kaiten (003168) and Kaeshi: Higanbana (003181).
+- **Models** (`work/game-models.js`, about 6.7 MB). One Hyur Midlander man per job, resolved and baked by PMP Viewer and skinned to the game's skeleton:
+  - **Black Mage:** the Endwalker artifact gear (Archmage's, set 778) and a Moonward Rod.
+  - **Samurai:** the Endwalker artifact gear (Sakonji, set 785), a katana in the right hand and its scabbard at the left hip.
   - **Dummies:** the Thavnairian, Glade, Oasis and Crystarium housing striking dummies. Pick one in Settings.
-  - **Animations:** the game's own. That's the two-handed staff battle stance and run (`bt_rod_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV, for example, plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`, and Triplecast `cbbm_abl152`.
+  - **Animations:** the game's own: each job's battle stance and run (`bt_rod_emp`, `bt_2kt_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`. Iaijutsu plays `cbbm_mgc_sam_1` → `_2lp` → `_3` for Midare, `_3c` for Higanbana and `_3g` for Tenka Goken. Textures shared between the characters are stored once.
 
 `work/` is git-ignored, so Square Enix's files never go into the repo. Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
 
@@ -54,6 +66,8 @@ python BlackMageSim/tools/build_single.py
 
 ## What's in it
 
+### Black Mage (Endwalker 6.5)
+
 - **The 6.5 kit.** Fire, Fire III, Fire IV, Despair, Blizzard, Blizzard III, Blizzard IV, Thunder III, Paradox, Xenoglossy, Foul, Scathe, Umbral Soul, Transpose, Sharpcast (2 charges), Triplecast (2 charges), Manafont, Amplifier, Ley Lines, Between the Lines, Manaward, Swiftcast, Lucid Dreaming, Addle, Surecast, Sprint and a Grade 8 Tincture of Intelligence.
 - **Elemental Gauge.** Astral Fire / Umbral Ice I–III with the 15s timer, the Enochian ring (a Polyglot every 30s, max 2, kept when Enochian drops while the timer resets), Umbral Hearts, and the Paradox marker. The marker lights when you leave Astral Fire III for ice, or Umbral Ice III with 3 hearts for fire. Fire and Blizzard turn into Paradox while it's lit.
 - **Timing.** Type your spell speed or your GCD in Settings and the other follows (1160 is 2.37, 400 is 2.50). A typed GCD sets the lowest spell speed that reaches it. Fire spells cast in half the time from Umbral Ice III, and ice spells from Astral Fire III.
@@ -63,8 +77,19 @@ python BlackMageSim/tools/build_single.py
 - **Procs.** Fire and Astral Fire Paradox have a 40% chance to grant Firestarter. Each Thunder III tick has a 10% chance to grant Thundercloud, which makes the next Thunder III instant and free, with the whole DoT added to the hit. Sharpcast guarantees the proc.
 - **Damage.** The level 90 damage formula with a rough 6.5 best-in-slot set: Astral Fire III ×1.8, Umbral Ice ×0.9/0.8/0.7 on the other element, Enochian ×1.23, and crit and direct hit rolls. DoT ticks run on their own 3s server tick.
 - **Ley Lines.** Drops a circle at your feet. Standing in it gives Circle of Power (15% faster casts and GCD). Between the Lines teleports you back to it.
-- **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and an Endwalker-style gauge.
-- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot running the same loop. The colours are a rough guide only, with no raid buffs.
+
+### Samurai (Endwalker 6.08, with Kaiten)
+
+- **The 6.0x kit.** Hakaze, Jinpu, Shifu, Gekko, Kasha, Yukikaze, Enpi, Iaijutsu (Higanbana, Tenka Goken, Midare Setsugekka), Tsubame-gaeshi (2 charges) and its three Kaeshi, Ogi Namikiri and Kaeshi: Namikiri, Hissatsu: Kaiten, Shinten, Gyoten, Yaten, Senei, Guren, Shoha, Ikishoten, Meikyo Shisui (2 charges), Hagakure, Meditate, Third Eye, the melee role actions, Sprint and a Grade 6 Tincture of Strength.
+- **Combos and positionals.** Weaponskill combos with a 30s window. Gekko is a rear positional and Kasha a flank one (+50 potency). The ring around the dummy shows the quarters and lights the one you're in. True North covers both. Meikyo Shisui lets three weaponskills skip their combo step and still grant Sen, Kenki, and Fugetsu (Gekko) or Fuka (Kasha).
+- **Kaiten.** 20 Kenki for +50% on your next weaponskill, Higanbana's DoT included. It doesn't reach the Kaeshi or Kaeshi: Namikiri.
+- **Kenki, Sen and Meditation.** A gauge with the Kenki blade (max 100), the three Sen and three Meditation pips. Iaijutsu and Ogi Namikiri add Meditation; three let you use Shoha.
+- **Timing.** Type your skill speed or your GCD with Fuka (the 2.14 tier is 579). Fuka takes 13% off weaponskills, Iaijutsu casts and auto-attacks. Auto-attacks start when you engage and keep going while you're in reach.
+
+### Both
+
+- **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and the job's Endwalker-style gauge.
+- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear.
 
 ## Notes on accuracy
 
@@ -74,27 +99,31 @@ Some things are reconstructed rather than read off a 6.x source:
 
 - Ice spells cost no MP while in Umbral Ice. Blizzard IV straight after Blizzard III at 0 MP needs this to work the way it did. Fire spells under Umbral Ice I/II, and ice spells under Astral Fire I/II, cost half and a quarter.
 - The gear set, the Grade 8 Tincture cap (262 INT) and the spell application delays are close approximations, so hits land within a few percent of what you remember, not to the point.
-- AoE spells (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV) are left out since there's one dummy. Aetherial Manipulation is left out because it needs a party member.
+- Samurai's 6.0x numbers (Hakaze 180; Jinpu, Shifu and Yukikaze 280; Gekko and Kasha 320/370; Midare 660; Kaeshi: Setsugekka 990; Ogi Namikiri 900; Kaeshi: Namikiri 1350; Shinten 270; Senei 800; Shoha 580; Higanbana 200 + 30 per tick) are worked back from what the 6.1 patch notes changed. Its gear is a rough 6.0 best-in-slot set (Strength 2563, weapon damage 120, skill speed 579). The Grade 6 tincture caps at 189 Strength.
+- AoE actions (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV, Fuga, Mangetsu, Oka, Kyuten) are left out since there's one dummy. Tenka Goken, Guren and Ogi Namikiri are cones and lines in the game but only hit the one dummy here. Aetherial Manipulation is left out because it needs a party member.
 - Icons, models and animations come from your own game install when you've run the two tools, and are drawn in code otherwise. Spell effects and sounds are made for this page, not the game's VFX and audio. Two of the exporter's choices: it shows the coat's sleeves (PMP Viewer's pre-Dawntrail visibility tables hide them under these gloves, which left the arms empty), and it draws the housing dummies fully opaque (background textures keep other data in alpha). FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
 
 ## Files
 
 | File | What it does |
 |---|---|
-| `js/data.js` | Actions, potencies, cooldowns, default hotbars and keybinds |
-| `js/engine.js` | Combat engine: GCD, casts, queue, gauge, MP/DoT ticks, damage formula |
-| `js/scene.js` | Canvas scene: camera, arena, dummy, mage, spell effects |
+| `js/data.js` | Shared numbers, role actions, the job registry, default keybinds and settings |
+| `js/engine.js` | Combat engine shared by every job: GCD, casts, queue, cooldowns and charges, combos, positionals, auto-attacks, MP/DoT ticks, damage formula |
+| `js/jobs/blm_ew.js` | Black Mage, Endwalker 6.5: actions, gauge, rules, help text |
+| `js/jobs/sam_ew.js` | Samurai, Endwalker 6.08: actions, gauge, rules, help text |
+| `js/scene.js` | Canvas scene: camera, arena, dummy, drawn figures, spell and weaponskill effects |
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
 | `js/main.js` | Input, keybinds, drag and drop, countdown, parse tracking, frame loop |
 | `js/icons.js` | Game icons when extracted, SVG icon art otherwise |
 | `js/models.js` | Draws the game's models with three.js and plays their animations |
 | `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
-| `tools/export_models.py` | Pulls the mage, staff, dummies and animations into `work/game-models.js` |
+| `tools/export_models.py` | Pulls each job's character, weapons and animations, and the dummies, into `work/game-models.js` |
 | `tools/build_single.py` | Bundles everything into one HTML file for sharing |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
 
+- **1.5.0**: Jobs and versions. Pick a job and the patch to play it at (`J`); each version keeps its own hotbars. Samurai joins as Endwalker 6.08, the last patch with Hissatsu: Kaiten. It comes with its gauge, combos and positionals, auto-attacks, Iaijutsu and Tsubame-gaeshi, game icons, model and animations, sword effects and sounds, and its opener in the help. The engine is now shared, with each job version in its own file.
 - **1.4.0**: The game's own models and animations: the Black Mage in Archmage's gear with a Moonward Rod, a choice of four striking dummies, and every action's real cast and ability motion. Exported from your install by `tools/export_models.py`. The camera sits closer and you start 10 yalms from the dummy.
 - **1.3.0**: The game's own icons for actions, statuses (Triplecast with its stack art), the Tincture and the job, extracted from your install by `tools/extract_icons.py`.
 - **1.2.1**: Action queue fixed. Triplecast then Fire IV no longer loses the Triplecast, a press during an animation lock queues instead of being dropped, and double weaves queue both abilities.

@@ -1,19 +1,17 @@
-// Combat engine: GCD, casting, animation lock, action queue, the Elemental Gauge,
-// MP and DoT server ticks, and the damage formula. No drawing in here.
+// Combat core shared by every job: GCD, casting, caster tax and ping, animation lock, the action queue,
+// cooldowns and charges, statuses, combos, positionals, auto-attacks, DoT and MP server ticks, and the damage
+// formula. Everything a job does differently (its gauge, costs, procs, what each action does) lives in its
+// job module (js/jobs/*.js), which the engine calls through the hooks below. No drawing in here.
 (function (B) {
-  const A = B.ACTIONS;
+  const A = B.ACTIONS;          // the current job's actions (B.setJob swaps the contents)
   const EPS = 1e-6;
 
-  const FIRE_MULT = { 1: 1.4, 2: 1.6, 3: 1.8, '-1': 0.9, '-2': 0.8, '-3': 0.7 };
-  const ICE_MULT = { 1: 0.9, 2: 0.8, 3: 0.7 };
-  const AF_ICE_COST = { 1: 0.5, 2: 0.25, 3: 0 };
-  const UI_FIRE_COST = { 1: 0.5, 2: 0.25, 3: 0 };
-
   class Engine {
-    constructor(settings) {
+    constructor(settings, job) {
       this.listeners = {};
       this.now = 0;
       this.settings = settings;
+      this.job = job;
       this.pos = { x: 0, z: -10 };
       this.reset();
     }
@@ -21,21 +19,22 @@
     on(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); }
     emit(type, data) { (this.listeners[type] || []).forEach(fn => fn(data || {})); }
 
-    get stats() {
-      const sps = Math.max(B.SPS_MIN, Math.min(B.SPS_MAX, Math.round(this.settings.sps) || B.DEFAULT_SETTINGS.sps));
-      return Object.assign({}, B.BASE_STATS, { sps });
+    setJob(job) {
+      this.job = job;
+      this.reset();
     }
+
+    get stats() {
+      const st = this.job.stats;
+      const speed = Math.max(B.SPEED_MIN, Math.min(B.SPEED_MAX, Math.round(this.speedSetting()) || st.speed));
+      return Object.assign({}, st, { speed });
+    }
+    speedSetting() { return (this.settings.speed || {})[this.job.id]; }
 
     reset() {
       this.mp = B.MAX_MP;
-      this.maxHp = 74210;
+      this.maxHp = this.job.stats.hp;
       this.hp = this.maxHp;
-      this.element = 0;            // +1..+3 Astral Fire, -1..-3 Umbral Ice
-      this.elementUntil = 0;
-      this.hearts = 0;
-      this.polyglot = 0;
-      this.enoStart = null;
-      this.paradox = false;
       this.statuses = {};
       this.tStatuses = {};
       this.cds = {};
@@ -44,12 +43,16 @@
       this.casting = null;
       this.queue = [];
       this.hits = [];
+      this.combo = null;           // { id, until }: the weaponskill that continues a combo
+      this.autoNext = null;        // next auto-attack, once engaged
+      this.inCombat = false;
       this.mpTickNext = this.now + 0.5 + Math.random() * 2.5;
       this.dotTickNext = this.now + 0.5 + Math.random() * 2.5;
       this.leyLines = null;
       this.targeted = true;
       this.moving = false;
       this.jumpUntil = 0;
+      this.g = this.job.initGauge(this);
       this.emit('reset');
     }
 
@@ -79,26 +82,39 @@
         Math.hypot(this.pos.x - this.leyLines.x, this.pos.z - this.leyLines.z) <= 3);
     }
 
+    // The dummy faces -Z, toward where you start. Rear is the 90° behind it, flanks the 90° to each side.
+    side() {
+      const a = Math.abs(Math.atan2(this.pos.x, -this.pos.z)) * 180 / Math.PI;   // 0 = in front, 180 = behind
+      return a > 135 ? 'rear' : a > 45 ? 'flank' : 'front';
+    }
+    positionalHit(a) {
+      if (!a.positional) return false;
+      return this.has('trueNorth') || this.side() === a.positional;
+    }
+
+    // Spell speed or skill speed, with the job's haste (Ley Lines, Shifu).
     speedScale(baseSec, haste) {
-      const x = Math.floor(130 * (this.stats.sps - 400) / 1900);
+      const x = Math.floor(130 * (this.stats.speed - 400) / 1900);
       let ms = Math.floor(baseSec * 1000 * (1000 - x) / 1000);
       ms = Math.floor(ms * (100 - (haste || 0)) / 100);
       return Math.floor(ms / 10) / 100;
     }
+    haste() { return this.job.haste ? this.job.haste(this) : 0; }
+    gcdRecast(id) { return this.speedScale((id && A[id] && A[id].recast) || 2.5, this.haste()); }
 
-    gcdRecast() { return this.speedScale(2.5, this.inCircle() ? 15 : 0); }
-
-    gcdForSps(sps) {
-      const x = Math.floor(130 * (sps - 400) / 1900);
-      return Math.floor(Math.floor(2500 * (1000 - x) / 1000) / 10) / 100;
+    // GCD for a speed stat, with the job's standing haste (Samurai tiers are quoted with Fuka on: 2.14).
+    gcdForSpeed(speed, haste) {
+      const x = Math.floor(130 * (speed - 400) / 1900);
+      const ms = Math.floor(2500 * (1000 - x) / 1000);
+      return Math.floor(Math.floor(ms * (100 - (haste || 0)) / 100) / 10) / 100;
     }
 
-    // Lowest spell speed that reaches a GCD (in seconds), for typing a GCD in settings.
-    spsForGcd(gcd) {
-      for (let sps = B.SPS_MIN; sps <= B.SPS_MAX; sps++) {
-        if (this.gcdForSps(sps) <= gcd + 1e-9) return sps;
+    // Lowest speed stat that reaches a GCD (in seconds), for typing a GCD in settings.
+    speedForGcd(gcd, haste) {
+      for (let s = B.SPEED_MIN; s <= B.SPEED_MAX; s++) {
+        if (this.gcdForSpeed(s, haste) <= gcd + 1e-9) return s;
       }
-      return B.SPS_MAX;
+      return B.SPEED_MAX;
     }
 
     // The vanilla client holds your animation lock until the server answers,
@@ -113,17 +129,18 @@
     animLock(base, nominal) { return (base || B.BASE_LOCK) + this.latency(nominal); }
     casterTax(nominal) { return B.CASTER_TAX + this.latency(nominal); }
 
-    // Fire and Blizzard turn into Paradox while the marker is lit.
-    resolve(id) {
-      if ((id === 'fire' || id === 'blizzard') && this.paradox) return 'paradox';
-      return id;
-    }
+    // A button can stand for another action (Fire becomes Paradox, Iaijutsu becomes Midare Setsugekka).
+    resolve(id) { return this.job.resolveId ? this.job.resolveId(id, this) : id; }
 
     cd(id) {
       const a = A[id];
-      if (!this.cds[id]) this.cds[id] = { max: a.charges || 1, charges: a.charges || 1, recast: a.recast, nextAt: null };
-      return this.cds[id];
+      const key = a.cdGroup || id;
+      // Abilities: recast is the cooldown. GCDs with a cooldown of their own (Kaeshi): cd.
+      const recast = a.kind === 'gcd' ? a.cd : a.recast;
+      if (!this.cds[key]) this.cds[key] = { max: a.charges || 1, charges: a.charges || 1, recast, nextAt: null };
+      return this.cds[key];
     }
+    cdOf(id) { const a = A[id]; return a ? this.cds[a.cdGroup || id] : null; }
     cdTick() {
       for (const id in this.cds) {
         const c = this.cds[id];
@@ -143,44 +160,26 @@
       const a = A[id];
       let t = this.lockUntil;
       if (this.casting) t = Math.max(t, this.casting.end + this.casting.tax);
-      if (a.kind === 'gcd') t = Math.max(t, this.gcdEnd);
-      else t = Math.max(t, this.cdReadyAt(id));
+      if (a.kind === 'gcd') {
+        t = Math.max(t, this.gcdEnd);
+        if (a.cd) t = Math.max(t, this.cdReadyAt(id));
+      } else t = Math.max(t, this.cdReadyAt(id));
       return t;
     }
 
     castTimeFor(id) {
       const a = A[id];
       if (!a.cast) return 0;
-      if (id === 'paradox' && this.element < 0) return 0;
-      if (id === 'fire3' && this.has('firestarter')) return 0;
-      if (id === 'thunder3' && this.has('thundercloud')) return 0;
-      if (this.has('swiftcast') || this.has('triplecast')) return 0;
-      let base = a.cast;
-      if (a.school === 'fire' && this.element === -3) base /= 2;
-      if (a.school === 'ice' && this.element === 3) base /= 2;
-      return this.speedScale(base, this.inCircle() ? 15 : 0);
+      if (this.job.castTime) {
+        const t = this.job.castTime(id, this);
+        if (t !== undefined) return t;
+      }
+      return this.speedScale(a.cast, this.haste());
     }
 
-    mpCost(id) {
-      const a = A[id];
-      const el = this.element;
-      switch (id) {
-        case 'despair': return this.mp;
-        case 'paradox': return el < 0 ? 0 : 1600;
-        case 'thunder3': return this.has('thundercloud') ? 0 : a.mp;
-        case 'fire3': if (this.has('firestarter')) return 0; break;
-      }
-      if (!a.mp) return 0;
-      if (a.school === 'fire') {
-        if (el > 0) return this.hearts > 0 ? a.mp : a.mp * 2;
-        if (el < 0) return a.mp * UI_FIRE_COST[-el];
-      }
-      if (a.school === 'ice') {
-        if (el > 0) return a.mp * AF_ICE_COST[el];
-        if (el < 0) return 0;
-      }
-      return a.mp;
-    }
+    mpCost(id) { return this.job.mpCost ? this.job.mpCost(id, this) : (A[id].mp || 0); }
+
+    inCombo(id) { return !!(this.combo && this.combo.id === id && this.combo.until > this.now); }
 
     // Returns an error message, or null when the action can go off right now.
     // forHotbar skips target, range and movement, which the hotbar shows another way.
@@ -188,25 +187,17 @@
       const a = A[id];
       if (a.target && !forHotbar) {
         if (!this.targeted) return 'Invalid target.';
-        if (this.distToTarget() - B.DUMMY_RADIUS > B.RANGE) return 'Target not in range.';
+        if (this.distToTarget() - B.DUMMY_RADIUS > (a.range || B.RANGE)) return 'Target not in range.';
       }
-      switch (id) {
-        case 'fire4': if (this.element <= 0) return 'Unable to execute action. Astral Fire required.'; break;
-        case 'despair':
-          if (this.element <= 0) return 'Unable to execute action. Astral Fire required.';
-          if (this.mp < 800) return 'Not enough MP.';
-          break;
-        case 'blizzard4': if (this.element >= 0) return 'Unable to execute action. Umbral Ice required.'; break;
-        case 'umbralSoul': if (this.element >= 0) return 'Unable to execute action. Umbral Ice required.'; break;
-        case 'paradox': if (!this.paradox) return 'Unable to execute action.'; break;
-        case 'xenoglossy': case 'foul': if (this.polyglot < 1) return 'Unable to execute action. Polyglot required.'; break;
-        case 'transpose': if (this.element === 0) return 'Unable to execute action.'; break;
-        case 'amplifier': if (this.element === 0) return 'Unable to execute action. Astral Fire or Umbral Ice required.'; break;
-        case 'betweenTheLines': if (!(this.leyLines && this.leyLines.until > this.now)) return 'Unable to execute action. Ley Lines required.'; break;
-      }
+      const err = this.job.check ? this.job.check(id, this, forHotbar) : null;
+      if (err) return err;
       if (a.kind === 'gcd' && this.mp < this.mpCost(id)) return 'Not enough MP.';
       if (!forHotbar && a.kind === 'gcd' && this.castTimeFor(id) > 0 && this.moving) return 'Unable to cast while moving.';
       return null;
+    }
+    outOfRange(id) {
+      const a = A[id];
+      return !!a.target && this.distToTarget() - B.DUMMY_RADIUS > (a.range || B.RANGE);
     }
 
     // ---------- input ----------
@@ -238,7 +229,8 @@
     queueable(id) {
       const a = A[id];
       if (this.casting && this.casting.end + this.casting.tax - this.now > B.QUEUE_WINDOW) return false;
-      const ready = a.kind === 'gcd' ? this.gcdEnd : this.cdReadyAt(id);
+      let ready = a.kind === 'gcd' ? this.gcdEnd : this.cdReadyAt(id);
+      if (a.kind === 'gcd' && a.cd) ready = Math.max(ready, this.cdReadyAt(id));
       return ready - this.now <= B.QUEUE_WINDOW;
     }
 
@@ -283,8 +275,13 @@
       if (err) { this.emit('error', { msg: err, id }); return false; }
 
       if (a.kind === 'gcd') {
+        if (a.cd) {
+          const c = this.cd(id);
+          if (c.charges === c.max) c.nextAt = this.now + c.recast;
+          c.charges--;
+        }
         const castTime = this.castTimeFor(id);
-        const recast = this.gcdRecast();
+        const recast = this.gcdRecast(id);
         this.gcdStart = this.now; this.gcdEnd = this.now + recast; this.gcdLen = recast;
         if (castTime > 0) {
           const tax = this.casterTax();
@@ -293,10 +290,10 @@
           this.emit('use', { id, gcd: true, cast: castTime, tax, t: this.now });
           this.emit('castStart', { id, start: this.now, end: this.now + castTime });
         } else {
-          this.consumeInstant(id);
-          this.lockUntil = this.now + this.animLock();
+          if (this.job.consumeInstant) this.job.consumeInstant(id, this);
+          this.lockUntil = this.now + this.animLock(a.lock);
           this.emit('use', { id, gcd: true, cast: 0, t: this.now });
-          this.resolveSpell(id);
+          this.resolveAction(id);
         }
       } else {
         const c = this.cd(id);
@@ -304,203 +301,49 @@
         c.charges--;
         this.lockUntil = this.now + this.animLock(a.lock);
         this.emit('use', { id, gcd: false, t: this.now });
-        this.resolveAbility(id);
+        this.resolveAction(id);
+      }
+      if (a.target) {
+        this.inCombat = true;
+        if (this.job.autoAttack && this.autoNext === null) this.autoNext = this.now;
       }
       return true;
     }
 
-    // Spells with a cast time that went off instantly eat the buff that made them instant.
-    consumeInstant(id) {
+    resolveAction(id) {
       const a = A[id];
-      if (!a.cast) return;
-      if (id === 'paradox' && this.element < 0) return;
-      if (id === 'fire3' && this.has('firestarter')) return;       // eaten in resolveSpell
-      if (id === 'thunder3' && this.has('thundercloud')) return;   // eaten in resolveSpell
-      if (this.has('triplecast')) {
-        const s = this.statuses.triplecast;
-        s.stacks--;
-        if (s.stacks <= 0) this.removeStatus('triplecast');
-        else this.emit('statusStack', { key: 'triplecast' });
-        return;
+      // Weaponskill combos: a combo action continues one, any other combo-aware weaponskill breaks it.
+      if (a.kind === 'gcd' && (a.comboFrom !== undefined || a.comboStart || a.breaksCombo)) {
+        const comboOk = a.comboFrom ? this.inCombo(a.comboFrom) || this.has('meikyoShisui') : false;
+        this.lastComboHit = comboOk;
+        this.combo = a.comboNext ? { id, until: this.now + B.COMBO_TIME } : null;
       }
-      if (this.has('swiftcast')) this.removeStatus('swiftcast');
-    }
-
-    // ---------- resolution ----------
-    setElement(next) {
-      const prev = this.element;
-      // Aspect Mastery V: AF3 -> Umbral Ice, or UI3 with 3 hearts -> Astral Fire, lights Paradox.
-      if (prev === 3 && next < 0) this.paradox = true;
-      if (prev === -3 && this.hearts === 3 && next > 0) this.paradox = true;
-      this.element = next;
-      if (next === 0) {
-        this.elementUntil = 0;
-        this.enoStart = null;
-      } else {
-        this.elementUntil = this.now + B.ELEMENT_DURATION;
-        if (prev === 0) this.enoStart = this.now;
-      }
-      if (prev !== next) this.emit('element', { prev, next });
-    }
-
-    snapshot(school) {
-      let mult = 1;
-      if (this.element !== 0) mult *= B.ENOCHIAN;
-      if (school === 'fire' && this.element !== 0) mult *= FIRE_MULT[this.element];
-      if (school === 'ice' && this.element > 0) mult *= ICE_MULT[this.element];
-      const int = B.BASE_STATS.int + (this.has('medicated') ? B.TINCTURE_INT : 0);
-      return { mult, int };
-    }
-
-    resolveSpell(id) {
-      const a = A[id];
-      const cost = this.mpCost(id);
-      if (this.mp < cost) { this.emit('error', { msg: 'Not enough MP.' }); return; }
-      // Hearts cover the doubled cost of fire spells under Astral Fire.
-      if (a.school === 'fire' && id !== 'despair' && this.element > 0 && this.hearts > 0 && cost > 0) {
-        this.hearts--;
-        this.emit('hearts', { n: this.hearts });
-      }
-      this.mp -= cost;
-
-      const snap = this.snapshot(a.school);
-      let potency = a.potency;
-      const sharp = this.has('sharpcast');
-      const procFirestarter = () => {
-        if (sharp || Math.random() < 0.4) this.addStatus('firestarter', 30);
-      };
-
-      switch (id) {
-        case 'fire':
-          if (sharp) this.removeStatus('sharpcast');
-          if (this.element < 0) this.setElement(0);
-          else this.setElement(Math.min(3, this.element + 1));
-          procFirestarter();
-          break;
-        case 'blizzard':
-          if (this.element > 0) this.setElement(0);
-          else this.setElement(Math.max(-3, this.element - 1));
-          break;
-        case 'fire3':
-          if (this.has('firestarter')) this.removeStatus('firestarter');
-          this.setElement(3);
-          break;
-        case 'blizzard3':
-          this.setElement(-3);
-          break;
-        case 'fire4':
-          break;
-        case 'blizzard4':
-          this.hearts = 3;
-          this.emit('hearts', { n: 3 });
-          break;
-        case 'despair':
-          this.setElement(3);
-          break;
-        case 'paradox':
-          this.paradox = false;
-          if (this.element > 0) {
-            this.elementUntil = this.now + B.ELEMENT_DURATION;
-            if (sharp) this.removeStatus('sharpcast');
-            procFirestarter();
-          } else if (this.element < 0) {
-            this.elementUntil = this.now + B.ELEMENT_DURATION;
-          }
-          this.emit('paradox', { active: false });
-          break;
-        case 'thunder3':
-          if (this.has('thundercloud')) {
-            this.removeStatus('thundercloud');
-            potency += a.dot.potency * a.dot.duration / 3;
-          }
-          break;
-        case 'xenoglossy': case 'foul':
-          this.polyglot--;
-          this.emit('polyglot', { n: this.polyglot });
-          break;
-        case 'scathe':
-          if (sharp) this.removeStatus('sharpcast');
-          if (sharp || Math.random() < 0.2) potency *= 2;
-          break;
-        case 'umbralSoul':
-          this.setElement(Math.max(-3, this.element - 1));
-          this.elementUntil = this.now + B.ELEMENT_DURATION;
-          this.hearts = Math.min(3, this.hearts + 1);
-          this.emit('hearts', { n: this.hearts });
-          break;
-      }
-
-      if (id === 'thunder3') {
-        const sharpT = sharp;
-        if (sharpT) this.removeStatus('sharpcast');
-        this.queueHit(id, potency, snap, a.delay, () => {
-          const dsnap = this.snapshot('thunder');
-          dsnap.mult = snap.mult; dsnap.int = snap.int;
-          this.addTStatus('thunder3', a.dot.duration, { snap: dsnap });
-          if (sharpT) this.addStatus('thundercloud', 40);
-        });
-      } else if (a.potency) {
-        this.queueHit(id, potency, snap, a.delay);
-      }
+      this.job.resolve(id, this);
       this.emit('resolve', { id });
     }
 
-    resolveAbility(id) {
-      switch (id) {
-        case 'transpose':
-          if (this.element > 0) this.setElement(-1);
-          else if (this.element < 0) this.setElement(1);
-          break;
-        case 'sharpcast': this.addStatus('sharpcast', 30); break;
-        case 'triplecast': this.addStatus('triplecast', 15, { stacks: 3 }); break;
-        case 'swiftcast': this.addStatus('swiftcast', 10); break;
-        case 'manafont': {
-          const before = this.mp;
-          this.mp = Math.min(B.MAX_MP, this.mp + 3000);
-          this.emit('mpGain', { amount: this.mp - before, source: 'manafont' });
-          break;
-        }
-        case 'amplifier':
-          this.polyglot = Math.min(B.POLYGLOT_MAX, this.polyglot + 1);
-          this.emit('polyglot', { n: this.polyglot });
-          break;
-        case 'leyLines':
-          this.leyLines = { x: this.pos.x, z: this.pos.z, until: this.now + 30, start: this.now };
-          this.addStatus('leyLines', 30);
-          break;
-        case 'betweenTheLines': {
-          const from = { x: this.pos.x, z: this.pos.z };
-          this.pos.x = this.leyLines.x; this.pos.z = this.leyLines.z;
-          this.emit('teleport', { from, to: { x: this.pos.x, z: this.pos.z } });
-          break;
-        }
-        case 'manaward': this.addStatus('manaward', 20); break;
-        case 'lucidDreaming': this.addStatus('lucidDreaming', 21); break;
-        case 'addle': this.addTStatus('addle', 10); break;
-        case 'surecast': this.addStatus('surecast', 6); break;
-        case 'sprint': this.addStatus('sprint', 10); break;
-        case 'tincture': this.addStatus('medicated', 30); break;
-      }
-      this.emit('resolve', { id });
+    queueHit(id, potency, snap, delay, after, opts) {
+      this.hits.push(Object.assign({ at: this.now + (delay || 0.6), id, potency, snap, after }, opts || {}));
     }
 
-    queueHit(id, potency, snap, delay, after) {
-      this.hits.push({ at: this.now + (delay || 0.6), id, potency, snap, after });
-    }
+    snapshot(a) { return this.job.snapshot(a, this); }
 
-    // FFXIV damage formula at level 90 (6.x level modifiers).
-    damage(potency, snap, isDot) {
+    // FFXIV damage formula at level 90 (6.x level modifiers). opts.auto: an auto-attack (weapon damage scaled by
+    // delay); opts.crit: always a critical hit.
+    damage(potency, snap, isDot, opts) {
       const s = this.stats;
-      const fAP = Math.floor(195 * (snap.int - 390) / 390) + 100;
+      opts = opts || {};
+      const fAP = Math.floor(195 * (snap.main - 390) / 390) + 100;
       const fDET = Math.floor(140 * (s.det - 390) / 1900) + 1000;
-      const fWD = Math.floor(390 * 115 / 1000) + s.wd;
+      let fWD = Math.floor(390 * s.jobMod / 1000) + s.wd;
+      if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
       let d = Math.floor(Math.floor(potency * fAP * fDET / 100) / 1000);
-      if (isDot) d = Math.floor(d * (Math.floor(130 * (s.sps - 400) / 1900) + 1000) / 1000);
-      d = Math.floor(Math.floor(d * fWD / 100) * B.TRAIT / 100);
+      if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - 400) / 1900) + 1000) / 1000);
+      d = Math.floor(Math.floor(d * fWD / 100) * s.trait / 100);
       const critRate = Math.floor(200 * (s.crit - 400) / 1900 + 50) / 1000;
       const critMult = Math.floor(200 * (s.crit - 400) / 1900 + 1400) / 1000;
       const dhRate = Math.floor(550 * (s.dh - 400) / 1900) / 1000;
-      const crit = Math.random() < critRate;
+      const crit = opts.crit || Math.random() < critRate;
       const dh = Math.random() < dhRate;
       if (crit) d = Math.floor(d * critMult);
       if (dh) d = Math.floor(d * 1.25);
@@ -509,6 +352,9 @@
       return { amount: d, crit, dh };
     }
 
+    // Out of combat: the dummy reset.
+    stopAutos() { this.autoNext = null; this.inCombat = false; }
+
     // ---------- time ----------
     nextEventTime() {
       let t = Infinity;
@@ -516,8 +362,8 @@
       for (const q of this.queue) t = Math.min(t, Math.max(this.now, this.availableAt(this.resolve(q.id))));
       for (const h of this.hits) t = Math.min(t, h.at);
       t = Math.min(t, this.mpTickNext, this.dotTickNext);
-      if (this.element !== 0) t = Math.min(t, this.elementUntil);
-      if (this.enoStart !== null) t = Math.min(t, this.enoStart + B.POLYGLOT_TIME);
+      if (this.autoNext !== null) t = Math.min(t, this.autoNext);
+      if (this.job.nextEvent) t = Math.min(t, this.job.nextEvent(this));
       for (const k in this.statuses) t = Math.min(t, this.statuses[k].until);
       for (const k in this.tStatuses) t = Math.min(t, this.tStatuses[k].until);
       for (const id in this.cds) if (this.cds[id].nextAt !== null) t = Math.min(t, this.cds[id].nextAt);
@@ -540,21 +386,7 @@
     processAt() {
       const now = this.now;
       this.cdTick();
-
-      // Element timer runs out: the gauge empties and Enochian progress resets.
-      if (this.element !== 0 && now >= this.elementUntil - EPS) {
-        const prev = this.element;
-        this.element = 0; this.elementUntil = 0; this.enoStart = null;
-        this.emit('element', { prev, next: 0, expired: true });
-      }
-
-      if (this.enoStart !== null && now >= this.enoStart + B.POLYGLOT_TIME - EPS) {
-        this.enoStart += B.POLYGLOT_TIME;
-        if (this.polyglot < B.POLYGLOT_MAX) {
-          this.polyglot++;
-          this.emit('polyglot', { n: this.polyglot, gained: true });
-        }
-      }
+      if (this.job.process) this.job.process(this);
 
       for (const k of Object.keys(this.statuses)) {
         if (this.statuses[k].until <= now + EPS) this.removeStatus(k);
@@ -570,13 +402,13 @@
       if (this.casting && now >= this.casting.end - EPS) {
         const c = this.casting;
         this.casting = null;
-        const err = this.checkCompletion(c.id);
+        const err = this.job.checkCompletion ? this.job.checkCompletion(c.id, this) : null;
         if (err) {
           this.gcdEnd = Math.min(this.gcdEnd, now); this.lockUntil = now;
           this.emit('interrupt', { id: c.id, reason: err });
         } else {
           this.emit('castEnd', { id: c.id });
-          this.resolveSpell(c.id);
+          this.resolveAction(c.id);
         }
       }
 
@@ -586,8 +418,8 @@
           this.hits = this.hits.filter(h => h.at > now + EPS);
           due.sort((a, b) => a.at - b.at);
           for (const h of due) {
-            const r = this.damage(h.potency, h.snap, false);
-            this.emit('hit', { id: h.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: false, t: now });
+            const r = this.damage(h.potency, h.snap, false, h);
+            this.emit('hit', { id: h.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: false, auto: !!h.auto, positional: h.positional, t: now });
             if (h.after) h.after();
           }
         }
@@ -595,44 +427,41 @@
 
       if (now >= this.mpTickNext - EPS) {
         this.mpTickNext += 3;
-        if (this.element <= 0) {
-          let gain = this.element < 0 ? B.UI_REGEN[-this.element - 1] : B.BASE_REGEN;
-          if (this.has('lucidDreaming')) gain += B.LUCID_REGEN;
-          const before = this.mp;
-          this.mp = Math.min(B.MAX_MP, this.mp + gain);
-          if (this.mp > before) this.emit('mpGain', { amount: this.mp - before, source: 'tick' });
-        }
+        const gain = this.mpTickGain();
+        const before = this.mp;
+        this.mp = Math.min(B.MAX_MP, this.mp + gain);
+        if (this.mp > before) this.emit('mpGain', { amount: this.mp - before, source: 'tick' });
         this.emit('mpTick');
       }
 
+      // DoTs tick on the server's 3s tick, not from when they landed.
       if (now >= this.dotTickNext - EPS) {
         this.dotTickNext += 3;
-        const dot = this.tStatuses.thunder3;
-        if (dot && dot.until > now + EPS) {
-          const r = this.damage(A.thunder3.dot.potency, dot.snap, true);
-          this.emit('hit', { id: 'thunder3', amount: r.amount, crit: r.crit, dh: r.dh, dot: true, t: now });
-          if (Math.random() < 0.1) this.addStatus('thundercloud', 40);
+        for (const [key, st] of Object.entries(this.tStatuses)) {
+          if (!st.dot || st.until <= now + EPS) continue;
+          const r = this.damage(st.dot.potency, st.snap, true);
+          this.emit('hit', { id: st.dot.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: true, t: now });
+          if (this.job.onDotTick) this.job.onDotTick(key, this);
+        }
+      }
+
+      // Auto-attacks, once engaged, while the dummy is in reach.
+      if (this.autoNext !== null && now >= this.autoNext - EPS) {
+        const au = this.job.autoAttack;
+        const delay = au.delay * (100 - (this.job.autoHaste ? this.job.autoHaste(this) : 0)) / 100;
+        this.autoNext = now + delay;
+        if (this.targeted && this.distToTarget() - B.DUMMY_RADIUS <= au.range) {
+          this.queueHit('auto', au.potency, this.snapshot({ school: 'physical', auto: true }), 0.1, null, { auto: true });
         }
       }
 
       if (this.queue.length) this.runQueue();
     }
 
-    // The gauge or MP can change under a cast; the game cancels it at the end if so.
-    checkCompletion(id) {
-      switch (id) {
-        case 'fire4': case 'despair':
-          if (this.element <= 0) return 'Interrupted';
-          break;
-        case 'blizzard4':
-          if (this.element >= 0) return 'Interrupted';
-          break;
-        case 'paradox':
-          if (!this.paradox) return 'Interrupted';
-          break;
-      }
-      if (this.mp < this.mpCost(id) || (id === 'despair' && this.mp < 800)) return 'Not enough MP.';
-      return null;
+    // MP restored on the next tick (what the tick timer above the MP bar shows).
+    mpTickGain() {
+      if (this.job.mpRegen) return this.job.mpRegen(this);
+      return B.BASE_REGEN + (this.has('lucidDreaming') ? B.LUCID_REGEN : 0);
     }
 
     // ---------- movement ----------
@@ -653,12 +482,8 @@
       if (moving !== this.moving || moving) this.setMoving(moving);
     }
 
-    syncCircle() {
-      const inside = this.inCircle();
-      if (inside && !this.has('circleOfPower')) this.addStatus('circleOfPower', 999, { permanent: true });
-      else if (!inside && this.statuses.circleOfPower) this.removeStatus('circleOfPower');
-      if (this.statuses.circleOfPower) this.statuses.circleOfPower.until = this.now + 999;
-    }
+    // Per-frame job upkeep (Circle of Power while standing in Ley Lines).
+    frame() { if (this.job.frame) this.job.frame(this); }
   }
 
   B.Engine = Engine;
