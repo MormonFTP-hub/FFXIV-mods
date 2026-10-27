@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -148,10 +148,10 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 5. HW 3.3–3.38 (2016-06-07 → 2016-09-26): Spread 30s; Nocturnal Aspected Helios barrier 120%. **Rating 4/5:** Faster Spread; liked.
 6. HW 3.4–3.57 (2016-09-27 → 2017-06-19): cards held 30s; Redraw 30s; Balance/Bole 20%; Celestial Opposition +10s. **Rating 5/5:** Spread, Royal Road and 30s card holds; deep card play, heavily missed.
 7. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Undraw, Earthly Star 62, Malefic III 64, Minor Arcana 66 (Lord/Lady of Crowns), Hyper Lightspeed, Sleeve Draw 70. **Rating 4/5:** Minor Arcana and Sleeve Draw arrive.
-8. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Balance 10%; Spear +10% crit; Undraw 3s; Hyper Lightspeed on Essential Dignity. **Rating 5/5:** Royal Road and Minor Arcana manipulation; Astrologian's most loved era.
-9. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Spear 30s. **Rating 5/5:** Same beloved SB card game.
-10. SB 4.3–4.38 (2018-05-22 → 2018-09-17): Malefic 1.5s casts; Lightspeed −50% MP, 120s; Aspected Helios 2.5s. **Rating 5/5:** Faster Malefic and Lightspeed; still the beloved SB card game.
-11. SB 4.4–4.58 (2018-09-18 → 2019-07-01) (minor): Minor Arcana / Lord / Lady 1s recast. **Rating 5/5:** Same beloved SB card game.
+8. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Balance 10%; Spear +10% crit; Undraw 3s; Hyper Lightspeed on Essential Dignity. ← built **Rating 5/5:** Royal Road and Minor Arcana manipulation; Astrologian's most loved era.
+9. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Spear 30s. ← built **Rating 5/5:** Same beloved SB card game.
+10. SB 4.3–4.38 (2018-05-22 → 2018-09-17): Malefic 1.5s casts; Lightspeed −50% MP, 120s; Aspected Helios 2.5s. ← built **Rating 5/5:** Faster Malefic and Lightspeed; still the beloved SB card game.
+11. SB 4.4–4.58 (2018-09-18 → 2019-07-01) (minor): Minor Arcana / Lord / Lady 1s recast. ← built **Rating 5/5:** Same beloved SB card game.
 12. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): seal system, Divination (180s, 2/4/6%), Balance 6%/3%; Royal Road, Spread, Time Dilation removed; Horoscope, Neutral Sect, Malefic IV, Combust III, Gravity. **Rating 2/5:** Seals replaced Royal Road and Spread; unpopular.
 13. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Divination 120s 4/5/6%; Lightspeed 90s; Celestial Opposition 60s; Gravity 1.5s. **Rating 2/5:** Seal tuning; still unpopular.
 14. ShB 5.1–5.25 (2019-10-29 → 2020-08-10): Collective Unconscious 60s ring; Minor Arcana converts on draw. **Rating 3/5:** Collective Unconscious and Minor Arcana fixes; better.
@@ -294,7 +294,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 1. ARR 2.0–2.05 (2013-08-27 → 2013-12-16): Aetherflow, Energy Drain, Fester; Bio, Bio II, Miasma, Miasma II, Shadow Flare; Bane; Contagion; Spur, Rouse, Enkindle; 6s summon casts. **Rating 3/5:** DoT summoner with Egis; early days.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Bane 8y, no overwrite of longer DoTs; Sustain costs MP. **Rating 4/5:** Bane DoT spreading; liked.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Painflare, Ruin III, Tri-disaster, Dreadwyrm Trance (3 Aethertrail), Deathflare. **Rating 5/5:** Tri-disaster, Bane and Dreadwyrm Trance; widely missed.
-4. SB 4.0–4.06 (2017-06-20 → 2017-10-09): Summon Bahamut; Trance 20s; Fester 5s; Ruin IV procs; Aetherpact / Devotion; Spur removed. **Rating 5/5:** Summon Bahamut's debut; iconic.
+4. SB 4.0–4.06 (2017-06-20 → 2017-10-09): Summon Bahamut; Trance 20s; Fester 5s; Ruin IV procs; Aetherpact / Devotion; Spur removed. ← built **Rating 5/5:** Summon Bahamut's debut; iconic.
 5. SB 4.1–4.58 (2017-10-10 → 2019-07-01): summons 3s; instant Ruin III in Trance; Further Ruin; Devotion party-wide. ← built **Rating 5/5:** Stormblood Summoner; the 'most missed version' in many threads.
 6. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Egi Assault I/II; Firebird Trance alternating with Dreadwyrm; Trance 60s; Rouse, Contagion, Shadow Flare removed. **Rating 3/5:** Firebird Trance; DoTs kept but strict demi phases.
 7. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Ruination removed; Tri-disaster 300; Bane applies DoTs; Trances 55s; Egi Assault a spell; pets deal magic damage. **Rating 3/5:** Same kit; fine.

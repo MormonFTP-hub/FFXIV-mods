@@ -107,7 +107,10 @@
 
   // Game icon keys are prefixed with the job ("sam:hakaze"); Black Mage's predate that and have none.
   B.icon = function (id) {
-    const g = gameIcon(`${B.jobId}:${id}`) || gameIcon(id);
+    // An action can borrow another's icon (iconOf), e.g. a card played from the Spread.
+    const a = B.ACTIONS && B.ACTIONS[id];
+    const key = (a && a.iconOf) || id;
+    const g = gameIcon(`${B.jobId}:${key}`) || gameIcon(key);
     if (g) return g;
     if (cache[id]) return cache[id];
     const art = ART[id] || ART.scathe;

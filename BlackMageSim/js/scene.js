@@ -11,6 +11,7 @@
     iai: ['255,225,150', '255,255,255', '255,150,110'],
     aether: ['120,255,200', '60,200,170', '230,255,245'],
     bahamut: ['150,120,255', '90,60,220', '230,220,255'],
+    astral: ['150,190,255', '255,230,150', '255,255,255'],
   };
   // Summoner pets, drawn as glowing billboards: glow, wings, body, and the colour of what they throw.
   const PET_COLORS = {
@@ -238,7 +239,7 @@
       this.release = 0.45;
       const a = A[id];
       if (!a) return;
-      if (this.e.job.role !== 'caster') { this.onMeleeRelease(id, a); return; }
+      if (!B.isCaster(this.e.job)) { this.onMeleeRelease(id, a); return; }
       const school = a.school && ELEMENT_COLORS[a.school] ? a.school : 'none';
       const p = this.e.pos;
       const tip = this.staffTip();
@@ -310,7 +311,7 @@
     }
 
     onTeleport(from, to) {
-      const colors = this.e.job.role === 'caster' ? ['200,140,255', '255,255,255'] : ['255,230,180', '255,255,255'];
+      const colors = B.isCaster(this.e.job) ? ['200,140,255', '255,255,255'] : ['255,230,180', '255,255,255'];
       this.emit(30, { x: from.x, y: 1, z: from.z, spread: 0.8, speed: 2, vy: 1, life: 0.6, size: 0.25, colors });
       this.emit(30, { x: to.x, y: 1, z: to.z, spread: 0.8, speed: 2, vy: 1, life: 0.6, size: 0.25, colors });
     }

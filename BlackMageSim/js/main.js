@@ -265,7 +265,7 @@
         if (this.enc) { this.enc.uses.push(u); this.enc.lastActivity = ev.t; }
       });
       // Spells are cast; weaponskills are readied (a cast) and used.
-      const caster = () => e.job.role === 'caster';
+      const caster = () => B.isCaster(e.job);
       e.on('castStart', ev => {
         sc.onCastStart(ev.id);
         sfx.play(caster() ? 'cast' : 'draw');

@@ -172,7 +172,7 @@
         ['General', ['sprint', 'tincture']],
       ];
       // What the 4.0–4.06 version (smn_sb40.js) changes.
-      this.cfg = { trance: TRANCE, instantRuin3: true, petProc: PET_PROC };
+      this.cfg = { trance: TRANCE, instantRuin3: true, petProc: PET_PROC, devotion: 1.02 };
       this.referenceDps = 5600;     // a scripted 4.58 rotation at 2.46 parses about 5,300 on the dummy
       this.referenceGcd = 2.46;
       this.startDistance = 12;
@@ -243,7 +243,7 @@
       const isPet = !!(a && a.pet);
       if (!isPet && e.has('dreadwyrmTrance')) mult *= 1.10;
       if (isPet && e.has('rouse')) mult *= 1.40;
-      if (e.has('devotion')) mult *= 1.02;
+      if (e.has('devotion')) mult *= this.cfg.devotion;
       if (e.tHas('contagion')) mult *= 1.10;
       const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.int3sb.cap : 0);
       return { mult, main };

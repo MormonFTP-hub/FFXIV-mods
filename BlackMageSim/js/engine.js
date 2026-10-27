@@ -156,6 +156,13 @@
       return this.cds[key];
     }
     cdOf(id) { const a = A[id]; return a ? this.cds[a.cdGroup || id] : null; }
+    // Start an action's recast. Abilities with holdCd start theirs later, from the job (Draw's starts once the card
+    // it drew is used).
+    startCd(id) {
+      const c = this.cd(id);
+      if (c.charges === c.max) c.nextAt = this.now + c.recast;
+      c.charges--;
+    }
     cdTick() {
       for (const id in this.cds) {
         const c = this.cds[id];
@@ -313,9 +320,7 @@
           this.resolveAction(id);
         }
       } else {
-        const c = this.cd(id);
-        if (c.charges === c.max) c.nextAt = this.now + c.recast;
-        c.charges--;
+        if (!a.holdCd) this.startCd(id);
         this.lockUntil = this.now + this.animLock(a.lock);
         this.emit('use', { id, gcd: false, t: this.now });
         this.resolveAction(id);
@@ -361,7 +366,8 @@
       d = Math.floor(d * fTNC / 1000);
       if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - L.sub) / L.div) + 1000) / 1000);
       d = Math.floor(Math.floor(d * fWD / 100) * s.trait / 100);
-      const critRate = Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000;
+      // snap.critAdd: a crit-rate buff (the Spear).
+      const critRate = Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000 + (snap.critAdd || 0);
       const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
       const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000;
       const crit = opts.crit || Math.random() < critRate;

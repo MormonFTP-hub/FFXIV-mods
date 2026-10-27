@@ -125,6 +125,32 @@ SMN_STATUSES = {
     "lucidDreaming": "Lucid Dreaming", "addle": "Addle", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Astrologian (Stormblood 4.x): the cards are their own actions ("the Balance" ...), played from Draw.
+AST_ACTIONS = {
+    "malefic3": (7442, "Malefic III"), "combust2": (3608, "Combust II"), "gravity": (3615, "Gravity"),
+    "earthlyStar": (7439, "Earthly Star"), "stellarDetonation": (8324, "Stellar Detonation"),
+    "stellarBurst": (7440, "Stellar Burst"), "stellarExplosion": (7441, "Stellar Explosion"),
+    "lordOfCrowns": (7444, "Lord of Crowns"), "ladyOfCrowns": (7445, "Lady of Crowns"), "minorArcana": (7443, "Minor Arcana"),
+    "draw": (3590, "Draw"), "redraw": (3593, "Redraw"), "undraw": (9629, "Undraw"), "royalRoad": (3591, "Royal Road"),
+    "emptyRoad": (4645, "Empty Road"), "spread": (3592, "Spread"), "undrawSpread": (4646, "Undraw Spread"),
+    "sleeveDraw": (7448, "Sleeve Draw"), "balance": (4401, "the Balance"), "arrow": (4402, "the Arrow"),
+    "spear": (4403, "the Spear"), "bole": (4404, "the Bole"), "ewer": (4405, "the Ewer"), "spire": (4406, "the Spire"),
+    "lightspeed": (3606, "Lightspeed"), "diurnalSect": (3604, "Diurnal Sect"), "nocturnalSect": (3605, "Nocturnal Sect"),
+    "benefic": (3594, "Benefic"), "benefic2": (3610, "Benefic II"), "aspectedBenefic": (3595, "Aspected Benefic"),
+    "helios": (3600, "Helios"), "aspectedHelios": (3601, "Aspected Helios"), "essentialDignity": (3614, "Essential Dignity"),
+    "synastry": (3612, "Synastry"), "collectiveUnconscious": (3613, "Collective Unconscious"),
+    "celestialOpposition": (16553, "Celestial Opposition"), "timeDilation": (3611, "Time Dilation"),
+    "clericStance": (7567, "Cleric Stance"), "largesse": (7570, "Largesse"), "swiftcast": (7561, "Swiftcast"),
+    "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+}
+AST_STATUSES = {
+    "theBalance": 829, "theBole": 830, "theArrow": 831, "theSpear": 832, "theEwer": 833, "theSpire": 834,
+    "enhancedRoyalRoad": 816, "expandedRoyalRoad": 817, "extendedRoyalRoad": 818, "lightspeed": 841, "combust2": 843,
+    "earthlyDominance": 1224, "giantDominance": 1248, "diurnalSect": 839, "nocturnalSect": 840, "clericStance": 145,
+    "largesse": 1207, "lucidDreaming": "Lucid Dreaming", "swiftcast": "Swiftcast", "surecast": "Surecast",
+    "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -138,6 +164,15 @@ JOBS = {
             "tincture": "Grade 8 Tincture of Strength", "classjob": 37},
     # Most of Stormblood Summoner's kit was removed in 6.0, and Dawntrail struck those icons through; uncross()
     # recovers them in roughly their old colours.
+    # Draw, Redraw, Undraw and Minor Arcana point at the removed-action icon now; their art is still nearby. The
+    # Stellar blasts use Stellar Detonation's. The Sects, Royal Road, Spread, Sleeve Draw and Time Dilation are struck
+    # through, and uncross() recovers them.
+    "ast": {"actions": AST_ACTIONS, "statuses": AST_STATUSES,
+            "overrides": {"draw": 3101, "redraw": 3105, "undraw": 3102, "minorArcana": 3106, "stellarBurst": 3144, "stellarExplosion": 3144},
+            "uncross": {"diurnalSect": "255,220,120", "nocturnalSect": "140,150,255", "royalRoad": "255,215,130",
+                        "spread": "200,210,255", "sleeveDraw": "230,200,255", "timeDilation": "170,210,255",
+                        "emptyRoad": "200,190,160", "undrawSpread": "200,210,255"},
+            "tincture": "Grade 8 Tincture of Mind", "classjob": 33},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",

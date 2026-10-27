@@ -394,7 +394,7 @@
       if (w) this.tipWorld.copy(w.tip).applyMatrix4(w.group.matrixWorld);
       else this.tipWorld.set(e.pos.x, 1.6, e.pos.z);
       const school = e.casting ? (B.ACTIONS[e.casting.id].school || 'none') : null;
-      const target = school ? 2.2 : sc.release > 0 && e.job.role === 'caster' ? 1.2 : 0;
+      const target = school ? 2.2 : sc.release > 0 && B.isCaster(e.job) ? 1.2 : 0;
       this.castLight.intensity += (target - this.castLight.intensity) * Math.min(1, dt * 10);
       if (school) this.castLight.color.setHex(ELEMENT_LIGHT[school] || ELEMENT_LIGHT.none);
       this.castLight.position.copy(this.tipWorld);

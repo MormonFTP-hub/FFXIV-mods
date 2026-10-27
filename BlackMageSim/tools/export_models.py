@@ -67,6 +67,14 @@ JOB_MODELS = {
         "stance": "bt_rod_emp",
         "attrs": {"top": {"atr_ude": True}},
     },
+    # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
+    "sch-sb": {
+        "actionsFrom": "sch",
+        "gear": {s: [326, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1701, "body": 71, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
     # Stormblood Astrologian: Constellation (the 4.x artifact gear) and the Omega Torquetum (Alphascape, 4.4).
     "ast-sb": {
         "actionsFrom": "ast",
