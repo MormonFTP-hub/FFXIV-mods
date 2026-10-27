@@ -149,6 +149,7 @@
       // Abilities: recast is the cooldown. GCDs with a cooldown of their own (Kaeshi): cd.
       const recast = a.kind === 'gcd' ? (a.cdScales ? this.speedScale(a.cd) : a.cd) : a.recast;
       if (!this.cds[key]) this.cds[key] = { max: a.charges || 1, charges: a.charges || 1, recast, nextAt: null };
+      else if (a.cdScales) this.cds[key].recast = recast;     // follows skill speed changed in Settings
       return this.cds[key];
     }
     cdOf(id) { const a = A[id]; return a ? this.cds[a.cdGroup || id] : null; }
@@ -452,9 +453,15 @@
         this.emit('mpTick');
       }
 
-      // DoTs tick on the server's 3s tick, not from when they landed.
+      // DoTs (and Lucid Dreaming's Refresh) tick on the server's 3s status tick, not from when they landed.
       if (now >= this.dotTickNext - EPS) {
         this.dotTickNext += 3;
+        if (this.has('lucidDreaming')) {
+          const gain = this.job.lucidGain ? this.job.lucidGain(this) : B.LUCID_REGEN;
+          const before = this.mp;
+          this.mp = Math.min(this.maxMp, this.mp + gain);
+          if (this.mp > before) this.emit('mpGain', { amount: this.mp - before, source: 'lucid' });
+        }
         for (const [key, st] of Object.entries(this.tStatuses)) {
           if (!st.dot || st.until <= now + EPS) continue;
           const r = this.damage(st.dot.potency, st.snap, true);
@@ -479,7 +486,7 @@
     // MP restored on the next tick (what the tick timer above the MP bar shows).
     mpTickGain() {
       if (this.job.mpRegen) return this.job.mpRegen(this);
-      return B.BASE_REGEN + (this.has('lucidDreaming') ? B.LUCID_REGEN : 0);
+      return B.BASE_REGEN;
     }
 
     // ---------- movement ----------

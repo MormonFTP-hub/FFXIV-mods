@@ -400,10 +400,10 @@
     mpRegen(e) {
       const el = e.g.element;
       if (el > 0) return 0;
-      let gain = el < 0 ? (this.cfg.uiRegen || UI_REGEN)[-el - 1] : (this.cfg.baseRegen || B.BASE_REGEN);
-      if (e.has('lucidDreaming')) gain += this.cfg.lucid;
-      return gain;
+      return el < 0 ? (this.cfg.uiRegen || UI_REGEN)[-el - 1] : (this.cfg.baseRegen || B.BASE_REGEN);
     }
+    // Lucid Dreaming ticks on its own (the status tick) and, like every other MP gain, not in Astral Fire.
+    lucidGain(e) { return e.g.element > 0 ? 0 : this.cfg.lucid; }
     mpTickNote(e) { return e.g.element > 0 ? 'no regen in Astral Fire' : null; }
 
     nextEvent(e) {

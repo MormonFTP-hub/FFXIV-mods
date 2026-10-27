@@ -321,6 +321,7 @@
       });
       e.on('mpGain', ev => {
         if (ev.source === 'manafont') ui.fly({ at: mageAt(), text: `${fmt(ev.amount)} MP`, cls: 'mp', dx: -70 });
+        else if (ev.source === 'lucid') ui.fly({ at: mageAt(), text: `${fmt(ev.amount)} MP`, cls: 'mp small', dx: -70 });
       });
       e.on('element', ev => {
         if (ev.expired) ui.log(`${ev.prev > 0 ? 'Astral Fire' : 'Umbral Ice'} wore off. Enochian lost.`, 'lose', 'system');

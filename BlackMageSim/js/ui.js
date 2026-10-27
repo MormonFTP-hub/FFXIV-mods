@@ -106,10 +106,16 @@
         if (rid !== s.rid) { s.rid = rid; s.img.src = B.icon(rid); }
         const a = A[rid];
         let rem = 0, total = 1, cdText = '', chg = '', light = false;
+        // Shared recasts (Continuation's follow-ups, Senei and Guren) live under their group's key.
+        const c = e.cdOf(rid);
         if (a.kind === 'gcd') {
           rem = e.gcdEnd - now; total = e.gcdLen;
+          // A weaponskill with a recast of its own (Gnashing Fang, Double Down, Tsubame-gaeshi) shows that recast
+          // once it outlasts the GCD, with its countdown, as the game does.
+          if (a.cd && c && c.charges === 0 && c.nextAt - now > rem) { rem = c.nextAt - now; total = c.recast; cdText = String(Math.ceil(rem)); }
+          else if (a.cd && c && c.charges < c.max && rem <= 0.001) { rem = c.nextAt - now; total = c.recast; light = true; }
+          if (a.cd && a.charges) chg = String(c ? c.charges : a.charges);
         } else {
-          const c = e.cds[rid];
           if (c && c.charges === 0) { rem = c.nextAt - now; total = c.recast; cdText = String(Math.ceil(rem)); }
           else if (c && c.charges < c.max) { rem = c.nextAt - now; total = c.recast; light = true; }
           if (a.charges) chg = String(c ? c.charges : a.charges);
