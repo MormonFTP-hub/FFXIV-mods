@@ -24,9 +24,13 @@
       this.reset();
     }
 
+    // The job version's level and its formula modifiers.
+    get level() { return this.job.level || 90; }
+    get lv() { return B.LEVELS[this.level]; }
+
     get stats() {
       const st = this.job.stats;
-      const speed = Math.max(B.SPEED_MIN, Math.min(B.SPEED_MAX, Math.round(this.speedSetting()) || st.speed));
+      const speed = Math.max(this.lv.sub, Math.min(B.SPEED_MAX, Math.round(this.speedSetting()) || st.speed));
       return Object.assign({}, st, { speed });
     }
     speedSetting() { return (this.settings.speed || {})[this.job.id]; }
@@ -94,7 +98,8 @@
 
     // Spell speed or skill speed, with the job's haste (Ley Lines, Shifu).
     speedScale(baseSec, haste) {
-      const x = Math.floor(130 * (this.stats.speed - 400) / 1900);
+      const L = this.lv;
+      const x = Math.floor(130 * (this.stats.speed - L.sub) / L.div);
       let ms = Math.floor(baseSec * 1000 * (1000 - x) / 1000);
       ms = Math.floor(ms * (100 - (haste || 0)) / 100);
       return Math.floor(ms / 10) / 100;
@@ -104,14 +109,15 @@
 
     // GCD for a speed stat, with the job's standing haste (Samurai tiers are quoted with Fuka on: 2.14).
     gcdForSpeed(speed, haste) {
-      const x = Math.floor(130 * (speed - 400) / 1900);
+      const L = this.lv;
+      const x = Math.floor(130 * (speed - L.sub) / L.div);
       const ms = Math.floor(2500 * (1000 - x) / 1000);
       return Math.floor(Math.floor(ms * (100 - (haste || 0)) / 100) / 10) / 100;
     }
 
     // Lowest speed stat that reaches a GCD (in seconds), for typing a GCD in settings.
     speedForGcd(gcd, haste) {
-      for (let s = B.SPEED_MIN; s <= B.SPEED_MAX; s++) {
+      for (let s = this.lv.sub; s <= B.SPEED_MAX; s++) {
         if (this.gcdForSpeed(s, haste) <= gcd + 1e-9) return s;
       }
       return B.SPEED_MAX;
@@ -328,24 +334,25 @@
 
     snapshot(a) { return this.job.snapshot(a, this); }
 
-    // FFXIV damage formula at level 90 (6.x level modifiers). The attack power modifier is 195, or 156 for tanks
-    // (stats.apMod), and tanks add Tenacity. opts.auto: an auto-attack (weapon damage scaled by delay); opts.crit:
-    // always a critical hit.
+    // FFXIV damage formula with the job version's level modifiers (B.LEVELS). The attack power modifier is the
+    // level's, lower for tanks (or stats.apMod), and tanks add Tenacity. opts.auto: an auto-attack (weapon damage
+    // scaled by delay); opts.crit: always a critical hit.
     damage(potency, snap, isDot, opts) {
-      const s = this.stats;
+      const s = this.stats, L = this.lv;
       opts = opts || {};
-      const fAP = Math.floor((s.apMod || 195) * (snap.main - 390) / 390) + 100;
-      const fDET = Math.floor(140 * (s.det - 390) / 1900) + 1000;
-      const fTNC = s.ten ? Math.floor(100 * (s.ten - 400) / 1900) + 1000 : 1000;
-      let fWD = Math.floor(390 * s.jobMod / 1000) + s.wd;
+      const ap = s.apMod || (this.job.role === 'tank' ? L.apTank : L.ap);
+      const fAP = Math.floor(ap * (snap.main - L.main) / L.main) + 100;
+      const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000;
+      const fTNC = s.ten ? Math.floor(100 * (s.ten - L.sub) / L.div) + 1000 : 1000;
+      let fWD = Math.floor(L.main * s.jobMod / 1000) + s.wd;
       if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
       let d = Math.floor(Math.floor(potency * fAP * fDET / 100) / 1000);
       d = Math.floor(d * fTNC / 1000);
-      if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - 400) / 1900) + 1000) / 1000);
+      if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - L.sub) / L.div) + 1000) / 1000);
       d = Math.floor(Math.floor(d * fWD / 100) * s.trait / 100);
-      const critRate = Math.floor(200 * (s.crit - 400) / 1900 + 50) / 1000;
-      const critMult = Math.floor(200 * (s.crit - 400) / 1900 + 1400) / 1000;
-      const dhRate = Math.floor(550 * (s.dh - 400) / 1900) / 1000;
+      const critRate = Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000;
+      const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
+      const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000;
       const crit = opts.crit || Math.random() < critRate;
       const dh = Math.random() < dhRate;
       if (crit) d = Math.floor(d * critMult);

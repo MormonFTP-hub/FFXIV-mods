@@ -566,7 +566,7 @@ ${job.helpHtml(seq, ic)}
       const commit = () => { this.app.save(); this.app.applySettings(); this.showGcdInfo(); };
       const sps = $('#s-sps'), gcd = $('#s-gcd'), ping = $('#s-ping');
       const minGcd = e.gcdForSpeed(B.SPEED_MAX, e.job.tierHaste);
-      const maxGcd = e.gcdForSpeed(B.SPEED_MIN, e.job.tierHaste);
+      const maxGcd = e.gcdForSpeed(e.lv.sub, e.job.tierHaste);
       // Each job keeps its own spell or skill speed.
       const getSpeed = () => this.speed();
       const setSpeed = (v) => { (st().speed = st().speed || {})[e.job.id] = v; };
@@ -574,13 +574,13 @@ ${job.helpHtml(seq, ic)}
       // Speed and GCD drive each other: type either one and the other follows.
       sps.addEventListener('input', () => {
         const v = parseInt(sps.value, 10);
-        if (!(v >= B.SPEED_MIN && v <= B.SPEED_MAX)) { $('#s-gcdinfo').textContent = `Enter ${B.SPEED_MIN}–${B.SPEED_MAX}`; return; }
+        if (!(v >= e.lv.sub && v <= B.SPEED_MAX)) { $('#s-gcdinfo').textContent = `Enter ${e.lv.sub}–${B.SPEED_MAX}`; return; }
         setSpeed(v);
         gcd.value = e.gcdForSpeed(v, e.job.tierHaste).toFixed(2);
         commit();
       });
       sps.addEventListener('change', () => {
-        setSpeed(Math.max(B.SPEED_MIN, Math.min(B.SPEED_MAX, parseInt(sps.value, 10) || getSpeed())));
+        setSpeed(Math.max(e.lv.sub, Math.min(B.SPEED_MAX, parseInt(sps.value, 10) || getSpeed())));
         sps.value = String(getSpeed());
         gcd.value = e.gcdForSpeed(getSpeed(), e.job.tierHaste).toFixed(2);
         commit();
@@ -734,6 +734,8 @@ ${job.helpHtml(seq, ic)}
     setJob() {
       $('#b-job-name').textContent = this.e.job.abbr;
       $('#party-ver').textContent = this.e.job.versionLabel;
+      $('#party-lv').textContent = 'Lv' + this.e.level;
+      $('#t-lv').textContent = 'Lv' + this.e.level;
       document.title = `${this.e.job.name} Dummy · ${this.e.job.versionLabel}`;
       this.statusEls = {}; this.tStatusEls = {};
       $('#buffs').innerHTML = ''; $('#tdebuffs').innerHTML = '';

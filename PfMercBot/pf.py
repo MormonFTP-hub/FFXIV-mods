@@ -199,14 +199,21 @@ _NOT_MERC = re.compile(
     r"staff|staffing|applications?)\b", re.I)
 _MERC_WORD = re.compile(r"\bmercs?\b|mercenar", re.I)
 _PAY_WORD = re.compile(
-    r"\bpay(s|ing|ed)?\b|\bpaid\b|\bbount(y|ies)\b|\brewards?\b|\bcompensat|"
+    r"\bpay(s|ing|ed)?\b|\bpaid\b|\bpay ?outs?\b|\bbount(y|ies)\b|\brewards?\b|\bcompensat|\btip(s|ping)?\b|"
     r"\b(wtb|buying)\b.{0,25}\b(clears?|carry|carries|kills?|help|runs?)\b", re.I)
 _PAY_CONTEXT = re.compile(
-    r"\b(for|per|each|a pop|clears?|kills?|phases?|p\d+|lockout|hours?|hrs?|hr|runs?|reclear)\b|/", re.I)
+    r"\b(for|per|each|ea|pp|a pop|clears?|kills?|phases?|p\d+|c\d\d|lockout|hours?|hrs?|hr|runs?|reclear|"
+    r"enrage|if|see)\b|/", re.I)
 
-# 10m, 2 mil, 1.5M, 500k, 20MIL. Must start with a digit so "M4S" etc. never match.
+# 10m, 2 mil, 1.5M, 500k, 1kk, 3 mills, 2 milly, 20MIL. Must start with a digit so "M4S" etc. never
+# match, and MGP (Gold Saucer points) isn't gil.
 _AMOUNT = re.compile(
-    r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(k|m|mil|mill|mils|million|millions|mio)(?![a-z])", re.I)
+    r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(kk|k|m|mils?|mills?|milly|mili|milli|mill?ions?|millons?|mln|mio)"
+    r"(?![a-z])(?!\s*mgp\b)", re.I)
+_AMOUNT_WORDS = re.compile(  # a mil, two million, half a mil
+    r"\b(an?|one|two|three|four|five|six|seven|eight|nine|ten|half(?:\s+an?)?)\s+(mils?|mills?|mill?ions?)\b", re.I)
+_WORD_MILLIONS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+                  "eight": 8, "nine": 9, "ten": 10, "half": 0.5}
 _AMOUNT_LONG = re.compile(r"(?<![\d,])(\d{1,3}(?:,\d{3}){2,})(?![\d,])")       # 5,000,000
 _AMOUNT_GIL = re.compile(r"(?<![\w.,])(\d[\d,]*)\s*gil\b", re.I)                  # 500000 gil
 
@@ -216,7 +223,10 @@ def pay_amounts(text: str) -> list[float]:
     out: list[float] = []
     for m in _AMOUNT.finditer(text):
         n = float(m.group(1).replace(",", "."))
-        out.append(n / 1000 if m.group(2).lower() == "k" else n)
+        unit = m.group(2).lower()
+        out.append(n / 1000 if unit == "k" else n)  # "kk" is millions too
+    for m in _AMOUNT_WORDS.finditer(text):
+        out.append(_WORD_MILLIONS[m.group(1).lower().split()[0]])
     for m in _AMOUNT_LONG.finditer(text):
         out.append(int(m.group(1).replace(",", "")) / 1_000_000)
     for m in _AMOUNT_GIL.finditer(text):
@@ -240,14 +250,16 @@ def merc_reason(listing: Listing) -> tuple[bool, str]:
         return True, "gil amount + pay keyword"
     if pay_word and re.search(r"\bgil\b", text, re.I):
         return True, "paying gil"
-    if amounts and _PAY_CONTEXT.search(text):
-        # Without an explicit "paying"/"merc", "1M each" in a [Loot] farm means you pay
-        # per drop, and 100M+ for a clear is a sale, not a merc fee.
-        if "[Loot]" in listing.tags:
+    ultimate = "(Ultimate)" in listing.duty
+    if amounts and (ultimate or _PAY_CONTEXT.search(text)):
+        # Without an explicit "paying"/"merc", "1M each" in a [Loot] farm means you pay per drop,
+        # and 100M+ for a clear is a sale, not a merc fee. Ultimates have no loot to sell (and
+        # often carry the Loot tag anyway): gil on one is pay for help.
+        if "[Loot]" in listing.tags and not ultimate:
             return False, "loot party price"
         if max(amounts) >= 100:
             return False, "big amount without pay word (likely a sale)"
-        return True, "gil amount for a clear/phase/hour"
+        return True, "gil amount on an ultimate" if ultimate else "gil amount for a clear/phase/hour"
     return False, "amount without pay context" if amounts else "no pay mentioned"
 
 

@@ -50,6 +50,15 @@ JOB_MODELS = {
         # the coat's arm section (atr_ude), which leaves the upper arms empty; in game the sleeves show.
         "attrs": {"top": {"atr_ude": True}},
     },
+    # Shadowbringers Black Mage: Spaekona's (the ShB artifact gear) and the Edenmorn Rod from Eden's Promise (5.4).
+    # Same animations as the Endwalker one, so only the character is new.
+    "blm-shb": {
+        "actionsFrom": "blm",
+        "gear": {s: [684, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1001, "body": 95, "variant": 1}, "n_buki_r")],
+        "stance": "bt_rod_emp",
+        "attrs": {"top": {"atr_ude": True}},
+    },
     "sam": {
         "gear": {s: [785, 1] for s in SLOTS},                              # Sakonji (Endwalker AF)
         "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 63, "variant": 1}, "n_buki_r"),   # Classical Samurai Blade (6.1)
@@ -349,7 +358,7 @@ def export_anims(pack, job, cfg):
 
     action, timeline, cast = Sheet("Action"), Sheet("ActionTimeline"), Sheet("ActionCastTimeline")
     key_col = timeline.string_cols()[0]
-    for sim_id, (row, _) in ICON_JOBS[job]["actions"].items():
+    for sim_id, (row, _) in ICON_JOBS[cfg.get("actionsFrom", job)]["actions"].items():
         entry = {}
         end_key = timeline.value(action.value(row, 7), key_col) if action.value(row, 7) > 0 else ""
         start_row = action.value(row, 5)

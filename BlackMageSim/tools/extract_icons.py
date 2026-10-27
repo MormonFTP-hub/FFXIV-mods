@@ -37,13 +37,15 @@ ACTIONS = {
     "xenoglossy": (16507, "Xenoglossy"), "amplifier": (25796, "Amplifier"), "paradox": (25797, "Paradox"),
     "surecast": (7559, "Surecast"), "addle": (7560, "Addle"), "swiftcast": (7561, "Swiftcast"),
     "lucidDreaming": (7562, "Lucid Dreaming"), "sprint": (3, "Sprint"),
+    # Shadowbringers: Enochian was a button until 6.0 made it a trait.
+    "enochian": (3575, "Enochian"),
 }
 BLM_STATUSES = {
     "firestarter": "Firestarter", "thundercloud": "Thundercloud", "sharpcast": "Sharpcast",
     "triplecast": "Triplecast", "swiftcast": "Swiftcast", "leyLines": "Ley Lines",
     "circleOfPower": "Circle of Power", "lucidDreaming": "Lucid Dreaming", "manaward": "Manaward",
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated", "thunder3": "Thunder III",
-    "addle": "Addle",
+    "addle": "Addle", "enochian": "Enochian",
 }
 SAM_ACTIONS = {
     "hakaze": (7477, "Hakaze"), "jinpu": (7478, "Jinpu"), "shifu": (7479, "Shifu"), "yukikaze": (7480, "Yukikaze"),

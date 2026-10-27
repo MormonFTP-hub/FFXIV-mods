@@ -3,7 +3,7 @@
 window.BLM = window.BLM || {};
 
 (function (B) {
-  B.SPEED_MIN = 400;           // level 90 base for spell / skill speed
+  B.SPEED_MIN = 400;           // level 90 base for spell / skill speed (other levels: B.LEVELS[n].sub)
   B.SPEED_MAX = 4000;
   B.MAX_MP = 10000;
   B.BASE_REGEN = 200;
@@ -18,6 +18,13 @@ window.BLM = window.BLM || {};
   B.AUTO_RANGE = 2.1;
   B.DUMMY_RADIUS = 0.8;
   B.COMBO_TIME = 30;
+
+  // Level modifiers for the damage and speed formulas: main stat, substat and divisor, the attack power multiplier
+  // for non-tanks and tanks, and Determination's coefficient. A job version sets its level (default 90).
+  B.LEVELS = {
+    90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
+    80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
+  };
 
   // The current job's tables. These objects stay the same; their contents change with the job.
   B.ACTIONS = {};

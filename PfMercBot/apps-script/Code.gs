@@ -1030,12 +1030,20 @@ const RE_NOT_MERC = new RegExp(
   'staff|staffing|applications?)\\b', 'i');
 const RE_MERC_WORD = /\bmercs?\b|mercenar/i;
 const RE_PAY_WORD = new RegExp(
-  '\\bpay(s|ing|ed)?\\b|\\bpaid\\b|\\bbount(y|ies)\\b|\\brewards?\\b|\\bcompensat|' +
+  '\\bpay(s|ing|ed)?\\b|\\bpaid\\b|\\bpay ?outs?\\b|\\bbount(y|ies)\\b|\\brewards?\\b|\\bcompensat|\\btip(s|ping)?\\b|' +
   '\\b(wtb|buying)\\b.{0,25}\\b(clears?|carry|carries|kills?|help|runs?)\\b', 'i');
-const RE_PAY_CONTEXT = /\b(for|per|each|a pop|clears?|kills?|phases?|p\d+|lockout|hours?|hrs?|hr|runs?|reclear)\b|\//i;
+const RE_PAY_CONTEXT = new RegExp(
+  '\\b(for|per|each|ea|pp|a pop|clears?|kills?|phases?|p\\d+|c\\d\\d|lockout|hours?|hrs?|hr|runs?|reclear|' +
+  'enrage|if|see)\\b|/', 'i');
 
-// 10m, 2 mil, 1.5M, 500k, 20MIL. Must start with a digit so "M4S" etc. never match.
-const RE_AMOUNT = /(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(k|m|mil|mill|mils|million|millions|mio)(?![a-z])/gi;
+// 10m, 2 mil, 1.5M, 500k, 1kk, 3 mills, 2 milly, 20MIL. Must start with a digit so "M4S" etc. never
+// match, and MGP (Gold Saucer points) isn't gil.
+const RE_AMOUNT = new RegExp(
+  '(?<![\\w.,])(\\d+(?:[.,]\\d+)?)\\s*(kk|k|m|mils?|mills?|milly|mili|milli|mill?ions?|millons?|mln|mio)' +
+  '(?![a-z])(?!\\s*mgp\\b)', 'gi');
+const RE_AMOUNT_WORDS =  // a mil, two million, half a mil
+    /\b(an?|one|two|three|four|five|six|seven|eight|nine|ten|half(?:\s+an?)?)\s+(mils?|mills?|mill?ions?)\b/gi;
+const WORD_MILLIONS = {a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, half: 0.5};
 const RE_AMOUNT_LONG = /(?<![\d,])(\d{1,3}(?:,\d{3}){2,})(?![\d,])/g;  // 5,000,000
 const RE_AMOUNT_GIL = /(?<![\w.,])(\d[\d,]*)\s*gil\b/gi;  // 500000 gil
 
@@ -1044,8 +1052,9 @@ function payAmounts(text) {
   const out = [];
   for (const m of text.matchAll(RE_AMOUNT)) {
     const n = parseFloat(m[1].replace(',', '.'));
-    out.push(m[2].toLowerCase() === 'k' ? n / 1000 : n);
+    out.push(m[2].toLowerCase() === 'k' ? n / 1000 : n);  // "kk" is millions too
   }
+  for (const m of text.matchAll(RE_AMOUNT_WORDS)) out.push(WORD_MILLIONS[m[1].toLowerCase().split(/\s+/)[0]]);
   for (const m of text.matchAll(RE_AMOUNT_LONG)) out.push(Number(m[1].replace(/,/g, '')) / 1e6);
   for (const m of text.matchAll(RE_AMOUNT_GIL)) {
     const n = Number(m[1].replace(/,/g, ''));
@@ -1064,12 +1073,14 @@ function mercReason(l) {
   const payWord = RE_PAY_WORD.test(text);
   if (amounts.length && payWord) return {merc: true, why: 'gil amount + pay keyword'};
   if (payWord && /\bgil\b/i.test(text)) return {merc: true, why: 'paying gil'};
-  if (amounts.length && RE_PAY_CONTEXT.test(text)) {
-    // Without an explicit "paying"/"merc", "1M each" in a [Loot] farm means you pay
-    // per drop, and 100M+ for a clear is a sale, not a merc fee.
-    if (l.tags.includes('[Loot]')) return {merc: false, why: 'loot party price'};
+  const ultimate = l.duty.includes('(Ultimate)');
+  if (amounts.length && (ultimate || RE_PAY_CONTEXT.test(text))) {
+    // Without an explicit "paying"/"merc", "1M each" in a [Loot] farm means you pay per drop,
+    // and 100M+ for a clear is a sale, not a merc fee. Ultimates have no loot to sell (and
+    // often carry the Loot tag anyway): gil on one is pay for help.
+    if (l.tags.includes('[Loot]') && !ultimate) return {merc: false, why: 'loot party price'};
     if (Math.max(...amounts) >= 100) return {merc: false, why: 'big amount without pay word (likely a sale)'};
-    return {merc: true, why: 'gil amount for a clear/phase/hour'};
+    return {merc: true, why: ultimate ? 'gil amount on an ultimate' : 'gil amount for a clear/phase/hour'};
   }
   return {merc: false, why: amounts.length ? 'amount without pay context' : 'no pay mentioned'};
 }
