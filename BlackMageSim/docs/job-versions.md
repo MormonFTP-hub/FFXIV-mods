@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58, Reaper DT 7.0–7.25 and 7.3–7.57, Sage EW 6.0–6.08, 6.1–6.18, 6.2–6.28 and 6.3–6.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58, Reaper DT 7.0–7.25 and 7.3–7.57, Reaper EW 6.0–6.58, Samurai EW 6.1–6.58, Sage EW 6.0–6.08, 6.1–6.18, 6.2–6.28 and 6.3–6.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -223,12 +223,12 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Kaeshi instant; Meikyo 55s; Meditate 45s; 5.08 Kaiten 1s recast. **Rating 4/5:** Instant Kaeshi; liked.
 4. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Meditation max 3 from Iaijutsu/Kaeshi; Shoha 400 / 15s; Meditate triggers GCD; Hagakure 10 per Sen. **Rating 4/5:** Meditation and Shoha settle; well liked.
 5. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Ikishoten 120s + Ogi Namikiri; Tsubame 2 charges; Meikyo 2 charges, grants Fugetsu/Fuka; Kaiten. ← built **Rating 4/5:** The Kaiten-era Endwalker kit; many still miss Kaiten's decisions.
-6. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Kaiten removed; Midare, Kaeshi and Namikiri always crit; potency rework. **Rating 4/5:** Kaiten gone, guaranteed crits; smoother and mostly liked.
+6. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Kaiten removed; Midare, Kaeshi and Namikiri always crit; potency rework. ← built **Rating 4/5:** Kaiten gone, guaranteed crits; smoother and mostly liked.
 7. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Tsubame-gaeshi a GCD needing Tsubame-gaeshi Ready (from Meikyo); Tendo; Zanshin. **Rating 2/5:** Tsubame tied to Meikyo; patched within weeks.
 8. DT 7.05–7.57 (2024-07-30 → present): Iaijutsu (not Higanbana) grants Tsubame-gaeshi Ready; Tengentsu. **Rating 3/5:** Tsubame from every Iaijutsu again; fine.
 
 ### Reaper (from 6.0)
-1. EW 6.0–6.58 (2021-12-07 → 2024-07-01): launch kit (Gluttony → 2 Soul Reaver, Enshroud, Arcane Circle). **Rating 4/5:** A flashy launch with the Enshroud burst; popular.
+1. EW 6.0–6.58 (2021-12-07 → 2024-07-01): launch kit (Gluttony → 2 Soul Reaver, Enshroud, Arcane Circle). ← built **Rating 4/5:** A flashy launch with the Enshroud burst; popular.
 2. DT 7.0–7.25 (2024-07-02 → 2025-08-04): Executioner from Gluttony; Oblatio; Perfectio. ← built **Rating 4/5:** Executioner's actions and Perfectio; liked.
 3. DT 7.3–7.57 (2025-08-05 → present) (minor): Enshroud 5s recast. ← built **Rating 4/5:** Faster Enshroud; liked.
 

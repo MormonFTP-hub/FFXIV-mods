@@ -278,6 +278,7 @@ ${seq(['harpe', 'shadowOfDeath', ['tincture'], 'soulSlice', ['arcaneCircle'], ['
     }
   }
 
+  B.ReaperDT = ReaperDT;
   B.registerJob({
     id: 'rpr', name: 'Reaper', abbr: 'RPR', role: 'melee', classJob: 39,
     versions: ['dt73', 'dt70'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new ReaperDT(v) })),
