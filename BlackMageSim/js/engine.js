@@ -29,6 +29,8 @@
     get lv() { return B.LEVELS[this.job.levelKey || this.level]; }
     // Max MP: 10,000 from Shadowbringers on; Stormblood's depended on level (a job version sets maxMp).
     get maxMp() { return this.job.maxMp || B.MAX_MP; }
+    // Striking dummies standing in the pack (Settings → Dummies): AoE actions hit the extra ones too.
+    get targets() { return Math.max(1, Math.min(B.EXTRA_DUMMIES.length + 1, +this.settings.dummies || 1)); }
     // TP: before 5.0, physical jobs spent TP on weaponskills (job.tp = { max, regen } per 3s tick).
     get usesTp() { return !!this.job.tp; }
 
@@ -61,6 +63,7 @@
       this.targeted = true;
       this.moving = false;
       this.jumpUntil = 0;
+      this.pet = null;             // a summoner's pet: { kind } (the job sets it; the scene draws it)
       this.g = this.job.initGauge(this);
       this.emit('reset');
     }
@@ -81,7 +84,7 @@
     }
     addTStatus(key, dur, extra) {
       const had = this.tHas(key);
-      this.tStatuses[key] = Object.assign({ until: this.now + dur, dur }, extra || {});
+      this.tStatuses[key] = Object.assign({ until: this.now + dur, dur, targets: this.targets }, extra || {});
       this.emit('statusGain', { key, self: false, refreshed: had });
     }
 
@@ -317,7 +320,7 @@
         this.emit('use', { id, gcd: false, t: this.now });
         this.resolveAction(id);
       }
-      if (a.target) {
+      if (a.target || a.pbaoe) {
         this.inCombat = true;
         if (this.job.autoAttack && this.autoNext === null) this.autoNext = this.now;
       }
@@ -436,8 +439,21 @@
           this.hits = this.hits.filter(h => h.at > now + EPS);
           due.sort((a, b) => a.at - b.at);
           for (const h of due) {
+            const a = A[h.id] || {};
+            // Point-blank AoE (Demon Slice, Blizzard II) needs no target, but whiffs if the dummy isn't inside it.
+            if (a.pbaoe && this.distToTarget() - B.DUMMY_RADIUS > a.pbaoe) continue;
+            // A hit from something that's gone (Demi-Bahamut after its 20s) does nothing.
+            if (h.expires !== undefined && now > h.expires + EPS) continue;
             const r = this.damage(h.potency, h.snap, false, h);
             this.emit('hit', { id: h.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: false, auto: !!h.auto, positional: h.positional, t: now });
+            // The rest of the pack, each with the action's falloff (a job can pass its own, e.g. a combo's).
+            const aoe = h.aoe !== undefined ? h.aoe : a.aoe;
+            if (aoe && !h.auto) {
+              for (let k = 1; k < this.targets; k++) {
+                const x = this.damage(h.potency * B.aoeMult(aoe, k), h.snap, false, h);
+                this.emit('hit', { id: h.id, amount: x.amount, crit: x.crit, dh: x.dh, dot: false, extra: k, t: now });
+              }
+            }
             if (h.after) h.after();
           }
         }
@@ -466,6 +482,15 @@
           if (!st.dot || st.until <= now + EPS) continue;
           const r = this.damage(st.dot.potency, st.snap, true);
           this.emit('hit', { id: st.dot.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: true, t: now });
+          // An AoE's DoT (Thunder IV, Bow Shock) ticks on every dummy it reached; so does one spread by Bane
+          // (st.aoe: its falloff by dummy).
+          const da = A[st.dot.id];
+          if ((da && da.dot && da.dot.aoe) || st.aoe) {
+            for (let k = 1; k < Math.min(this.targets, st.targets || 1); k++) {
+              const x = this.damage(st.dot.potency * B.aoeMult(st.aoe || true, k), st.snap, true);
+              this.emit('hit', { id: st.dot.id, amount: x.amount, crit: x.crit, dh: x.dh, dot: true, extra: k, t: now });
+            }
+          }
           if (this.job.onDotTick) this.job.onDotTick(key, this);
         }
       }

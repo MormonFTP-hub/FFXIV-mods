@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, asking before the next. Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -218,7 +218,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 10. DT 7.1–7.57 (2024-11-12 → present) (minor): Ten Chi Jin allows movement; Dokumori a cone. **Rating 3/5:** Ten Chi Jin allows movement; fine.
 
 ### Samurai (from 4.0)
-1. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Sen, Kenki, Iaijutsu; Hissatsu: Kaiten; Meikyo 10s / 80s. **Rating 5/5:** Launch Samurai with Kaiten; a huge, very popular debut.
+1. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Sen, Kenki, Iaijutsu; Hissatsu: Kaiten; Meikyo 10s / 80s. ← built **Rating 5/5:** Launch Samurai with Kaiten; a huge, very popular debut.
 2. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): Tsubame-gaeshi (with a cast), Ikishoten; Meditation up to 5 for Shoha; Meikyo 15s / 60s. **Rating 3/5:** Tsubame-gaeshi with a cast time; awkward, short-lived.
 3. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Kaeshi instant; Meikyo 55s; Meditate 45s; 5.08 Kaiten 1s recast. **Rating 4/5:** Instant Kaeshi; liked.
 4. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Meditation max 3 from Iaijutsu/Kaeshi; Shoha 400 / 15s; Meditate triggers GCD; Hagakure 10 per Sen. **Rating 4/5:** Meditation and Shoha settle; well liked.
@@ -295,7 +295,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Bane 8y, no overwrite of longer DoTs; Sustain costs MP. **Rating 4/5:** Bane DoT spreading; liked.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Painflare, Ruin III, Tri-disaster, Dreadwyrm Trance (3 Aethertrail), Deathflare. **Rating 5/5:** Tri-disaster, Bane and Dreadwyrm Trance; widely missed.
 4. SB 4.0–4.06 (2017-06-20 → 2017-10-09): Summon Bahamut; Trance 20s; Fester 5s; Ruin IV procs; Aetherpact / Devotion; Spur removed. **Rating 5/5:** Summon Bahamut's debut; iconic.
-5. SB 4.1–4.58 (2017-10-10 → 2019-07-01): summons 3s; instant Ruin III in Trance; Further Ruin; Devotion party-wide. **Rating 5/5:** Stormblood Summoner; the 'most missed version' in many threads.
+5. SB 4.1–4.58 (2017-10-10 → 2019-07-01): summons 3s; instant Ruin III in Trance; Further Ruin; Devotion party-wide. ← built **Rating 5/5:** Stormblood Summoner; the 'most missed version' in many threads.
 6. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Egi Assault I/II; Firebird Trance alternating with Dreadwyrm; Trance 60s; Rouse, Contagion, Shadow Flare removed. **Rating 3/5:** Firebird Trance; DoTs kept but strict demi phases.
 7. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Ruination removed; Tri-disaster 300; Bane applies DoTs; Trances 55s; Egi Assault a spell; pets deal magic damage. **Rating 3/5:** Same kit; fine.
 8. EW 6.0–6.08 (2021-12-07 → 2022-04-11): full rework — demi phase + Ifrit/Titan/Garuda attunement; Searing Light via Carbuncle; DoTs removed. **Rating 2/5:** Full rework to an easy primal rotation; divisive, many miss the old Summoner.

@@ -43,6 +43,19 @@
       name: 'Enpi', potency: 100, enhancedPotency: 260, kenki: 10, range: 20, breaksCombo: true, delay: 0.7, fx: 'enpi',
       desc: 'Delivers a ranged attack with a potency of 100.\nEnhanced Enpi Bonus Potency: 260\nAdditional Effect: Increases Kenki Gauge by 10',
     }),
+    // AoE: Fuko starts the Mangetsu (Fugetsu, Getsu) and Oka (Fuka, Ka) combos; all three are point-blank.
+    fuko: ws({
+      name: 'Fuko', potency: 100, comboStart: true, comboNext: true, kenki: 10, target: false, pbaoe: 5, aoe: true, fx: 'slash',
+      desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nAdditional Effect: Increases Kenki Gauge by 10',
+    }),
+    mangetsu: ws({
+      name: 'Mangetsu', potency: 100, comboPotency: 110, comboFrom: 'fuko', kenki: 10, sen: 'getsu', target: false, pbaoe: 5, aoe: true, fx: 'slash3',
+      desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Fuko\nCombo Potency: 110\nCombo Bonus: Grants Fugetsu\nFugetsu Effect: Increases damage dealt by 13%\nDuration: 40s\nCombo Bonus: Increases Kenki Gauge by 10\nCombo Bonus: Grants Getsu',
+    }),
+    oka: ws({
+      name: 'Oka', potency: 100, comboPotency: 110, comboFrom: 'fuko', kenki: 10, sen: 'ka', target: false, pbaoe: 5, aoe: true, fx: 'slashFire',
+      desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Fuko\nCombo Potency: 110\nCombo Bonus: Grants Fuka\nFuka Effect: Reduces weaponskill cast time and recast time, spell cast time and recast time, and auto-attack delay by 13%\nDuration: 40s\nCombo Bonus: Increases Kenki Gauge by 10\nCombo Bonus: Grants Ka',
+    }),
     iaijutsu: ws({
       name: 'Iaijutsu', cast: 1.3, school: 'iai', range: 6,
       desc: 'Executes a weaponskill determined by the number of Sen stored in the Sen Gauge.\n1 Sen: Higanbana\n2 Sen: Tenka Goken\n3 Sen: Midare Setsugekka',
@@ -52,7 +65,7 @@
       desc: 'Delivers an attack with a potency of 200.\nAdditional Effect: Damage over time\nPotency: 30\nDuration: 60s\nAdditional Effect: Grants a stack of Meditation\nCan only be executed when under the effect of one of the following: Setsu, Getsu, or Ka.',
     }),
     tenkaGoken: ws({
-      name: 'Tenka Goken', potency: 280, cast: 1.3, school: 'iai', range: 6, delay: 0.6, iai: 2, fx: 'tenka',
+      name: 'Tenka Goken', potency: 280, cast: 1.3, school: 'iai', range: 6, delay: 0.6, iai: 2, aoe: true, fx: 'tenka',
       desc: 'Delivers an attack to all enemies in a cone before you with a potency of 280.\nAdditional Effect: Grants a stack of Meditation\nCan only be executed when under the effect of two of the following: Setsu, Getsu, or Ka.',
     }),
     midareSetsugekka: ws({
@@ -69,7 +82,7 @@
       desc: 'Delivers an attack with a potency of 300.\nAdditional Effect: Damage over time\nPotency: 45\nDuration: 60s\nCan only be executed immediately following Higanbana.',
     }),
     kaeshiGoken: ws({
-      name: 'Kaeshi: Goken', potency: 420, cd: 60, charges: 2, cdGroup: 'tsubame', range: 6, noKaiten: true, delay: 0.6, fx: 'tenka',
+      name: 'Kaeshi: Goken', potency: 420, cd: 60, charges: 2, cdGroup: 'tsubame', range: 6, noKaiten: true, delay: 0.6, aoe: true, fx: 'tenka',
       desc: 'Delivers an attack to all enemies in a cone before you with a potency of 420.\nCan only be executed immediately following Tenka Goken.',
     }),
     kaeshiSetsugekka: ws({
@@ -77,11 +90,11 @@
       desc: 'Delivers an attack with a potency of 990.\nCan only be executed immediately following Midare Setsugekka.',
     }),
     ogiNamikiri: ws({
-      name: 'Ogi Namikiri', potency: 900, cast: 1.3, school: 'iai', range: 8, delay: 0.7, fx: 'ogi',
+      name: 'Ogi Namikiri', potency: 900, cast: 1.3, school: 'iai', range: 8, delay: 0.7, aoe: [1, 0.25], fx: 'ogi',
       desc: 'Delivers an attack to all enemies in a cone before you with a potency of 900 for the first enemy, and 75% less for all remaining enemies.\nAdditional Effect: Grants a stack of Meditation\nCan only be executed while under the effect of Ogi Namikiri Ready.',
     }),
     kaeshiNamikiri: ws({
-      name: 'Kaeshi: Namikiri', potency: 1350, range: 8, noKaiten: true, delay: 0.7, fx: 'ogi',
+      name: 'Kaeshi: Namikiri', potency: 1350, range: 8, noKaiten: true, delay: 0.7, aoe: [1, 0.25], fx: 'ogi',
       desc: 'Delivers an attack to all enemies in a cone before you with a potency of 1,350 for the first enemy, and 75% less for all remaining enemies.\nCan only be executed immediately following Ogi Namikiri.',
     }),
     meditate: {
@@ -109,8 +122,12 @@
       desc: 'Delivers an attack with a potency of 800.\nKenki Gauge Cost: 25\nShares a recast timer with Hissatsu: Guren.',
     },
     guren: {
-      name: 'Hissatsu: Guren', kind: 'ogcd', recast: 120, cdGroup: 'senei', potency: 500, kenkiCost: 25, target: true, range: 10, delay: 0.6, fx: 'senei',
+      name: 'Hissatsu: Guren', kind: 'ogcd', recast: 120, cdGroup: 'senei', potency: 500, kenkiCost: 25, target: true, range: 10, delay: 0.6, aoe: [1, 0.5], fx: 'senei',
       desc: 'Delivers an attack to all enemies in a straight line before you with a potency of 500 for the first enemy, and 50% less for all remaining enemies.\nKenki Gauge Cost: 25\nShares a recast timer with Hissatsu: Senei.',
+    },
+    kyuten: {
+      name: 'Hissatsu: Kyuten', kind: 'ogcd', recast: 1, potency: 110, kenkiCost: 25, pbaoe: 5, aoe: true, delay: 0.5, fx: 'shinten',
+      desc: 'Delivers an attack with a potency of 110 to all nearby enemies.\nKenki Gauge Cost: 25',
     },
     shoha: {
       name: 'Shoha', kind: 'ogcd', recast: 15, potency: 580, target: true, range: B.MELEE_RANGE, delay: 0.6, fx: 'shoha',
@@ -169,15 +186,23 @@
       this.defaultBars = [
         ['hakaze', 'jinpu', 'gekko', 'shifu', 'kasha', 'yukikaze', 'iaijutsu', 'tsubameGaeshi', 'ogiNamikiri', 'enpi', 'hagakure', 'meditate'],
         ['kaiten', 'shinten', 'senei', 'shoha', 'meikyoShisui', 'ikishoten', 'gyoten', 'yaten', 'trueNorth', 'tincture', 'feint', 'thirdEye'],
-        ['bloodbath', 'sprint', 'secondWind', 'armsLength', 'legSweep', 'guren', null, null, null, null, null, null],
+        ['bloodbath', 'sprint', 'secondWind', 'armsLength', 'legSweep', 'guren', 'fuko', 'mangetsu', 'oka', 'kyuten', null, null],
       ];
       this.actionGroups = [
-        ['Samurai', ['hakaze', 'jinpu', 'shifu', 'gekko', 'kasha', 'yukikaze', 'enpi', 'iaijutsu', 'higanbana', 'tenkaGoken', 'midareSetsugekka',
+        ['Samurai', ['hakaze', 'jinpu', 'shifu', 'gekko', 'kasha', 'yukikaze', 'enpi', 'fuko', 'mangetsu', 'oka', 'kyuten', 'iaijutsu', 'higanbana', 'tenkaGoken', 'midareSetsugekka',
           'tsubameGaeshi', 'kaeshiHiganbana', 'kaeshiGoken', 'kaeshiSetsugekka', 'ogiNamikiri', 'kaeshiNamikiri', 'kaiten', 'shinten',
           'senei', 'guren', 'shoha', 'gyoten', 'yaten', 'ikishoten', 'meikyoShisui', 'hagakure', 'meditate', 'thirdEye']],
         ['Role Actions', ['trueNorth', 'feint', 'bloodbath', 'secondWind', 'armsLength', 'legSweep']],
         ['General', ['sprint', 'tincture']],
       ];
+      // What older versions change (sam_sb.js): the two buffs, positionals, Meikyo and the AoE combo buffs.
+      this.buff = { fugetsu: FUGETSU, fuka: FUKA, dur: 40 };
+      this.positionalBonus = POSITIONAL;      // potency; before 6.0 positionals only gave Kenki
+      this.positionalKenki = 0;
+      this.meikyoBuffs = true;                // Meikyo Gekko / Kasha grant Fugetsu / Fuka
+      this.aoeBuffs = true;                   // Mangetsu / Oka grant Fugetsu / Fuka
+      this.meditationStacks = true;
+      this.tinctureKey = 'str6';
       this.referenceDps = 8700;     // a scripted 6.08 rotation on this gear parses about 8,200 on the dummy
       this.referenceGcd = 2.14;
       this.startDistance = 3.2;
@@ -199,11 +224,11 @@
       return id;
     }
 
-    haste(e) { return e.has('fuka') ? FUKA : 0; }
-    autoHaste(e) { return e.has('fuka') ? FUKA : 0; }
+    haste(e) { return e.has('fuka') ? this.buff.fuka : 0; }
+    autoHaste(e) { return e.has('fuka') ? this.buff.fuka : 0; }
 
     check(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       if (id === 'iaijutsu') return 'Unable to execute action. Sen required.';
       if (id === 'tsubameGaeshi') return 'Unable to execute action. Iaijutsu required.';
       if (a.cdGroup === 'tsubame' && KAESHI[g.kaeshi] !== id) return 'Unable to execute action.';
@@ -223,21 +248,22 @@
     }
 
     snapshot(a, e) {
-      let mult = e.has('fugetsu') ? FUGETSU : 1;
+      let mult = e.has('fugetsu') ? this.buff.fugetsu : 1;
       if (a && a.kaiten) mult *= KAITEN;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.str6.cap : 0);
+      if (this.targetMult) mult *= this.targetMult(e);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey].cap : 0);
       return { mult, main };
     }
 
     resolve(id, e) {
       // Meditate is a channel: any other action ends it.
       if (id !== 'meditate' && e.has('meditate')) { e.removeStatus('meditate'); e.g.medNext = null; }
-      if (ACTIONS[id].kind === 'gcd') this.weaponskill(id, e);
+      if (this.actions[id].kind === 'gcd') this.weaponskill(id, e);
       else this.ability(id, e);
     }
 
     weaponskill(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       const iai = IAI.includes(id);
       const comboFamily = !!(a.comboFrom || a.comboStart || id === 'enpi');
       // Meikyo Shisui: each stack lets a weaponskill skip its combo requirement (Iaijutsu and Kaeshi don't use one).
@@ -254,27 +280,29 @@
       let potency = a.potency || 0;
       if (a.comboFrom && combo) potency = a.comboPotency;
       const positional = !!a.positional && e.positionalHit(a);
-      if (positional) potency += POSITIONAL;
+      if (positional) potency += this.positionalBonus;
       if (id === 'enpi' && e.has('enhancedEnpi')) { potency = a.enhancedPotency; e.removeStatus('enhancedEnpi'); }
       const kaiten = potency > 0 && !a.noKaiten && e.has('kaiten');
       if (kaiten) e.removeStatus('kaiten');
       const snap = this.snapshot({ kaiten }, e);
 
       // Combo bonuses: Kenki, Sen and the two buffs.
-      if (id === 'hakaze' || id === 'enpi') this.addKenki(e, a.kenki);
+      if (a.comboStart || id === 'enpi') this.addKenki(e, a.kenki);
       if (a.comboFrom && combo) {
         this.addKenki(e, a.kenki);
-        if (id === 'jinpu') e.addStatus('fugetsu', 40);
-        if (id === 'shifu') e.addStatus('fuka', 40);
+        if (positional && this.positionalKenki) this.addKenki(e, this.positionalKenki);
+        if (id === 'jinpu' || (this.aoeBuffs && id === 'mangetsu')) e.addStatus('fugetsu', this.buff.dur);
+        if (id === 'shifu' || (this.aoeBuffs && id === 'oka')) e.addStatus('fuka', this.buff.dur);
         if (a.sen) { g.sen[a.sen] = true; e.emit('sen', {}); }
-        if (meikyo && id === 'gekko') e.addStatus('fugetsu', 40);
-        if (meikyo && id === 'kasha') e.addStatus('fuka', 40);
+        if (this.meikyoBuffs && meikyo && id === 'gekko') e.addStatus('fugetsu', this.buff.dur);
+        if (this.meikyoBuffs && meikyo && id === 'kasha') e.addStatus('fuka', this.buff.dur);
+        if (this.comboBonus) this.comboBonus(id, e);
       }
 
       let after = null;
       if (iai) {
         g.sen = { setsu: false, getsu: false, ka: false };
-        g.meditation = Math.min(MED_MAX, g.meditation + 1);
+        if (this.meditationStacks) g.meditation = Math.min(MED_MAX, g.meditation + 1);
         e.emit('sen', {});
       }
       if (id === 'ogiNamikiri') {
@@ -293,11 +321,13 @@
       g.kaeshi = iai ? id : null;
       g.namikiri = id === 'ogiNamikiri';
 
-      if (potency) e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (positional ? 'hit' : 'miss') : null });
+      // An AoE combo can have its own falloff (Stormblood's Mangetsu and Oka).
+      const aoe = a.comboAoe && a.comboFrom && combo ? a.comboAoe : undefined;
+      if (potency) e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (positional ? 'hit' : 'miss') : null, aoe });
     }
 
     ability(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       if (a.kenkiCost) this.addKenki(e, -a.kenkiCost);
       switch (id) {
         case 'kaiten': e.addStatus('kaiten', 10); break;
@@ -344,7 +374,7 @@
       if (e.now >= g.medNext - EPS) {
         g.medNext += 3;
         this.addKenki(e, 10);
-        g.meditation = Math.min(MED_MAX, g.meditation + 1);
+        if (this.meditationStacks) g.meditation = Math.min(MED_MAX, g.meditation + 1);
       }
     }
     frame(e) {
@@ -353,7 +383,7 @@
 
     // Hotbar borders: the next combo step, Kaeshi, Ogi Namikiri, Enhanced Enpi, Midare with three Sen.
     proc(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       if (a.comboFrom && e.inCombo(a.comboFrom)) return true;
       if (a.cdGroup === 'tsubame' && KAESHI[g.kaeshi] === id) return true;
       if (id === 'ogiNamikiri' && e.has('ogiNamikiriReady')) return true;
@@ -396,12 +426,12 @@
     <path class="glyph" d="M4 -13 A13 13 0 1 0 4 13 A10 10 0 1 1 4 -13 Z" fill="#fff" opacity=".35"/></g>
   <g id="s-ka" transform="translate(180 150)"><circle r="22" fill="#1d2230" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
     <g class="glyph" fill="#fff" opacity=".35">${flower(0, 0)}<circle r="3.5" fill="#1d2230"/></g></g>
-  <text x="236" y="112" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">MEDITATION</text>
-  ${[0, 1, 2].map(k => `<path id="s-med${k}" d="M0 -12 L9 0 L0 12 L-9 0 Z" transform="translate(${252 + k * 32} 150)" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}
+  ${this.meditationStacks ? `<text x="236" y="112" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">MEDITATION</text>
+  ${[0, 1, 2].map(k => `<path id="s-med${k}" d="M0 -12 L9 0 L0 12 L-9 0 Z" transform="translate(${252 + k * 32} 150)" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}` : ''}
 </svg>`;
       const $ = (s) => root.querySelector(s);
       this.sg = { kenki: $('#s-kenki'), kenkin: $('#s-kenkin'), setsu: $('#s-setsu'), getsu: $('#s-getsu'), ka: $('#s-ka'),
-        med: [0, 1, 2].map(k => $('#s-med' + k)), cache: {} };
+        med: this.meditationStacks ? [0, 1, 2].map(k => $('#s-med' + k)) : [], cache: {} };
     }
 
     gaugeUpdate(e) {
@@ -415,7 +445,7 @@
           G[k].setAttribute('filter', v ? 'url(#sg)' : '');
         });
       }
-      for (let i = 0; i < 3; i++) put('m' + i, g.meditation > i, v => { G.med[i].setAttribute('fill', v ? '#ffcf5a' : '#2a2535'); G.med[i].setAttribute('filter', v ? 'url(#sg)' : ''); });
+      for (let i = 0; i < G.med.length; i++) put('m' + i, g.meditation > i, v => { G.med[i].setAttribute('fill', v ? '#ffcf5a' : '#2a2535'); G.med[i].setAttribute('filter', v ? 'url(#sg)' : ''); });
     }
 
     // ---------- help ----------
@@ -433,6 +463,8 @@ ${seq(['meikyoShisui', 'gekko', ['tincture'], 'kasha', ['ikishoten'], 'yukikaze'
 <p style="color:#a9a3b4">The 6.08 numbers: Hakaze 180; Jinpu, Shifu and Yukikaze combo 280; Gekko and Kasha combo 320 (370 positional); Higanbana 200 + 30 per tick for 60s; Midare 660 (not yet a guaranteed crit); Kaeshi: Setsugekka 990; Ogi Namikiri 900; Kaeshi: Namikiri 1350; Shinten 270; Senei 800; Shoha 580; auto-attacks 90 potency at 2.64s. 6.1 later raised the combo GCDs, made Midare and Ogi guaranteed crits and cut the Kaeshi.</p>`;
     }
   }
+
+  B.SamuraiEW608 = SamuraiEW608;
 
   B.registerJob({
     id: 'sam', name: 'Samurai', abbr: 'SAM', role: 'melee', classJob: 34,

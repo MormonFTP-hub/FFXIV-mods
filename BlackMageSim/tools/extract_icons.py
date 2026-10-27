@@ -41,13 +41,17 @@ ACTIONS = {
     "enochian": (3575, "Enochian"),
     # Stormblood: Convert (row 158 became Manafont in 5.0; the old action survives at 9637).
     "convert": (9637, "Convert"),
+    # AoE: High Fire II / High Blizzard II from 6.0; Fire II and the old point-blank Blizzard II (row 146) before it.
+    "fire2": (147, "Fire II"), "blizzard2": (146, "Blizzard II"), "highFire2": (25794, "High Fire II"),
+    "highBlizzard2": (25795, "High Blizzard II"), "freeze": (159, "Freeze"), "flare": (162, "Flare"),
+    "thunder4": (7420, "Thunder IV"),
 }
 BLM_STATUSES = {
     "firestarter": "Firestarter", "thundercloud": "Thundercloud", "sharpcast": "Sharpcast",
     "triplecast": "Triplecast", "swiftcast": "Swiftcast", "leyLines": "Ley Lines",
     "circleOfPower": "Circle of Power", "lucidDreaming": "Lucid Dreaming", "manaward": "Manaward",
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated", "thunder3": "Thunder III",
-    "addle": "Addle", "enochian": "Enochian",
+    "addle": "Addle", "enochian": "Enochian", "thunder4": "Thunder IV",
 }
 SAM_ACTIONS = {
     "hakaze": (7477, "Hakaze"), "jinpu": (7478, "Jinpu"), "shifu": (7479, "Shifu"), "yukikaze": (7480, "Yukikaze"),
@@ -62,13 +66,15 @@ SAM_ACTIONS = {
     "ogiNamikiri": (25781, "Ogi Namikiri"), "kaeshiNamikiri": (25782, "Kaeshi: Namikiri"),
     "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
     "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "fuga": (7483, "Fuga"), "fuko": (25780, "Fuko"), "mangetsu": (7484, "Mangetsu"), "oka": (7485, "Oka"),
+    "invigorate": (7544, "Invigorate"),
     "sprint": (3, "Sprint"), "auto": (7, "attack"),
 }
 # Dawntrail renamed some of these, so they go by row (1298 Fugetsu, 1299 Fuka).
 SAM_STATUSES = {
     "fugetsu": 1298, "fuka": 1299, "kaiten": 1229, "meikyoShisui": 1233, "enhancedEnpi": 1236, "higanbana": 1228,
     "ogiNamikiriReady": 2959, "thirdEye": 1232, "meditate": 1231, "trueNorth": 1250, "bloodbath": 84, "feint": 1195,
-    "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+    "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated", "slashingResDown": "Slashing Resistance Down",
 }
 
 GNB_ACTIONS = {
@@ -85,6 +91,7 @@ GNB_ACTIONS = {
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    "demonSlice": (16141, "Demon Slice"), "demonSlaughter": (16149, "Demon Slaughter"), "fatedCircle": (16163, "Fated Circle"),
 }
 GNB_STATUSES = {
     "noMercy": "No Mercy", "brutalShell": "Brutal Shell", "royalGuard": "Royal Guard", "camouflage": "Camouflage",
@@ -93,6 +100,29 @@ GNB_STATUSES = {
     "readyToGouge": "Ready to Gouge", "readyToBlast": "Ready to Blast", "heartOfCorundum": "Heart of Corundum",
     "heartOfLight": "Heart of Light", "heartOfStone": "Heart of Stone", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
     "sprint": "Sprint", "medicated": "Medicated",
+}
+
+# Summoner (Stormblood 4.x): the summoner's own actions, then the pets' (Garuda-Egi, Ifrit-Egi, Demi-Bahamut).
+SMN_ACTIONS = {
+    "ruin": (163, "Ruin"), "ruin2": (172, "Ruin II"), "ruin3": (3579, "Ruin III"), "ruin4": (7426, "Ruin IV"),
+    "bio3": (7424, "Bio III"), "miasma3": (7425, "Miasma III"), "triDisaster": (3580, "Tri-disaster"),
+    "aetherflow": (166, "Aetherflow"), "energyDrain": (167, "Energy Drain"), "fester": (181, "Fester"),
+    "painflare": (3578, "Painflare"), "bane": (174, "Bane"), "dreadwyrmTrance": (3581, "Dreadwyrm Trance"),
+    "deathflare": (3582, "Deathflare"), "summonBahamut": (7427, "Summon Bahamut"),
+    "enkindleBahamut": (7429, "Enkindle Bahamut"), "rouse": (176, "Rouse"), "enkindle": (184, "Enkindle"),
+    "aetherpact": (7423, "Aetherpact"), "shadowFlare": (179, "Shadow Flare"), "triBind": (182, "Tri-bind"),
+    "physick": (190, "Physick"),
+    "windBlade": (792, "Wind Blade"), "shockwave": (793, "Shockwave"), "aerialSlash": (794, "Aerial Slash"),
+    "contagion": (795, "Contagion"), "aerialBlast": (796, "Aerial Blast"), "crimsonCyclone": (797, "Crimson Cyclone"),
+    "burningStrike": (798, "Burning Strike"), "radiantShield": (799, "Radiant Shield"), "flamingCrush": (800, "Flaming Crush"),
+    "inferno": (801, "Inferno"), "wyrmwave": (7428, "Wyrmwave"), "akhMorn": (7449, "Akh Morn"),
+    "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"), "addle": (7560, "Addle"),
+    "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+}
+SMN_STATUSES = {
+    "bio3": "Bio III", "miasma3": "Miasma III", "dreadwyrmTrance": "Dreadwyrm Trance", "furtherRuin": "Further Ruin",
+    "rouse": "Rouse", "devotion": "Devotion", "shadowFlare": "Shadow Flare", "swiftcast": "Swiftcast",
+    "lucidDreaming": "Lucid Dreaming", "addle": "Addle", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
 }
 
 JOBS = {
@@ -106,6 +136,16 @@ JOBS = {
     # Rough Divide (removed in 7.0 for Trajectory) keeps its icon at 003418, between Sonic Break and Continuation.
     "gnb": {"actions": GNB_ACTIONS, "statuses": GNB_STATUSES, "overrides": {"roughDivide": 3418},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 37},
+    # Most of Stormblood Summoner's kit was removed in 6.0, and Dawntrail struck those icons through; uncross()
+    # recovers them in roughly their old colours.
+    "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
+            "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
+                        "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",
+                        "enkindle": "255,175,90", "windBlade": "120,235,150", "shockwave": "170,230,170",
+                        "aerialSlash": "110,230,185", "contagion": "160,225,95", "aerialBlast": "100,240,175",
+                        "crimsonCyclone": "255,125,65", "burningStrike": "255,145,70", "radiantShield": "255,205,95",
+                        "flamingCrush": "255,110,50", "inferno": "255,95,45"},
+            "tincture": "Grade 8 Tincture of Intelligence", "classjob": 27},
 }
 
 
@@ -191,12 +231,59 @@ def png_data_url(icon):
     return img, "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
+def is_crossed(img):
+    """A struck-through removed-action icon: grey art (little colour outside the red stroke) with a red stroke."""
+    import numpy as np
+    a = np.asarray(img.convert("RGB")).astype(np.float32)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    red = (r - np.maximum(g, b) > 45) & (r > 100)
+    sat = (a.max(axis=2) - a.min(axis=2))[~red]
+    return red.mean() > 0.03 and float(sat.mean()) < 18
+
+
+def uncross(img, tint):
+    """Dawntrail marks a removed action's icon with a grey copy of its art struck through in red, and the coloured
+    art is gone from the files. Take the stroke out (each red pixel takes the mean of its unmarked neighbours),
+    stretch the faded grey back to full contrast, and colour it black → tint → white."""
+    import numpy as np
+    a = np.asarray(img.convert("RGBA")).astype(np.float32)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    red = (r - np.maximum(g, b) > 45) & (r > 100)
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):                 # grow the mask a pixel to take the edges
+        red = red | np.roll(np.roll(red, dy, 0), dx, 1)
+    lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    known = ~red
+    for _ in range(64):
+        if known.all():
+            break
+        acc = np.zeros_like(lum); cnt = np.zeros_like(lum)
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy or dx:
+                    k = np.roll(np.roll(known, dy, 0), dx, 1)
+                    acc += np.where(k, np.roll(np.roll(lum, dy, 0), dx, 1), 0); cnt += k
+        grow = ~known & (cnt > 0)
+        lum[grow] = acc[grow] / cnt[grow]
+        known = known | grow
+    lo, hi = np.percentile(lum, 2), np.percentile(lum, 98)
+    lum = np.clip((lum - lo) / max(1e-3, hi - lo), 0, 1)
+    t = np.array([int(c) for c in tint.split(",")], np.float32) / 255
+    l3 = lum[..., None]
+    rgb = np.where(l3 < 0.5, 2 * l3 * t, t + (2 * l3 - 1) * (1 - t))
+    out = np.concatenate([rgb * 255, a[..., 3:4]], axis=2).clip(0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
 def main():
     (OUT / "icons").mkdir(parents=True, exist_ok=True)
     icons, report = {}, []
 
-    def put(key, icon):
+    def put(key, icon, tint=None):
         img, url = png_data_url(icon)
+        if tint and is_crossed(img):
+            img = uncross(img, tint)
+            buf = io.BytesIO(); img.save(buf, "PNG", optimize=True)
+            url = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
         icons[key] = url
         img.save(OUT / "icons" / f"{key.replace(':', '_')}.png")
         report.append(f"{key:30s} {icon:06d}  {img.width}x{img.height}")
@@ -225,7 +312,7 @@ def main():
         if icol is None:
             icol = icon_col(action, [r for r, _ in acts.values()])
         for key, (rid, _) in acts.items():
-            put(f"{job}:{key}", cfg["overrides"].get(key) or action.value(rid, icol))
+            put(f"{job}:{key}", cfg["overrides"].get(key) or action.value(rid, icol), cfg.get("uncross", {}).get(key))
 
         sids = {k: (v if isinstance(v, int) else by_name[v]) for k, v in cfg["statuses"].items()}
         sicol = icon_col(status, list(sids.values()), 10000)

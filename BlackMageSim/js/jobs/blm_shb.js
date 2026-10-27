@@ -26,7 +26,7 @@
     },
     thunder3: {
       name: 'Thunder III', kind: 'gcd', school: 'thunder', potency: 70, mp: 400, cast: 2.5, delay: 0.8, target: true,
-      dot: { potency: 40, duration: 24 },
+      thunder: true, tcChance: 0.1, dot: { potency: 40, duration: 24 },
       desc: 'Deals lightning damage with a potency of 70.\nAdditional Effect: Lightning damage over time\nPotency: 40\nDuration: 24s\nAdditional Effect: 10% chance after each tick that the next Thunder spell will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 18s',
     },
     fire4: {
@@ -46,7 +46,7 @@
       desc: 'Deals unaspected damage with a potency of 750.\nPolyglot Cost: 1',
     },
     foul: {
-      name: 'Foul', kind: 'gcd', school: 'none', potency: 650, mp: 0, cast: 2.5, delay: 1.16, target: true,
+      name: 'Foul', kind: 'gcd', school: 'none', potency: 650, mp: 0, cast: 2.5, delay: 1.16, target: true, aoe: 0.75,
       desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 650 for the first enemy, and 25% less for all remaining enemies.\nPolyglot Cost: 1',
     },
     scathe: {
@@ -56,6 +56,30 @@
     umbralSoul: {
       name: 'Umbral Soul', kind: 'gcd', school: 'none', potency: 0, mp: 0, cast: 0,
       desc: 'Grants Umbral Ice and 1 Umbral Heart.\nDuration: 15s\nCan only be executed while under the effects of both Umbral Ice and Enochian.',
+    },
+    // AoE (5.x): Fire II and Blizzard II move the element one step, Freeze gives Umbral Ice III and an Umbral Heart,
+    // Flare spends all MP for Astral Fire III.
+    fire2: {
+      name: 'Fire II', kind: 'gcd', school: 'fire', potency: 80, mp: 1500, cast: 3, delay: 1.0, target: true, aoe: true, look: 'fire3',
+      desc: 'Deals fire damage with a potency of 80 to target and all enemies nearby it.\nAdditional Effect: Grants Astral Fire or removes Umbral Ice\nDuration: 15s',
+    },
+    blizzard2: {
+      name: 'Blizzard II', kind: 'gcd', school: 'ice', potency: 50, mp: 800, cast: 2, delay: 0.8, pbaoe: 5, aoe: true, look: 'blizzard3',
+      desc: 'Deals ice damage with a potency of 50 to all nearby enemies.\nAdditional Effect: Grants Umbral Ice or removes Astral Fire\nDuration: 15s',
+    },
+    freeze: {
+      name: 'Freeze', kind: 'gcd', school: 'ice', potency: 100, mp: 1000, cast: 2.5, delay: 1.0, target: true, aoe: true, look: 'blizzard4',
+      grantsUI3: true, hearts: 1,
+      desc: 'Deals ice damage with a potency of 100 to target and all enemies nearby it.\nAdditional Effect: Grants Umbral Ice III and removes Astral Fire\nDuration: 15s\nAdditional Effect: Grants 1 Umbral Heart\nUmbral Heart Bonus: Nullifies Astral Fire\'s MP cost increase for Fire spells and reduces MP cost for Flare by one-third',
+    },
+    flare: {
+      name: 'Flare', kind: 'gcd', school: 'fire', potency: 260, mp: 800, cast: 4, delay: 1.1, target: true, aoe: 0.6, look: 'despair',
+      desc: 'Deals fire damage to a target and all enemies nearby it with a potency of 260 for the first enemy, and 40% less for all remaining enemies.\nAdditional Effect: Grants Astral Fire III and removes Umbral Ice\nDuration: 15s\nRequires at least 800 MP and consumes all remaining MP.',
+    },
+    thunder4: {
+      name: 'Thunder IV', kind: 'gcd', school: 'thunder', potency: 50, mp: 800, cast: 3, delay: 0.8, target: true, aoe: true, look: 'thunder3',
+      thunder: true, tcChance: 0.03, dot: { potency: 30, duration: 18, aoe: true },
+      desc: 'Deals lightning damage with a potency of 50 to target and all enemies nearby it.\nAdditional Effect: Lightning damage over time\nPotency: 30\nDuration: 18s\nAdditional Effect: 3% chance after each tick that the next Thunder spell of any grade will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 18s\nOnly one Thunder spell-induced damage over time effect per caster can be inflicted upon a single target.',
     },
     enochian: {
       name: 'Enochian', kind: 'ogcd', recast: 30,
@@ -115,10 +139,11 @@
       this.defaultBars = [
         ['fire3', 'fire4', 'despair', 'fire', 'blizzard3', 'blizzard4', 'blizzard', 'thunder3', 'xenoglossy', 'foul', 'umbralSoul', 'scathe'],
         ['enochian', 'sharpcast', 'triplecast', 'swiftcast', 'leyLines', 'betweenTheLines', 'manafont', 'transpose', 'lucidDreaming', 'tincture', 'addle', 'manaward'],
-        ['surecast', 'sprint', null, null, null, null, null, null, null, null, null, null],
+        ['surecast', 'sprint', 'blizzard2', 'freeze', 'thunder4', 'fire2', 'flare', null, null, null, null, null],
       ];
       this.actionGroups = [
-        ['Black Mage', ['fire', 'fire3', 'fire4', 'despair', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'xenoglossy', 'foul', 'scathe', 'umbralSoul', 'enochian', 'transpose', 'sharpcast', 'triplecast', 'manafont', 'leyLines', 'betweenTheLines', 'manaward']],
+        ['Black Mage', ['fire', 'fire3', 'fire4', 'despair', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'xenoglossy', 'foul', 'scathe', 'umbralSoul',
+          'fire2', 'blizzard2', 'freeze', 'flare', 'thunder4', 'enochian', 'transpose', 'sharpcast', 'triplecast', 'manafont', 'leyLines', 'betweenTheLines', 'manaward']],
         ['Role Actions', ['swiftcast', 'lucidDreaming', 'addle', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
@@ -181,7 +206,7 @@
     }
 
     // Thunder III is the only Thunder in this kit, so Sharpcast only proc Thundercloud from it (as in 6.x).
-    proc(id, e) { return (id === 'fire3' && e.has('firestarter')) || (id === 'thunder3' && e.has('thundercloud')) || (id === 'enochian' && !e.g.enochian && e.g.element !== 0); }
+    proc(id, e) { return (id === 'fire3' && e.has('firestarter')) || (this.actions[id].thunder && e.has('thundercloud')) || (id === 'enochian' && !e.g.enochian && e.g.element !== 0); }
 
     speedInfo(e) {
       return `Fire IV ${e.speedScale(2.8).toFixed(2)}s · Despair ${e.speedScale(3).toFixed(2)}s · Fire III ${e.speedScale(3.5).toFixed(2)}s`;

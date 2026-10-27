@@ -62,6 +62,10 @@
         case 'xeno': this.tone('sine', 260, 55, 0.7, 0.5); this.noise('lowpass', 600, 1, 0.6, 0.4); this.tone('triangle', 880, 660, 0.4, 0.06); break;
         case 'paradox': [880, 1320, 1760, 2640].forEach((f, i) => this.tone('sine', f, f, 0.45, 0.07, i * 0.04)); this.noise('highpass', 6000, 1, 0.2, 0.1); break;
         case 'dot': this.noise('bandpass', 3500, 3, 0.08, 0.12); break;
+        case 'ruin': this.tone('sine', 720, 360, 0.35, 0.16); this.noise('bandpass', 1800, 2, 0.25, 0.14); break;
+        case 'wind': this.noise('bandpass', 1400, 0.8, 0.35, 0.28); this.noise('highpass', 4000, 1, 0.2, 0.1, 0.05); break;
+        case 'wyrm': this.tone('sawtooth', 180, 90, 0.5, 0.1); this.noise('lowpass', 800, 1, 0.5, 0.28); break;
+        case 'akhmorn': this.noise('lowpass', 600, 1, 1.2, 0.7); this.tone('sawtooth', 80, 30, 1.0, 0.28); this.tone('sine', 1200, 300, 0.8, 0.1); break;
         // Samurai: a blade leaving the sheath, swishes, and heavier cuts for Iaijutsu and the big oGCDs.
         case 'draw': this.noise('highpass', 5000, 1, 0.25, 0.08); this.tone('triangle', 2800, 3100, 0.2, 0.03); break;
         case 'auto': this.noise('bandpass', 2600, 1.2, 0.07, 0.12); break;

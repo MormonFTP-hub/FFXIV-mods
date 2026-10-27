@@ -30,6 +30,7 @@
       if (saved.barsByJob && typeof saved.barsByJob === 'object') store.barsByJob = saved.barsByJob;
       else if (saved.bars) store.barsByJob['blm:ew65'] = saved.bars;                                  // from 1.x
       if (okGrid(saved.binds, v => v === null || typeof v === 'string')) store.binds = saved.binds;
+      if (saved.barsSeen && typeof saved.barsSeen === 'object') store.barsSeen = saved.barsSeen;
     }
     if (!B.JOBS[store.settings.job]) store.settings.job = B.JOB_ORDER[0];
     return store;
@@ -188,7 +189,16 @@
       const key = this.jobKey();
       const have = this.store.barsByJob[key];
       if (!okGrid(have, v => v === null || !!A[v])) this.store.barsByJob[key] = this.job.defaultBars.map(r => r.slice());
-      return this.store.barsByJob[key];
+      const bars = this.store.barsByJob[key];
+      const seen = (this.store.barsSeen = this.store.barsSeen || {})[key] = this.store.barsSeen[key] || [];
+      if (!seen.length) bars.forEach(r => r.forEach(v => { if (v) seen.push(v); }));
+      const placed = new Set(bars.flat());
+      this.job.defaultBars.forEach((r, b) => r.forEach((id, i) => {
+        if (!id || seen.includes(id)) return;
+        seen.push(id);
+        if (!placed.has(id) && bars[b][i] === null) bars[b][i] = id;
+      }));
+      return bars;
     },
 
     // Change job or version: a fresh engine state, the job's hotbars, gauge, help and model.
@@ -287,6 +297,12 @@
         const a = A[ev.id];
         const tag = ev.crit && ev.dh ? 'Critical Direct Hit!' : ev.crit ? 'Critical!' : ev.dh ? 'Direct Hit!' : '';
         const n = fmt(ev.amount) + (ev.crit ? '!' : '') + (ev.dh ? '!' : '');
+        // Another dummy in the pack: just its number over its head.
+        if (ev.extra) {
+          ui.fly({ at: sc.dummyHead(ev.extra), text: n, cls: 'extra ' + (ev.crit ? 'crit ' : '') + (ev.dot ? 'dot' : ''), dy: ev.dot ? 30 : 0 });
+          sc.onExtraHit(ev);
+          return;
+        }
         flyN = (flyN + 1) % 5;
         ui.fly({
           at: dummyAt(), text: n, tag, cls: (ev.crit ? 'crit ' : '') + (ev.dh ? 'dh ' : '') + (ev.dot ? 'dot' : ''),
@@ -299,7 +315,7 @@
         sc.onHit(ev);
         if (ev.dot) sfx.play('dot');
         else {
-          const snd = a.fx || { fire: 'fire', fire3: 'fire', fire4: 'fire4', despair: 'despair', blizzard: 'ice', blizzard3: 'ice', blizzard4: 'ice4', thunder3: 'thunder', xenoglossy: 'xeno', foul: 'xeno', paradox: 'paradox', scathe: 'xeno' }[ev.id];
+          const snd = a.sound || a.fx || { fire: 'fire', fire3: 'fire', fire4: 'fire4', despair: 'despair', blizzard: 'ice', blizzard3: 'ice', blizzard4: 'ice4', thunder3: 'thunder', xenoglossy: 'xeno', foul: 'xeno', paradox: 'paradox', scathe: 'xeno' }[a.look || ev.id];
           if (snd) sfx.play(snd);
         }
       });
@@ -327,6 +343,7 @@
         if (ev.expired) ui.log(`${ev.prev > 0 ? 'Astral Fire' : 'Umbral Ice'} wore off. Enochian lost.`, 'lose', 'system');
       });
       e.on('teleport', ev => sc.onTeleport(ev.from, ev.to));
+      e.on('petUse', ev => sc.onPetUse(ev.id));
       e.on('mpTick', () => ui.flashTick());
       e.on('reset', () => { this.ui && this.ui.refreshBars && this.ui.refreshBars(); });
     },

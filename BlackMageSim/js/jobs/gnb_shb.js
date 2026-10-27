@@ -34,10 +34,10 @@
       this.defaultBars = [
         ['keenEdge', 'brutalShell', 'solidBarrel', 'gnashingFang', 'savageClaw', 'wickedTalon', 'continuation', 'burstStrike', 'sonicBreak', 'lightningShot', 'roughDivide', 'royalGuard'],
         ['noMercy', 'bloodfest', 'blastingZone', 'bowShock', 'tincture', 'rampart', 'camouflage', 'nebula', 'heartOfStone', 'aurora', 'superbolide', 'reprisal'],
-        ['heartOfLight', 'provoke', 'sprint', 'armsLength', 'lowBlow', 'interject', 'shirk', null, null, null, null, null],
+        ['heartOfLight', 'provoke', 'sprint', 'armsLength', 'lowBlow', 'interject', 'shirk', 'demonSlice', 'demonSlaughter', 'fatedCircle', null, null],
       ];
       this.actionGroups = [
-        ['Gunbreaker', ['keenEdge', 'brutalShell', 'solidBarrel', 'lightningShot', 'burstStrike', 'gnashingFang', 'savageClaw',
+        ['Gunbreaker', ['keenEdge', 'brutalShell', 'solidBarrel', 'lightningShot', 'demonSlice', 'demonSlaughter', 'burstStrike', 'fatedCircle', 'gnashingFang', 'savageClaw',
           'wickedTalon', 'sonicBreak', 'continuation', 'jugularRip', 'abdomenTear', 'eyeGouge', 'noMercy', 'bloodfest',
           'blastingZone', 'bowShock', 'roughDivide', 'royalGuard', 'camouflage', 'nebula', 'aurora', 'superbolide',
           'heartOfLight', 'heartOfStone']],
@@ -53,6 +53,9 @@
     buildShB(A) {
       const set = (id, o) => { A[id] = Object.assign({}, A[id], o); };
       set('keenEdge', { potency: 200, desc: 'Delivers an attack with a potency of 200.' });
+      set('demonSlice', { potency: 150, desc: 'Delivers an attack with a potency of 150 to all nearby enemies.' });
+      set('demonSlaughter', { potency: 100, comboPotency: 250, desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Demon Slice\nCombo Potency: 250\nCombo Bonus: Adds a Cartridge to your Powder Gauge' });
+      set('fatedCircle', { potency: 320, desc: 'Delivers an attack with a potency of 320 to all nearby enemies.\nCartridge Cost: 1' });
       set('brutalShell', { potency: 100, comboPotency: 300, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Keen Edge\nCombo Potency: 300\nCombo Bonus: Restores own HP\nCure Potency: 200\nCombo Bonus: Creates a barrier which nullifies damage equal to HP restored\nDuration: 30s' });
       set('solidBarrel', { potency: 100, comboPotency: 400, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Brutal Shell\nCombo Potency: 400\nCombo Bonus: Adds a Cartridge to your Powder Gauge' });
       set('burstStrike', { potency: 500, desc: 'Delivers an attack with a potency of 500.\nCartridge Cost: 1' });

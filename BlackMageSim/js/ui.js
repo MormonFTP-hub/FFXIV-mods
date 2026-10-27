@@ -649,6 +649,7 @@ ${job.helpHtml(seq, ic)}
       $('#s-dummy').innerHTML = Object.entries(dummies).map(([k, d]) => `<option value="${k}">${esc(d.label)} Striking Dummy</option>`).join('')
         || '<option value="">Drawn (no game models exported)</option>';
       bind('#s-dummy', 'dummy');
+      bind('#s-dummies', 'dummies', el => parseInt(el.value, 10));
       $('#s-resetbars').addEventListener('click', () => this.app.resetLayout());
     }
 
@@ -672,6 +673,7 @@ ${job.helpHtml(seq, ic)}
       $('#s-mouse').value = String(s.mouseSpeed);
       $('#s-models').disabled = !(B.GAME_MODELS && window.THREE);
       $('#s-dummy').value = s.dummy;
+      $('#s-dummies').value = String(s.dummies || 1);
     }
 
     speed() {

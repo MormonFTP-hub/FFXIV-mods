@@ -17,8 +17,8 @@
   const cont = (o) => Object.assign({ kind: 'ogcd', recast: 1, cdGroup: 'continuation', target: true, range: 5, delay: 0.5 }, o);
   // What differs between the two versions.
   const NUMBERS = {
-    ew60: { keenEdge: 170, brutalShell: [120, 260], solidBarrel: [120, 340], blastingZone: 700, bloodfest: 90, contRange: 3, tincture: 'str6' },
-    ew62: { keenEdge: 200, brutalShell: [160, 300], solidBarrel: [140, 360], blastingZone: 720, bloodfest: 120, contRange: 5, tincture: 'str' },
+    ew60: { keenEdge: 170, brutalShell: [120, 260], solidBarrel: [120, 340], blastingZone: 700, bloodfest: 90, contRange: 3, tincture: 'str6', fatedCircle: 290 },
+    ew62: { keenEdge: 200, brutalShell: [160, 300], solidBarrel: [140, 360], blastingZone: 720, bloodfest: 120, contRange: 5, tincture: 'str', fatedCircle: 300 },
   };
 
   const buildActions = (N) => ({
@@ -37,6 +37,19 @@
     lightningShot: ws({
       name: 'Lightning Shot', potency: 150, range: 20, breaksCombo: true, delay: 0.7, fx: 'gnbShot',
       desc: 'Delivers a ranged attack with a potency of 150.\nAdditional Effect: Increased enmity',
+    }),
+    // AoE: Demon Slice → Demon Slaughter (a cartridge), and Fated Circle spends one; all point-blank.
+    demonSlice: ws({
+      name: 'Demon Slice', potency: 100, comboStart: true, comboNext: true, target: false, pbaoe: 5, aoe: true, fx: 'gnbSlash',
+      desc: 'Delivers an attack with a potency of 100 to all nearby enemies.',
+    }),
+    demonSlaughter: ws({
+      name: 'Demon Slaughter', potency: 100, comboPotency: 160, comboFrom: 'demonSlice', target: false, pbaoe: 5, aoe: true, fx: 'gnbSlash2',
+      desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Demon Slice\nCombo Potency: 160\nCombo Bonus: Adds a Cartridge to your Powder Gauge',
+    }),
+    fatedCircle: ws({
+      name: 'Fated Circle', potency: N.fatedCircle, carts: 1, target: false, pbaoe: 5, aoe: true, fx: 'gnbBurst',
+      desc: `Delivers an attack with a potency of ${N.fatedCircle} to all nearby enemies.\nCartridge Cost: 1`,
     }),
     burstStrike: ws({
       name: 'Burst Strike', potency: 380, carts: 1, fx: 'gnbBurst',
@@ -59,7 +72,7 @@
       desc: 'Delivers an attack with a potency of 300.\nAdditional Effect: Damage over time\nPotency: 60\nDuration: 30s',
     }),
     doubleDown: ws({
-      name: 'Double Down', potency: 1200, carts: 2, cd: 60, range: 5, delay: 0.7, fx: 'gnbDouble',
+      name: 'Double Down', potency: 1200, carts: 2, cd: 60, range: 5, delay: 0.7, aoe: 0.85, fx: 'gnbDouble',
       desc: 'Delivers an attack to all nearby enemies with a potency of 1,200 for the first enemy, and 15% less for all remaining enemies.\nCartridge Cost: 2',
     }),
     continuation: cont({
@@ -83,7 +96,7 @@
       desc: `Delivers an attack with a potency of ${N.blastingZone}.`,
     },
     bowShock: {
-      name: 'Bow Shock', kind: 'ogcd', recast: 60, potency: 150, target: true, range: 5, delay: 0.6, dot: { potency: 60, duration: 15 }, fx: 'gnbBow',
+      name: 'Bow Shock', kind: 'ogcd', recast: 60, potency: 150, target: true, range: 5, delay: 0.6, aoe: true, dot: { potency: 60, duration: 15, aoe: true }, fx: 'gnbBow',
       desc: 'Delivers an attack with a potency of 150 to all nearby enemies.\nAdditional Effect: Damage over time\nPotency: 60\nDuration: 15s',
     },
     roughDivide: {
@@ -166,11 +179,11 @@
       this.defaultBars = [
         ['keenEdge', 'brutalShell', 'solidBarrel', 'gnashingFang', 'continuation', 'burstStrike', 'sonicBreak', 'doubleDown', 'lightningShot', 'roughDivide', 'royalGuard', 'provoke'],
         ['noMercy', 'bloodfest', 'blastingZone', 'bowShock', 'tincture', 'rampart', 'camouflage', 'nebula', 'heartOfCorundum', 'aurora', 'superbolide', 'reprisal'],
-        ['heartOfLight', 'sprint', 'armsLength', 'lowBlow', 'interject', 'shirk', null, null, null, null, null, null],
+        ['heartOfLight', 'sprint', 'armsLength', 'lowBlow', 'interject', 'shirk', 'demonSlice', 'demonSlaughter', 'fatedCircle', null, null, null],
       ];
       this.actionGroups = [
-        ['Gunbreaker', ['keenEdge', 'brutalShell', 'solidBarrel', 'lightningShot', 'burstStrike', 'gnashingFang', 'savageClaw',
-          'wickedTalon', 'sonicBreak', 'doubleDown', 'continuation', 'jugularRip', 'abdomenTear', 'eyeGouge', 'hypervelocity',
+        ['Gunbreaker', ['keenEdge', 'brutalShell', 'solidBarrel', 'lightningShot', 'demonSlice', 'demonSlaughter', 'burstStrike', 'fatedCircle',
+          'gnashingFang', 'savageClaw', 'wickedTalon', 'sonicBreak', 'doubleDown', 'continuation', 'jugularRip', 'abdomenTear', 'eyeGouge', 'hypervelocity',
           'noMercy', 'bloodfest', 'blastingZone', 'bowShock', 'roughDivide', 'royalGuard', 'camouflage', 'nebula', 'aurora',
           'superbolide', 'heartOfLight', 'heartOfCorundum']],
         ['Role Actions', ['rampart', 'lowBlow', 'provoke', 'interject', 'reprisal', 'armsLength', 'shirk']],
@@ -222,7 +235,7 @@
 
       switch (id) {
         case 'brutalShell': if (e.lastComboHit) e.addStatus('brutalShell', 30); break;
-        case 'solidBarrel': if (e.lastComboHit) { g.carts = Math.min(this.maxCarts, g.carts + 1); e.emit('carts', {}); } break;
+        case 'solidBarrel': case 'demonSlaughter': if (e.lastComboHit) { g.carts = Math.min(this.maxCarts, g.carts + 1); e.emit('carts', {}); } break;
         case 'burstStrike': this.setReady(e, 'readyToBlast'); break;
         case 'gnashingFang': g.ammo = { next: 'savageClaw', until: e.now + this.ammoCombo }; this.setReady(e, 'readyToRip'); break;
         case 'savageClaw': g.ammo = { next: 'wickedTalon', until: e.now + this.ammoCombo }; this.setReady(e, 'readyToTear'); break;

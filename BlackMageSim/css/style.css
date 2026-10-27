@@ -201,6 +201,9 @@ canvas#models, canvas#fx { position: fixed; inset: 0; display: block; pointer-ev
 .fly.self.lose .num { color: #ff9ea1; }
 .fly.mp .num { font-size: 24px; color: #ff9ad3; }
 .fly.mp.small .num { font-size: 18px; }
+.fly.extra .num { font-size: 22px; color: #f1ece2; }
+.fly.extra.crit .num { font-size: 28px; color: #fff4c2; }
+.fly.extra.dot .num { font-size: 17px; }
 @keyframes fly {
   0% { opacity: 0; margin-top: 18px; transform: translate(-50%, -100%) scale(1.35); }
   10% { opacity: 1; margin-top: 0; transform: translate(-50%, -100%) scale(1); }

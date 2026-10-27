@@ -67,6 +67,22 @@ JOB_MODELS = {
         "stance": "bt_rod_emp",
         "attrs": {"top": {"atr_ude": True}},
     },
+    # Stormblood Astrologian: Constellation (the 4.x artifact gear) and the Omega Torquetum (Alphascape, 4.4).
+    "ast-sb": {
+        "actionsFrom": "ast",
+        "gear": {s: [330, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2101, "body": 62, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2gl_emp",
+        "attrs": {},
+    },
+    # Stormblood Summoner: Channeler's (the 4.x artifact gear) and the Omega Grimoire (Alphascape, 4.4).
+    "smn-sb": {
+        "actionsFrom": "smn",
+        "gear": {s: [325, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1733, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
     "sam": {
         "gear": {s: [785, 1] for s in SLOTS},                              # Sakonji (Endwalker AF)
         "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 63, "variant": 1}, "n_buki_r"),   # Classical Samurai Blade (6.1)

@@ -32,7 +32,7 @@
     },
     thunder3: {
       name: 'Thunder III', kind: 'gcd', school: 'thunder', potency: 50, mp: 400, cast: 2.5, delay: 0.8, target: true,
-      dot: { potency: 35, duration: 30 },
+      thunder: true, tcChance: 0.1, dot: { potency: 35, duration: 30 },
       desc: 'Deals lightning damage with a potency of 50.\nAdditional Effect: Lightning damage over time\nPotency: 35\nDuration: 30s\nAdditional Effect: 10% chance after each tick that the next Thunder spell will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 40s\nOnly one Thunder spell-induced damage over time effect per caster can be inflicted upon a single target.',
     },
     fire4: {
@@ -56,12 +56,38 @@
       desc: 'Deals unaspected damage with a potency of 880.\nPolyglot Cost: 1',
     },
     foul: {
-      name: 'Foul', kind: 'gcd', school: 'none', potency: 600, mp: 0, cast: 0, delay: 1.16, target: true,
+      name: 'Foul', kind: 'gcd', school: 'none', potency: 600, mp: 0, cast: 0, delay: 1.16, target: true, aoe: 0.4,
       desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 600 for the first enemy, and 60% less for all remaining enemies.\nPolyglot Cost: 1',
     },
     scathe: {
       name: 'Scathe', kind: 'gcd', school: 'none', potency: 100, mp: 800, cast: 0, delay: 0.67, target: true,
       desc: 'Deals unaspected damage with a potency of 100.\nAdditional Effect: 20% chance potency will double',
+    },
+    // AoE (6.5x): High Fire II and High Blizzard II set the element at three stacks, Freeze needs Umbral Ice and
+    // gives an Umbral Heart, Flare needs Astral Fire and spends all MP (a third less with Umbral Hearts, which it
+    // uses up), and Thunder IV's DoT replaces Thunder III's.
+    highFire2: {
+      name: 'High Fire II', kind: 'gcd', school: 'fire', potency: 140, mp: 1500, cast: 3, delay: 1.0, target: true, aoe: true, look: 'fire3',
+      desc: 'Deals fire damage with a potency of 140 to target and all enemies nearby it.\nAdditional Effect: Grants Astral Fire III and removes Umbral Ice\nDuration: 15s\nAstral Fire Bonus: Grants Enhanced Flare\nEffect is canceled if Astral Fire ends.',
+    },
+    highBlizzard2: {
+      name: 'High Blizzard II', kind: 'gcd', school: 'ice', potency: 140, mp: 800, cast: 3, delay: 1.0, target: true, aoe: true, look: 'blizzard3',
+      desc: 'Deals ice damage with a potency of 140 to target and all enemies nearby it.\nAdditional Effect: Grants Umbral Ice III and removes Astral Fire\nDuration: 15s',
+    },
+    freeze: {
+      name: 'Freeze', kind: 'gcd', school: 'ice', potency: 120, mp: 1000, cast: 2.8, delay: 1.0, target: true, aoe: true, look: 'blizzard4',
+      grantsUI3: true, hearts: 1, needsUI: true,
+      desc: 'Deals ice damage with a potency of 120 to target and all enemies nearby it.\nAdditional Effect: Grants Umbral Ice III and removes Astral Fire\nDuration: 15s\nAdditional Effect: Grants 1 Umbral Heart\nUmbral Heart Bonus: Nullifies Astral Fire\'s MP cost increase for Fire spells and reduces MP cost for Flare by one-third\nCan only be executed while under the effect of Umbral Ice.',
+    },
+    flare: {
+      name: 'Flare', kind: 'gcd', school: 'fire', potency: 220, enhancedPotency: 280, mp: 800, cast: 4, delay: 1.1, target: true, aoe: 0.6, look: 'despair',
+      needsAF: true,
+      desc: 'Deals fire damage to a target and all enemies nearby it with a potency of 220 for the first enemy, and 40% less for all remaining enemies.\nEnhanced Flare Potency: 280\nAdditional Effect: Grants Astral Fire III\nDuration: 15s\nCan only be executed while under the effect of Astral Fire.\nRequires at least 800 MP and consumes all remaining MP.',
+    },
+    thunder4: {
+      name: 'Thunder IV', kind: 'gcd', school: 'thunder', potency: 50, mp: 800, cast: 2.5, delay: 0.8, target: true, aoe: true, look: 'thunder3',
+      thunder: true, tcChance: 0.03, dot: { potency: 20, duration: 18, aoe: true },
+      desc: 'Deals lightning damage with a potency of 50 to target and all enemies nearby it.\nAdditional Effect: Lightning damage over time\nPotency: 20\nDuration: 18s\nAdditional Effect: 3% chance after each tick that the next Thunder spell of any grade will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 40s\nOnly one Thunder spell-induced damage over time effect per caster can be inflicted upon a single target.',
     },
     umbralSoul: {
       name: 'Umbral Soul', kind: 'gcd', school: 'none', potency: 0, mp: 0, cast: 0,
@@ -113,6 +139,7 @@
     circleOfPower: { name: 'Circle of Power', self: true, icon: 'st_circle' },
     manaward: { name: 'Manaward', self: true, icon: 'st_manaward' },
     thunder3: { name: 'Thunder III', self: false, icon: 'st_thunder3' },
+    thunder4: { name: 'Thunder IV', self: false, icon: 'st_thunder4' },
   };
 
   class BlackMageEW {
@@ -131,14 +158,15 @@
       this.speedName = 'Spell speed';
       this.selfStatusOrder = ['circleOfPower', 'leyLines', 'triplecast', 'swiftcast', 'sharpcast', 'firestarter',
         'thundercloud', 'medicated', 'lucidDreaming', 'manaward', 'surecast', 'sprint'];
-      this.targetStatusOrder = ['thunder3', 'addle'];
+      this.targetStatusOrder = ['thunder3', 'thunder4', 'addle'];
       this.defaultBars = [
         ['fire3', 'fire4', 'despair', 'fire', 'blizzard3', 'blizzard4', 'blizzard', 'thunder3', 'xenoglossy', 'foul', 'umbralSoul', 'scathe'],
         ['sharpcast', 'triplecast', 'swiftcast', 'leyLines', 'betweenTheLines', 'amplifier', 'manafont', 'transpose', 'lucidDreaming', 'tincture', 'addle', 'manaward'],
-        ['surecast', 'sprint', null, null, null, null, null, null, null, null, null, null],
+        ['surecast', 'sprint', 'highBlizzard2', 'freeze', 'thunder4', 'highFire2', 'flare', null, null, null, null, null],
       ];
       this.actionGroups = [
-        ['Black Mage', ['fire', 'fire3', 'fire4', 'despair', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'paradox', 'xenoglossy', 'foul', 'scathe', 'umbralSoul', 'transpose', 'sharpcast', 'triplecast', 'manafont', 'amplifier', 'leyLines', 'betweenTheLines', 'manaward']],
+        ['Black Mage', ['fire', 'fire3', 'fire4', 'despair', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'paradox', 'xenoglossy', 'foul', 'scathe', 'umbralSoul',
+          'highFire2', 'highBlizzard2', 'freeze', 'flare', 'thunder4', 'transpose', 'sharpcast', 'triplecast', 'manafont', 'amplifier', 'leyLines', 'betweenTheLines', 'manaward']],
         ['Role Actions', ['swiftcast', 'lucidDreaming', 'addle', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
@@ -149,7 +177,7 @@
     }
 
     initGauge() {
-      return { element: 0, elementUntil: 0, hearts: 0, polyglot: 0, enoStart: null, paradox: false };
+      return { element: 0, elementUntil: 0, hearts: 0, polyglot: 0, enoStart: null, paradox: false, enhancedFlare: false };
     }
 
     // Fire and Blizzard turn into Paradox while the marker is lit.
@@ -164,7 +192,7 @@
       const a = this.actions[id], g = e.g;
       if (id === 'paradox' && g.element < 0) return 0;
       if (id === 'fire3' && e.has('firestarter')) return 0;
-      if (id === 'thunder3' && e.has('thundercloud')) return 0;
+      if (a.thunder && e.has('thundercloud')) return 0;
       if (e.has('swiftcast') || e.has('triplecast')) return 0;
       let base = a.cast;
       if (a.school === 'fire' && g.element === -3) base /= 2;
@@ -177,9 +205,10 @@
       switch (id) {
         case 'despair': return e.mp;
         case 'paradox': return el < 0 ? 0 : 1600;
-        case 'thunder3': return e.has('thundercloud') ? 0 : a.mp;
+        case 'flare': return this.flareCost(e);
         case 'fire3': if (e.has('firestarter')) return 0; break;
       }
+      if (a.thunder) return e.has('thundercloud') ? 0 : a.mp;
       if (!a.mp) return 0;
       if (a.school === 'fire') {
         if (el > 0) return e.g.hearts > 0 ? a.mp : a.mp * 2;
@@ -192,8 +221,16 @@
       return a.mp;
     }
 
+    // Flare spends all MP, a third less while Umbral Hearts are up.
+    flareCost(e) { return e.g.hearts > 0 ? Math.round(e.mp * 2 / 3) : e.mp; }
+
     check(id, e) {
-      const g = e.g;
+      const g = e.g, a = this.actions[id];
+      if (id === 'flare') {
+        if (a.needsAF && g.element <= 0) return 'Unable to execute action. Astral Fire required.';
+        if (e.mp < 800) return 'Not enough MP.';
+      }
+      if (id === 'freeze' && a.needsUI && g.element >= 0) return 'Unable to execute action. Umbral Ice required.';
       switch (id) {
         case 'fire4': if (g.element <= 0) return 'Unable to execute action. Astral Fire required.'; break;
         case 'despair':
@@ -219,7 +256,7 @@
         case 'blizzard4': if (g.element >= 0) return 'Interrupted'; break;
         case 'paradox': if (!g.paradox) return 'Interrupted'; break;
       }
-      if (e.mp < this.mpCost(id, e) || (id === 'despair' && e.mp < 800)) return 'Not enough MP.';
+      if (e.mp < this.mpCost(id, e) || ((id === 'despair' || id === 'flare') && e.mp < 800)) return 'Not enough MP.';
       return null;
     }
 
@@ -229,7 +266,7 @@
       if (!a.cast) return;
       if (id === 'paradox' && e.g.element < 0) return;
       if (id === 'fire3' && e.has('firestarter')) return;       // eaten in resolve
-      if (id === 'thunder3' && e.has('thundercloud')) return;   // eaten in resolve
+      if (a.thunder && e.has('thundercloud')) return;   // eaten in resolve
       if (e.has('triplecast')) {
         const s = e.statuses.triplecast;
         s.stacks--;
@@ -246,6 +283,7 @@
       if (prev === 3 && next < 0) g.paradox = true;
       if (prev === -3 && g.hearts === 3 && next > 0) g.paradox = true;
       g.element = next;
+      if (next <= 0) g.enhancedFlare = false;
       if (next === 0) {
         g.elementUntil = 0;
         g.enoStart = null;
@@ -280,7 +318,7 @@
       const cost = this.mpCost(id, e);
       if (e.mp < cost) { e.emit('error', { msg: 'Not enough MP.' }); return; }
       // Hearts cover the doubled cost of fire spells under Astral Fire.
-      if (a.school === 'fire' && id !== 'despair' && g.element > 0 && g.hearts > 0 && cost > 0) {
+      if (a.school === 'fire' && id !== 'despair' && id !== 'flare' && g.element > 0 && g.hearts > 0 && cost > 0) {
         g.hearts--;
         e.emit('hearts', { n: g.hearts });
       }
@@ -329,11 +367,43 @@
           }
           e.emit('paradox', { active: false });
           break;
-        case 'thunder3':
+        case 'thunder3': case 'thunder4':
           if (e.has('thundercloud')) {
             e.removeStatus('thundercloud');
             potency += a.dot.potency * a.dot.duration / 3;
           }
+          break;
+        // Fire II and Blizzard II before 6.0 (and Freeze in Stormblood) move the element one step.
+        case 'fire2':
+          if (g.element < 0) this.setElement(e, 0);
+          else this.setElement(e, Math.min(3, g.element + 1));
+          break;
+        case 'blizzard2':
+          if (g.element > 0) this.setElement(e, 0);
+          else this.setElement(e, Math.max(-3, g.element - 1));
+          break;
+        case 'highFire2': {
+          const inFire = g.element > 0;
+          this.setElement(e, 3);
+          if (inFire) g.enhancedFlare = true;
+          break;
+        }
+        case 'highBlizzard2':
+          this.setElement(e, -3);
+          break;
+        case 'freeze':
+          if (a.grantsUI3) {
+            this.setElement(e, -3);
+            g.hearts = Math.min(3, g.hearts + (a.hearts || 0));
+            e.emit('hearts', { n: g.hearts });
+          } else if (g.element > 0) this.setElement(e, 0);
+          else this.setElement(e, Math.max(-3, g.element - 1));
+          break;
+        case 'flare':
+          if (a.enhancedPotency && g.enhancedFlare) potency = a.enhancedPotency;
+          g.enhancedFlare = false;
+          if (g.hearts) { g.hearts = 0; e.emit('hearts', { n: 0 }); }
+          this.setElement(e, 3);
           break;
         case 'xenoglossy': case 'foul':
           g.polyglot--;
@@ -351,10 +421,14 @@
           break;
       }
 
-      if (id === 'thunder3') {
+      if (a.thunder) {
         if (sharp) e.removeStatus('sharpcast');
         e.queueHit(id, potency, snap, a.delay, () => {
-          e.addTStatus('thunder3', a.dot.duration, { snap, dot: { potency: a.dot.potency, id: 'thunder3' } });
+          // One Thunder DoT per caster: Thunder IV's replaces Thunder III's and the other way round.
+          for (const k of Object.keys(e.tStatuses)) {
+            if (k !== id && this.actions[k] && this.actions[k].thunder) { delete e.tStatuses[k]; e.emit('statusLose', { key: k, self: false }); }
+          }
+          e.addTStatus(id, a.dot.duration, { snap, dot: { potency: a.dot.potency, id } });
           if (sharp) e.addStatus('thundercloud', this.cfg.tcDur);
         });
       } else if (a.potency) {
@@ -432,7 +506,8 @@
     }
 
     onDotTick(key, e) {
-      if (key === 'thunder3' && Math.random() < 0.1) e.addStatus('thundercloud', this.cfg.tcDur);
+      const a = this.actions[key];
+      if (a && a.thunder && Math.random() < (a.tcChance || 0.1)) e.addStatus('thundercloud', this.cfg.tcDur);
     }
 
     frame(e) {
@@ -444,7 +519,8 @@
 
     // Hotbar borders: Firestarter on Fire III, Thundercloud on Thunder III, Paradox while lit.
     proc(id, e) {
-      return (id === 'fire3' && e.has('firestarter')) || (id === 'thunder3' && e.has('thundercloud')) || id === 'paradox';
+      return (id === 'fire3' && e.has('firestarter')) || (this.actions[id].thunder && e.has('thundercloud')) || id === 'paradox' ||
+        (id === 'flare' && e.g.enhancedFlare);
     }
 
     // Element colour for the scene (embers or snow around the mage).

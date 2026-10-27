@@ -289,7 +289,11 @@
       }
     }
 
-    actionAnims(id) { return (this.ch && this.ch.anims.actions && this.ch.anims.actions[id]) || {}; }
+    actionAnims(id) {
+      const t = this.ch && this.ch.anims.actions;
+      const a = B.ACTIONS[id];
+      return (t && (t[id] || (a && a.look && t[a.look]))) || {};
+    }
 
     wire() {
       const e = this.e;
@@ -362,6 +366,20 @@
       this.stateMachine();
       this.applyPose();
 
+      // The extra dummies of an AoE pack: copies of the chosen dummy, each turned to face you.
+      if (this.dummy) {
+        if (this.extrasOf !== this.dummy) {
+          for (const x of this.extras || []) this.scene3.remove(x);
+          this.extras = B.EXTRA_DUMMIES.map(() => { const c = this.dummy.clone(); this.scene3.add(c); return c; });
+          this.extrasOf = this.dummy;
+        }
+        this.extras.forEach((c, i) => {
+          const d = B.EXTRA_DUMMIES[i];
+          c.visible = i < e.targets - 1;
+          c.position.set(d.x, 0, d.z);
+          c.rotation.y = Math.atan2(e.pos.x - d.x, e.pos.z - d.z);
+        });
+      }
       // The dummy turns to face you and rocks when hit.
       if (this.dummy) {
         this.dummy.rotation.y = Math.atan2(e.pos.x, e.pos.z);

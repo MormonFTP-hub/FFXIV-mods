@@ -18,6 +18,12 @@ window.BLM = window.BLM || {};
   B.AUTO_RANGE = 2.1;
   B.DUMMY_RADIUS = 0.8;
   B.COMBO_TIME = 30;
+  // Extra striking dummies for practising AoE (Settings → Dummies): a pack behind the main dummy, which faces -Z.
+  B.EXTRA_DUMMIES = [{ x: -2.1, z: 1.6 }, { x: 2.1, z: 1.6 }, { x: -1.1, z: 3.4 }, { x: 1.1, z: 3.4 }];
+  // An action's aoe field: true (full potency on every target), a number (the multiplier on every target after
+  // the first, e.g. 0.6 for "40% less for all remaining enemies") or a list of multipliers by target, the last
+  // repeating ("15% less for the second, 30% less for the third ...").
+  B.aoeMult = (aoe, k) => Array.isArray(aoe) ? aoe[Math.min(k, aoe.length - 1)] : typeof aoe === 'number' ? (k ? aoe : 1) : 1;
 
   // Level modifiers for the damage and speed formulas: main stat, substat and divisor, the attack power multiplier
   // for non-tanks and tanks, and Determination's coefficient. A job version sets its level (default 90), and
@@ -126,7 +132,8 @@ window.BLM = window.BLM || {};
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
     int4: { name: 'Grade 4 Tincture of Intelligence', cap: 464 },   // the 5.4/5.5 tier (pre-squish stats)
     str4: { name: 'Grade 4 Tincture of Strength', cap: 464 },
-    int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 196 },   // Stormblood potions were Infusions; the cap is an estimate
+    int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
+    str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
   };
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
@@ -217,6 +224,7 @@ window.BLM = window.BLM || {};
     showTimeline: true,
     gameModels: true,     // use work/game-models.js when it's there
     dummy: 'thavnair',
+    dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)
     mouseSpeed: 1,        // camera turn speed for mouse drags
   };

@@ -1,4 +1,4 @@
-# Striking Dummy Sim (Black Mage, Samurai, Gunbreaker)
+# Striking Dummy Sim (Black Mage, Samurai, Gunbreaker, Summoner)
 
 A browser game: play a job the way it was in an older patch, at level 90 on a striking dummy. Each job version has that patch's kit and numbers, and they all share the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise openers and loops the way they played back then.
 
@@ -11,7 +11,9 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 | Black Mage | Endwalker 6.5 | Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23% |
 | Black Mage | Stormblood 4.2–4.58 | Level 70. 13s Astral Fire and Umbral Ice, one Polyglot for Foul, Convert, 60s Sharpcast, Enochian as a button, Stormblood's 15,480 MP and level-70 spell costs, Seventh Hell gear and the Omega Rod |
 | Black Mage | Shadowbringers 5.0–5.58 | Level 80. Enochian as a button (30s, lost when Astral Fire or Umbral Ice drops), Xenoglossy 750, Despair 380, one-charge Sharpcast and Triplecast, 18s procs, Spaekona's gear and the Edenmorn Rod |
+| Samurai | Stormblood 4.0–4.58 | Level 70. Weaponskills cost TP (Invigorate refills it), Hissatsu: Kaiten on a 5s recast, Jinpu and Shifu at 10% for 30s, Yukikaze's Slashing Resistance Down, positionals give Kenki rather than potency, a 1.8s Iaijutsu, Guren for 50 Kenki, no Tsubame-gaeshi. Myochin artifact gear with the Omega blade |
 | Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
+| Summoner | Stormblood 4.1–4.58 | Level 70. Garuda-Egi or Ifrit-Egi attacking on its own, Bio III and Miasma III with Tri-disaster, Aetherflow into Fester and a 16s Dreadwyrm Trance, two Trances for Demi-Bahamut (Wyrmwave on every action, Akh Morn), Further Ruin from pet actions. Channeler's artifact gear with the Omega Grimoire |
 | Gunbreaker | Shadowbringers 5.1–5.58 | Level 80. Two cartridges (Bloodfest adds 2, 90s), no Double Down or Hypervelocity, Savage Claw and Wicked Talon on their own buttons, skill speed drifts Gnashing Fang and Sonic Break, 15s combos, Bodyguard's gear and the Edenmorn Gunblade |
 | Gunbreaker | Endwalker 6.0–6.18 | Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
@@ -102,10 +104,23 @@ python BlackMageSim/tools/build_single.py
 - **No Mercy.** +20% damage for 20s every 60s. DoTs from Sonic Break and Bow Shock keep the bonus they were applied with.
 - **Tank damage.** Tanks use the lower attack power modifier (156 at level 90 against 195) and Tenacity adds to their damage.
 
-### Both
+### Samurai (Stormblood 4.0–4.58)
 
+- **The 4.5x kit.** Hakaze, Jinpu, Shifu, Gekko, Kasha, Yukikaze, Enpi, Fuga, Mangetsu, Oka, Iaijutsu (Higanbana 240 + 35, Tenka Goken 360, Midare 720 with a 1.8s cast), Hissatsu: Kaiten, Shinten, Kyuten, Gyoten, Yaten, Guren, Hagakure (20 Kenki a Sen), Meikyo Shisui (3 steps, 10s, 80s), Ikishoten (50 Kenki, 60s), Meditate, Third Eye, the usual melee role actions of the time (True North, Invigorate, Feint, Bloodbath, Second Wind, Arm's Length, Leg Sweep), Sprint and a Grade 3 Infusion of Strength.
+- **TP.** Shown where MP would be: 1,000, back 60 every 3s. Hakaze, Jinpu and Shifu cost 60, the finishers 50, the AoE weaponskills 140. Invigorate gives 400.
+- **Buffs and debuff.** Jinpu (+10% damage) and Shifu (10% haste) last 30s; Yukikaze's combo puts Slashing Resistance Down (+10%) on the dummy for 30s. Gekko from the rear and Kasha from a flank give 5 more Kenki, not potency. Combos have a 15s window.
+
+### Summoner (Stormblood 4.1–4.58)
+
+- **The 4.58 kit.** Ruin III (instant in Trance), Ruin II, Ruin IV, Bio III, Miasma III, Tri-disaster (both DoTs and Ruination, +20 on your Ruins), Aetherflow, Fester, Energy Drain, Painflare, Bane, Dreadwyrm Trance, Deathflare, Summon Bahamut, Enkindle Bahamut, Rouse, Enkindle, Aetherpact, Contagion, Shadow Flare, Tri-bind, Physick, Summon and Summon III, the caster role actions of the time (Swiftcast, Lucid Dreaming, Addle, Surecast) and a Grade 3 Infusion of Intelligence.
+- **Pets.** The egi fights on its own from your first attack: Garuda-Egi casts Wind Blade every 3s and Aerial Slash every 30s; Ifrit-Egi stands at the dummy with Burning Strike, Crimson Cyclone and Flaming Crush. Each pet action has a 15% chance of Further Ruin, which makes Ruin II into Ruin IV and takes 10s off Enkindle. Demi-Bahamut replaces the egi for 20s and casts Wyrmwave each time you use an action on the dummy; anything it throws that lands after it leaves does nothing. The pets are drawn as glowing figures, not the game's models.
+- **Gauge.** Three Aetherflow slots that turn into Aethertrail Attunement as you spend them, two Dreadwyrm Aether, and a bar for Trance or Demi-Bahamut.
+
+### Every job
+
+- **AoE.** Settings → Dummies puts 1, 3 or 5 striking dummies out. AoE actions hit every one with their falloff (Flare 40% less after the first, Stormblood's Mangetsu stepping down per target), and an AoE DoT (Thunder IV, Bow Shock) ticks on each. Point-blank ones (Blizzard II before 6.0, Demon Slice, Fuko, Mangetsu, Oka, Kyuten) need no target but whiff if the dummy isn't within 5 yalms. The meter adds up every dummy. Black Mage has High Fire II, High Blizzard II, Freeze, Flare and Thunder IV in 6.5 (Fire II and Blizzard II before), Samurai Fuko or Fuga, Mangetsu, Oka and Kyuten, Gunbreaker Demon Slice, Demon Slaughter and Fated Circle.
 - **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and the job's Endwalker-style gauge.
-- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear; the Gunbreaker bot about 5,300 in 6.0–6.18 (6.0 gear) and 8,400 in 6.2–6.58 (6.5 gear).
+- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear and 6,950 in Stormblood (with TP and Kaiten); the Stormblood Summoner bot about 5,300 with Garuda-Egi; the Gunbreaker bot about 5,300 in 6.0–6.18 (6.0 gear) and 8,400 in 6.2–6.58 (6.5 gear).
 
 ## Notes on accuracy
 
@@ -117,7 +132,9 @@ Some things are reconstructed rather than read off a 6.x source:
 - The gear set, the Grade 8 Tincture cap (262 INT) and the spell application delays are close approximations, so hits land within a few percent of what you remember, not to the point.
 - Samurai's 6.0x numbers (Hakaze 180; Jinpu, Shifu and Yukikaze 280; Gekko and Kasha 320/370; Midare 660; Kaeshi: Setsugekka 990; Ogi Namikiri 900; Kaeshi: Namikiri 1350; Shinten 270; Senei 800; Shoha 580; Higanbana 200 + 30 per tick) are worked back from what the 6.1 patch notes changed. Its gear is a rough 6.0 best-in-slot set (Strength 2563, weapon damage 120, skill speed 579). The Grade 6 tincture caps at 189 Strength.
 - Gunbreaker's numbers are the 6.4–6.58 values from the wiki's patch histories (Keen Edge 200, Brutal Shell 160/300 from 6.4; Solid Barrel 140/360 and Blasting Zone 720 from 6.2; Gnashing Fang 380, Savage Claw 440, Wicked Talon 540 and the Continuation follow-ups from 6.11). Its gear is a rough item level 665 set at the 2.50 GCD (Strength 3330, weapon damage 132, Tenacity 751). The opener in its help follows the version's rules but isn't copied from a published guide.
-- AoE actions (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV, Fuga, Mangetsu, Oka, Kyuten, Demon Slice, Demon Slaughter, Fated Circle, Danger Zone) are left out since there's one dummy. Tenka Goken, Guren and Ogi Namikiri are cones and lines in the game but only hit the one dummy here. Aetherial Manipulation is left out because it needs a party member.
+- The extra dummies stand in a pack behind the first; every AoE reaches all of them, whatever its shape. Aetherial Manipulation is left out because it needs a party member.
+- Summoner's numbers are the 4.58 game data (Action and ActionTransient at the 4.58 datamining commit), checked against the wiki's pre-5.0 revisions and xivanalysis's Stormblood module. How pets scaled in Stormblood isn't documented: here they use your stats and the +30% Maim and Mend trait, and Dreadwyrm Trance doesn't reach them. Ifrit-Egi's separate auto-attack is left out; Further Ruin's 30s and Energy Drain's 5% MP are guesses.
+- Samurai's 4.5x numbers come from the wiki's pre-5.0 revisions and patch histories (4.3 and 4.4 raised the combo potencies). The TP costs, the 15s combo window and the 110-potency auto-attacks are the era's values as remembered, not read off a 4.x source. The weapon (93 damage, 2.64 delay) is from the game data; the rest of the gear is approximate.
 - Icons, models and animations come from your own game install when you've run the two tools, and are drawn in code otherwise. Spell effects and sounds are made for this page, not the game's VFX and audio. Two of the exporter's choices: it shows the coat's sleeves (PMP Viewer's pre-Dawntrail visibility tables hide them under these gloves, which left the arms empty), and it draws the housing dummies fully opaque (background textures keep other data in alpha). FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
 
 ## Files
@@ -129,6 +146,8 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/engine.js` | Combat engine shared by every job: GCD, casts, queue, cooldowns and charges, combos, positionals, auto-attacks, MP/DoT ticks, damage formula |
 | `js/jobs/blm_ew.js` | Black Mage, Endwalker 6.5: actions, gauge, rules, help text |
 | `js/jobs/sam_ew.js` | Samurai, Endwalker 6.08: actions, gauge, rules, help text |
+| `js/jobs/sam_sb.js` | Samurai, Stormblood 4.0–4.58: the 4.5x kit with TP, built on the 6.08 class |
+| `js/jobs/smn_sb.js` | Summoner, Stormblood 4.1–4.58: the kit, the egis and Demi-Bahamut, the Aetherflow gauge, help text |
 | `js/jobs/gnb_ew.js` | Gunbreaker, Endwalker 6.2–6.58: actions, Powder Gauge, rules, help text |
 | `js/scene.js` | Canvas scene: camera, arena, dummy, drawn figures, spell and weaponskill effects |
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
@@ -143,6 +162,8 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **2.2.0**: Summoner, Stormblood 4.1–4.58: the engine now has pets (an egi's own attacks, Demi-Bahamut, pet buffs and procs). Icons of actions that Dawntrail struck through are recovered from the grey copies. Black Mage SB's Omega Rod is 93 weapon damage, as in the game data (it was 108), so its numbers and reference DPS dropped about 11%.
+- **2.1.0**: Samurai, Stormblood 4.0–4.58, with TP. AoE for every job: a Dummies setting (1, 3 or 5) and each version's AoE kit. Lucid Dreaming now ticks on its own, with the other status effects, so it visibly gives MP in Umbral Ice (it still does nothing in Astral Fire). Weaponskills with their own recast (Gnashing Fang, Sonic Break, Double Down, Tsubame-gaeshi) now show it on the hotbar instead of looking ready after the GCD. New default hotbar actions fill empty slots in saved hotbars.
 - **2.0.0**: Black Mage, Stormblood 4.2–4.58, the first level 70 version. The engine now has Stormblood's level 70 formula and lets a version set its own max MP, MP regen and Astral Fire timer. Seventh Hell artifact gear with the Omega Rod. Gear stats, the MP pool and the tincture cap are approximate.
 - **1.9.0**: Gunbreaker, Shadowbringers 5.1–5.58, with The Balance's 5.58 "4th GCD No Mercy" opener. Job versions can now set their own combo window, and a GCD's own recast can scale with skill speed (5.x Gnashing Fang and Sonic Break).
 - **1.8.0**: Black Mage, Shadowbringers 5.0–5.58, the first version below level 90. The engine now takes a level per job version, including level 80 as it was before Endwalker's stat squish (divisor 3300, gear with 5,000+ Intelligence), and a version can wear its own era's gear model. Numbers from the archived 5.58 job guide and The Balance's 5.58 guides; its opener is The Balance's for the 2.33 tier. Build order from here: every version, highest rating first.

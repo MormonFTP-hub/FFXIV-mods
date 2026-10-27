@@ -9,6 +9,15 @@
     thunder: ['200,150,255', '255,240,120', '255,255,255'],
     none: ['230,170,255', '170,90,255', '255,240,255'],
     iai: ['255,225,150', '255,255,255', '255,150,110'],
+    aether: ['120,255,200', '60,200,170', '230,255,245'],
+    bahamut: ['150,120,255', '90,60,220', '230,220,255'],
+  };
+  // Summoner pets, drawn as glowing billboards: glow, wings, body, and the colour of what they throw.
+  const PET_COLORS = {
+    garuda: { glow: '110,255,160', wing: '80,210,130', body: '200,255,215', fx: ['150,255,190', '60,200,120'] },
+    ifrit: { glow: '255,120,60', wing: '200,60,30', body: '255,210,160', fx: ['255,150,80', '220,60,20'] },
+    titan: { glow: '230,190,110', wing: '150,110,60', body: '240,220,170', fx: ['240,210,140', '160,120,60'] },
+    bahamut: { glow: '140,110,255', wing: '60,40,120', body: '200,190,255', fx: ['170,140,255', '80,50,220'] },
   };
 
   function rng(seed) {
@@ -236,7 +245,7 @@
       const col = ELEMENT_COLORS[school];
       if (a.kind === 'gcd') {
         this.emit(14, { x: tip.x, y: tip.y, z: tip.z, speed: 2.5, life: 0.4, size: 0.25, colors: col });
-        if (['xenoglossy', 'foul', 'scathe', 'paradox'].includes(id)) {
+        if (a.orb || ['xenoglossy', 'foul', 'scathe', 'paradox'].includes(id)) {
           this.addFx({ type: 'orb', from: tip, dur: a.delay * 0.9, color: col, size: id === 'xenoglossy' ? 0.55 : 0.4 });
         }
       } else {
@@ -306,8 +315,17 @@
       this.emit(30, { x: to.x, y: 1, z: to.z, spread: 0.8, speed: 2, vy: 1, life: 0.6, size: 0.25, colors });
     }
 
+    // A hit on one of the extra dummies: a smaller burst over it.
+    onExtraHit(ev) {
+      const d = B.EXTRA_DUMMIES[ev.extra - 1];
+      if (!d) return;
+      const colors = ev.dot ? ['255,240,120', '220,180,255'] : (ELEMENT_COLORS[A[ev.id] && A[ev.id].school] || ['255,230,190', '255,255,255']);
+      this.emit(ev.dot ? 5 : 14, { x: d.x, y: 1.3, z: d.z, spread: 0.5, speed: ev.dot ? 1.5 : 2.6, life: 0.4, size: 0.2, colors });
+    }
+
     onHit(ev) {
-      const id = ev.id;
+      // New spells borrow an older one's look (Fire II looks like Fire III, Freeze like Blizzard IV).
+      const id = (A[ev.id] && A[ev.id].look) || ev.id;
       const big = ev.crit ? 1.25 : 1;
       this.dummyFlash = 0.18;
       this.dummyWobble = Math.min(1, this.dummyWobble + (ev.dot ? 0.15 : 0.6));
@@ -373,6 +391,17 @@
         case 'scathe':
           this.emit(24, { ...T, spread: 0.4, speed: 2.5, life: 0.5, size: 0.3, colors: ['160,120,220', '60,30,90'] });
           break;
+        default: {
+          // Anything else (a Summoner's spells, a pet's attacks): a burst in its element's colour, bigger for the
+          // big ones (a.big: Deathflare, Akh Morn, Enkindle).
+          const a = A[id];
+          if (!a) break;
+          const cols = ELEMENT_COLORS[a.school] || ELEMENT_COLORS.none;
+          const k = a.big ? 1.8 : 1;
+          this.emit(Math.round(28 * k * big), { ...T, spread: 0.5, speed: 3 * k, life: 0.6, size: 0.35 * k, colors: cols, drag: 2 });
+          this.addFx({ type: 'flash', ...T, r: 1.6 * k, dur: 0.3, color: cols[0] });
+          if (a.big) { this.addFx({ type: 'pillar', x: 0, z: 0, h: 7, w: 2, dur: 0.8, color: cols[0] }); this.shake = Math.max(this.shake, 0.12); }
+        }
       }
     }
 
@@ -594,6 +623,28 @@
       if (moving) this.walkPhase += dt * 9;
 
       const e = this.e;
+      // A summoner's pet keeps a step behind and to the side; Demi-Bahamut hovers higher, further back.
+      if (e.pet) {
+        const d = Math.hypot(e.pos.x, e.pos.z) || 1, fx = -e.pos.x / d, fz = -e.pos.z / d;
+        const big = e.pet.kind === 'bahamut';
+        // Ifrit-Egi fights in melee, at the dummy's side facing you.
+        const melee = e.pet.kind === 'ifrit';
+        const tx = melee ? fx * -1.9 + fz * 1.2 : e.pos.x - fx * (big ? 2.4 : 1.0) + fz * (big ? 0 : 1.5);
+        const tz = melee ? fz * -1.9 - fx * 1.2 : e.pos.z - fz * (big ? 2.4 : 1.0) - fx * (big ? 0 : 1.5);
+        if (!this.petPos || this.petKind !== e.pet.kind) {
+          this.petPos = { x: tx, z: tz }; this.petKind = e.pet.kind;
+          const col = PET_COLORS[this.petKind] || PET_COLORS.garuda;
+          this.emit(big ? 80 : 40, { x: tx, y: big ? 2.6 : 1, z: tz, spread: big ? 2 : 1, speed: 2, life: 0.9, size: 0.3, colors: [col.glow, col.body] });
+          this.addFx({ type: 'ring', x: tx, z: tz, r0: 0.3, r1: big ? 4 : 2, dur: 0.6, color: col.glow });
+        }
+        const k = Math.min(1, dt * 3);
+        this.petPos.x += (tx - this.petPos.x) * k; this.petPos.z += (tz - this.petPos.z) * k;
+        if (Math.random() < dt * 12) {
+          const col = PET_COLORS[this.petKind] || PET_COLORS.garuda;
+          this.particles.push({ x: this.petPos.x + (Math.random() - 0.5), y: (big ? 2.4 : 0.8) + Math.random(), z: this.petPos.z + (Math.random() - 0.5),
+            vx: 0, vy: -0.3, vz: 0, life: 0.6, age: 0, size: 0.12, color: col.glow, grav: 0, drag: 0 });
+        }
+      } else { this.petPos = null; this.petKind = null; }
       // Casting: motes drift up into the staff.
       if (e.casting) {
         const a = A[e.casting.id];
@@ -651,9 +702,17 @@
         const c = this.toCam(d.x, 0, d.z);
         if (c.z > 0.5 && c.z < 70) (models && c.z < pc.z - 0.6 ? front : back).push({ z: c.z, draw: () => this.drawDecor(d, this.fromCam(c)) });
       }
+      if (this.petPos) {
+        const kc = this.toCam(this.petPos.x, 0, this.petPos.z);
+        if (kc.z > 0.5) (models && kc.z < pc.z - 0.3 ? front : back).push({ z: kc.z, draw: () => this.drawPet(this.petKind, this.petPos) });
+      }
       if (!models) {
         const dc = this.toCam(0, 0, 0);
         if (dc.z > 0.5) back.push({ z: dc.z, draw: () => this.drawDummy(this.fromCam(dc)) });
+        for (let k = 1; k < this.e.targets; k++) {
+          const d = B.EXTRA_DUMMIES[k - 1], xc = this.toCam(d.x, 0, d.z);
+          if (xc.z > 0.5) back.push({ z: xc.z, draw: () => this.drawDummy(this.fromCam(xc)) });
+        }
         if (pc.z > 0.5) back.push({ z: pc.z, draw: () => this.drawPlayer(this.fromCam(pc)) });
       }
       back.sort((a, b) => b.z - a.z).forEach(it => it.draw());
@@ -933,6 +992,58 @@
         ctx.fillStyle = `rgba(255,220,150,${flick})`;
         ctx.fillRect(p.x - w, p.y - h - w * 1.8, w * 2, w * 1.6);
       }
+    }
+
+    // A pet: Garuda-Egi or Ifrit-Egi at shoulder height, Demi-Bahamut large and high, with beating wings.
+    drawPet(kind, w) {
+      const ctx = this.ctx, t = this.time;
+      const big = kind === 'bahamut';
+      const C = PET_COLORS[kind] || PET_COLORS.garuda;
+      const p = this.project(w.x, (big ? 2.7 : 1.0) + Math.sin(t * 2.2) * 0.12, w.z);
+      if (!p) return;
+      const U = p.s * (big ? 1.5 : 0.6);
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.globalCompositeOperation = 'lighter';
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, U * 1.8);
+      g.addColorStop(0, `rgba(${C.glow},0.5)`); g.addColorStop(1, `rgba(${C.glow},0)`);
+      ctx.fillStyle = g; ctx.fillRect(-U * 1.8, -U * 1.8, U * 3.6, U * 3.6);
+      ctx.globalCompositeOperation = 'source-over';
+      const flap = Math.sin(t * (big ? 3 : 7)) * 0.25;
+      ctx.fillStyle = `rgba(${C.wing},0.9)`;
+      for (const s of [-1, 1]) {
+        ctx.beginPath(); ctx.moveTo(s * 0.12 * U, -0.25 * U);
+        ctx.quadraticCurveTo(s * 0.9 * U, (-1.0 - flap) * U, s * 1.35 * U, (-0.4 - flap) * U);
+        ctx.quadraticCurveTo(s * 0.85 * U, -0.15 * U, s * 1.05 * U, (0.25 - flap * 0.5) * U);
+        ctx.quadraticCurveTo(s * 0.5 * U, 0.05 * U, s * 0.12 * U, 0.15 * U);
+        ctx.closePath(); ctx.fill();
+      }
+      if (big) {
+        // Tail and horns for the dragon.
+        ctx.strokeStyle = `rgba(${C.wing},0.95)`; ctx.lineWidth = 0.12 * U; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(0, 0.4 * U); ctx.quadraticCurveTo(0.3 * U, 1.0 * U, -0.2 * U + Math.sin(t * 2) * 0.1 * U, 1.4 * U); ctx.stroke();
+      }
+      const bg = ctx.createRadialGradient(0, -0.1 * U, 0, 0, 0, 0.5 * U);
+      bg.addColorStop(0, `rgb(${C.body})`); bg.addColorStop(1, `rgba(${C.glow},0.9)`);
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.ellipse(0, 0, 0.28 * U, 0.5 * U, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, -0.62 * U, 0.2 * U, 0, Math.PI * 2); ctx.fill();
+      if (big || kind === 'ifrit') {
+        ctx.fillStyle = `rgba(${C.wing},1)`;
+        for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 0.1 * U, -0.75 * U); ctx.lineTo(s * 0.35 * U, -1.05 * U); ctx.lineTo(s * 0.18 * U, -0.68 * U); ctx.fill(); }
+      }
+      ctx.restore();
+    }
+
+    // The pet acts: what it throws flies from it to the dummy (the hit itself comes through onHit).
+    onPetUse(id) {
+      if (!this.petPos) return;
+      const a = A[id] || {};
+      const big = this.petKind === 'bahamut';
+      const C = PET_COLORS[this.petKind] || PET_COLORS.garuda;
+      const from = { x: this.petPos.x, y: big ? 2.7 : 1.0, z: this.petPos.z };
+      this.addFx({ type: 'orb', from, dur: (a.delay || 0.6) * 0.9, color: C.fx, size: a.big ? 0.8 : 0.32 });
+      if (a.big) this.addFx({ type: 'flash', ...from, r: 2.2, dur: 0.5, color: C.fx[0] });
     }
 
     drawDummy(p) {
@@ -1321,7 +1432,10 @@
     }
 
     // Screen point where flytext for the dummy starts.
-    dummyHead() { return this.project(0, 2.7, 0); }
+    dummyHead(k) {
+      const d = k ? B.EXTRA_DUMMIES[k - 1] : null;
+      return d ? this.project(d.x, 2.5, d.z) : this.project(0, 2.7, 0);
+    }
     mageHead() { const p = this.e.pos; return this.project(p.x, (this.modelsOn() ? 2.4 : 2.9) + this.jumpY(), p.z); }
 
     hitDummy(x, y) {

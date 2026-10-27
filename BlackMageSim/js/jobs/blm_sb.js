@@ -19,15 +19,17 @@
       elementDur: 13, convertMp: 0.3, lucid: 960, baseRegen: Math.round(MAX_MP * 0.02),
       uiRegen: [0.32, 0.47, 0.62].map(k => Math.round(MAX_MP * k)),
     },
-    // A rough 4.5 best-in-slot set (Alphascape item level 400–405, the Omega Rod) at the 2.40 GCD; level-70 stats.
-    stats: { hp: 33000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 108, det: 1450, crit: 2350,
+    // A rough 4.5 best-in-slot set (Alphascape item level 400–405, the Omega Rod: 93 weapon damage, 3.28 delay in
+    // the game data) at the 2.40 GCD; level-70 stats.
+    stats: { hp: 33000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 93, det: 1450, crit: 2350,
       dh: 1900, speed: 1040, delay: 3.28 },
-    referenceDps: 6400,     // a scripted 4.5x rotation at 2.40 parses about 5,500–6,100 on the dummy
+    referenceDps: 5700,     // a scripted 4.5x rotation at 2.40 parses about 4,900–5,450 on the dummy
     referenceGcd: 2.4,
     actions() {
       const shb = new ShB().actions;
       const A = {};
       const keep = ['fire', 'blizzard', 'fire3', 'blizzard3', 'thunder3', 'fire4', 'blizzard4', 'foul', 'scathe', 'enochian',
+        'fire2', 'blizzard2', 'freeze', 'flare', 'thunder4',
         'transpose', 'sharpcast', 'triplecast', 'leyLines', 'betweenTheLines', 'manaward', 'swiftcast', 'addle', 'surecast', 'sprint'];
       for (const k of keep) A[k] = Object.assign({}, shb[k]);
       const set = (id, o) => { A[id] = Object.assign({}, A[id], o); };
@@ -38,8 +40,15 @@
       set('thunder3', { mp: 1920 });
       set('fire4', { mp: 1200, potency: 300 });
       set('blizzard4', { mp: 960, potency: 260, desc: 'Deals ice damage with a potency of 260.\nAdditional Effect: Grants 3 Umbral Hearts\nUmbral Heart Bonus: Nullifies Astral Fire\'s MP cost increase for Fire spells and reduces MP cost for Flare by one-third\nCan only be executed while under the effects of both Umbral Ice and Enochian.' });
-      set('foul', { desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 650 for the first enemy, and 10% less for each remaining enemy.\nCan only be executed while under the effect of Polyglot.' });
+      set('foul', { aoe: [1, 0.9, 0.8, 0.7, 0.6, 0.5], desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 650 for the first enemy, and 10% less for each remaining enemy.\nCan only be executed while under the effect of Polyglot.' });
       set('scathe', { mp: 960 });
+      // AoE at level 70: Fire II, Blizzard II and Freeze each move the element one step (13s), Flare's falloff steps
+      // down per target, and Thunder IV is its own spell.
+      set('fire2', { mp: 1800, desc: 'Deals fire damage with a potency of 80 to target and all enemies nearby it.\nAdditional Effect: Grants Astral Fire or removes Umbral Ice\nDuration: 13s' });
+      set('blizzard2', { mp: 960, desc: 'Deals ice damage with a potency of 50 to all nearby enemies.\nAdditional Effect: Bind\nDuration: 8s\nAdditional Effect: Grants Umbral Ice or removes Astral Fire\nDuration: 13s' });
+      set('freeze', { mp: 2400, cast: 3, grantsUI3: false, hearts: 0, desc: 'Covers a designated area in ice, dealing ice damage with a potency of 100.\nAdditional Effect: Bind\nDuration: 15s\nAdditional Effect: Grants Umbral Ice or removes Astral Fire\nDuration: 13s' });
+      set('flare', { aoe: [1, 0.85, 0.7, 0.55, 0.4, 0.3], desc: 'Deals fire damage to a target and all enemies nearby it with a potency of 260 for the first enemy, 15% less for the second, 30% less for the third, 45% less for the fourth, 60% less for the fifth, and 70% less for all remaining enemies.\nAdditional Effect: Grants Astral Fire III and removes Umbral Ice\nDuration: 13s\nConsumes all remaining MP.' });
+      set('thunder4', { mp: 2160, desc: 'Deals lightning damage with a potency of 50 to target and all enemies nearby it.\nAdditional Effect: Lightning damage over time\nPotency: 30\nDuration: 18s\nAdditional Effect: 3% chance after each tick that the next Thunder spell of any grade will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 12s\nOnly one Thunder spell-induced damage over time effect per caster can be inflicted upon a single target.' });
       set('enochian', { desc: 'Increases magic damage dealt by 10%. Also allows the casting of Blizzard IV and Fire IV.\nAdditional Effect: Grants Polyglot if Enochian is maintained for 30s\nCan only be executed while under the effect of Astral Fire or Umbral Ice. Effect is canceled if Astral Fire or Umbral Ice end.' });
       set('transpose', { recast: 8 });
       set('sharpcast', { recast: 60 });
@@ -80,10 +89,10 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'blizzard4', 'fire3', ['leyLines']
       this.defaultBars = [
         ['fire3', 'fire4', 'fire', 'blizzard3', 'blizzard4', 'blizzard', 'thunder3', 'foul', 'scathe', null, null, null],
         ['enochian', 'sharpcast', 'triplecast', 'swiftcast', 'leyLines', 'betweenTheLines', 'convert', 'transpose', 'lucidDreaming', 'tincture', 'addle', 'manaward'],
-        ['surecast', 'sprint', null, null, null, null, null, null, null, null, null, null],
+        ['surecast', 'sprint', 'blizzard2', 'freeze', 'thunder4', 'fire2', 'flare', null, null, null, null, null],
       ];
       this.actionGroups = [
-        ['Black Mage', ['fire', 'fire3', 'fire4', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'foul', 'scathe', 'enochian', 'transpose', 'sharpcast', 'triplecast', 'convert', 'leyLines', 'betweenTheLines', 'manaward']],
+        ['Black Mage', ['fire', 'fire3', 'fire4', 'blizzard', 'blizzard3', 'blizzard4', 'thunder3', 'foul', 'scathe', 'fire2', 'blizzard2', 'freeze', 'flare', 'thunder4', 'enochian', 'transpose', 'sharpcast', 'triplecast', 'convert', 'leyLines', 'betweenTheLines', 'manaward']],
         ['Role Actions', ['swiftcast', 'lucidDreaming', 'addle', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
@@ -112,7 +121,8 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'blizzard4', 'fire3', ['leyLines']
     // fire spells and Astral Fire does the same to ice spells, with nothing free at three stacks yet.
     mpCost(id, e) {
       const a = this.actions[id], el = e.g.element;
-      if (id === 'thunder3') return e.has('thundercloud') ? 0 : a.mp;
+      if (a.thunder) return e.has('thundercloud') ? 0 : a.mp;
+      if (id === 'flare') return this.flareCost(e);
       if (id === 'fire3' && e.has('firestarter')) return 0;
       if (!a.mp) return 0;
       if (a.school === 'fire') {
@@ -123,7 +133,7 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'blizzard4', 'fire3', ['leyLines']
       return a.mp;
     }
 
-    proc(id, e) { return (id === 'fire3' && e.has('firestarter')) || (id === 'thunder3' && e.has('thundercloud')) || (id === 'enochian' && !e.g.enochian && e.g.element !== 0); }
+    proc(id, e) { return (id === 'fire3' && e.has('firestarter')) || (this.actions[id].thunder && e.has('thundercloud')) || (id === 'enochian' && !e.g.enochian && e.g.element !== 0); }
 
     speedInfo(e) {
       return `Fire IV ${e.speedScale(this.actions.fire4.cast).toFixed(2)}s · Fire III ${e.speedScale(3.5).toFixed(2)}s · ${e.maxMp.toLocaleString()} MP`;
