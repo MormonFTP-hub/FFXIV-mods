@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58, Reaper DT 7.0–7.25 and 7.3–7.57, Sage EW 6.0–6.08, 6.1–6.18, 6.2–6.28 and 6.3–6.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -164,10 +164,10 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 21. DT 7.4–7.57 (2025-12-16 → present) (borderline): Collective Unconscious mitigation 10s. **Rating 3/5:** Longer Collective Unconscious; fine.
 
 ### Sage (from 6.0)
-1. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Addersgall (20s, max 3), Addersting, Kardia, Phlegma 2 charges 45s, Soteria 90s +50%, Zoe, Holos, Panhaima, Krasis, Pneuma. **Rating 4/5:** A fresh barrier healer with Kardia and Phlegma; a very popular launch.
-2. EW 6.1–6.18 (2022-04-12 → 2022-08-22): Soteria 4 stacks +70%; Addersting starts full. **Rating 4/5:** Better Soteria; full Addersting at the start.
-3. EW 6.2–6.28 (2022-08-23 → 2023-01-09): Holos adds a barrier. **Rating 4/5:** Holos adds a barrier; liked.
-4. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Phlegma 40s; Addersting from your own Eukrasian Prognosis too. **Rating 4/5:** Faster Phlegma; liked.
+1. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Addersgall (20s, max 3), Addersting, Kardia, Phlegma 2 charges 45s, Soteria 90s +50%, Zoe, Holos, Panhaima, Krasis, Pneuma. ← built **Rating 4/5:** A fresh barrier healer with Kardia and Phlegma; a very popular launch.
+2. EW 6.1–6.18 (2022-04-12 → 2022-08-22): Soteria 4 stacks +70%; Addersting starts full. ← built **Rating 4/5:** Better Soteria; full Addersting at the start.
+3. EW 6.2–6.28 (2022-08-23 → 2023-01-09): Holos adds a barrier. ← built **Rating 4/5:** Holos adds a barrier; liked.
+4. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Phlegma 40s; Addersting from your own Eukrasian Prognosis too. ← built **Rating 4/5:** Faster Phlegma; liked.
 5. DT 7.0–7.57 (2024-07-02 → present): Eukrasian Dyskrasia, Psyche (92), Eukrasian Prognosis II (96), Philosophia (100). **Rating 3/5:** Psyche and Eukrasian Dyskrasia; fine but static.
 
 ## Melee DPS (52 versions: MNK 15, DRG 14, NIN 10, SAM 8, RPR 3, VPR 2)
@@ -229,8 +229,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Reaper (from 6.0)
 1. EW 6.0–6.58 (2021-12-07 → 2024-07-01): launch kit (Gluttony → 2 Soul Reaver, Enshroud, Arcane Circle). **Rating 4/5:** A flashy launch with the Enshroud burst; popular.
-2. DT 7.0–7.25 (2024-07-02 → 2025-08-04): Executioner from Gluttony; Oblatio; Perfectio. **Rating 4/5:** Executioner's actions and Perfectio; liked.
-3. DT 7.3–7.57 (2025-08-05 → present) (minor): Enshroud 5s recast. **Rating 4/5:** Faster Enshroud; liked.
+2. DT 7.0–7.25 (2024-07-02 → 2025-08-04): Executioner from Gluttony; Oblatio; Perfectio. ← built **Rating 4/5:** Executioner's actions and Perfectio; liked.
+3. DT 7.3–7.57 (2025-08-05 → present) (minor): Enshroud 5s recast. ← built **Rating 4/5:** Faster Enshroud; liked.
 
 ### Viper (from 7.0)
 1. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Noxious Gnash debuff; venoms 40s; Serpent's Ire 120s. **Rating 3/5:** Noxious Gnash upkeep; short-lived.

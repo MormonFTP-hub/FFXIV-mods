@@ -418,6 +418,49 @@ WHM_STATUSES = {
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Reaper (Dawntrail 7.x): the current kit.
+RPR_ACTIONS = {
+    "slice": (24373, "Slice"), "waxingSlice": (24374, "Waxing Slice"), "infernalSlice": (24375, "Infernal Slice"),
+    "spinningScythe": (24376, "Spinning Scythe"), "nightmareScythe": (24377, "Nightmare Scythe"), "shadowOfDeath": (24378, "Shadow of Death"),
+    "whorlOfDeath": (24379, "Whorl of Death"), "soulSlice": (24380, "Soul Slice"), "gibbet": (24382, "Gibbet"), "gallows": (24383, "Gallows"),
+    "guillotine": (24384, "Guillotine"), "plentifulHarvest": (24385, "Plentiful Harvest"), "harpe": (24386, "Harpe"), "soulsow": (24387, "Soulsow"),
+    "harvestMoon": (24388, "Harvest Moon"), "bloodStalk": (24389, "Blood Stalk"), "unveiledGibbet": (24390, "Unveiled Gibbet"),
+    "unveiledGallows": (24391, "Unveiled Gallows"), "grimSwathe": (24392, "Grim Swathe"), "gluttony": (24393, "Gluttony"),
+    "enshroud": (24394, "Enshroud"), "voidReaping": (24395, "Void Reaping"), "crossReaping": (24396, "Cross Reaping"),
+    "grimReaping": (24397, "Grim Reaping"), "communio": (24398, "Communio"), "lemuresSlice": (24399, "Lemure's Slice"),
+    "hellsIngress": (24401, "Hell's Ingress"), "arcaneCrest": (24404, "Arcane Crest"), "arcaneCircle": (24405, "Arcane Circle"),
+    "sacrificium": (36969, "Sacrificium"), "executionersGibbet": (36970, "Executioner's Gibbet"), "executionersGallows": (36971, "Executioner's Gallows"),
+    "executionersGuillotine": (36972, "Executioner's Guillotine"), "perfectio": (36973, "Perfectio"),
+    "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
+    "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+RPR_STATUSES = {
+    "soulReaver": "Soul Reaver", "executioner": "Executioner", "enshrouded": "Enshrouded", "enhancedGibbet": "Enhanced Gibbet",
+    "enhancedGallows": "Enhanced Gallows", "enhancedVoidReaping": "Enhanced Void Reaping", "enhancedCrossReaping": "Enhanced Cross Reaping",
+    "oblatio": "Oblatio", "arcaneCircle": "Arcane Circle", "bloodsownCircle": "Bloodsown Circle", "immortalSacrifice": "Immortal Sacrifice",
+    "idealHost": "Ideal Host", "perfectioOcculta": "Perfectio Occulta", "perfectioParata": "Perfectio Parata", "soulsow": "Soulsow",
+    "arcaneCrest": "Crest of Time Borrowed", "deathsDesign": "Death's Design", "trueNorth": 1250, "bloodbath": 84, "feint": 1195,
+    "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+}
+
+# Sage (Endwalker 6.x): the current kit.
+SGE_ACTIONS = {
+    "dosis3": (24312, "Dosis III"), "eukrasia": (24290, "Eukrasia"), "eukrasianDosis3": (24314, "Eukrasian Dosis III"),
+    "phlegma3": (24313, "Phlegma III"), "toxikon2": (24316, "Toxikon II"), "dyskrasia2": (24315, "Dyskrasia II"), "pneuma": (24318, "Pneuma"),
+    "diagnosis": (24284, "Diagnosis"), "prognosis": (24286, "Prognosis"), "eukrasianDiagnosis": (24291, "Eukrasian Diagnosis"),
+    "eukrasianPrognosis": (24292, "Eukrasian Prognosis"), "egeiro": (24287, "Egeiro"), "kardia": (24285, "Kardia"), "soteria": (24294, "Soteria"),
+    "zoe": (24300, "Zoe"), "holos": (24310, "Holos"), "panhaima": (24311, "Panhaima"), "haima": (24305, "Haima"), "krasis": (24317, "Krasis"),
+    "rhizomata": (24309, "Rhizomata"), "physis2": (24302, "Physis II"), "kerachole": (24298, "Kerachole"), "ixochole": (24299, "Ixochole"),
+    "taurochole": (24303, "Taurochole"), "druochole": (24296, "Druochole"), "icarus": (24295, "Icarus"),
+    "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "rescue": (7571, "Rescue"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+SGE_STATUSES = {
+    "eukrasia": "Eukrasia", "kardia": "Kardia", "soteria": "Soteria", "zoe": "Zoe", "swiftcast": "Swiftcast",
+    "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast", "eukrasianDosis3": "Eukrasian Dosis III", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -480,6 +523,10 @@ JOBS = {
                         "hawksEye": "230,200,120", "quellingStrikes": "170,200,230", "bloodForBlood": "230,100,90", "keenFlurry": "200,200,230",
                         "feint": "200,200,220"},
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 31},
+    "rpr": {"actions": RPR_ACTIONS, "statuses": RPR_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Gemdraught of Strength", "classjob": 39},
+    "sge": {"actions": SGE_ACTIONS, "statuses": SGE_STATUSES, "overrides": {},
+            "tincture": "Grade 8 Tincture of Mind", "classjob": 40},
     "whm": {"actions": WHM_ACTIONS, "statuses": WHM_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},

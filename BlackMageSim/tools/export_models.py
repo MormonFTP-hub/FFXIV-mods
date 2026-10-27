@@ -163,6 +163,22 @@ JOB_MODELS = {
         "stance": "bt_swd_sld",
         "attrs": {},
     },
+    # Dawntrail Reaper: the 7.4 savage set (Grand Champion's of Maiming, e0908 v2) and the Grand Champion's War Scythe (w2804 b3).
+    "rpr-dt": {
+        "actionsFrom": "rpr",
+        "gear": {s: [908, 2] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2804, "body": 3, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2km_emp",
+        "attrs": {},
+    },
+    # Endwalker Sage: the 6.4 savage set (Ascension of Healing, e0828) and the Wings of Ascension nouliths (w2701 b25).
+    "sge-ew": {
+        "actionsFrom": "sge",
+        "gear": {s: [828, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2701, "body": 25, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
     # Dawntrail White Mage: the 7.4 savage set (Grand Champion's of Healing, e0910) and the Grand Champion's Cane (w827 b18).
     "whm-dt": {
         "actionsFrom": "whm",
