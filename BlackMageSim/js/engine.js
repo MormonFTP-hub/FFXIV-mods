@@ -27,6 +27,8 @@
     // The job version's level and its formula modifiers.
     get level() { return this.job.level || 90; }
     get lv() { return B.LEVELS[this.job.levelKey || this.level]; }
+    // Max MP: 10,000 from Shadowbringers on; Stormblood's depended on level (a job version sets maxMp).
+    get maxMp() { return this.job.maxMp || B.MAX_MP; }
 
     get stats() {
       const st = this.job.stats;
@@ -36,7 +38,7 @@
     speedSetting() { return (this.settings.speed || {})[this.job.id]; }
 
     reset() {
-      this.mp = B.MAX_MP;
+      this.mp = this.maxMp;
       this.maxHp = this.job.stats.hp;
       this.hp = this.maxHp;
       this.statuses = {};
@@ -439,7 +441,7 @@
         this.mpTickNext += 3;
         const gain = this.mpTickGain();
         const before = this.mp;
-        this.mp = Math.min(B.MAX_MP, this.mp + gain);
+        this.mp = Math.min(this.maxMp, this.mp + gain);
         if (this.mp > before) this.emit('mpGain', { amount: this.mp - before, source: 'tick' });
         this.emit('mpTick');
       }

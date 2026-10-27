@@ -294,7 +294,7 @@
     // ---------- params / party / target ----------
     updateParams() {
       const e = this.e;
-      const hpK = e.hp / e.maxHp, mpK = e.mp / B.MAX_MP;
+      const hpK = e.hp / e.maxHp, mpK = e.mp / e.maxMp;
       const c = this.pc || (this.pc = {});
       const put = (k, v, fn) => { if (c[k] !== v) { c[k] = v; fn(v); } };
       put('hp', e.hp, v => { $('#p-hp').textContent = fmt(v); $('#party-hpn').textContent = fmt(v); });

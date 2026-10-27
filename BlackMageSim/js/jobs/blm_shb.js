@@ -202,6 +202,8 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'fire3', ['triplecast'], 'fire4', 
     }
   }
 
+  B.BlackMageShB = BlackMageShB;
+
   B.registerJob({
     id: 'blm', name: 'Black Mage', abbr: 'BLM', role: 'caster', classJob: 25,
     versions: [{ id: 'shb', label: 'Shadowbringers 5.0–5.58', history: 'ShB 5.0–5.58', note: 'Enochian as a button, Xenoglossy 750, Despair 380, one-charge Sharpcast and Triplecast, level 80', create: () => new BlackMageShB() }],

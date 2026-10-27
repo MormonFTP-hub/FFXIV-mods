@@ -250,7 +250,7 @@
         g.elementUntil = 0;
         g.enoStart = null;
       } else {
-        g.elementUntil = e.now + ELEMENT_DURATION;
+        g.elementUntil = e.now + (this.cfg.elementDur || ELEMENT_DURATION);
         if (prev === 0) g.enoStart = e.now;
       }
       if (prev !== next) e.emit('element', { prev, next });
@@ -321,11 +321,11 @@
         case 'paradox':
           g.paradox = false;
           if (g.element > 0) {
-            g.elementUntil = e.now + ELEMENT_DURATION;
+            g.elementUntil = e.now + (this.cfg.elementDur || ELEMENT_DURATION);
             if (sharp) e.removeStatus('sharpcast');
             procFirestarter();
           } else if (g.element < 0) {
-            g.elementUntil = e.now + ELEMENT_DURATION;
+            g.elementUntil = e.now + (this.cfg.elementDur || ELEMENT_DURATION);
           }
           e.emit('paradox', { active: false });
           break;
@@ -345,7 +345,7 @@
           break;
         case 'umbralSoul':
           this.setElement(e, Math.max(-3, g.element - 1));
-          g.elementUntil = e.now + ELEMENT_DURATION;
+          g.elementUntil = e.now + (this.cfg.elementDur || ELEMENT_DURATION);
           g.hearts = Math.min(3, g.hearts + 1);
           e.emit('hearts', { n: g.hearts });
           break;
@@ -373,7 +373,7 @@
         case 'triplecast': e.addStatus('triplecast', 15, { stacks: 3 }); return;
         case 'manafont': {
           const before = e.mp;
-          e.mp = Math.min(B.MAX_MP, e.mp + this.cfg.manafont);
+          e.mp = Math.min(e.maxMp, e.mp + this.cfg.manafont);
           e.emit('mpGain', { amount: e.mp - before, source: 'manafont' });
           return;
         }
@@ -400,7 +400,7 @@
     mpRegen(e) {
       const el = e.g.element;
       if (el > 0) return 0;
-      let gain = el < 0 ? UI_REGEN[-el - 1] : B.BASE_REGEN;
+      let gain = el < 0 ? (this.cfg.uiRegen || UI_REGEN)[-el - 1] : (this.cfg.baseRegen || B.BASE_REGEN);
       if (e.has('lucidDreaming')) gain += this.cfg.lucid;
       return gain;
     }
