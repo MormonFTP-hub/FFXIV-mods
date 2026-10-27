@@ -27,6 +27,7 @@ window.BLM = window.BLM || {};
     90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
     80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
     shb80: { main: 340, sub: 380, div: 3300, ap: 165, apTank: 115, det: 130 },   // level 80 in 5.x (Allagan Studies)
+    sb70: { main: 292, sub: 364, div: 2170, ap: 125, apTank: 105, det: 130 },    // level 70 in 4.x (Allagan Studies)
   };
 
   // The current job's tables. These objects stay the same; their contents change with the job.
@@ -125,6 +126,7 @@ window.BLM = window.BLM || {};
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
     int4: { name: 'Grade 4 Tincture of Intelligence', cap: 464 },   // the 5.4/5.5 tier (pre-squish stats)
     str4: { name: 'Grade 4 Tincture of Strength', cap: 464 },
+    int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 196 },   // Stormblood potions were Infusions; the cap is an estimate
   };
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,

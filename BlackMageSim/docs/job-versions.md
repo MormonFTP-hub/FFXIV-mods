@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, asking before the next. Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, asking before the next. Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -282,7 +282,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 4. HW 3.2–3.57 (2016-02-23 → 2017-06-19): AF/UI timer 12s. **Rating 4/5:** Enochian refresh juggling; a hardcore favourite.
 5. SB 4.0–4.01 (2017-06-20 → 2017-07-16): job gauge; Enochian has no duration; Polyglot (1) and Foul; Blizzard IV hearts; Thunder IV; Triplecast 90s; Sharpcast 15s; AF/UI 13s. **Rating 4/5:** Polyglot and Foul arrive.
 6. SB 4.05–4.1x (2017-07-17 → 2018-01-29): Triplecast 60s; Fire IV / Blizzard IV 2.8s; Foul no MP. **Rating 4/5:** Faster Triplecast and casts; liked.
-7. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Transpose 8s; procs 18s; Aetherial Manipulation 10s; Fire IV 280 (300 in 4.4). **Rating 5/5:** Polyglot, Foul and Thunder optimization; peak for many.
+7. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Transpose 8s; procs 18s; Aetherial Manipulation 10s; Fire IV 280 (300 in 4.4). ← built **Rating 5/5:** Polyglot, Foul and Thunder optimization; peak for many.
 8. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Manafont replaces Convert; Despair, Umbral Soul, Xenoglossy; 2 Polyglot; Enochian 15%; AF/UI 15s; Transpose 5s; Sharpcast 30s; Freeze rework. ← built **Rating 5/5:** Despair, Xenoglossy and two Polyglots; widely cited as Black Mage's best.
 9. EW 6.0–6.58 (2021-12-07 → 2024-07-01): Enochian a trait; Amplifier; Paradox; Sharpcast and Triplecast 2 charges; Manafont 120s; Ley Lines 120s; Thundercloud 40s. Potency tiers 6.08 / 6.28 / 6.4 (Xenoglossy 880, Enochian 23% from 6.4). ← built (6.4–6.58 numbers) **Rating 4/5:** Paradox and two-charge Sharpcast and Triplecast; strong and liked.
 10. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Sharpcast removed; Thunderhead; High Thunder; Retrace; Astral Soul + Flare Star; 3 Polyglot; Manafont 100s rework; Umbral Ice MP refunds; instant Paradox. **Rating 2/5:** Thunderhead and the Manafont rework; mixed to negative.

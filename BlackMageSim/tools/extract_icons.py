@@ -39,6 +39,8 @@ ACTIONS = {
     "lucidDreaming": (7562, "Lucid Dreaming"), "sprint": (3, "Sprint"),
     # Shadowbringers: Enochian was a button until 6.0 made it a trait.
     "enochian": (3575, "Enochian"),
+    # Stormblood: Convert (row 158 became Manafont in 5.0; the old action survives at 9637).
+    "convert": (9637, "Convert"),
 }
 BLM_STATUSES = {
     "firestarter": "Firestarter", "thundercloud": "Thundercloud", "sharpcast": "Sharpcast",
