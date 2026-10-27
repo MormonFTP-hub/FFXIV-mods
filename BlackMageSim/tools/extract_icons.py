@@ -303,7 +303,7 @@ WAR_ACTIONS = {
     "fellCleaveEw": (3549, "Fell Cleave"), "innerChaos": (16465, "Inner Chaos"), "innerRelease": (7389, "Inner Release"),
     "primalRend": (25753, "Primal Rend"), "upheaval": (7387, "Upheaval"), "orogeny": (25752, "Orogeny"), "onslaught": (7386, "Onslaught"),
     "mythrilTempest": (16462, "Mythril Tempest"), "chaoticCyclone": (16463, "Chaotic Cyclone"), "bloodwhetting": (25751, "Bloodwhetting"),
-    "shakeItOff": (7388, "Shake It Off"), "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "interject": (7538, "Interject"),
+    "shakeItOff": (7388, "Shake It Off"), "nascentFlash": (16464, "Nascent Flash"), "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "interject": (7538, "Interject"),
     "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
 }
 WAR_STATUSES = {
@@ -313,7 +313,7 @@ WAR_STATUSES = {
     "holmgang": "Holmgang", "thrillOfBattle": "Thrill of Battle", "foresight": "Foresight", "bloodbath": "Bloodbath",
     "internalRelease": "Internal Release", "slashingResDown": "Slashing Resistance Down", "sprint": "Sprint", "medicated": "Medicated",
     "surgingTempest": "Surging Tempest", "innerRelease": 1177, "primalRendReady": "Primal Rend Ready", "nascentChaos": "Nascent Chaos",
-    "bloodwhetting": "Bloodwhetting", "shakeItOff": "Shake It Off", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
+    "bloodwhetting": "Bloodwhetting", "shakeItOff": "Shake It Off", "nascentFlash": "Nascent Flash", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
 }
 
 # Ninja (Heavensward 3.x). Much of the 3.x kit was removed later, so many icons are struck through.
@@ -355,6 +355,7 @@ PLD_ACTIONS = {
     "holySheltron": (25746, "Holy Sheltron"), "intervention": (7382, "Intervention"), "cover": (27, "Cover"),
     "guardian": (36920, "Guardian"), "bulwark": (22, "Bulwark"), "hallowedGround": (30, "Hallowed Ground"),
     "divineVeil": (3540, "Divine Veil"), "passageOfArms": (7385, "Passage of Arms"), "requiescat": (7383, "Requiescat"),
+    "sentinel": (17, "Sentinel"), "sheltron": (3542, "Sheltron"), "spiritsWithin": (29, "Spirits Within"),
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
@@ -364,6 +365,7 @@ PLD_STATUSES = {
     "supplicationReady": 3827, "sepulchreReady": 3828, "divineMight": 2673, "bladeOfHonorReady": 3831, "circleOfScorn": 248,
     "ironWill": 79, "holySheltron": "Holy Sheltron", "guardian": "Guardian", "bulwark": 77, "hallowedGround": 82,
     "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal", "swordOath": "Sword Oath",
+    "sentinel": "Sentinel", "sheltron": "Sheltron", "goringBlade": "Goring Blade",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
 }
 
@@ -461,6 +463,27 @@ SGE_STATUSES = {
     "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast", "eukrasianDosis3": "Eukrasian Dosis III", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Dark Knight (Shadowbringers 5.x): the level 80 kit.
+DRK_ACTIONS = {
+    "hardSlash": (3617, "Hard Slash"), "syphonStrike": (3623, "Syphon Strike"), "souleater": (3632, "Souleater"),
+    "unleash": (3621, "Unleash"), "stalwartSoul": (16468, "Stalwart Soul"), "unmend": (3624, "Unmend"), "grit": (3629, "Grit"),
+    "bloodWeapon": (3625, "Blood Weapon"), "shadowWall": (3636, "Shadow Wall"), "darkMind": (3634, "Dark Mind"),
+    "livingDead": (3638, "Living Dead"), "saltedEarth": (3639, "Salted Earth"), "plunge": (3640, "Plunge"),
+    "abyssalDrain": (3641, "Abyssal Drain"), "carveAndSpit": (3643, "Carve and Spit"), "bloodspiller": (7392, "Bloodspiller"),
+    "quietus": (7391, "Quietus"), "delirium": (7390, "Delirium"), "theBlackestNight": (7393, "The Blackest Night"),
+    "floodOfShadow": (16469, "Flood of Shadow"), "edgeOfShadow": (16470, "Edge of Shadow"), "darkMissionary": (16471, "Dark Missionary"),
+    "livingShadow": (16472, "Living Shadow"),
+    "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"), "interject": (7538, "Interject"),
+    "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+DRK_STATUSES = {
+    "darkside": "Darkside", "bloodWeapon": 742, "delirium": "Delirium", "blackestNight": "Blackest Night",
+    "darkArts": "Dark Arts", "grit": "Grit", "shadowWall": "Shadow Wall", "darkMind": "Dark Mind", "livingDead": "Living Dead",
+    "darkMissionary": "Dark Missionary", "saltedEarth": "Salted Earth", "rampart": "Rampart", "reprisal": "Reprisal",
+    "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -531,6 +554,8 @@ JOBS = {
             "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Dexterity", "classjob": 41},
+    "drk": {"actions": DRK_ACTIONS, "statuses": DRK_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Tincture of Strength", "classjob": 32},
     "pld": {"actions": PLD_ACTIONS, "statuses": PLD_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Strength", "classjob": 19},
     "nin": {"actions": NIN_ACTIONS, "statuses": NIN_STATUSES, "overrides": {},

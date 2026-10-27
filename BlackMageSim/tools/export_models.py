@@ -274,6 +274,31 @@ JOB_MODELS = {
         "stance": "bt_2kt_emp",
         "attrs": {},
     },
+    # Shadowbringers Paladin, Warrior and Dark Knight: their artifact gear (Chevalier's e0527, Boii e0529, Bale e0537) and
+    # the Edenmorn weapons from Eden's Promise (5.4): Bastard Sword w201 b135 and Scutum w101 b99, Battleaxe w401 b108,
+    # Zweihander w1501 b101.
+    "pld-shb": {
+        "actionsFrom": "pld",
+        "gear": {s: [527, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 201, "body": 135, "variant": 1}, "n_buki_r"),
+                    ("shield", {"kind": "weapon", "id": 101, "body": 99, "variant": 1}, "n_buki_tate_l")],
+        "stance": "bt_swd_sld",
+        "attrs": {},
+    },
+    "war-shb": {
+        "actionsFrom": "war",
+        "gear": {s: [529, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 401, "body": 108, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
+    "drk-shb": {
+        "actionsFrom": "drk",
+        "gear": {s: [537, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1501, "body": 101, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sw_emp",
+        "attrs": {},
+    },
     "gnb-shb": {
         "actionsFrom": "gnb",
         "gear": {s: [542, 1] for s in SLOTS},

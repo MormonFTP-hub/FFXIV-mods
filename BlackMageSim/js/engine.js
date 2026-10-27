@@ -113,7 +113,10 @@
       return Math.floor(ms / 10) / 100;
     }
     haste() { return this.job.haste ? this.job.haste(this) : 0; }
-    gcdRecast(id) { return this.speedScale((id && A[id] && A[id].recast) || 2.5, this.haste()); }
+    gcdRecast(id) {
+      if (id && A[id] && A[id].fixedRecast) return A[id].fixedRecast;     // a tank's spell: no spell speed on tank gear
+      return this.speedScale((id && A[id] && A[id].recast) || 2.5, this.haste());
+    }
 
     // GCD for a speed stat, with the job's standing haste (Samurai tiers are quoted with Fuka on: 2.14).
     gcdForSpeed(speed, haste) {

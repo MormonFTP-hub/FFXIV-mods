@@ -246,6 +246,7 @@ ${opener}
     }
   }
 
+  B.WarriorEW = WarriorEW;
   B.registerJob({
     id: 'war', name: 'Warrior', abbr: 'WAR', role: 'tank', classJob: 21,
     versions: ['ew61', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WarriorEW(v) })),
