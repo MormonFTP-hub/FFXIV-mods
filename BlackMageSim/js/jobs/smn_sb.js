@@ -152,9 +152,9 @@
       this.maxMp = MAX_MP;
       this.actions = ACTIONS;
       this.statuses = STATUSES;
-      // A rough 4.5 crit set (Alphascape item level 400–405, the Omega Grimoire: 93 weapon damage, 3.12 delay in the
+      // A rough 4.5 crit set (Alphascape item level 400–405, the Omega Grimoire: 147 magic damage, 3.12 delay in the 4.58
       // game data) at the 2.46 GCD; level-70 stats. Maim and Mend II (+30%) covers the summoner and the pets.
-      this.stats = { hp: 31000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 93, det: 1500, crit: 2500,
+      this.stats = { hp: 31000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 147, det: 1500, crit: 2500,
         dh: 1950, speed: 600, delay: 3.12 };
       this.speedName = 'Spell speed';
       this.selfStatusOrder = ['dreadwyrmTrance', 'furtherRuin', 'rouse', 'devotion', 'swiftcast', 'medicated', 'lucidDreaming', 'surecast', 'sprint'];
@@ -173,7 +173,7 @@
       ];
       // What the 4.0–4.06 version (smn_sb40.js) changes.
       this.cfg = { trance: TRANCE, instantRuin3: true, petProc: PET_PROC, devotion: 1.02 };
-      this.referenceDps = 5600;     // a scripted 4.58 rotation at 2.46 parses about 5,300 on the dummy
+      this.referenceDps = 8000;     // a scripted 4.58 rotation at 2.46 parses about 7,600 on the dummy
       this.referenceGcd = 2.46;
       this.startDistance = 12;
     }

@@ -27,22 +27,23 @@
   const ROAD_STATUS = { enhanced: 'enhancedRoyalRoad', extended: 'extendedRoyalRoad', expanded: 'expandedRoyalRoad' };
   const cap = (s) => s[0].toUpperCase() + s.slice(1);
 
-  // Gear: rough sets for each tier (Deltascape item level 340, Sigmascape 370, Alphascape 400), level-70 stats.
+  // Gear: rough sets for each tier (Deltascape item level 340, Sigmascape 370, Alphascape 400), level-70 stats; weapon
+  // magic damage 134 / 140 / 146 from the 4.58 item data.
   const GEAR = {
-    i340: { hp: 26000, main: 2500, wd: 77, det: 1150, crit: 1900, dh: 1250, speed: 650, piety: 900 },
-    i370: { hp: 28500, main: 2900, wd: 85, det: 1300, crit: 2200, dh: 1450, speed: 750, piety: 1000 },
-    i400: { hp: 31000, main: 3300, wd: 93, det: 1500, crit: 2500, dh: 1650, speed: 850, piety: 1100 },
+    i340: { hp: 26000, main: 2500, wd: 134, det: 1150, crit: 1900, dh: 1250, speed: 650, piety: 900 },
+    i370: { hp: 28500, main: 2900, wd: 140, det: 1300, crit: 2200, dh: 1450, speed: 750, piety: 1000 },
+    i400: { hp: 31000, main: 3300, wd: 146, det: 1500, crit: 2500, dh: 1650, speed: 850, piety: 1100 },
   };
-  // ref: a scripted bot (Lucid on cooldown, Lightspeed for MP, cards on itself) parses about 1,750 / 2,250 / 2,600 / 3,250
+  // ref: a scripted bot (Lucid on cooldown, Lightspeed for MP, cards on itself) parses about 2,650 / 3,300 / 3,800 / 4,650
   // in these four over 5 minutes; the first two are MP-limited, as healers were before 4.3's Lightspeed.
   const VERSIONS = {
-    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', spear: 20, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i340', ref: 1860,
+    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', spear: 20, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i340', ref: 2820,
       note: 'Level 70. The Stormblood card game: Balance 10%, the Spear 20s, Royal Road, Spread, Minor Arcana and Sleeve Draw. 2.5s Malefic, Lightspeed costs 25% potency' },
-    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', spear: 30, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i370', ref: 2370,
+    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', spear: 30, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i370', ref: 3470,
       note: 'Level 70. As 4.05 with the Spear lasting 30s; Sigmascape gear' },
-    sb43: { label: 'Stormblood 4.3–4.38', history: 'SB 4.3–4.38', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 2750,
+    sb43: { label: 'Stormblood 4.3–4.38', history: 'SB 4.3–4.38', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 4030,
       note: 'Level 70. 1.5s Malefic casts, Lightspeed −50% MP with no damage cost (120s)' },
-    sb44: { label: 'Stormblood 4.4–4.58', history: 'SB 4.4–4.58', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 1, gear: 'i400', ref: 3460,
+    sb44: { label: 'Stormblood 4.4–4.58', history: 'SB 4.4–4.58', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 1, gear: 'i400', ref: 4900,
       note: 'Level 70. Minor Arcana and Lord of Crowns on 1s recasts; Alphascape gear' },
   };
 

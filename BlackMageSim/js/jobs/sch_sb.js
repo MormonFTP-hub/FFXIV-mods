@@ -14,17 +14,18 @@
   // Stormblood MP at level 70: 119% (Scholar's modifier) of 12,000 plus 6,000 × (Piety − 292) / 2,170.
   const maxMpFor = (piety) => Math.floor(1.19 * (6000 * (piety - 292) / 2170 + 12000));
   const GEAR = {
-    i340: { hp: 25500, main: 2500, wd: 77, det: 1150, crit: 1900, dh: 1250, speed: 650, piety: 900 },
-    i370: { hp: 28000, main: 2900, wd: 85, det: 1300, crit: 2200, dh: 1450, speed: 750, piety: 1000 },
-    i400: { hp: 30500, main: 3300, wd: 93, det: 1500, crit: 2500, dh: 1650, speed: 850, piety: 1100 },
+    i340: { hp: 25500, main: 2500, wd: 134, det: 1150, crit: 1900, dh: 1250, speed: 650, piety: 900 },
+    i370: { hp: 28000, main: 2900, wd: 140, det: 1300, crit: 2200, dh: 1450, speed: 750, piety: 1000 },
+    i400: { hp: 30500, main: 3300, wd: 146, det: 1500, crit: 2500, dh: 1650, speed: 850, piety: 1100 },
   };
-  // ref: a scripted bot parses about 1,750 / 2,250 / 2,900 in these three over 5 minutes (the gear tier is the difference).
+  // ref: a scripted bot parses about 2,650 / 3,300 / 4,150 in these three over 5 minutes (the gear tier is the difference).
+  // Weapon magic damage 134 / 140 / 146 is from the 4.58 item data.
   const VERSIONS = {
-    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', gear: 'i340', excogExpiry: false, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 1860,
+    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', gear: 'i340', excogExpiry: false, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 2820,
       note: 'Level 70. Broil II, Bio II and Miasma, Energy Drain with Quickened Aetherflow, Chain Stratagem, Selene\'s Fey Wind; Excogitation 800 / 45s' },
-    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', gear: 'i370', excogExpiry: true, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 2400,
+    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', gear: 'i370', excogExpiry: true, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 3520,
       note: 'Level 70. As 4.05, with Excogitation also healing when it expires; Sigmascape gear' },
-    sb43: { label: 'Stormblood 4.3–4.58', history: 'SB 4.3–4.58', gear: 'i400', excogExpiry: true, aetherpact: 3, dawnCast: 0, dawn: 120, ref: 3080,
+    sb43: { label: 'Stormblood 4.3–4.58', history: 'SB 4.3–4.58', gear: 'i400', excogExpiry: true, aetherpact: 3, dawnCast: 0, dawn: 120, ref: 4380,
       note: 'Level 70. Whispering Dawn instant, Aetherpact 3s; Alphascape gear' },
   };
 

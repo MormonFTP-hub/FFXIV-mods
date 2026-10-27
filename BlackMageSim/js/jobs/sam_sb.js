@@ -149,9 +149,9 @@
       this.comboTime = 15;
       this.tp = { max: 1000, regen: 60 };
       this.tierHaste = 10;
-      // A rough 4.5 Alphascape set (item level 400–405, the Omega blade: 93 weapon damage, 2.64 delay) at the
+      // A rough 4.5 Alphascape set (item level 400–405, the Omega blade: 109 weapon damage, 2.64 delay in the 4.58 item data) at the
       // 2.18 GCD with Shifu; level-70 stats.
-      this.stats = { hp: 31000, main: 3280, mainStat: 'str', jobMod: 112, trait: 100, wd: 93, det: 1600, crit: 2700,
+      this.stats = { hp: 31000, main: 3280, mainStat: 'str', jobMod: 112, trait: 100, wd: 109, det: 1600, crit: 2700,
         dh: 1900, speed: 900, delay: 2.64 };
       this.autoAttack = { potency: 110, delay: 2.64, range: B.MELEE_RANGE };
       this.selfStatusOrder = ['fugetsu', 'fuka', 'meikyoShisui', 'kaiten', 'enhancedEnpi', 'meditate', 'trueNorth', 'thirdEye',
@@ -169,7 +169,7 @@
         ['Role Actions', ['trueNorth', 'invigorate', 'feint', 'bloodbath', 'secondWind', 'armsLength', 'legSweep']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 7400;     // a scripted 4.5x rotation at 2.17 parses about 6,950 on the dummy
+      this.referenceDps = 8350;     // a scripted 4.5x rotation at 2.17 parses about 7,850 on the dummy
       this.referenceGcd = 2.18;
       this.startDistance = 3.2;
     }

@@ -338,7 +338,8 @@
       if (a.kind === 'gcd' && (a.comboFrom !== undefined || a.comboStart || a.breaksCombo)) {
         const comboOk = a.comboFrom ? this.inCombo(a.comboFrom) || this.has('meikyoShisui') : false;
         this.lastComboHit = comboOk;
-        this.combo = a.comboNext ? { id, until: this.now + (this.job.comboTime || B.COMBO_TIME) } : null;
+        // comboAs: an upgraded action continues the combo as its base (Heated Split Shot as Split Shot).
+        this.combo = a.comboNext ? { id: a.comboAs || id, until: this.now + (this.job.comboTime || B.COMBO_TIME) } : null;
       }
       this.job.resolve(id, this);
       this.emit('resolve', { id });
@@ -369,7 +370,7 @@
       // snap.critAdd: a crit-rate buff (the Spear).
       const critRate = Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000 + (snap.critAdd || 0);
       const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
-      const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000;
+      const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000 + (snap.dhAdd || 0);   // snap.dhAdd: Battle Voice
       const crit = opts.crit || Math.random() < critRate;
       const dh = Math.random() < dhRate;
       if (crit) d = Math.floor(d * critMult);
@@ -453,6 +454,7 @@
             const r = this.damage(h.potency, h.snap, false, h);
             this.emit('hit', { id: h.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: false, auto: !!h.auto, positional: h.positional, t: now });
             if (h.onResult) h.onResult(r);          // a job reacting to how it landed (Monk's chakra on crits)
+            if (this.job.onHit) this.job.onHit(h, r, this);   // or to every hit (Machinist's Wildfire)
             // The rest of the pack, each with the action's falloff (a job can pass its own, e.g. a combo's).
             const aoe = h.aoe !== undefined ? h.aoe : a.aoe;
             if (aoe && !h.auto) {
@@ -498,7 +500,7 @@
               this.emit('hit', { id: st.dot.id, amount: x.amount, crit: x.crit, dh: x.dh, dot: true, extra: k, t: now });
             }
           }
-          if (this.job.onDotTick) this.job.onDotTick(key, this);
+          if (this.job.onDotTick) this.job.onDotTick(key, this, r);
         }
       }
 

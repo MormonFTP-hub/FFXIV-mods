@@ -135,10 +135,11 @@ window.BLM = window.BLM || {};
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
     mnd3sb: { name: 'Grade 3 Infusion of Mind', cap: 225 },
+    dex3sb: { name: 'Grade 3 Infusion of Dexterity', cap: 225 },
   };
   // Healers cast like casters (cast bars, spell effects).
   B.isCaster = (job) => job.role === 'caster' || job.role === 'healer';
-  B.statName = (stat) => stat.startsWith('int') ? 'Intelligence' : stat.startsWith('mnd') ? 'Mind' : 'Strength';
+  B.statName = (stat) => stat.startsWith('int') ? 'Intelligence' : stat.startsWith('mnd') ? 'Mind' : stat.startsWith('dex') ? 'Dexterity' : 'Strength';
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
     desc: `This diluted brew temporarily increases ${B.statName(stat).toLowerCase()} for twice the duration of similar potions.\n${B.statName(stat)} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,

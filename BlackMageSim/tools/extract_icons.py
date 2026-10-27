@@ -217,6 +217,44 @@ MNK_STATUSES = {
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Bard (Stormblood 4.06–4.58).
+BRD_ACTIONS = {
+    "heavyShot": (97, "Heavy Shot"), "straightShot": (98, "Straight Shot"), "causticBite": (7406, "Caustic Bite"),
+    "stormbite": (7407, "Stormbite"), "ironJaws": (3560, "Iron Jaws"), "refulgentArrow": (7409, "Refulgent Arrow"),
+    "quickNock": (106, "Quick Nock"), "rainOfDeath": (117, "Rain of Death"), "bloodletter": (110, "Bloodletter"),
+    "empyrealArrow": (3558, "Empyreal Arrow"), "sidewinder": (3562, "Sidewinder"), "pitchPerfect": (7404, "Pitch Perfect"),
+    "ragingStrikes": (101, "Raging Strikes"), "barrage": (107, "Barrage"), "magesBallad": (114, "Mage's Ballad"),
+    "armysPaeon": (116, "Army's Paeon"), "wanderersMinuet": (3559, "the Wanderer's Minuet"), "battleVoice": (118, "Battle Voice"),
+    "troubadour": (7405, "Troubadour"), "naturesMinne": (7408, "Nature's Minne"), "wardensPaean": (3561, "the Warden's Paean"),
+    "repellingShot": (112, "Repelling Shot"), "headGraze": (7551, "Head Graze"), "peloton": (7557, "Peloton"),
+    "invigorate": (7544, "Invigorate"), "secondWind": (7541, "Second Wind"), "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+}
+BRD_STATUSES = {
+    "straighterShot": 122, "straightShot": "Straight Shot", "causticBite": "Caustic Bite", "stormbite": "Stormbite",
+    "ragingStrikes": "Raging Strikes", "barrage": "Barrage", "magesBallad": "Mage's Ballad", "armysPaeon": "Army's Paeon",
+    "wanderersMinuet": 865, "battleVoice": "Battle Voice", "troubadour": "Troubadour",
+    "naturesMinne": "Nature's Minne", "criticalUp": "Critical Up", "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
+}
+
+# Machinist (Stormblood 4.06–4.58). Row 7410 was Cooldown; Shadowbringers renamed it Heat Blast.
+MCH_ACTIONS = {
+    "splitShot": (2866, "Split Shot"), "slugShot": (2868, "Slug Shot"), "cleanShot": (2873, "Clean Shot"),
+    "heatedSplitShot": (7411, "Heated Split Shot"), "heatedSlugShot": (7412, "Heated Slug Shot"),
+    "heatedCleanShot": (7413, "Heated Clean Shot"), "hotShot": (2872, "Hot Shot"), "cooldown": (7410, "Heat Blast"),
+    "spreadShot": (2870, "Spread Shot"), "reload": (2867, "Reload"), "quickReload": (2879, "Quick Reload"),
+    "reassemble": (2876, "Reassemble"), "gaussRound": (2874, "Gauss Round"), "ricochet": (2890, "Ricochet"),
+    "wildfire": (2878, "Wildfire"), "rapidFire": (2881, "Rapid Fire"), "hypercharge": (2885, "Hypercharge"),
+    "gaussBarrel": (2880, "Gauss Barrel"), "barrelStabilizer": (7414, "Barrel Stabilizer"), "flamethrower": (7418, "Flamethrower"),
+    "rookAutoturret": (2864, "Rook Autoturret"), "rookOverdrive": (7415, "Rook Overdrive"), "rookOverload": (7416, "Rook Overload"),
+    "volleyFire": (2891, "Volley Fire"), "invigorate": (7544, "Invigorate"), "secondWind": (7541, "Second Wind"),
+    "headGraze": (7551, "Head Graze"), "peloton": (7557, "Peloton"), "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+}
+MCH_STATUSES = {
+    "hotShot": 855, "enhancedSlugShot": "Enhanced Slug Shot", "cleanerShot": "Cleaner Shot", "reassembled": "Reassembled",
+    "wildfire": "Wildfire", "rapidFire": "Rapid Fire", "gaussBarrel": "Gauss Barrel", "flamethrower": "Flamethrower",
+    "vulnerabilityUp": "Vulnerability Up", "ammunition": 862, "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -258,6 +296,18 @@ JOBS = {
                         "purification": "160,210,255", "mantra": "150,230,160", "oneIlmPunch": "230,150,90",
                         "armOfTheDestroyer": "240,170,90"},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 20},
+    "brd": {"actions": BRD_ACTIONS, "statuses": BRD_STATUSES, "overrides": {},
+            "uncross": {"straightShot": "230,200,120", "quickNock": "220,190,140", "repellingShot": "200,220,240",
+                        "rainOfDeath": "180,150,230", "pitchPerfect": "240,190,120", "ironJaws": "200,210,170"},
+            "tincture": "Grade 8 Tincture of Dexterity", "classjob": 23},
+    "mch": {"actions": MCH_ACTIONS, "statuses": MCH_STATUSES, "overrides": {"volleyFire": 3026},
+            "uncross": {"splitShot": "230,190,120", "slugShot": "230,170,110", "cleanShot": "230,200,140", "heatedSplitShot": "255,150,80",
+                        "heatedSlugShot": "255,140,70", "heatedCleanShot": "255,160,90", "cooldown": "140,200,255",
+                        "spreadShot": "220,190,140", "reload": "210,210,170", "quickReload": "210,210,170", "rapidFire": "255,190,110",
+                        "hypercharge": "255,140,90", "gaussBarrel": "170,210,255", "barrelStabilizer": "170,210,255",
+                        "flamethrower": "255,120,60", "rookAutoturret": "170,190,230", "rookOverdrive": "255,150,90",
+                        "rookOverload": "255,150,90"},
+            "tincture": "Grade 8 Tincture of Dexterity", "classjob": 31},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",

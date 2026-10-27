@@ -19,6 +19,7 @@
     ifrit: { glow: '255,120,60', wing: '200,60,30', body: '255,210,160', fx: ['255,150,80', '220,60,20'] },
     titan: { glow: '230,190,110', wing: '150,110,60', body: '240,220,170', fx: ['240,210,140', '160,120,60'] },
     bahamut: { glow: '140,110,255', wing: '60,40,120', body: '200,190,255', fx: ['170,140,255', '80,50,220'] },
+    rook: { glow: '120,180,255', wing: '90,100,120', body: '200,210,230', fx: ['160,210,255', '80,140,255'] },
     eos: { glow: '255,190,230', wing: '190,255,220', body: '255,240,250', fx: ['255,200,235', '200,255,220'] },
     selene: { glow: '150,200,255', wing: '200,230,255', body: '235,245,255', fx: ['170,210,255', '230,240,255'] },
   };
@@ -1001,6 +1002,7 @@
     // A pet: Garuda-Egi or Ifrit-Egi at shoulder height, Demi-Bahamut large and high, with beating wings.
     drawPet(kind, w) {
       const ctx = this.ctx, t = this.time;
+      if (kind === 'rook') { this.drawTurret(w); return; }
       const big = kind === 'bahamut', fairy = FAERIES.includes(kind);
       const C = PET_COLORS[kind] || PET_COLORS.garuda;
       const p = this.project(w.x, (big ? 2.7 : fairy ? 1.9 : 1.0) + Math.sin(t * 2.2) * (fairy ? 0.25 : 0.12), w.z);
@@ -1036,6 +1038,26 @@
         ctx.fillStyle = `rgba(${C.wing},1)`;
         for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 0.1 * U, -0.75 * U); ctx.lineTo(s * 0.35 * U, -1.05 * U); ctx.lineTo(s * 0.18 * U, -0.68 * U); ctx.fill(); }
       }
+      ctx.restore();
+    }
+
+    // Machinist's Rook Autoturret: a tripod with a turning head and a glowing lens.
+    drawTurret(w) {
+      const ctx = this.ctx, C = PET_COLORS.rook;
+      const base = this.project(w.x, 0, w.z), head = this.project(w.x, 1.1, w.z);
+      if (!base || !head) return;
+      const U = base.s * 0.5;
+      ctx.save();
+      ctx.strokeStyle = `rgb(${C.wing})`; ctx.lineWidth = Math.max(1.5, U * 0.08); ctx.lineCap = 'round';
+      for (const dx of [-0.6, 0, 0.6]) { ctx.beginPath(); ctx.moveTo(head.x, head.y + U * 0.3); ctx.lineTo(base.x + dx * U, base.y); ctx.stroke(); }
+      const g = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, U * 0.9);
+      g.addColorStop(0, `rgb(${C.body})`); g.addColorStop(1, `rgb(${C.wing})`);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(head.x, head.y, U * 0.6, U * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgb(${C.wing})`; ctx.fillRect(head.x - U * 0.12, head.y - U * 0.05, U * 0.9, U * 0.16);
+      ctx.globalCompositeOperation = 'lighter';
+      const l = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, U * 0.5);
+      l.addColorStop(0, `rgba(${C.glow},${0.8 + Math.sin(this.time * 6) * 0.2})`); l.addColorStop(1, `rgba(${C.glow},0)`);
+      ctx.fillStyle = l; ctx.beginPath(); ctx.arc(head.x, head.y, U * 0.5, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
 

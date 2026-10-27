@@ -19,11 +19,11 @@
       elementDur: 13, convertMp: 0.3, lucid: 960, baseRegen: Math.round(MAX_MP * 0.02),
       uiRegen: [0.32, 0.47, 0.62].map(k => Math.round(MAX_MP * k)),
     },
-    // A rough 4.5 best-in-slot set (Alphascape item level 400–405, the Omega Rod: 93 weapon damage, 3.28 delay in
-    // the game data) at the 2.40 GCD; level-70 stats.
-    stats: { hp: 33000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 93, det: 1450, crit: 2350,
+    // A rough 4.5 best-in-slot set (Alphascape item level 400–405, the Omega Rod: 147 magic damage, 3.28 delay in
+    // the 4.58 item data) at the 2.40 GCD; level-70 stats.
+    stats: { hp: 33000, main: 3300, mainStat: 'int', jobMod: 115, trait: 130, wd: 147, det: 1450, crit: 2350,
       dh: 1900, speed: 1040, delay: 3.28 },
-    referenceDps: 5700,     // a scripted 4.5x rotation at 2.40 parses about 4,900–5,450 on the dummy
+    referenceDps: 8150,     // a scripted 4.5x rotation at 2.40 parses about 7,000–7,800 on the dummy
     referenceGcd: 2.4,
     actions() {
       const shb = new ShB().actions;

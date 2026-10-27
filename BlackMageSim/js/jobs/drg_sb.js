@@ -80,9 +80,9 @@
       this.statuses = STATUSES;
       this.tp = { max: 1000, regen: 60 };
       this.comboTime = 15;
-      // A rough 4.5 Alphascape set (the Omega Trident: 93 weapon damage, 2.80 delay in the game data) at the 2.44 GCD;
+      // A rough 4.5 Alphascape set (the Omega Trident: 109 weapon damage, 2.80 delay in the 4.58 item data) at the 2.44 GCD;
       // level-70 stats.
-      this.stats = { hp: 33000, main: 3280, mainStat: 'str', jobMod: 115, trait: 100, wd: 93, det: 1700, crit: 2600,
+      this.stats = { hp: 33000, main: 3280, mainStat: 'str', jobMod: 115, trait: 100, wd: 109, det: 1700, crit: 2600,
         dh: 2000, speed: 750, delay: 2.8 };
       this.speedName = 'Skill speed';
       this.tierHaste = 0;
@@ -102,7 +102,7 @@
         ['Role Actions', ['trueNorth', 'invigorate', 'feint', 'bloodbath', 'secondWind', 'legSweep', 'armsLength']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 6900;     // a scripted 4.5 rotation at 2.44 parses about 6,500 on the dummy
+      this.referenceDps = 7800;     // a scripted 4.5 rotation at 2.44 parses about 7,350 on the dummy
       this.referenceGcd = 2.44;
       this.startDistance = 3.2;
     }

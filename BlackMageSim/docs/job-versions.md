@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -244,7 +244,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. HW 3.01–3.26 (2015-07-07 → 2016-06-06): Wanderer's Minuet an instant toggle, +30%; Empyreal Arrow 220; Sidewinder 100/175/250. (3.2: Warden's Paean oGCD.) **Rating 3/5:** Instant Minuet toggle; better.
 4. HW 3.3–3.57 (2016-06-07 → 2017-06-19): song casts 1.5s, singing penalty 10%; Battle Voice 180s; DoT and Blunt Arrow buffs. **Rating 3/5:** Faster songs; better.
 5. SB 4.0–4.05 (2017-06-20 → 2017-08-06): Repertoire; songs instant 80s recast 30s (Mage's Ballad resets Bloodletter on DoT crits, Army's Paeon speed stacks, Wanderer's Minuet Pitch Perfect); Refulgent Arrow, Caustic Bite, Stormbite, Troubadour, Nature's Minne; Raging Strikes 80s 10%; Battle Voice +15% DH; many ARR actions removed. **Rating 4/5:** Repertoire and the song rotation arrive.
-6. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Straight Shot 30s; Barrage 80s. **Rating 5/5:** Repertoire procs, songs and Iron Jaws snapshots; often called Bard's best.
+6. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Straight Shot 30s; Barrage 80s. ← built **Rating 5/5:** Repertoire procs, songs and Iron Jaws snapshots; often called Bard's best.
 7. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Soul Voice + Apex Arrow; Straight Shot Ready procs; Repertoire 40% per DoT tick; Burst Shot, Shadowbite; Empyreal Arrow an ability; Battle Voice 20%; Misery's End, Foe Requiem removed. **Rating 3/5:** Apex Arrow and tick-based Repertoire; Bard ranked low in a 5.25 survey.
 8. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): songs give party buffs (1% dmg / 3% DH / 2% crit); Apex Arrow 120–600 full gauge; Troubadour 120s. **Rating 3/5:** Songs give party buffs; fine.
 9. EW 6.0–6.58 (2021-12-07 → 2024-07-01): songs abilities 120s/45s, Repertoire 80%; Bloodletter charges (3 at 84) and Mage's Ballad 7.5s cut; Coda + Radiant Finale; Blast Arrow; Raging Strikes 120s 15%; Shadowbite proc; Ladonsbite; Sidewinder 300. (6.1: Battle Voice needs no song.) **Rating 4/5:** Coda, Radiant Finale and 120s songs; well liked.
@@ -258,7 +258,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 5. HW 3.4–3.57 (2016-09-27 → 2017-06-19): Reload ammo no longer expires. **Rating 5/5:** Ammo, Reload, Hypercharge and Wildfire bursts; a cult favourite.
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Heat Gauge and Overheat, heated shots, Cooldown, Flamethrower, Barrel Stabilizer 120s, Overdrive; Reload 30s 3 rounds; Wildfire 60s 10s. **Rating 3/5:** Heat gauge debut; rough edges.
 7. SB 4.05 (2017-07-17 → 2017-08-06): Barrel Stabilizer 60s; Quick Reload no heat drop; heat per shot 5; Overloads doubled. **Rating 4/5:** Barrel Stabilizer at 60s; liked.
-8. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Overheat +20%; Gauss Barrel 2s; Hot Shot 60s. **Rating 5/5:** Heat and Overheat juggling; Stormblood Machinist is widely missed.
+8. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Overheat +20%; Gauss Barrel 2s; Hot Shot 60s. ← built **Rating 5/5:** Heat and Overheat juggling; Stormblood Machinist is widely missed.
 9. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): full rework — Hypercharge (50 Heat, Heat Blast), Battery and Queen, Gauss Round / Ricochet charges, Wildfire 120s, Reassemble, Drill, Air Anchor, Tactician. **Rating 4/5:** The modern rework: Hypercharge and Queen; clean.
 10. ShB 5.05–5.58 (2019-07-29 → 2021-12-06): Reassemble 55s; 5.1 Tactician 120s, Flamethrower skill speed. **Rating 4/5:** Same kit; liked.
 11. EW 6.0–6.18 (2021-12-07 → 2022-08-22): Chain Saw, Scattergun, Reassemble 2 charges, Queen's Gambit; Overheated 8s; Drill/Air Anchor 550. (6.1 Wildfire buff.) **Rating 4/5:** Chain Saw and Reassemble charges; liked.

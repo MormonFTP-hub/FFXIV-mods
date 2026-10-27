@@ -91,9 +91,9 @@
       this.actions = ACTIONS;
       this.statuses = STATUSES;
       this.tp = { max: 1000, regen: 60 };
-      // A rough 4.5 Alphascape set (the Omega Knuckles: 93 weapon damage, 2.56 delay in the game data) at 2.42 base,
+      // A rough 4.5 Alphascape set (the Omega Knuckles: 109 weapon damage, 2.56 delay in the 4.58 item data) at 2.42 base,
       // 2.05 with Greased Lightning III; level-70 stats. Monk's Strength modifier is 110.
-      this.stats = { hp: 32000, main: 3280, mainStat: 'str', jobMod: 110, trait: 100, wd: 93, det: 1500, crit: 2700,
+      this.stats = { hp: 32000, main: 3280, mainStat: 'str', jobMod: 110, trait: 100, wd: 109, det: 1500, crit: 2700,
         dh: 2000, speed: 900, delay: 2.56 };
       this.speedName = 'Skill speed';
       this.tierHaste = 15;            // GCD tiers are quoted with Greased Lightning III
@@ -115,7 +115,7 @@
         ['Role Actions', ['trueNorth', 'invigorate', 'feint', 'bloodbath', 'secondWind', 'legSweep', 'armsLength']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 7300;     // a scripted 4.5 rotation parses about 6,900 on the dummy
+      this.referenceDps = 8250;     // a scripted 4.5 rotation parses about 7,800 on the dummy
       this.referenceGcd = 2.05;
       this.startDistance = 3.2;
     }

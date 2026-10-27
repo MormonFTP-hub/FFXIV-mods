@@ -84,6 +84,24 @@ JOB_MODELS = {
         "stance": "bt_2sp_emp",
         "attrs": {},
     },
+    # Stormblood Bard: Storyteller's (the 4.x artifact gear), the Omega Bow in the left hand and its quiver at the hip.
+    "brd-sb": {
+        "actionsFrom": "brd",
+        "gear": {s: [322, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 601, "body": 64, "variant": 1}, "n_buki_l"),
+                    ("quiver", {"kind": "weapon", "id": 698, "body": 68, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2bw_emp",
+        "attrs": {},
+    },
+    # Stormblood Machinist: Gunner's (the 4.x artifact gear) and Omegafire, with its holster at the hip.
+    "mch-sb": {
+        "actionsFrom": "mch",
+        "gear": {s: [329, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2022, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("holster", {"kind": "weapon", "id": 2099, "body": 1, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2gn_emp",
+        "attrs": {},
+    },
     # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
     "sch-sb": {
         "actionsFrom": "sch",

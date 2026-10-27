@@ -24,7 +24,7 @@
       set('aetherpact', { desc: 'Orders pet to use Devotion: increases the attack and healing potency of the party member closest to the pet by 5%, and reduces their damage taken by 5%.\nDuration: 15s' });
       this.actions = A;
       this.cfg = Object.assign({}, this.cfg, { instantRuin3: false, devotion: 1.05 });
-      this.referenceDps = 5850;     // a scripted 4.06 rotation parses about 5,500 on the dummy
+      this.referenceDps = 8350;     // a scripted 4.06 rotation parses about 7,900 on the dummy
     }
 
     // Further Ruin lights up Ruin III, not Ruin II.
