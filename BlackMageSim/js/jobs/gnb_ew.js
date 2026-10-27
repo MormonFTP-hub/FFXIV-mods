@@ -142,8 +142,14 @@
 
   class GunbreakerEW {
     constructor(version) {
-      const N = NUMBERS[version], V = VERSIONS[version];
+      const N = NUMBERS[version] || NUMBERS.ew62, V = VERSIONS[version] || VERSIONS.ew62;
       this.N = N;
+      // What older versions change (gnb_shb.js): the cartridge cap and Bloodfest's grant, the Gnashing Fang combo
+      // window, whether Gnashing Fang turns into its follow-ups on one button.
+      this.maxCarts = MAX_CARTS;
+      this.bloodfestCarts = 3;
+      this.ammoCombo = AMMO_COMBO;
+      this.oneButtonFang = true;
       this.name = 'Gunbreaker';
       this.abbr = 'GNB';
       this.role = 'tank';
@@ -180,7 +186,7 @@
     // Gnashing Fang becomes Savage Claw, then Wicked Talon; Continuation becomes whichever follow-up is ready.
     resolveId(id, e) {
       const g = e.g;
-      if (id === 'gnashingFang' && g.ammo && g.ammo.until > e.now) return g.ammo.next;
+      if (this.oneButtonFang && id === 'gnashingFang' && g.ammo && g.ammo.until > e.now) return g.ammo.next;
       if (id === 'continuation') {
         for (const r of READY) if (e.has(r)) return CONTINUATION[r];
       }
@@ -216,13 +222,13 @@
 
       switch (id) {
         case 'brutalShell': if (e.lastComboHit) e.addStatus('brutalShell', 30); break;
-        case 'solidBarrel': if (e.lastComboHit) { g.carts = Math.min(MAX_CARTS, g.carts + 1); e.emit('carts', {}); } break;
+        case 'solidBarrel': if (e.lastComboHit) { g.carts = Math.min(this.maxCarts, g.carts + 1); e.emit('carts', {}); } break;
         case 'burstStrike': this.setReady(e, 'readyToBlast'); break;
-        case 'gnashingFang': g.ammo = { next: 'savageClaw', until: e.now + AMMO_COMBO }; this.setReady(e, 'readyToRip'); break;
-        case 'savageClaw': g.ammo = { next: 'wickedTalon', until: e.now + AMMO_COMBO }; this.setReady(e, 'readyToTear'); break;
+        case 'gnashingFang': g.ammo = { next: 'savageClaw', until: e.now + this.ammoCombo }; this.setReady(e, 'readyToRip'); break;
+        case 'savageClaw': g.ammo = { next: 'wickedTalon', until: e.now + this.ammoCombo }; this.setReady(e, 'readyToTear'); break;
         case 'wickedTalon': g.ammo = null; this.setReady(e, 'readyToGouge'); break;
         case 'noMercy': e.addStatus('noMercy', 20); break;
-        case 'bloodfest': g.carts = Math.min(MAX_CARTS, g.carts + 3); e.emit('carts', {}); break;
+        case 'bloodfest': g.carts = Math.min(this.maxCarts, g.carts + this.bloodfestCarts); e.emit('carts', {}); break;
         case 'royalGuard':
           if (e.has('royalGuard')) e.removeStatus('royalGuard');
           else e.addStatus('royalGuard', 1e9, { permanent: true });
@@ -260,7 +266,7 @@
       if (a.comboFrom && e.inCombo(a.comboFrom)) return true;
       if (a.ammoFrom && g.ammo && g.ammo.next === id && g.ammo.until > e.now) return true;
       if (a.ready && e.has(a.ready)) return true;
-      if (id === 'burstStrike' && g.carts >= MAX_CARTS) return true;
+      if (id === 'burstStrike' && g.carts >= this.maxCarts) return true;
       return false;
     }
 
@@ -289,19 +295,19 @@
   <rect x="8" y="14" width="344" height="190" rx="14" fill="rgba(14,12,20,.86)" stroke="rgba(255,255,255,.22)"/>
   <text x="24" y="42" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">POWDER GAUGE</text>
   <text id="g-cartn" x="332" y="46" text-anchor="end" font-family="Saira Semi Condensed, sans-serif" font-size="26" font-weight="700" fill="#fff" stroke="#000" stroke-width="3" paint-order="stroke">0</text>
-  ${[0, 1, 2].map(k => `<g id="g-cart${k}">${shell(120 + k * 60)}</g>`).join('')}
+  ${[...Array(this.maxCarts).keys()].map(k => `<g id="g-cart${k}">${shell(180 + (k - (this.maxCarts - 1) / 2) * 60)}</g>`).join('')}
   <path d="M60 160 L300 160" stroke="rgba(255,255,255,.12)" stroke-width="2"/>
   <text id="g-ammo" x="180" y="190" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="12" font-weight="600" fill="#8fb6ff"></text>
 </svg>`;
       const $ = (s) => root.querySelector(s);
-      this.gg = { n: $('#g-cartn'), carts: [0, 1, 2].map(k => $(`#g-cart${k} .round`)), ammo: $('#g-ammo'), cache: {} };
+      this.gg = { n: $('#g-cartn'), carts: [...Array(this.maxCarts).keys()].map(k => $(`#g-cart${k} .round`)), ammo: $('#g-ammo'), cache: {} };
     }
 
     gaugeUpdate(e) {
       const G = this.gg, c = G.cache, g = e.g;
       const put = (k, v, fn) => { if (c[k] !== v) { c[k] = v; fn(v); } };
       put('n', g.carts, v => { G.n.textContent = String(v); });
-      for (let i = 0; i < 3; i++) put('c' + i, g.carts > i, v => { G.carts[i].setAttribute('opacity', v ? '1' : '.15'); G.carts[i].setAttribute('filter', v ? 'url(#cg)' : ''); });
+      for (let i = 0; i < this.maxCarts; i++) put('c' + i, g.carts > i, v => { G.carts[i].setAttribute('opacity', v ? '1' : '.15'); G.carts[i].setAttribute('filter', v ? 'url(#cg)' : ''); });
       const next = g.ammo && g.ammo.until > e.now ? `Next: ${this.actions[g.ammo.next].name}` : '';
       put('a', next, v => { G.ammo.textContent = v; });
     }
@@ -326,6 +332,8 @@ ${seq(['keenEdge', ['tincture'], 'brutalShell', ['bloodfest'], ['noMercy'], 'gna
 <p style="color:#a9a3b4">${numbers}</p>`;
     }
   }
+
+  B.GunbreakerEW = GunbreakerEW;
 
   B.registerJob({
     id: 'gnb', name: 'Gunbreaker', abbr: 'GNB', role: 'tank', classJob: 37,

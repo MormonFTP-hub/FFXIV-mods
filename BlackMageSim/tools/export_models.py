@@ -66,6 +66,14 @@ JOB_MODELS = {
         "stance": "bt_2kt_emp",                                            # katana
         "attrs": {},
     },
+    # Shadowbringers Gunbreaker: Bodyguard's (the ShB artifact gear) and the Edenmorn Gunblade from Eden's Promise.
+    "gnb-shb": {
+        "actionsFrom": "gnb",
+        "gear": {s: [542, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2501, "body": 41, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2gb_emp",
+        "attrs": {},
+    },
     "gnb": {
         "gear": {s: [787, 1] for s in SLOTS},                              # Bastion's (Endwalker AF)
         "weapons": [("main", {"kind": "weapon", "id": 2501, "body": 37, "variant": 2}, "n_buki_r")],   # Diadochos Gunblade (6.4)

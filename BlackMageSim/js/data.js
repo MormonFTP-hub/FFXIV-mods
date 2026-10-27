@@ -124,6 +124,7 @@ window.BLM = window.BLM || {};
     str: { name: 'Grade 8 Tincture of Strength', cap: 262 },
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
     int4: { name: 'Grade 4 Tincture of Intelligence', cap: 464 },   // the 5.4/5.5 tier (pre-squish stats)
+    str4: { name: 'Grade 4 Tincture of Strength', cap: 464 },
   };
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,

@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, asking before the next. Built outside Endwalker so far: Black Mage ShB 5.0–5.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, asking before the next. Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -97,7 +97,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Gunbreaker (from 5.0)
 1. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): 2 Cartridges max; Gnashing Fang 30s with Savage Claw / Wicked Talon as separate buttons; Bloodfest 90s (+2); Sonic Break 60s; Nebula 10s. **Rating 4/5:** Launch Gunbreaker: a tight cartridge loop; a hit new tank.
-2. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Nebula 15s. **Rating 5/5:** The 2.4 GCD 'Gunbreaker dance' in No Mercy; peak hype.
+2. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Nebula 15s. ← built **Rating 5/5:** The 2.4 GCD 'Gunbreaker dance' in No Mercy; peak hype.
 3. EW 6.0–6.18 (2021-12-07 → 2022-08-22): 3 Cartridges (Bloodfest +3, 90s); Double Down; Hypervelocity; Gnashing Fang combo on one button; Aurora 2 charges. ← built **Rating 4/5:** Double Down and a one-button Gnashing combo; demanding, the 90s Bloodfest drift was fiddly.
 4. EW 6.2–6.58 (2022-08-23 → 2024-07-01): Bloodfest 120s; Continuation 5y. ← built **Rating 4/5:** Bloodfest on the 2-minute rhythm; still the skill-expression tank.
 5. DT 7.0–7.05 (2024-07-02 → 2024-11-11): Ready to Break (Sonic Break a 2.5s GCD); Ready to Reign → Reign of Beasts / Noble Blood / Lion Heart; Fated Brand; Great Nebula; Trajectory. Bloodfest still 120s. **Rating 3/5:** Reign of Beasts; Sonic Break tied to No Mercy; mixed.

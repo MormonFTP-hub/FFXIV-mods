@@ -79,7 +79,7 @@ GNB_ACTIONS = {
     "eyeGouge": (16158, "Eye Gouge"), "bowShock": (16159, "Bow Shock"), "heartOfLight": (16160, "Heart of Light"),
     "burstStrike": (16162, "Burst Strike"), "bloodfest": (16164, "Bloodfest"), "blastingZone": (16165, "Blasting Zone"),
     "heartOfCorundum": (25758, "Heart of Corundum"), "hypervelocity": (25759, "Hypervelocity"),
-    "doubleDown": (25760, "Double Down"),
+    "doubleDown": (25760, "Double Down"), "heartOfStone": (16161, "Heart of Stone"),
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
@@ -89,7 +89,7 @@ GNB_STATUSES = {
     "nebula": "Nebula", "aurora": "Aurora", "superbolide": "Superbolide", "sonicBreak": "Sonic Break",
     "bowShock": "Bow Shock", "readyToRip": "Ready to Rip", "readyToTear": "Ready to Tear",
     "readyToGouge": "Ready to Gouge", "readyToBlast": "Ready to Blast", "heartOfCorundum": "Heart of Corundum",
-    "heartOfLight": "Heart of Light", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
+    "heartOfLight": "Heart of Light", "heartOfStone": "Heart of Stone", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
     "sprint": "Sprint", "medicated": "Medicated",
 }
 

@@ -142,7 +142,7 @@
       const a = A[id];
       const key = a.cdGroup || id;
       // Abilities: recast is the cooldown. GCDs with a cooldown of their own (Kaeshi): cd.
-      const recast = a.kind === 'gcd' ? a.cd : a.recast;
+      const recast = a.kind === 'gcd' ? (a.cdScales ? this.speedScale(a.cd) : a.cd) : a.recast;
       if (!this.cds[key]) this.cds[key] = { max: a.charges || 1, charges: a.charges || 1, recast, nextAt: null };
       return this.cds[key];
     }
@@ -322,7 +322,7 @@
       if (a.kind === 'gcd' && (a.comboFrom !== undefined || a.comboStart || a.breaksCombo)) {
         const comboOk = a.comboFrom ? this.inCombo(a.comboFrom) || this.has('meikyoShisui') : false;
         this.lastComboHit = comboOk;
-        this.combo = a.comboNext ? { id, until: this.now + B.COMBO_TIME } : null;
+        this.combo = a.comboNext ? { id, until: this.now + (this.job.comboTime || B.COMBO_TIME) } : null;
       }
       this.job.resolve(id, this);
       this.emit('resolve', { id });
