@@ -1,14 +1,13 @@
 // Black Mage, Endwalker (patch 6.5x) at level 90: actions, the Elemental Gauge, MP rules, procs, the gauge display
-// and the help page. Numbers from the FFXIV wiki's patch histories (consolegameswiki).
+// and the help page. Numbers from the FFXIV wiki's patch histories (consolegameswiki). Older Black Mage versions
+// (blm_shb.js) extend this class: they swap the action table and this.cfg and override what played differently.
 (function (B) {
   const FIRE_MULT = { 1: 1.4, 2: 1.6, 3: 1.8, '-1': 0.9, '-2': 0.8, '-3': 0.7 };
   const ICE_MULT = { 1: 0.9, 2: 0.8, 3: 0.7 };
   const AF_ICE_COST = { 1: 0.5, 2: 0.25, 3: 0 };
   const UI_FIRE_COST = { 1: 0.5, 2: 0.25, 3: 0 };
-  const ENOCHIAN = 1.23;          // Enhanced Enochian III after 6.4
   const ELEMENT_DURATION = 15;
   const POLYGLOT_TIME = 30;
-  const POLYGLOT_MAX = 2;
   const UI_REGEN = [3200, 4700, 6200];
   const EPS = 1e-6;
 
@@ -123,6 +122,9 @@
       this.role = 'caster';
       this.actions = ACTIONS;
       this.statuses = STATUSES;
+      // What older versions change: Enochian's bonus (Enhanced Enochian III after 6.4), Polyglot cap, proc and
+      // Sharpcast durations, Manafont's MP, the tincture, and the label on the gauge's marker.
+      this.cfg = { enochian: 1.23, polyMax: 2, fsDur: 30, tcDur: 40, sharpDur: 30, manafont: 3000, tincture: 'int', marker: 'PARADOX' };
       // Rough 6.5 best-in-slot stats; spell speed is typed in Settings.
       this.stats = { hp: 74210, main: 3375, mainStat: 'int', jobMod: 115, trait: 130, wd: 132, det: 1886, crit: 2541,
         dh: 1435, speed: 1160, delay: 3.28 };
@@ -159,7 +161,7 @@
     haste(e) { return e.inCircle() ? 15 : 0; }
 
     castTime(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       if (id === 'paradox' && g.element < 0) return 0;
       if (id === 'fire3' && e.has('firestarter')) return 0;
       if (id === 'thunder3' && e.has('thundercloud')) return 0;
@@ -171,7 +173,7 @@
     }
 
     mpCost(id, e) {
-      const a = ACTIONS[id], el = e.g.element;
+      const a = this.actions[id], el = e.g.element;
       switch (id) {
         case 'despair': return e.mp;
         case 'paradox': return el < 0 ? 0 : 1600;
@@ -223,7 +225,7 @@
 
     // Spells with a cast time that went off instantly eat the buff that made them instant.
     consumeInstant(id, e) {
-      const a = ACTIONS[id];
+      const a = this.actions[id];
       if (!a.cast) return;
       if (id === 'paradox' && e.g.element < 0) return;
       if (id === 'fire3' && e.has('firestarter')) return;       // eaten in resolve
@@ -254,24 +256,27 @@
       if (prev !== next) e.emit('element', { prev, next });
     }
 
+    // Enochian is up whenever there's Astral Fire or Umbral Ice in Endwalker (it was a button before 6.0).
+    enochianActive(e) { return e.g.element !== 0; }
+
     snapshot(a, e) {
       const g = e.g;
       let mult = 1;
-      if (g.element !== 0) mult *= ENOCHIAN;
+      if (this.enochianActive(e)) mult *= this.cfg.enochian;
       if (a.school === 'fire' && g.element !== 0) mult *= FIRE_MULT[g.element];
       if (a.school === 'ice' && g.element > 0) mult *= ICE_MULT[g.element];
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.int.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.cfg.tincture].cap : 0);
       return { mult, main };
     }
 
     resolve(id, e) {
-      const a = ACTIONS[id];
+      const a = this.actions[id];
       if (a.kind === 'gcd') this.resolveSpell(id, e);
       else this.resolveAbility(id, e);
     }
 
     resolveSpell(id, e) {
-      const a = ACTIONS[id], g = e.g;
+      const a = this.actions[id], g = e.g;
       const cost = this.mpCost(id, e);
       if (e.mp < cost) { e.emit('error', { msg: 'Not enough MP.' }); return; }
       // Hearts cover the doubled cost of fire spells under Astral Fire.
@@ -285,7 +290,7 @@
       let potency = a.potency;
       const sharp = e.has('sharpcast');
       const procFirestarter = () => {
-        if (sharp || Math.random() < 0.4) e.addStatus('firestarter', 30);
+        if (sharp || Math.random() < 0.4) e.addStatus('firestarter', this.cfg.fsDur);
       };
 
       switch (id) {
@@ -350,7 +355,7 @@
         if (sharp) e.removeStatus('sharpcast');
         e.queueHit(id, potency, snap, a.delay, () => {
           e.addTStatus('thunder3', a.dot.duration, { snap, dot: { potency: a.dot.potency, id: 'thunder3' } });
-          if (sharp) e.addStatus('thundercloud', 40);
+          if (sharp) e.addStatus('thundercloud', this.cfg.tcDur);
         });
       } else if (a.potency) {
         e.queueHit(id, potency, snap, a.delay);
@@ -364,16 +369,16 @@
           if (g.element > 0) this.setElement(e, -1);
           else if (g.element < 0) this.setElement(e, 1);
           return;
-        case 'sharpcast': e.addStatus('sharpcast', 30); return;
+        case 'sharpcast': e.addStatus('sharpcast', this.cfg.sharpDur); return;
         case 'triplecast': e.addStatus('triplecast', 15, { stacks: 3 }); return;
         case 'manafont': {
           const before = e.mp;
-          e.mp = Math.min(B.MAX_MP, e.mp + 3000);
+          e.mp = Math.min(B.MAX_MP, e.mp + this.cfg.manafont);
           e.emit('mpGain', { amount: e.mp - before, source: 'manafont' });
           return;
         }
         case 'amplifier':
-          g.polyglot = Math.min(POLYGLOT_MAX, g.polyglot + 1);
+          g.polyglot = Math.min(this.cfg.polyMax, g.polyglot + 1);
           e.emit('polyglot', { n: g.polyglot });
           return;
         case 'leyLines':
@@ -419,7 +424,7 @@
       }
       if (g.enoStart !== null && now >= g.enoStart + POLYGLOT_TIME - EPS) {
         g.enoStart += POLYGLOT_TIME;
-        if (g.polyglot < POLYGLOT_MAX) {
+        if (g.polyglot < this.cfg.polyMax) {
           g.polyglot++;
           e.emit('polyglot', { n: g.polyglot, gained: true });
         }
@@ -427,7 +432,7 @@
     }
 
     onDotTick(key, e) {
-      if (key === 'thunder3' && Math.random() < 0.1) e.addStatus('thundercloud', 40);
+      if (key === 'thunder3' && Math.random() < 0.1) e.addStatus('thundercloud', this.cfg.tcDur);
     }
 
     frame(e) {
@@ -479,7 +484,7 @@
   <g transform="translate(314 66)"><rect id="g-para" x="-12" y="-12" width="24" height="24" transform="rotate(45)" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>
   ${[0, 1, 2].map(k => `<g transform="translate(${226 + k * 34} 152) scale(1.35)"><path id="g-ht${k}" d="${heart}" fill="#1c2233" stroke="rgba(255,255,255,.25)" stroke-width="1.1"/></g>`).join('')}
   <text x="244" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">POLYGLOT</text>
-  <text x="314" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">PARADOX</text>
+  <text x="314" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">${this.cfg.marker}</text>
   <text x="260" y="186" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">UMBRAL HEARTS</text>
 </svg>`;
       const $ = (s) => root.querySelector(s);
@@ -489,6 +494,9 @@
         ht: [0, 1, 2].map(k => $('#g-ht' + k)), cache: {},
       };
     }
+
+    // The gauge's diamond: Paradox in Endwalker (older versions show Enochian there).
+    markerOn(e) { return e.g.paradox; }
 
     gaugeUpdate(e) {
       const G = this.gg, c = G.cache, g = e.g;
@@ -509,7 +517,7 @@
         put('h' + k, g.hearts > k, v => { G.ht[k].setAttribute('fill', v ? '#8fd8ff' : '#1c2233'); G.ht[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
       }
       for (let k = 0; k < 2; k++) put('p' + k, g.polyglot > k, v => { G.poly[k].setAttribute('fill', v ? 'url(#poly)' : '#251d33'); G.poly[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
-      put('para', g.paradox, v => { G.para.setAttribute('fill', v ? 'url(#para)' : '#251d33'); G.para.setAttribute('filter', v ? 'url(#gl)' : ''); });
+      put('para', this.markerOn(e), v => { G.para.setAttribute('fill', v ? 'url(#para)' : '#251d33'); G.para.setAttribute('filter', v ? 'url(#gl)' : ''); });
       const prog = g.enoStart !== null ? Math.min(1, (e.now - g.enoStart) / POLYGLOT_TIME) : 0;
       const dash = (prog * this.enoC).toFixed(1);
       put('eno', dash, v => G.eno.setAttribute('stroke-dasharray', `${v} ${this.enoC}`));
@@ -530,6 +538,8 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
 <p style="color:#a9a3b4">The 6.5 numbers: Fire IV 310, Despair 340, Paradox 500, Xenoglossy 880, Thunder III 50 + 35 per tick for 30s, Astral Fire III ×1.8, Enochian ×1.23, Manafont +3000 MP, Umbral Ice III regen 6200 MP per tick.</p>`;
     }
   }
+
+  B.BlackMageEW = BlackMageEW;
 
   B.registerJob({
     id: 'blm', name: 'Black Mage', abbr: 'BLM', role: 'caster', classJob: 25,
