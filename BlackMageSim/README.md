@@ -1,4 +1,4 @@
-# Striking Dummy Sim (Black Mage, Samurai, Gunbreaker, Summoner, Astrologian)
+# Striking Dummy Sim (Black Mage, Samurai, Gunbreaker, Summoner, Astrologian, Scholar)
 
 A browser game: play a job the way it was in an older patch, at level 90 on a striking dummy. Each job version has that patch's kit and numbers, and they all share the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise openers and loops the way they played back then.
 
@@ -19,6 +19,9 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 | Astrologian | Stormblood 4.2–4.25 | As 4.05 with the Spear lasting 30s, Sigmascape gear |
 | Astrologian | Stormblood 4.3–4.38 | 1.5s Malefic casts, Aspected Helios 2.5s, Lightspeed halves MP with no damage cost (120s) |
 | Astrologian | Stormblood 4.4–4.58 | Minor Arcana and Lord / Lady of Crowns on 1s recasts, Alphascape gear |
+| Scholar | Stormblood 4.05–4.18 | Level 70. Broil II, Bio II and Miasma, Energy Drain with Quickened Aetherflow, Chain Stratagem, Shadow Flare, Selene's Fey Wind; Dissipation sends the faerie away until you resummon it. Orator's artifact gear with the Omega Codex |
+| Scholar | Stormblood 4.2–4.25 | The same damage kit; Excogitation also heals on expiry; Sigmascape gear |
+| Scholar | Stormblood 4.3–4.58 | The same damage kit; Whispering Dawn instant, Aetherpact 3s; Alphascape gear |
 | Gunbreaker | Shadowbringers 5.1–5.58 | Level 80. Two cartridges (Bloodfest adds 2, 90s), no Double Down or Hypervelocity, Savage Claw and Wicked Talon on their own buttons, skill speed drifts Gnashing Fang and Sonic Break, 15s combos, Bodyguard's gear and the Edenmorn Gunblade |
 | Gunbreaker | Endwalker 6.0–6.18 | Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
@@ -127,11 +130,16 @@ python BlackMageSim/tools/build_single.py
 - **Cards.** Draw turns into the card you drew; press it to play it on yourself. The Balance (+10% damage), the Spear (+10% crit), the Arrow (10% haste) and the Ewer (MP) do something on a dummy; the Bole and the Spire are for Royal Road (Enhanced ×1.5, Extended ×2 duration, Expanded AoE at half) or Minor Arcana. Draw's recast starts once the card is used, as in 4.x. A gauge shows your hand, the Spread, the stored Royal Road and the Arcana card.
 - **Earthly Star.** Placed at the dummy: detonate it after 10s (Giant Dominance) for 200, or earlier for 150; it goes off by itself at 20s.
 
+### Scholar (Stormblood 4.05–4.58, three versions)
+
+- **The kit.** Broil II, Bio II, Miasma, Miasma II, Ruin II, Energy Drain, Bane, Shadow Flare, Chain Stratagem (+15% crit on the dummy), Aetherflow (Quickened: 5s off its recast per Aetherflow action), Dissipation, the heals and faerie orders for the hotbar, the healer role actions of the time and a Grade 3 Infusion of Mind. Scholar's damage didn't change across Stormblood; the three versions differ in the healing kit and gear.
+- **Faerie.** Selene keeps Fey Wind (3% haste) on you in combat; Eos is there for her heals. The faerie deals no damage. Dissipation dismisses it, and you resummon it yourself, as in Stormblood. A gauge shows Aetherflow, the Faerie Gauge (Energy Drain +10, Fey Union drains it) and your faerie.
+
 ### Every job
 
 - **AoE.** Settings → Dummies puts 1, 3 or 5 striking dummies out. AoE actions hit every one with their falloff (Flare 40% less after the first, Stormblood's Mangetsu stepping down per target), and an AoE DoT (Thunder IV, Bow Shock) ticks on each. Point-blank ones (Blizzard II before 6.0, Demon Slice, Fuko, Mangetsu, Oka, Kyuten) need no target but whiff if the dummy isn't within 5 yalms. The meter adds up every dummy. Black Mage has High Fire II, High Blizzard II, Freeze, Flare and Thunder IV in 6.5 (Fire II and Blizzard II before), Samurai Fuko or Fuga, Mangetsu, Oka and Kyuten, Gunbreaker Demon Slice, Demon Slaughter and Fated Circle.
 - **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and the job's Endwalker-style gauge.
-- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear and 6,950 in Stormblood (with TP and Kaiten); the Stormblood Summoner bot about 5,300 with Garuda-Egi in 4.1–4.58 and 5,500 in 4.0–4.06; the Stormblood Astrologian bot about 1,750, 2,250, 2,600 and 3,250 across its four versions (before 4.3 it runs short of MP); the Gunbreaker bot about 5,300 in 6.0–6.18 (6.0 gear) and 8,400 in 6.2–6.58 (6.5 gear).
+- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear and 6,950 in Stormblood (with TP and Kaiten); the Stormblood Summoner bot about 5,300 with Garuda-Egi in 4.1–4.58 and 5,500 in 4.0–4.06; the Stormblood Astrologian bot about 1,750, 2,250, 2,600 and 3,250 across its four versions (before 4.3 it runs short of MP); the Stormblood Scholar bot about 1,750, 2,250 and 2,900; the Gunbreaker bot about 5,300 in 6.0–6.18 (6.0 gear) and 8,400 in 6.2–6.58 (6.5 gear).
 
 ## Notes on accuracy
 
@@ -162,6 +170,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/jobs/smn_sb.js` | Summoner, Stormblood 4.1–4.58: the kit, the egis and Demi-Bahamut, the Aetherflow gauge, help text |
 | `js/jobs/smn_sb40.js` | Summoner, Stormblood 4.0–4.06, built on the 4.1–4.58 class |
 | `js/jobs/ast_sb.js` | Astrologian, Stormblood: four versions from one class, the card game, Earthly Star, the card gauge |
+| `js/jobs/sch_sb.js` | Scholar, Stormblood: three versions from one class, the faerie, the Aetherflow and Faerie gauge |
 | `js/jobs/gnb_ew.js` | Gunbreaker, Endwalker 6.2–6.58: actions, Powder Gauge, rules, help text |
 | `js/scene.js` | Canvas scene: camera, arena, dummy, drawn figures, spell and weaponskill effects |
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
@@ -176,6 +185,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **2.4.0**: Scholar, Stormblood, in three versions (4.05–4.18, 4.2–4.25, 4.3–4.58), with the faerie (Selene's Fey Wind, Dissipation and resummoning).
 - **2.3.0**: Astrologian, Stormblood, in four versions (4.05–4.18, 4.2–4.25, 4.3–4.38, 4.4–4.58), with the card game. Healers cast like casters in the engine; a crit-rate buff and abilities whose recast starts later are new engine pieces.
 - **2.2.0**: Summoner, Stormblood 4.1–4.58 and 4.0–4.06: the engine now has pets (an egi's own attacks, Demi-Bahamut, pet buffs and procs). Icons of actions that Dawntrail struck through are recovered from the grey copies. Black Mage SB's Omega Rod is 93 weapon damage, as in the game data (it was 108), so its numbers and reference DPS dropped about 11%.
 - **2.1.0**: Samurai, Stormblood 4.0–4.58, with TP. AoE for every job: a Dummies setting (1, 3 or 5) and each version's AoE kit. Lucid Dreaming now ticks on its own, with the other status effects, so it visibly gives MP in Umbral Ice (it still does nothing in Astral Fire). Weaponskills with their own recast (Gnashing Fang, Sonic Break, Double Down, Tsubame-gaeshi) now show it on the hotbar instead of looking ready after the GCD. New default hotbar actions fill empty slots in saved hotbars.

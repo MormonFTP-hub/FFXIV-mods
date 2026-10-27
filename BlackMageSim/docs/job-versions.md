@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -130,9 +130,9 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Lustrate 25%, Bane 8y, Virus Antibody, Sustain costs MP. **Rating 4/5:** Classic ARR Scholar: DoT spreading and fairy management.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Indomitability 52, Broil 54, Deployment Tactics 56 (120s), Emergency Tactics 58, Dissipation 60 (180s); Lustrate 600 potency. **Rating 5/5:** Bane, Energy Drain and Dissipation; widely called Scholar's golden age.
 4. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Faerie Gauge + Aetherpact/Fey Union; Excogitation 62, Broil II 64, Chain Stratagem 66; Quickened Aetherflow (20% chance −10s); Aetherflow 10% MP; Virus, Sustain, Miasma II removed. **Rating 4/5:** Fae Gauge, Excogitation and Chain Stratagem; complex and loved.
-5. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Excogitation 800 / 45s / 45s recast; Emergency Tactics 20s; Quickened Aetherflow 100% −5s; Miasma II back, Sustain back in 4.1. **Rating 5/5:** Full DoT kit plus Aetherpact; the Scholar people miss most.
-6. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Excogitation heals on expiry. **Rating 5/5:** Same beloved SB kit.
-7. SB 4.3–4.58 (2018-05-22 → 2019-07-01): Whispering Dawn instant; Aetherpact 3s. **Rating 5/5:** Same beloved SB kit, smoother Aetherpact.
+5. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Excogitation 800 / 45s / 45s recast; Emergency Tactics 20s; Quickened Aetherflow 100% −5s; Miasma II back, Sustain back in 4.1. ← built **Rating 5/5:** Full DoT kit plus Aetherpact; the Scholar people miss most.
+6. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Excogitation heals on expiry. ← built **Rating 5/5:** Same beloved SB kit.
+7. SB 4.3–4.58 (2018-05-22 → 2019-07-01): Whispering Dawn instant; Aetherpact 3s. ← built **Rating 5/5:** Same beloved SB kit, smoother Aetherpact.
 8. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): Bane, Miasma, Shadow Flare, Rouse, Eye for an Eye, Energy Drain removed; one shared fairy kit; Art of War 46, Biolysis + Broil III 72, Recitation 74 (90s), Fey Blessing 76, Summon Seraph 80. **Rating 2/5:** Lost Bane, Miasma and Shadow Flare; big backlash.
 9. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Energy Drain back (1 Aetherflow, 150); Succor 2s cast. **Rating 2/5:** Energy Drain back, but the DoT kit stayed gone.
 10. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Seraph 22s; Consolation 30s. **Rating 2/5:** Broil spam; Scholar ranked among the least satisfying jobs in a 5.25 survey.

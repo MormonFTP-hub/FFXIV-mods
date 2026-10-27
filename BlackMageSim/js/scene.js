@@ -19,7 +19,10 @@
     ifrit: { glow: '255,120,60', wing: '200,60,30', body: '255,210,160', fx: ['255,150,80', '220,60,20'] },
     titan: { glow: '230,190,110', wing: '150,110,60', body: '240,220,170', fx: ['240,210,140', '160,120,60'] },
     bahamut: { glow: '140,110,255', wing: '60,40,120', body: '200,190,255', fx: ['170,140,255', '80,50,220'] },
+    eos: { glow: '255,190,230', wing: '190,255,220', body: '255,240,250', fx: ['255,200,235', '200,255,220'] },
+    selene: { glow: '150,200,255', wing: '200,230,255', body: '235,245,255', fx: ['170,210,255', '230,240,255'] },
   };
+  const FAERIES = ['eos', 'selene'];
 
   function rng(seed) {
     let s = seed >>> 0;
@@ -998,11 +1001,11 @@
     // A pet: Garuda-Egi or Ifrit-Egi at shoulder height, Demi-Bahamut large and high, with beating wings.
     drawPet(kind, w) {
       const ctx = this.ctx, t = this.time;
-      const big = kind === 'bahamut';
+      const big = kind === 'bahamut', fairy = FAERIES.includes(kind);
       const C = PET_COLORS[kind] || PET_COLORS.garuda;
-      const p = this.project(w.x, (big ? 2.7 : 1.0) + Math.sin(t * 2.2) * 0.12, w.z);
+      const p = this.project(w.x, (big ? 2.7 : fairy ? 1.9 : 1.0) + Math.sin(t * 2.2) * (fairy ? 0.25 : 0.12), w.z);
       if (!p) return;
-      const U = p.s * (big ? 1.5 : 0.6);
+      const U = p.s * (big ? 1.5 : fairy ? 0.32 : 0.6);
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.globalCompositeOperation = 'lighter';
@@ -1010,7 +1013,7 @@
       g.addColorStop(0, `rgba(${C.glow},0.5)`); g.addColorStop(1, `rgba(${C.glow},0)`);
       ctx.fillStyle = g; ctx.fillRect(-U * 1.8, -U * 1.8, U * 3.6, U * 3.6);
       ctx.globalCompositeOperation = 'source-over';
-      const flap = Math.sin(t * (big ? 3 : 7)) * 0.25;
+      const flap = Math.sin(t * (big ? 3 : fairy ? 16 : 7)) * 0.25;
       ctx.fillStyle = `rgba(${C.wing},0.9)`;
       for (const s of [-1, 1]) {
         ctx.beginPath(); ctx.moveTo(s * 0.12 * U, -0.25 * U);

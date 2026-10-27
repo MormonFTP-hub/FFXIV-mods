@@ -151,6 +151,27 @@ AST_STATUSES = {
     "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Scholar (Stormblood 4.x): the summoner-line damage spells, the faerie's actions and the Aetherflow heals.
+SCH_ACTIONS = {
+    "broil2": (7435, "Broil II"), "bio2": (17865, "Bio II"), "miasma": (168, "Miasma"), "miasma2": (177, "Miasma II"),
+    "ruin2": (172, "Ruin II"), "shadowFlare": (179, "Shadow Flare"), "energyDrain": (16508, "Energy Drain"), "bane": (174, "Bane"),
+    "chainStratagem": (7436, "Chain Stratagem"), "aetherflow": (166, "Aetherflow"), "dissipation": (3587, "Dissipation"),
+    "physick": (190, "Physick"), "adloquium": (185, "Adloquium"), "succor": (186, "Succor"), "lustrate": (189, "Lustrate"),
+    "indomitability": (3583, "Indomitability"), "excogitation": (7434, "Excogitation"), "sacredSoil": (188, "Sacred Soil"),
+    "deploymentTactics": (3585, "Deployment Tactics"), "emergencyTactics": (3586, "Emergency Tactics"),
+    "aetherpact": (7437, "Aetherpact"), "summon": (165, "Summon"), "summon2": (170, "Summon II"),
+    "whisperingDawn": (803, "Whispering Dawn"), "feyCovenant": (804, "Fey Covenant"), "feyIllumination": (805, "Fey Illumination"),
+    "silentDusk": (807, "Silent Dusk"), "feyCaress": (810, "Fey Caress"), "feyWind": (811, "Fey Wind"), "embrace": (802, "Embrace"),
+    "clericStance": (7567, "Cleric Stance"), "largesse": (7570, "Largesse"), "swiftcast": (7561, "Swiftcast"),
+    "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+}
+SCH_STATUSES = {
+    "bio2": 189, "miasma": 180, "miasma2": "Miasma II", "chainStratagem": 1221, "feyWind": 799, "dissipation": "Dissipation",
+    "clericStance": 145, "largesse": 1207, "shadowFlare": "Shadow Flare", "feyUnion": "Fey Union",
+    "emergencyTactics": "Emergency Tactics", "excogitation": "Excogitation", "lucidDreaming": "Lucid Dreaming",
+    "swiftcast": "Swiftcast", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -173,6 +194,13 @@ JOBS = {
                         "spread": "200,210,255", "sleeveDraw": "230,200,255", "timeDilation": "170,210,255",
                         "emptyRoad": "200,190,160", "undrawSpread": "200,210,255"},
             "tincture": "Grade 8 Tincture of Mind", "classjob": 33},
+    # Summon and Summon II point at the removed-action icon; Eos's and Selene's Embrace stand in for them.
+    "sch": {"actions": SCH_ACTIONS, "statuses": SCH_STATUSES, "overrides": {"summon": 2826, "summon2": 2836},
+            "uncross": {"miasma": "150,110,220", "miasma2": "170,120,230", "shadowFlare": "150,85,215", "bane": "190,120,235",
+                        "bio2": "130,215,90", "silentDusk": "140,170,240", "feyCaress": "150,200,255", "feyWind": "150,220,255",
+                        "embrace": "120,230,170", "whisperingDawn": "150,240,170", "feyCovenant": "150,220,200",
+                        "feyIllumination": "170,240,200", "dissipation": "130,210,180"},
+            "tincture": "Grade 8 Tincture of Mind", "classjob": 28},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",
