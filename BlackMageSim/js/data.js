@@ -161,6 +161,7 @@ window.BLM = window.BLM || {};
     armsLength: (e) => e.addStatus('armsLength', 6),
     legSweep: () => {},
     rampart: (e) => e.addStatus('rampart', 20),
+    invigorate: (e) => { if (e.usesTp) e.tp = Math.min(e.job.tp.max, e.tp + 400); },
     reprisal: (e) => e.addTStatus('reprisal', 10),
     lowBlow: () => {}, provoke: () => {}, interject: () => {}, shirk: () => {},
     sprint: (e) => e.addStatus('sprint', 10),

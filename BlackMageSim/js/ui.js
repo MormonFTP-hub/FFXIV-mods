@@ -294,11 +294,15 @@
     // ---------- params / party / target ----------
     updateParams() {
       const e = this.e;
-      const hpK = e.hp / e.maxHp, mpK = e.mp / e.maxMp;
+      // Jobs on TP (physical jobs before 5.0) show it where MP would be, as the old UI did.
+      const tp = e.usesTp;
+      const res = tp ? e.tp : e.mp;
+      const hpK = e.hp / e.maxHp, mpK = res / (tp ? e.job.tp.max : e.maxMp);
       const c = this.pc || (this.pc = {});
       const put = (k, v, fn) => { if (c[k] !== v) { c[k] = v; fn(v); } };
       put('hp', e.hp, v => { $('#p-hp').textContent = fmt(v); $('#party-hpn').textContent = fmt(v); });
-      put('mp', e.mp, v => { $('#p-mp').textContent = String(Math.floor(v)); $('#party-mpn').textContent = String(Math.floor(v)); });
+      put('mp', res, v => { $('#p-mp').textContent = String(Math.floor(v)); $('#party-mpn').textContent = String(Math.floor(v)); });
+      put('reslbl', tp ? 'TP' : 'MP', v => { $('#p-mplbl').textContent = v; $('#p-tickbar').title = `Next ${v} tick (every 3s)`; });
       put('hpk', hpK, v => { $('#p-hpbar').style.transform = `scaleX(${v})`; $('#party-hp').style.transform = `scaleX(${v})`; });
       put('mpk', mpK, v => { $('#p-mpbar').style.transform = `scaleX(${v})`; $('#party-mp').style.transform = `scaleX(${v})`; });
       put('name', this.app.store.settings.name, v => { $('#party-name').textContent = v; });
@@ -306,10 +310,10 @@
       // MP tick timer: fills over the 3s server tick, labelled with what the tick will give.
       const left = Math.max(0, e.mpTickNext - e.now);
       $('#p-tick').style.transform = `scaleX(${(1 - left / 3).toFixed(3)})`;
-      const gain = e.mpTickGain();
+      const gain = tp ? Math.min(e.job.tp.regen, e.job.tp.max - e.tp) : e.mpTickGain();
       const note = e.job.mpTickNote ? e.job.mpTickNote(e) : null;
       const af = !!note;
-      const txt = note ? `tick ${left.toFixed(1)}s · ${note}` : `+${gain} in ${left.toFixed(1)}s`;
+      const txt = !tp && note ? `tick ${left.toFixed(1)}s · ${note}` : `+${gain}${tp ? ' TP' : ''} in ${left.toFixed(1)}s`;
       put('tick', txt, v => { $('#p-ticktxt').textContent = v; });
       put('tickaf', af, v => { $('#p-ticktxt').classList.toggle('af', v); $('#p-tickbar').classList.toggle('af', v); });
     }

@@ -29,6 +29,8 @@
     get lv() { return B.LEVELS[this.job.levelKey || this.level]; }
     // Max MP: 10,000 from Shadowbringers on; Stormblood's depended on level (a job version sets maxMp).
     get maxMp() { return this.job.maxMp || B.MAX_MP; }
+    // TP: before 5.0, physical jobs spent TP on weaponskills (job.tp = { max, regen } per 3s tick).
+    get usesTp() { return !!this.job.tp; }
 
     get stats() {
       const st = this.job.stats;
@@ -39,6 +41,7 @@
 
     reset() {
       this.mp = this.maxMp;
+      this.tp = this.job.tp ? this.job.tp.max : 0;
       this.maxHp = this.job.stats.hp;
       this.hp = this.maxHp;
       this.statuses = {};
@@ -200,6 +203,7 @@
       const err = this.job.check ? this.job.check(id, this, forHotbar) : null;
       if (err) return err;
       if (a.kind === 'gcd' && this.mp < this.mpCost(id)) return 'Not enough MP.';
+      if (this.usesTp && a.tp && this.tp < a.tp) return 'Not enough TP.';
       if (!forHotbar && a.kind === 'gcd' && this.castTimeFor(id) > 0 && this.moving) return 'Unable to cast while moving.';
       return null;
     }
@@ -282,6 +286,7 @@
       const err = this.checkConditions(id);
       if (err) { this.emit('error', { msg: err, id }); return false; }
 
+      if (this.usesTp && a.tp) this.tp -= a.tp;
       if (a.kind === 'gcd') {
         if (a.cd) {
           const c = this.cd(id);
@@ -443,6 +448,7 @@
         const before = this.mp;
         this.mp = Math.min(this.maxMp, this.mp + gain);
         if (this.mp > before) this.emit('mpGain', { amount: this.mp - before, source: 'tick' });
+        if (this.usesTp) this.tp = Math.min(this.job.tp.max, this.tp + this.job.tp.regen);
         this.emit('mpTick');
       }
 
