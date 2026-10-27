@@ -120,10 +120,11 @@ window.BLM = window.BLM || {};
     int: { name: 'Grade 8 Tincture of Intelligence', cap: 262 },
     str: { name: 'Grade 8 Tincture of Strength', cap: 262 },
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
+    int4: { name: 'Grade 4 Tincture of Intelligence', cap: 165 },   // the 5.4/5.5 tier
   };
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
-    desc: `This diluted brew temporarily increases ${stat === 'int' ? 'intelligence' : 'strength'} for twice the duration of similar potions.\n${stat === 'int' ? 'Intelligence' : 'Strength'} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,
+    desc: `This diluted brew temporarily increases ${stat.startsWith('int') ? 'intelligence' : 'strength'} for twice the duration of similar potions.\n${stat.startsWith('int') ? 'Intelligence' : 'Strength'} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,
   });
 
   B.COMMON_STATUSES = {
