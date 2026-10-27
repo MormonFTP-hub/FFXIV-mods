@@ -49,7 +49,7 @@
     },
     paradox: {
       name: 'Paradox', kind: 'gcd', school: 'none', potency: 500, mp: 1600, cast: 2.5, delay: 0.62, target: true,
-      desc: 'Deals unaspected damage with a potency of 500.\nAstral Fire Bonus: Extends Astral Fire duration to maximum. 40% chance next Fire III will cost no MP and have no cast time.\nUmbral Ice Bonus: Cast immediately, costs no MP, and extends Umbral Ice duration to maximum.\nOnly available while the Paradox marker is active.',
+      desc: 'Deals unaspected damage with a potency of 500.\nAstral Fire Bonus: Extends Astral Fire duration to maximum. 40% chance next Fire III will cost no MP and have no cast time.\nUmbral Ice Bonus: Cast immediately, costs no MP, grants Umbral Ice +1 and extends Umbral Ice duration to maximum.\nOnly available while the Paradox marker is active.',
     },
     xenoglossy: {
       name: 'Xenoglossy', kind: 'gcd', school: 'none', potency: 880, mp: 0, cast: 0, delay: 0.63, target: true,
@@ -363,7 +363,8 @@
             if (sharp) e.removeStatus('sharpcast');
             procFirestarter();
           } else if (g.element < 0) {
-            g.elementUntil = e.now + (this.cfg.elementDur || ELEMENT_DURATION);
+            // In ice it also adds a stack (Umbral Ice I from Transpose becomes II), like the Blizzard it replaces.
+            this.setElement(e, Math.max(-3, g.element - 1));
           }
           e.emit('paradox', { active: false });
           break;
@@ -604,7 +605,7 @@
       return `
 <h3>How it plays (Endwalker 6.5)</h3>
 <p>Spells share a 2.5s GCD (faster with spell speed). Abilities like Triplecast and Manafont are oGCDs: weave them after instant spells. Fire spells cost double MP in Astral Fire unless you have Umbral Hearts. Astral Fire and Umbral Ice last 15s; let them drop and you lose Enochian (the 23% damage bonus) and the Polyglot timer resets. Every 30s in Enochian gives a Polyglot (max 2) for Xenoglossy.</p>
-<p>Paradox lights up when you swap from Astral Fire III into ice, or from Umbral Ice III with 3 Umbral Hearts into fire. Fire and Blizzard become Paradox. In ice it's instant and free; in fire it refreshes Astral Fire and can proc Firestarter. Thunder III ticks can proc Thundercloud (instant Thunder III with the whole DoT added up front).</p>
+<p>Paradox lights up when you swap from Astral Fire III into ice, or from Umbral Ice III with 3 Umbral Hearts into fire. Fire and Blizzard become Paradox. In ice it's instant and free and adds a stack of Umbral Ice; in fire it refreshes Astral Fire and can proc Firestarter. Thunder III ticks can proc Thundercloud (instant Thunder III with the whole DoT added up front).</p>
 <h3>Standard rotation</h3>
 ${seq(['blizzard3', 'blizzard4', 'paradox', 'fire3', 'fire4', 'fire4', 'fire4', 'paradox', 'fire4', 'fire4', 'fire4', 'despair'])}
 <p>Keep Thunder III up (refresh around every 30s, ideally with Thundercloud), spend Polyglot on Xenoglossy before it overcaps, and use Sharpcast on Thunder III or Paradox. Manafont after Despair buys one more Fire IV and Despair.</p>

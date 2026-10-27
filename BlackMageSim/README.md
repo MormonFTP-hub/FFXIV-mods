@@ -96,7 +96,7 @@ python BlackMageSim/tools/build_single.py
 ### Black Mage (Endwalker 6.5)
 
 - **The 6.5 kit.** Fire, Fire III, Fire IV, Despair, Blizzard, Blizzard III, Blizzard IV, Thunder III, Paradox, Xenoglossy, Foul, Scathe, Umbral Soul, Transpose, Sharpcast (2 charges), Triplecast (2 charges), Manafont, Amplifier, Ley Lines, Between the Lines, Manaward, Swiftcast, Lucid Dreaming, Addle, Surecast, Sprint and a Grade 8 Tincture of Intelligence.
-- **Elemental Gauge.** Astral Fire / Umbral Ice I–III with the 15s timer, the Enochian ring (a Polyglot every 30s, max 2, kept when Enochian drops while the timer resets), Umbral Hearts, and the Paradox marker. The marker lights when you leave Astral Fire III for ice, or Umbral Ice III with 3 hearts for fire. Fire and Blizzard turn into Paradox while it's lit.
+- **Elemental Gauge.** Astral Fire / Umbral Ice I–III with the 15s timer, the Enochian ring (a Polyglot every 30s, max 2, kept when Enochian drops while the timer resets), Umbral Hearts, and the Paradox marker. The marker lights when you leave Astral Fire III for ice, or Umbral Ice III with 3 hearts for fire. Fire and Blizzard turn into Paradox while it's lit; in ice, Paradox adds a stack of Umbral Ice (Umbral Ice I becomes II) as well as refreshing the timer.
 - **Timing.** Type your spell speed or your GCD in Settings and the other follows (1160 is 2.37, 400 is 2.50). A typed GCD sets the lowest spell speed that reaches it. Fire spells cast in half the time from Umbral Ice III, and ice spells from Astral Fire III.
 - **Queueing.** A spell queues in the last 0.5s of the GCD or of a cast. Anything pressed during an animation lock waits for the lock to end, because the game starts a 0.5s client lock on every action. The queue keeps one spell and up to two abilities in the order you pressed them. Triplecast then Fire IV comes out instant, and two abilities pressed together after an instant both go off. Pressed the other way round (Fire IV, then Triplecast at the end of a cast), Fire IV hardcasts, as in the game.
 - **Ping, like the vanilla client.** Without NoClippy or XivAlexander, the game holds your animation lock until the server answers. So each instant or ability locks you for 0.6s plus your ping, and each cast adds a 0.1s caster tax plus your ping, with a little jitter per action. At 70 ms that's 0.67s and 0.17s: back-to-back Fire IVs land every 2.82s instead of 2.75s, and a double weave inside Ley Lines clips. Tick the NoClippy / XivAlexander box to take the ping back out. Pressing up to 0.5s early queues the action. Moving or jumping cancels a cast except in its last 0.5s, which is marked on the cast bar. Abilities can't be used mid-cast.
@@ -245,6 +245,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **2.10.1**: Black Mage: Paradox in Umbral Ice now adds a stack of Umbral Ice, as the Blizzard it replaces does.
 - **2.10.0**: Ninja, Heavensward 3.0–3.57, and Machinist, Heavensward 3.4–3.57. The engine can switch auto-attacks off (the Gauss Barrel).
 - **2.9.0**: Summoner, Heavensward 3.0–3.57.
 - **2.8.0**: Monk, Heavensward 3.07–3.57. Warrior HW's gear now uses Heavensward-era values (Strength 1,450, weapon damage 85); today's item data shows the 4.0 rescale.
