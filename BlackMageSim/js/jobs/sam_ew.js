@@ -436,6 +436,6 @@ ${seq(['meikyoShisui', 'gekko', ['tincture'], 'kasha', ['ikishoten'], 'yukikaze'
 
   B.registerJob({
     id: 'sam', name: 'Samurai', abbr: 'SAM', role: 'melee', classJob: 34,
-    versions: [{ id: 'ew608', label: 'Endwalker 6.08 (Kaiten)', note: 'Hissatsu: Kaiten, Midare 660, Kaeshi: Setsugekka 990. Before the 6.1 rework', create: () => new SamuraiEW608() }],
+    versions: [{ id: 'ew608', label: 'Endwalker 6.08 (Kaiten)', history: 'EW 6.0–6.08', note: 'Hissatsu: Kaiten, Midare 660, Kaeshi: Setsugekka 990. Before the 6.1 rework', create: () => new SamuraiEW608() }],
   });
 })(window.BLM);

@@ -676,19 +676,53 @@ ${job.helpHtml(seq, ic)}
     }
 
     // The Job window: every job, and under it each game version it can be played as.
+    // The job window: each playable job with its versions and how players remember them, a history strip of every
+    // version the job has had (coloured by rating, playable ones marked), and the jobs still to come.
     buildJobs() {
-      const cur = this.e.job;
-      let html = '<div class="jobnote">Pick a job, then the version of the game to play it as. Each version keeps its own hotbars.</div><div class="jobgrid">';
+      const cur = this.e.job, H = B.JOB_HISTORY || {};
+      const ROLE = { caster: 'Magical ranged DPS', melee: 'Melee DPS', tank: 'Tank', healer: 'Healer', ranged: 'Physical ranged DPS', limited: 'Limited job' };
+      const TIER = { 5: 'Most missed', 4: 'Well liked', 3: 'Mixed', 2: 'Unpopular', 1: 'Panned' };
+      const t0 = Date.parse('2013-08-27'), t1 = Date.now();
+      const x = (t) => (Math.max(0, Math.min(1, (t - t0) / (t1 - t0))) * 100).toFixed(2);
+      const pips = (r) => `<span class="pips r${r}" aria-label="${r} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= r ? ' class="on"' : ''}></i>`).join('')}</span>`;
+      const find = (id, label) => ((H[id] || {}).versions || []).find(h => h.label === label);
+      const strip = (id, playable) => {
+        const h = H[id];
+        if (!h) return '';
+        const segs = h.versions.map(v => {
+          const a = Date.parse(v.start), b = v.end ? Date.parse(v.end) + 864e5 : t1;
+          const here = playable.includes(v.label);
+          return `<i class="seg r${v.rating}${here ? ' here' : ''}" style="left:${x(a)}%;width:${(x(b) - x(a))}%" title="${esc(v.label)} · ${v.rating}/5 ${TIER[v.rating]}${here ? ' · playable here' : ''}\n${esc(v.why)}"></i>`;
+        }).join('');
+        const ticks = [['ARR', '2013-08-27'], ['HW', '2015-06-23'], ['SB', '2017-06-20'], ['ShB', '2019-07-02'], ['EW', '2021-12-07'], ['DT', '2024-07-02']]
+          .map(([k, d]) => `<span style="left:${x(Date.parse(d))}%">${k}</span>`).join('');
+        return `<div class="hstrip"><div class="htrack">${segs}</div><div class="hticks">${ticks}</div></div>`;
+      };
+
+      let html = '<div class="jobnote">Pick a job, then the version of the game to play it as. Each version keeps its own hotbars. Ratings are how players remember each version: 5 most missed, 4 well liked, 3 mixed, 2 unpopular, 1 panned.</div><div class="jobgrid">';
       for (const id of B.JOB_ORDER) {
         const def = B.JOBS[id];
-        html += `<div class="jobcard${id === cur.id ? ' on' : ''}"><div class="jh"><img src="${B.jobIcon(id)}" alt=""><div><b>${esc(def.name)}</b><small>${esc(def.abbr)} · ${{ caster: 'Magical ranged DPS', melee: 'Melee DPS', tank: 'Tank', healer: 'Healer', ranged: 'Physical ranged DPS' }[def.role] || esc(def.role)}</small></div></div>`;
+        html += `<div class="jobcard${id === cur.id ? ' on' : ''}"><div class="jh"><img src="${B.jobIcon(id)}" alt=""><div><b>${esc(def.name)}</b><small>${esc(def.abbr)} · ${ROLE[def.role] || esc(def.role)}</small></div></div>`;
+        html += strip(id, def.versions.map(v => v.history));
         for (const v of def.versions) {
           const on = id === cur.id && v.id === cur.version;
-          html += `<button class="ver${on ? ' on' : ''}" data-job="${id}" data-ver="${v.id}"><b>${esc(v.label)}</b><small>${esc(v.note || '')}</small></button>`;
+          const h = find(id, v.history);
+          const rate = h ? `<span class="vr">${pips(h.rating)}<em class="r${h.rating}">${TIER[h.rating]}</em></span>` : '';
+          html += `<button class="ver${on ? ' on' : ''}" data-job="${id}" data-ver="${v.id}"><span class="vh"><b>${esc(v.label)}</b>${rate}</span><small>${esc(v.note || '')}</small>${h ? `<small class="why">Players: ${esc(h.why)}</small>` : ''}</button>`;
         }
         html += '</div>';
       }
-      html += '</div><div class="jobnote">More jobs and expansions slot in here as they\'re added.</div>';
+      html += '</div>';
+      const later = Object.keys(H).filter(id => !B.JOBS[id]);
+      if (later.length) {
+        html += '<div class="jobnote">Not in the sim yet. Hover a stripe for that version and its rating.</div><div class="laterlist">';
+        for (const id of later) {
+          const h = H[id], best = Math.max(...h.versions.map(v => v.rating));
+          const fav = h.versions.filter(v => v.rating === best).map(v => v.label);
+          html += `<div class="later"><div class="lh"><b>${esc(h.name)}</b><small>${ROLE[h.role] || ''} · ${h.versions.length} versions · fondest: ${esc(fav.length > 2 ? fav[0] + ' +' + (fav.length - 1) : fav.join(', '))}</small></div>${strip(id, [])}</div>`;
+        }
+        html += '</div>';
+      }
       $('#joblist').innerHTML = html;
       $('#joblist').querySelectorAll('button.ver').forEach(b => b.addEventListener('click', () => {
         this.closeWindows();

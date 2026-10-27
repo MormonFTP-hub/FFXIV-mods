@@ -312,4 +312,24 @@ table.brk .pbar i { display: block; height: 100%; background: var(--poly); }
 .jobcard .ver.on { border-color: var(--gold); box-shadow: inset 0 0 0 1px rgba(230, 196, 122, 0.35); }
 .jobcard .ver b { display: block; font: 600 14.5px var(--ui); }
 .jobcard .ver small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+/* Version ratings (how players remember each version) and the job's history strip. */
+.r5 { --rc: #e6c47a; } .r4 { --rc: #63c08f; } .r3 { --rc: #9298ab; } .r2 { --rc: #e39a56; } .r1 { --rc: #e5655d; }
+.jobcard .ver .vh { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 10px; }
+.jobcard .ver .vh b { display: inline; }
+.vr { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.vr em { font: 600 11px var(--num); letter-spacing: .08em; text-transform: uppercase; font-style: normal; color: var(--rc); }
+.pips { display: inline-flex; gap: 3px; }
+.pips i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--rc); }
+.pips i.on { background: var(--rc); }
+.jobcard .ver small.why { color: #c9c3d4; font-style: italic; }
+.hstrip { position: relative; height: 24px; margin: 0 2px 2px; }
+.htrack { position: absolute; left: 0; right: 0; top: 2px; height: 10px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+.htrack .seg { position: absolute; top: 0; bottom: 0; background: var(--rc); opacity: .55; border-right: 1px solid rgba(0, 0, 0, 0.55); }
+.htrack .seg.here { opacity: 1; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.85); }
+.hticks { position: absolute; left: 0; right: 0; top: 14px; font: 600 9.5px var(--num); letter-spacing: .06em; color: var(--muted); }
+.hticks span { position: absolute; padding-left: 3px; border-left: 1px solid rgba(255, 255, 255, 0.18); line-height: 1; }
+.laterlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px 14px; margin-top: 6px; }
+.later { padding: 8px 10px 4px; border-radius: 8px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--edge); }
+.later .lh b { font: 600 14px var(--ui); margin-right: 6px; }
+.later .lh small { color: var(--muted); font-size: 11.5px; display: block; }
 .member .nm small { margin-left: 8px; font: 500 12px var(--num); color: var(--muted); }

@@ -330,8 +330,8 @@ ${seq(['keenEdge', ['tincture'], 'brutalShell', ['bloodfest'], ['noMercy'], 'gna
   B.registerJob({
     id: 'gnb', name: 'Gunbreaker', abbr: 'GNB', role: 'tank', classJob: 37,
     versions: [
-      { id: 'ew60', label: 'Endwalker 6.0–6.18', note: 'Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 numbers', create: () => new GunbreakerEW('ew60') },
-      { id: 'ew62', label: 'Endwalker 6.2–6.58', note: 'Bloodfest on a 120s recast (it was 90s before 6.2), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill', create: () => new GunbreakerEW('ew62') },
+      { id: 'ew60', label: 'Endwalker 6.0–6.18', history: 'EW 6.0–6.18', note: 'Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 numbers', create: () => new GunbreakerEW('ew60') },
+      { id: 'ew62', label: 'Endwalker 6.2–6.58', history: 'EW 6.2–6.58', note: 'Bloodfest on a 120s recast (it was 90s before 6.2), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill', create: () => new GunbreakerEW('ew62') },
     ],
   });
 })(window.BLM);

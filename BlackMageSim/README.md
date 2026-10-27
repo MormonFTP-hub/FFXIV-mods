@@ -13,7 +13,7 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 | Gunbreaker | Endwalker 6.0–6.18 | Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
 
-More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files). The full list of versions to build, every job from 2.0 to 7.57 (217 of them, with Endwalker's 44 first), is in [docs/job-versions.md](docs/job-versions.md).
+More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files). The full list of versions to build, every job from 2.0 to 7.57 (217 of them, with Endwalker's 44 first), is in [docs/job-versions.md](docs/job-versions.md). Each version there carries a 1–5 rating for how players remember it (5 most missed, 4 well liked, 3 mixed, 2 unpopular, 1 panned). The job window shows these: each playable version's rating and the reason for it, a strip of the job's whole history coloured by rating, and the jobs still to come. After editing the list, run `python BlackMageSim/tools/build_versions.py` to regenerate `js/versions.js`.
 
 ## Playing
 
@@ -122,6 +122,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | File | What it does |
 |---|---|
 | `js/data.js` | Shared numbers, role actions, the job registry, default keybinds and settings |
+| `js/versions.js` | Every job's version history with ratings, generated from `docs/job-versions.md` |
 | `js/engine.js` | Combat engine shared by every job: GCD, casts, queue, cooldowns and charges, combos, positionals, auto-attacks, MP/DoT ticks, damage formula |
 | `js/jobs/blm_ew.js` | Black Mage, Endwalker 6.5: actions, gauge, rules, help text |
 | `js/jobs/sam_ew.js` | Samurai, Endwalker 6.08: actions, gauge, rules, help text |
@@ -133,11 +134,13 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/models.js` | Draws the game's models with three.js and plays their animations |
 | `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
 | `tools/export_models.py` | Pulls each job's character, weapons and animations, and the dummies, into `work/game-models.js` |
+| `tools/build_versions.py` | Turns `docs/job-versions.md` into `js/versions.js` |
 | `tools/build_single.py` | Bundles everything into one HTML file for sharing |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
 
+- **1.7.0**: Version ratings in the job window. Each playable version shows how players remember it (1–5, with the reason), each job has a history strip of every version it has had, coloured by rating, and the jobs not built yet are listed with theirs. The ratings live in `docs/job-versions.md`.
 - **1.6.1**: Gunbreaker's other Endwalker version, 6.0–6.18, with Bloodfest on its original 90s recast, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures. Pick it under Gunbreaker in the job window (`J`).
 - **1.6.0**: Gunbreaker, Endwalker 6.2–6.58, the version with Bloodfest on its 120s recast. Comes with the Powder Gauge, the Gnashing Fang and Continuation chains, its game icons, model and animations, gunblade effects and sounds, and an opener in the help. The engine now does tank damage (the 156 attack modifier and Tenacity) and has the tank role actions. The model data is gzipped, so three jobs still fit in a share file under 10 MB.
 - **1.5.1**: Mouse camera like the game's standard controls. Right drag turns the camera and your character (A/D strafe, S backpedals at 2.4 yalms a second), left drag turns only the camera, both buttons run forward, and the wheel zooms. The camera no longer swings round to the dummy on its own (a Settings switch brings that back), and Settings has a mouse camera speed.

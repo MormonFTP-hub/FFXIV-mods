@@ -154,7 +154,8 @@ window.BLM = window.BLM || {};
   };
 
   // ---------- job registry ----------
-  // B.JOBS[id] = { id, name, abbr, role, classJob, versions: [{ id, label, note, create() }] }
+  // B.JOBS[id] = { id, name, abbr, role, classJob, versions: [{ id, label, history, note, create() }] }
+  // history names the version's entry in docs/job-versions.md (B.JOB_HISTORY, js/versions.js), for its rating.
   B.JOBS = {};
   B.JOB_ORDER = [];
   B.registerJob = function (job) {
