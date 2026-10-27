@@ -142,6 +142,12 @@ window.BLM = window.BLM || {};
     str4: { name: 'Grade 4 Tincture of Strength', cap: 464 },
     str2: { name: 'Grade 2 Tincture of Strength', cap: 339 },   // the 5.05 tier
     str3: { name: 'Grade 3 Tincture of Strength', cap: 398 },   // the 5.2 tier
+    str1: { name: 'Tincture of Strength', cap: 312 },           // 5.0's only one
+    dex1: { name: 'Tincture of Dexterity', cap: 312 },          // 5.0's only one
+    dex2: { name: 'Grade 2 Tincture of Dexterity', cap: 339 },
+    dex4: { name: 'Grade 4 Tincture of Dexterity', cap: 464 },
+    int2: { name: 'Grade 2 Tincture of Intelligence', cap: 339 },
+    mnd4: { name: 'Grade 4 Tincture of Mind', cap: 464 },
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
     mnd3sb: { name: 'Grade 3 Infusion of Mind', cap: 225 },

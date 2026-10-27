@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58, Reaper DT 7.0–7.25 and 7.3–7.57, Reaper EW 6.0–6.58, Samurai EW 6.1–6.58, Sage EW 6.0–6.08, 6.1–6.18, 6.2–6.28 and 6.3–6.58, Paladin ShB 5.0–5.08 and 5.1–5.58, Warrior ShB 5.0–5.08 and 5.1–5.21, Dark Knight ShB 5.0–5.08 and 5.1–5.58, Gunbreaker ShB 5.0–5.08.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58, Reaper DT 7.0–7.25 and 7.3–7.57, Reaper EW 6.0–6.58, Samurai EW 6.1–6.58, Sage EW 6.0–6.08, 6.1–6.18, 6.2–6.28 and 6.3–6.58, Paladin ShB 5.0–5.08 and 5.1–5.58, Warrior ShB 5.0–5.08 and 5.1–5.21, Dark Knight ShB 5.0–5.08 and 5.1–5.58, Gunbreaker ShB 5.0–5.08, Samurai ShB 5.05–5.08 and 5.1–5.58, Dragoon ShB 5.0 and 5.01–5.58, Ninja ShB 5.1–5.58, White Mage ShB 5.0–5.58, Machinist ShB 5.0–5.01 and 5.05–5.58, Dancer ShB 5.0–5.58, Red Mage ShB 5.0–5.08 and 5.1–5.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -116,7 +116,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 6. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Plenary Indulgence rework (Confession 100% from Medica/Medica II/Cure III, 10s, 60s recast); Cure Lily chance 100%. **Rating 3/5:** Plenary Indulgence rework; Cleric Stance as a role action; mixed.
 7. SB 4.2–4.45 (2018-01-30 → 2019-01-07) (minor): Divine Benison no longer needs a Lily; 4.4 Asylum applies immediately. **Rating 3/5:** Divine Benison freed from Lilies; fine.
 8. SB 4.5–4.58 (2019-01-08 → 2019-07-01): Assize 45s recast, 400 potency; Plenary Indulgence 30s. **Rating 3/5:** Faster Assize; fine.
-9. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Lily rework (1 per 30s, max 3, Afflatus Solace/Rapture, Blood Lily → Afflatus Misery 900); Glare 72, Dia 72, Temperance 80; Thin Air to 58; Divine Benison 500 barrier; Holy 140, 2.5s; Lucid 60s; Aero III and Protect removed. **Rating 4/5:** Lilies into Afflatus Misery; a satisfying payoff, well liked.
+9. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Lily rework (1 per 30s, max 3, Afflatus Solace/Rapture, Blood Lily → Afflatus Misery 900); Glare 72, Dia 72, Temperance 80; Thin Air to 58; Divine Benison 500 barrier; Holy 140, 2.5s; Lucid 60s; Aero III and Protect removed. ← built **Rating 4/5:** Lilies into Afflatus Misery; a satisfying payoff, well liked.
 10. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Glare III, Holy III (82), Aquaveil (86), Liturgy of the Bell (90); Thin Air 60s, 2 charges, next action free; Glare 1.5s cast; Divine Benison 2 charges; Fluid Aura removed. **Rating 3/5:** Thin Air charges and Liturgy; 'one-button healer DPS' complaints.
 11. EW 6.1–6.18 (2022-04-12 → 2022-08-22): Lily timer 30→20s; Afflatus Misery 900→1240. **Rating 3/5:** Faster Lilies and a bigger Misery; fine.
 12. EW 6.2–6.28 (2022-08-23 → 2023-01-09) (minor): Liturgy of the Bell 15→20s. **Rating 3/5:** Longer Liturgy; fine.
@@ -198,8 +198,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Dragon Gauge with 4 Eyes → Life of the Dragon; Mirage Dive, Nastrond, Dragon Sight, Sonic Thrust; Blood of the Dragon 15s. **Rating 4/5:** Eyes and Life of the Dragon debut.
 7. SB 4.05–4.06 (2017-07-17 → 2017-10-09): Blood of the Dragon 20s (+10s from Sonic Thrust, max 30s); Elusive Jump 30s; Dragon Sight 12y. **Rating 4/5:** Blood extended by Sonic Thrust; liked.
 8. SB 4.1–4.58 (2017-10-10 → 2019-07-01): 3 Eyes max; Geirskogul 30s; Blood can't be used during Life. ← built **Rating 5/5:** Eyes, Life of the Dragon and Mirage Dive; Dragoon's most loved form.
-9. ShB 5.0 (2019-07-02 → 2019-07-14): Heavy Thrust removed, Disembowel grants Power Surge; Geirskogul needs 2 eyes; Blood 30s; Stardiver. **Rating 4/5:** Stardiver; Blood upkeep remains.
-10. ShB 5.01–5.58 (2019-07-15 → 2021-12-06): Power Surge 30s; 5.1 Blood recast 25s. **Rating 4/5:** Same kit; well liked.
+9. ShB 5.0 (2019-07-02 → 2019-07-14): Heavy Thrust removed, Disembowel grants Power Surge; Geirskogul needs 2 eyes; Blood 30s; Stardiver. ← built **Rating 4/5:** Stardiver; Blood upkeep remains.
+10. ShB 5.01–5.58 (2019-07-15 → 2021-12-06): Power Surge 30s; 5.1 Blood recast 25s. ← built **Rating 4/5:** Same kit; well liked.
 11. EW 6.0–6.28 (2021-12-07 → 2023-01-09): Blood of the Dragon becomes a trait; Life of the Dragon fixed 20s; Wyrmwind Thrust; Spineshatter Dive 2 charges. **Rating 3/5:** Blood of the Dragon becomes a trait; simpler, mixed.
 12. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Life Surge 40s. **Rating 3/5:** Faster Life Surge; mixed.
 13. DT 7.0–7.05 (2024-07-02 → 2024-11-11): Eyes removed; Geirskogul 60s → Life of the Dragon +15% and Nastrond Ready ×3; Dragon Sight removed; Winged Glide; Starcross; Drakesbane. **Rating 2/5:** Eyes and Dragon Sight removed; widely seen as gutted.
@@ -210,7 +210,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 2. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Smoke Screen, Armor Crush, Shadewalker, Duality, Dream Within a Dream. ← built **Rating 5/5:** Shadewalker, Duality and Dream Within a Dream; Heavensward Ninja is fondly remembered.
 3. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Ninki gauge; Ten Chi Jin; Enhanced Mug; Bhavacakra, Hellfrog. **Rating 4/5:** Ninki and Ten Chi Jin; liked.
 4. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Bunshin; Kassatsu 2 charges +30%; Ten Chi Jin 150%; Mug 110s; Shadow Fang in the combo. **Rating 3/5:** Bunshin and Kassatsu rework; awkward mudras.
-5. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Mudras 2 charges / 20s; Kassatsu one free Ninjutsu; Ten Chi Jin rework; Bunshin 5 stacks 90s; Trick Attack 5% any direction; Shadow Fang oGCD. **Rating 4/5:** Mudra charges made Ninjutsu fluid; well liked.
+5. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Mudras 2 charges / 20s; Kassatsu one free Ninjutsu; Ten Chi Jin rework; Bunshin 5 stacks 90s; Trick Attack 5% any direction; Shadow Fang oGCD. ← built **Rating 4/5:** Mudra charges made Ninjutsu fluid; well liked.
 6. EW 6.0–6.01 (2021-12-07 → 2022-01-02) (minor): Shadow Fang removed; Huraijin; Phantom Kamaitachi; Forked/Fleeting Raiju (15s). **Rating 3/5:** Raiju arrives; short-lived.
 7. EW 6.05–6.08 (2022-01-03 → 2022-04-11): Raiju Ready 30s; Fleeting Raiju 3y; Bunshin → Phantom Kamaitachi button. **Rating 3/5:** Raiju tuning; fine.
 8. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Mug +5% damage taken; Trick Attack +10% from you; Doton 18s. **Rating 3/5:** Raiju spam and party-wide Mug; fine.
@@ -220,8 +220,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ### Samurai (from 4.0)
 1. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Sen, Kenki, Iaijutsu; Hissatsu: Kaiten; Meikyo 10s / 80s. ← built **Rating 5/5:** Launch Samurai with Kaiten; a huge, very popular debut.
 2. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): Tsubame-gaeshi (with a cast), Ikishoten; Meditation up to 5 for Shoha; Meikyo 15s / 60s. **Rating 3/5:** Tsubame-gaeshi with a cast time; awkward, short-lived.
-3. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Kaeshi instant; Meikyo 55s; Meditate 45s; 5.08 Kaiten 1s recast. **Rating 4/5:** Instant Kaeshi; liked.
-4. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Meditation max 3 from Iaijutsu/Kaeshi; Shoha 400 / 15s; Meditate triggers GCD; Hagakure 10 per Sen. **Rating 4/5:** Meditation and Shoha settle; well liked.
+3. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Kaeshi instant; Meikyo 55s; Meditate 45s; 5.08 Kaiten 1s recast. ← built **Rating 4/5:** Instant Kaeshi; liked.
+4. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Meditation max 3 from Iaijutsu/Kaeshi; Shoha 400 / 15s; Meditate triggers GCD; Hagakure 10 per Sen. ← built **Rating 4/5:** Meditation and Shoha settle; well liked.
 5. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Ikishoten 120s + Ogi Namikiri; Tsubame 2 charges; Meikyo 2 charges, grants Fugetsu/Fuka; Kaiten. ← built **Rating 4/5:** The Kaiten-era Endwalker kit; many still miss Kaiten's decisions.
 6. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Kaiten removed; Midare, Kaeshi and Namikiri always crit; potency rework. ← built **Rating 4/5:** Kaiten gone, guaranteed crits; smoother and mostly liked.
 7. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Tsubame-gaeshi a GCD needing Tsubame-gaeshi Ready (from Meikyo); Tendo; Zanshin. **Rating 2/5:** Tsubame tied to Meikyo; patched within weeks.
@@ -259,15 +259,15 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Heat Gauge and Overheat, heated shots, Cooldown, Flamethrower, Barrel Stabilizer 120s, Overdrive; Reload 30s 3 rounds; Wildfire 60s 10s. **Rating 3/5:** Heat gauge debut; rough edges.
 7. SB 4.05 (2017-07-17 → 2017-08-06): Barrel Stabilizer 60s; Quick Reload no heat drop; heat per shot 5; Overloads doubled. **Rating 4/5:** Barrel Stabilizer at 60s; liked.
 8. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Overheat +20%; Gauss Barrel 2s; Hot Shot 60s. ← built **Rating 5/5:** Heat and Overheat juggling; Stormblood Machinist is widely missed.
-9. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): full rework — Hypercharge (50 Heat, Heat Blast), Battery and Queen, Gauss Round / Ricochet charges, Wildfire 120s, Reassemble, Drill, Air Anchor, Tactician. **Rating 4/5:** The modern rework: Hypercharge and Queen; clean.
-10. ShB 5.05–5.58 (2019-07-29 → 2021-12-06): Reassemble 55s; 5.1 Tactician 120s, Flamethrower skill speed. **Rating 4/5:** Same kit; liked.
+9. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): full rework — Hypercharge (50 Heat, Heat Blast), Battery and Queen, Gauss Round / Ricochet charges, Wildfire 120s, Reassemble, Drill, Air Anchor, Tactician. ← built **Rating 4/5:** The modern rework: Hypercharge and Queen; clean.
+10. ShB 5.05–5.58 (2019-07-29 → 2021-12-06): Reassemble 55s; 5.1 Tactician 120s, Flamethrower skill speed. ← built **Rating 4/5:** Same kit; liked.
 11. EW 6.0–6.18 (2021-12-07 → 2022-08-22): Chain Saw, Scattergun, Reassemble 2 charges, Queen's Gambit; Overheated 8s; Drill/Air Anchor 550. (6.1 Wildfire buff.) **Rating 4/5:** Chain Saw and Reassemble charges; liked.
 12. EW 6.2–6.28 (2022-08-23 → 2023-01-09): Queen/Rook fixed duration, Battery scales potency; guaranteed crit/DH now use crit/DH buffs. **Rating 4/5:** Queen rework; liked.
 13. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Hypercharge 5 Overheated stacks, 10s; Wildfire max 6; Dismantle back. **Rating 4/5:** Hypercharge stacks and Dismantle; liked.
 14. DT 7.0–7.57 (2024-07-02 → present): Barrel Stabilizer → Hypercharged + Full Metal Field; Drill 2 charges; Excavator; Double Check / Checkmate; Blazing Shot. **Rating 3/5:** Double Check, Checkmate and Hypercharged; fine.
 
 ### Dancer (from 5.0)
-1. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Standard Step, Technical Step, Flourish, Devilment, Shield Samba, Esprit + Saber Dance, Fourfold Feathers, Improvisation. (5.01 cut Finishes; 5.1 GCD buffs.) **Rating 4/5:** Dancer's debut: steps and procs; popular.
+1. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Standard Step, Technical Step, Flourish, Devilment, Shield Samba, Esprit + Saber Dance, Fourfold Feathers, Improvisation. (5.01 cut Finishes; 5.1 GCD buffs.) ← built **Rating 4/5:** Dancer's debut: steps and procs; popular.
 2. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Flourishing Symmetry/Flow, Threefold/Fourfold Fan Dance, Fan Dance IV, Tillana, Starfall Dance; Esprit from your own GCDs; Improvisation rework. **Rating 4/5:** Tillana, Starfall and Fan Dance IV; liked.
 3. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Silken procs separate from Flourishing, so Flourish no longer overwrites them; steps are weaponskills. **Rating 4/5:** Silken and Flourishing procs split, so nothing overwrites; liked.
 4. DT 7.0–7.57 (2024-07-02 → present): Last Dance, Finishing Move, Dance of the Dawn; Tillana 2.5s recast + 50 Esprit. **Rating 3/5:** More buttons on the same loop; mixed.
@@ -305,8 +305,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Red Mage (from 4.0)
 1. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Dualcast, Black/White Mana; Impact needs a proc; Acceleration 35s; Embolden decaying 10%; Manafication doubles mana; melee costs 30/25/30. **Rating 4/5:** Dualcast and mana balance; a very popular debut.
-2. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Engagement, Enchanted Reprise, Verthunder II / Veraero II, Scorch; Impact AoE; Manafication 110s +5%. **Rating 4/5:** Engagement and Scorch; liked.
-3. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Acceleration 3 casts, 20s, 55s. **Rating 4/5:** Better Acceleration; liked.
+2. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Engagement, Enchanted Reprise, Verthunder II / Veraero II, Scorch; Impact AoE; Manafication 110s +5%. ← built **Rating 4/5:** Engagement and Scorch; liked.
+3. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Acceleration 3 casts, 20s, 55s. ← built **Rating 4/5:** Better Acceleration; liked.
 4. EW 6.0–6.58 (2021-12-07 → 2024-07-01): Mana Stacks; Verthunder III / Veraero III, Magick Barrier, Resolution; cheaper melee; Acceleration, Corps-a-corps, Displacement 2 charges; Manafication +50|50 and 6 stacks; Embolden flat 5%. **Rating 4/5:** Mana stacks and Resolution; liked.
 5. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Manafication → Magicked Swordplay + Prefulgence; Vice of Thorns; Grand Impact; Jolt III; Moulinet Deux/Trois. **Rating 3/5:** Magicked Swordplay arrives; short-lived.
 6. DT 7.05–7.3x (2024-07-30 → 2025-12-15): Magicked Swordplay 30s. **Rating 4/5:** Longer Swordplay; liked.

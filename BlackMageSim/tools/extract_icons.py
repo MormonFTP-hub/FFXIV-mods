@@ -72,7 +72,7 @@ SAM_ACTIONS = {
 }
 # Dawntrail renamed some of these, so they go by row (1298 Fugetsu, 1299 Fuka).
 SAM_STATUSES = {
-    "fugetsu": 1298, "fuka": 1299, "kaiten": 1229, "meikyoShisui": 1233, "enhancedEnpi": 1236, "higanbana": 1228,
+    "fugetsu": 1298, "fuka": 1299, "meditation": 1865, "kaiten": 1229, "meikyoShisui": 1233, "enhancedEnpi": 1236, "higanbana": 1228,
     "ogiNamikiriReady": 2959, "thirdEye": 1232, "meditate": 1231, "trueNorth": 1250, "bloodbath": 84, "feint": 1195,
     "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated", "slashingResDown": "Slashing Resistance Down",
 }
@@ -199,12 +199,16 @@ DRG_ACTIONS = {
     "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
     "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
     "invigorate": (7544, "Invigorate"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Shadowbringers.
+    "raidenThrust": (16479, "Raiden Thrust"), "highJump": (16478, "High Jump"), "stardiver": (16480, "Stardiver"),
+    "lanceCharge": (85, "Lance Charge"), "coerthanTorment": (16477, "Coerthan Torment"),
 }
 DRG_STATUSES = {
     "heavyThrust": 115, "lifeSurge": 116, "chaosThrust": 118, "piercingResDown": 820, "bloodOfTheDragon": 736,
     "battleLitany": 786, "sharperFangAndClaw": 802, "enhancedWheelingThrust": 803, "rightEye": 1183, "diveReady": 1243,
     "bloodForBlood": "Blood for Blood", "lifeOfTheDragon": "Life of the Dragon",
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+    "disembowel": 1914, "lanceCharge": 1864, "raidenThrustReady": 1863,
 }
 # Monk (Stormblood 4.2–4.58).
 MNK_ACTIONS = {
@@ -278,6 +282,12 @@ MCH_ACTIONS = {
     "dismantle": (2887, "Dismantle"), "rendMind": (2882, "Rend Mind"), "ragingStrikes": (101, "Raging Strikes"),
     "hawksEye": (99, "Hawk's Eye"), "quellingStrikes": (104, "Quelling Strikes"), "bloodForBlood": (85, "Lance Charge"),
     "keenFlurry": (77, "Keen Flurry"), "feint": (76, "Feint"),
+    # Shadowbringers (the 5.0 rework).
+    "heatBlast": (7410, "Heat Blast"), "hypercharge2": (17209, "Hypercharge"), "drill": (16498, "Drill"), "airAnchor": (16500, "Air Anchor"),
+    "autoCrossbow": (16497, "Auto Crossbow"), "bioblaster": (16499, "Bioblaster"), "automatonQueen": (16501, "Automaton Queen"),
+    "queenOverdrive": (16502, "Queen Overdrive"), "detonator": (16766, "Detonator"), "tactician": (16889, "Tactician"),
+    "rollerDash": (17206, "Roller Dash"), "armPunch": (16504, "Arm Punch"), "pileBunker": (16503, "Pile Bunker"),
+    "armsLength": (7548, "Arm's Length"),
 }
 MCH_STATUSES = {
     "hotShot": 855, "enhancedSlugShot": "Enhanced Slug Shot", "cleanerShot": "Cleaner Shot", "reassembled": "Reassembled",
@@ -285,6 +295,7 @@ MCH_STATUSES = {
     "vulnerabilityUp": "Vulnerability Up", "ammunition": 862, "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
     "leadShot": "Lead Shot", "ragingStrikes": "Raging Strikes", "hawksEye": "Hawk's Eye", "bloodForBlood": "Blood for Blood",
     "quellingStrikes": "Quelling Strikes", "keenFlurry": "Keen Flurry", "dismantle": "Dismantle", "hypercharge": "Hypercharge",
+    "tactician": 1951, "bioblaster": 1866, "armsLength": "Arm's Length",
 }
 
 # Warrior (Heavensward 3.x). Most of its 3.x kit was removed later, so many icons are struck through.
@@ -333,6 +344,15 @@ NIN_ACTIONS = {
     "internalRelease": (59, "Internal Release"), "bloodForBlood": (85, "Lance Charge"), "invigorate": (80, "Invigorate"),
     "secondWind": (57, "Second Wind"), "featherfoot": (55, "Featherfoot"), "mantra": (65, "Mantra"), "keenFlurry": (77, "Keen Flurry"),
     "feint": (76, "Feint"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Shadowbringers 5.1+: the free follow-up mudras, Ten Chi Jin's ninjutsu, Ninki spenders, role actions.
+    "ten2": (18805, "Ten"), "chi2": (18806, "Chi"), "jin2": (18807, "Jin"),
+    "tcjFumaTen": (18873, "Fuma Shuriken"), "tcjFumaChi": (18874, "Fuma Shuriken"), "tcjFumaJin": (18875, "Fuma Shuriken"),
+    "tcjKaton": (18876, "Katon"), "tcjRaiton": (18877, "Raiton"), "tcjHyoton": (18878, "Hyoton"),
+    "tcjHuton": (18879, "Huton"), "tcjDoton": (18880, "Doton"), "tcjSuiton": (18881, "Suiton"),
+    "gokaMekkyaku": (16491, "Goka Mekkyaku"), "hyoshoRanryu": (16492, "Hyosho Ranryu"), "hakkeMujinsatsu": (16488, "Hakke Mujinsatsu"),
+    "bhavacakra": (7402, "Bhavacakra"), "hellfrogMedium": (7401, "Hellfrog Medium"), "bunshin": (16493, "Bunshin"),
+    "tenChiJin": (7403, "Ten Chi Jin"), "meisui": (16489, "Meisui"),
+    "trueNorth": (7546, "True North"), "bloodbath": (7542, "Bloodbath"), "legSweep": (7863, "Leg Sweep"), "armsLength": (7548, "Arm's Length"),
 }
 NIN_STATUSES = {
     "huton": "Huton", "suiton": "Suiton", "hidden": "Hidden", "mudra": "Mudra", "kassatsu": "Kassatsu", "duality": "Duality",
@@ -340,6 +360,7 @@ NIN_STATUSES = {
     "bloodForBlood": "Blood for Blood", "shadeShift": "Shade Shift", "shadewalker": "Shadewalker", "featherfoot": "Featherfoot",
     "mantra": "Mantra", "keenFlurry": "Keen Flurry", "shadowFang": "Shadow Fang", "mutilate": "Mutilation",
     "dancingEdge": "Slashing Resistance Down", "trickAttack": "Vulnerability Up", "doton": "Doton", "sprint": "Sprint", "medicated": "Medicated",
+    "tenChiJin": 1186, "bunshin": 1954, "assassinateReady": 1955, "trueNorth": 1250, "bloodbath": 84, "armsLength": 1209,
 }
 
 # Paladin (Dawntrail 7.x): the current kit, so nothing is struck through.
@@ -413,6 +434,9 @@ WHM_ACTIONS = {
     "aetherialShift": (37008, "Aetherial Shift"), "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"),
     "surecast": (7559, "Surecast"), "rescue": (7571, "Rescue"), "esuna": (7568, "Esuna"), "repose": (16560, "Repose"),
     "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Shadowbringers.
+    "glare": (16533, "Glare"), "holy": (139, "Holy"), "cure": (120, "Cure"), "medica": (124, "Medica"), "medica2": (133, "Medica II"),
+    "raise": (125, "Raise"), "fluidAura": (134, "Fluid Aura"),
 }
 WHM_STATUSES = {
     "presenceOfMind": 157, "sacredSight": 3879, "thinAir": "Thin Air", "temperance": "Temperance", "divineGrace": "Divine Grace",
@@ -484,6 +508,46 @@ DRK_STATUSES = {
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Red Mage (Shadowbringers 5.x).
+RDM_ACTIONS = {
+    "jolt2": (7524, "Jolt II"), "verthunder": (7505, "Verthunder"), "veraero": (7507, "Veraero"), "verfire": (7510, "Verfire"),
+    "verstone": (7511, "Verstone"), "verflare": (7525, "Verflare"), "verholy": (7526, "Verholy"), "scorch": (16530, "Scorch"),
+    "impact": (16526, "Impact"), "verthunder2": (16524, "Verthunder II"), "veraero2": (16525, "Veraero II"), "vercure": (7514, "Vercure"),
+    "verraise": (7523, "Verraise"), "riposte": (7504, "Riposte"), "zwerchhau": (7512, "Zwerchhau"), "redoublement": (7516, "Redoublement"),
+    "enchantedRiposte": (7527, "Enchanted Riposte"), "enchantedZwerchhau": (7528, "Enchanted Zwerchhau"),
+    "enchantedRedoublement": (7529, "Enchanted Redoublement"), "moulinet": (7513, "Moulinet"), "enchantedMoulinet": (7530, "Enchanted Moulinet"),
+    "reprise": (16529, "Reprise"), "enchantedReprise": (16528, "Enchanted Reprise"), "fleche": (7517, "Fleche"),
+    "contreSixte": (7519, "Contre Sixte"), "corpsACorps": (7506, "Corps-a-corps"), "displacement": (7515, "Displacement"),
+    "engagement": (16527, "Engagement"), "acceleration": (7518, "Acceleration"), "embolden": (7520, "Embolden"),
+    "manafication": (7521, "Manafication"), "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"),
+    "surecast": (7559, "Surecast"), "addle": (7560, "Addle"), "sprint": (3, "Sprint"),
+}
+RDM_STATUSES = {
+    "dualcast": 1249, "verfireReady": 1234, "verstoneReady": 1235, "acceleration": 1238, "embolden": 1239, "manafication": 1971,
+    "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast", "addle": 1203, "sprint": "Sprint", "medicated": "Medicated",
+}
+# Dancer (Shadowbringers 5.x).
+DNC_ACTIONS = {
+    "cascade": (15989, "Cascade"), "fountain": (15990, "Fountain"), "reverseCascade": (15991, "Reverse Cascade"),
+    "fountainfall": (15992, "Fountainfall"), "windmill": (15993, "Windmill"), "bladeshower": (15994, "Bladeshower"),
+    "risingWindmill": (15995, "Rising Windmill"), "bloodshower": (15996, "Bloodshower"), "saberDance": (16005, "Saber Dance"),
+    "standardStep": (15997, "Standard Step"), "technicalStep": (15998, "Technical Step"), "emboite": (15999, "Emboite"),
+    "entrechat": (16000, "Entrechat"), "jete": (16001, "Jete"), "pirouette": (16002, "Pirouette"),
+    "standardFinish": (16192, "Double Standard Finish"), "technicalFinish": (16196, "Quadruple Technical Finish"),
+    "fanDance": (16007, "Fan Dance"), "fanDance2": (16008, "Fan Dance II"), "fanDance3": (16009, "Fan Dance III"),
+    "devilment": (16011, "Devilment"), "flourish": (16013, "Flourish"), "improvisation": (16014, "Improvisation"),
+    "closedPosition": (16006, "Closed Position"), "shieldSamba": (16012, "Shield Samba"), "curingWaltz": (16015, "Curing Waltz"),
+    "enAvant": (16010, "En Avant"), "legGraze": (7554, "Leg Graze"), "secondWind": (7541, "Second Wind"), "footGraze": (7553, "Foot Graze"),
+    "peloton": (7557, "Peloton"), "headGraze": (7551, "Head Graze"), "armsLength": (7548, "Arm's Length"),
+    "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+}
+DNC_STATUSES = {
+    "standardStep": 1818, "technicalStep": 1819, "standardFinish": 1821, "technicalFinish": 1822, "esprit": 1847, "devilment": 1825,
+    "flourishingCascade": 1814, "flourishingFountain": 1815, "flourishingWindmill": 1816, "flourishingShower": 1817,
+    "flourishingFanDance": 1820, "improvisation": 1827, "shieldSamba": 1826, "peloton": "Peloton", "armsLength": "Arm's Length",
+    "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -536,7 +600,7 @@ JOBS = {
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 23},
     "mch": {"actions": MCH_ACTIONS, "statuses": MCH_STATUSES, "overrides": {"volleyFire": 3026},
             "uncross": {"splitShot": "230,190,120", "slugShot": "230,170,110", "cleanShot": "230,200,140", "heatedSplitShot": "255,150,80",
-                        "heatedSlugShot": "255,140,70", "heatedCleanShot": "255,160,90", "cooldown": "140,200,255",
+                        "heatedSlugShot": "255,140,70", "heatedCleanShot": "255,160,90", "cooldown": "140,200,255", "heatBlast": "140,200,255",
                         "spreadShot": "220,190,140", "reload": "210,210,170", "quickReload": "210,210,170", "rapidFire": "255,190,110",
                         "hypercharge": "255,140,90", "gaussBarrel": "170,210,255", "barrelStabilizer": "170,210,255",
                         "flamethrower": "255,120,60", "rookAutoturret": "170,190,230", "rookOverdrive": "255,150,90",
@@ -550,6 +614,10 @@ JOBS = {
             "tincture": "Grade 4 Gemdraught of Strength", "classjob": 39},
     "sge": {"actions": SGE_ACTIONS, "statuses": SGE_STATUSES, "overrides": {},
             "tincture": "Grade 8 Tincture of Mind", "classjob": 40},
+    "rdm": {"actions": RDM_ACTIONS, "statuses": RDM_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Tincture of Intelligence", "classjob": 35},
+    "dnc": {"actions": DNC_ACTIONS, "statuses": DNC_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Tincture of Dexterity", "classjob": 38},
     "whm": {"actions": WHM_ACTIONS, "statuses": WHM_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},
