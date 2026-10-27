@@ -155,7 +155,7 @@
       if (id === 'heatBlast') { this.cut(e, 'gaussRound', 15); this.cut(e, 'ricochet', 15); }
       if (e.tHas('wildfire')) g.wf++;
       const opts = {};
-      if (e.has('reassembled')) { e.removeStatus('reassembled'); opts.crit = true; opts.dh = true; }
+      if (e.has('reassembled')) { e.removeStatus('reassembled'); opts.crit = true; opts.dh = true; opts.dhDet = !!this.reassembleDhDet; }
       const snap = this.snapshot(a, e);
       const after = a.dot ? () => e.addTStatus(id, a.dot.duration, { snap, dot: { potency: a.dot.potency, id } }) : null;
       e.queueHit(id, potency, snap, a.delay, after, opts);
@@ -206,7 +206,7 @@
       if (!e.tStatuses.wildfire) return;
       delete e.tStatuses.wildfire;
       e.emit('statusLose', { key: 'wildfire', self: false });
-      if (g.wf > 0) e.queueHit('wildfireBurst', 200 * g.wf, g.wfSnap, 0.1);
+      if (g.wf > 0) e.queueHit('wildfireBurst', (this.wfPotency || 200) * Math.min(g.wf, this.wfCap || 99), g.wfSnap, 0.1);
       g.wf = 0;
     }
 
@@ -301,6 +301,7 @@ ${seq(['drill', ['gaussRound'], ['ricochet'], 'heatedSplitShot', ['barrelStabili
     }
   }
 
+  B.MachinistShB = MachinistShB;
   B.registerJob({
     id: 'mch', name: 'Machinist', abbr: 'MCH', role: 'ranged', classJob: 31,
     versions: ['shb505', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new MachinistShB(v) })),

@@ -146,6 +146,9 @@ window.BLM = window.BLM || {};
     dex1: { name: 'Tincture of Dexterity', cap: 312 },          // 5.0's only one
     dex2: { name: 'Grade 2 Tincture of Dexterity', cap: 339 },
     dex4: { name: 'Grade 4 Tincture of Dexterity', cap: 464 },
+    dex6: { name: 'Grade 6 Tincture of Dexterity', cap: 189 },    // the 6.0x tier
+    dex7: { name: 'Grade 7 Tincture of Dexterity', cap: 223 },    // the 6.2 tier
+    dex8: { name: 'Grade 8 Tincture of Dexterity', cap: 262 },    // the 6.4 tier
     int2: { name: 'Grade 2 Tincture of Intelligence', cap: 339 },
     mnd4: { name: 'Grade 4 Tincture of Mind', cap: 464 },
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)

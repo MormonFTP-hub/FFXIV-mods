@@ -360,6 +360,33 @@ JOB_MODELS = {
         "stance": "bt_chk_chk",
         "attrs": {},
     },
+    # Endwalker Dancer, Machinist and Bard: their artifact gear (Etoile e0694, Pioneer's e0689, Brioso e0682) and the 6.4
+    # savage weapons: War Quoits of Ascension w2601 / w2651 b61, Knifelock of Ascension w2001 b104 with its holster,
+    # Harp Bow of Ascension w601 b109 with its quiver w698 b123.
+    "dnc-ew": {
+        "actionsFrom": "dnc",
+        "gear": {s: [694, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2601, "body": 61, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 2651, "body": 61, "variant": 1}, "n_buki_l")],
+        "stance": "bt_chk_chk",
+        "attrs": {},
+    },
+    "mch-ew": {
+        "actionsFrom": "mch",
+        "gear": {s: [689, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2001, "body": 104, "variant": 1}, "n_buki_r"),
+                    ("holster", {"kind": "weapon", "id": 2099, "body": 1, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2gn_emp",
+        "attrs": {},
+    },
+    "brd-ew": {
+        "actionsFrom": "brd",
+        "gear": {s: [682, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 601, "body": 109, "variant": 1}, "n_buki_l"),
+                    ("quiver", {"kind": "weapon", "id": 698, "body": 123, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2bw_emp",
+        "attrs": {},
+    },
     "gnb-shb": {
         "actionsFrom": "gnb",
         "gear": {s: [542, 1] for s in SLOTS},

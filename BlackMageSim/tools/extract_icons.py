@@ -255,12 +255,18 @@ BRD_ACTIONS = {
     "troubadour": (7405, "Troubadour"), "naturesMinne": (7408, "Nature's Minne"), "wardensPaean": (3561, "the Warden's Paean"),
     "repellingShot": (112, "Repelling Shot"), "headGraze": (7551, "Head Graze"), "peloton": (7557, "Peloton"),
     "invigorate": (7544, "Invigorate"), "secondWind": (7541, "Second Wind"), "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+    # Endwalker.
+    "burstShot": (16495, "Burst Shot"), "apexArrow": (16496, "Apex Arrow"), "blastArrow": (25784, "Blast Arrow"),
+    "radiantFinale": (25785, "Radiant Finale"), "ladonsbite": (25783, "Ladonsbite"), "shadowbite": (16494, "Shadowbite"),
+    "legGraze": (7554, "Leg Graze"), "footGraze": (7553, "Foot Graze"), "armsLength": (7548, "Arm's Length"),
 }
 BRD_STATUSES = {
     "straighterShot": 122, "straightShot": "Straight Shot", "causticBite": "Caustic Bite", "stormbite": "Stormbite",
     "ragingStrikes": "Raging Strikes", "barrage": "Barrage", "magesBallad": "Mage's Ballad", "armysPaeon": "Army's Paeon",
     "wanderersMinuet": 865, "battleVoice": "Battle Voice", "troubadour": "Troubadour",
     "naturesMinne": "Nature's Minne", "criticalUp": "Critical Up", "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
+    "straightShotReady": 122, "radiantFinale": 2722, "blastArrowReady": 2692, "armysMuse": 1932, "armysEthos": 1933,
+    "shadowbiteReady": 3002, "armsLength": "Arm's Length",
 }
 
 # Machinist (Stormblood 4.06–4.58). Row 7410 was Cooldown; Shadowbringers renamed it Heat Blast.
@@ -288,6 +294,7 @@ MCH_ACTIONS = {
     "queenOverdrive": (16502, "Queen Overdrive"), "detonator": (16766, "Detonator"), "tactician": (16889, "Tactician"),
     "rollerDash": (17206, "Roller Dash"), "armPunch": (16504, "Arm Punch"), "pileBunker": (16503, "Pile Bunker"),
     "armsLength": (7548, "Arm's Length"),
+    "chainSaw": (25788, "Chain Saw"), "scattergun": (25786, "Scattergun"), "crownedCollider": (25787, "Crowned Collider"),
 }
 MCH_STATUSES = {
     "hotShot": 855, "enhancedSlugShot": "Enhanced Slug Shot", "cleanerShot": "Cleaner Shot", "reassembled": "Reassembled",
@@ -540,12 +547,15 @@ DNC_ACTIONS = {
     "enAvant": (16010, "En Avant"), "legGraze": (7554, "Leg Graze"), "secondWind": (7541, "Second Wind"), "footGraze": (7553, "Foot Graze"),
     "peloton": (7557, "Peloton"), "headGraze": (7551, "Head Graze"), "armsLength": (7548, "Arm's Length"),
     "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+    "tillana": (25790, "Tillana"), "fanDance4": (25791, "Fan Dance IV"), "starfallDance": (25792, "Starfall Dance"),
 }
 DNC_STATUSES = {
     "standardStep": 1818, "technicalStep": 1819, "standardFinish": 1821, "technicalFinish": 1822, "esprit": 1847, "devilment": 1825,
     "flourishingCascade": 1814, "flourishingFountain": 1815, "flourishingWindmill": 1816, "flourishingShower": 1817,
     "flourishingFanDance": 1820, "improvisation": 1827, "shieldSamba": 1826, "peloton": "Peloton", "armsLength": "Arm's Length",
     "sprint": "Sprint", "medicated": "Medicated",
+    "silkenSymmetry": 2693, "silkenFlow": 2694, "flourishSymmetry": 3017, "flourishFlow": 3018, "fourfoldFanDance": 2699,
+    "flourishingStarfall": 2700, "flourishingFinish": 2698,
 }
 
 JOBS = {

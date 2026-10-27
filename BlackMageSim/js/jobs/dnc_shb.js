@@ -172,7 +172,7 @@
       if (a.finish) {
         const n = g.done;
         e.removeStatus(a.finish);
-        const potency = a.finish === 'standardStep' ? STD[n] : TECH[n];
+        const potency = a.finish === 'standardStep' ? (this.STD || STD)[n] : (this.TECH || TECH)[n];
         const snap = this.snapshot(a, e);
         if (a.finish === 'standardStep') { if (n) { g.stdBuff = STD_BUFF[n]; e.addStatus('standardFinish', 60); } }
         else if (n) { g.techBuff = TECH_BUFF[n]; e.addStatus('technicalFinish', 20); }
@@ -293,6 +293,7 @@ ${seq(['standardStep', 'emboite', 'entrechat', 'standardFinish', 'technicalStep'
     }
   }
 
+  B.DancerShB = DancerShB;
   B.registerJob({
     id: 'dnc', name: 'Dancer', abbr: 'DNC', role: 'ranged', classJob: 38,
     versions: [{ id: 'shb50', label: 'Shadowbringers 5.0–5.58', history: 'ShB 5.0–5.58', note: 'Level 80, Dancer\'s debut: Standard and Technical Step dances, Cascade and Fountain procs, Fourfold Feathers, Esprit into Saber Dance, Devilment, Flourish; the 5.58 numbers', create: () => new DancerShB() }],
