@@ -173,12 +173,17 @@ SCH_ACTIONS = {
     "silentDusk": (807, "Silent Dusk"), "feyCaress": (810, "Fey Caress"), "feyWind": (811, "Fey Wind"), "embrace": (802, "Embrace"),
     "clericStance": (7567, "Cleric Stance"), "largesse": (7570, "Largesse"), "swiftcast": (7561, "Swiftcast"),
     "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+    # Heavensward only: the 3.x Arcanist and Scholar actions removed or replaced later, and the Conjurer cross-class skills.
+    "broil": (3584, "Broil"), "ruin": (163, "Ruin"), "bio": (17864, "Bio"), "rouse": (176, "Rouse"),
+    "eyeForAnEye": (175, "Eye for an Eye"), "virus": (169, "Virus"), "leeches": (187, "Leeches"), "aero": (121, "Aero"),
+    "protect": (123, "Protect"), "stoneskin": (129, "Stoneskin"),
 }
 SCH_STATUSES = {
     "bio2": 189, "miasma": 180, "miasma2": "Miasma II", "chainStratagem": 1221, "feyWind": 799, "dissipation": "Dissipation",
     "clericStance": 145, "largesse": 1207, "shadowFlare": "Shadow Flare", "feyUnion": "Fey Union",
     "emergencyTactics": "Emergency Tactics", "excogitation": "Excogitation", "lucidDreaming": "Lucid Dreaming",
     "swiftcast": "Swiftcast", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
+    "bio": "Bio", "aero": "Aero", "rouse": "Rouse",
 }
 
 # Dragoon (Stormblood 4.x). Row 85 is now Lance Charge; in Stormblood it was Blood for Blood.
@@ -350,7 +355,9 @@ JOBS = {
     # Summon and Summon II point at the removed-action icon; Eos's and Selene's Embrace stand in for them.
     "sch": {"actions": SCH_ACTIONS, "statuses": SCH_STATUSES, "overrides": {"summon": 2826, "summon2": 2836},
             "uncross": {"miasma": "150,110,220", "miasma2": "170,120,230", "shadowFlare": "150,85,215", "bane": "190,120,235",
-                        "bio2": "130,215,90", "silentDusk": "140,170,240", "feyCaress": "150,200,255", "feyWind": "150,220,255",
+                        "bio2": "130,215,90", "broil": "200,150,255", "ruin": "170,200,255", "rouse": "240,175,80",
+                        "eyeForAnEye": "200,200,160", "virus": "150,200,120", "leeches": "180,220,200", "aero": "140,230,170",
+                        "protect": "220,220,160", "stoneskin": "210,190,150", "silentDusk": "140,170,240", "feyCaress": "150,200,255", "feyWind": "150,220,255",
                         "embrace": "120,230,170", "whisperingDawn": "150,240,170", "feyCovenant": "150,220,200",
                         "feyIllumination": "170,240,200", "dissipation": "130,210,180"},
             "tincture": "Grade 8 Tincture of Mind", "classjob": 28},

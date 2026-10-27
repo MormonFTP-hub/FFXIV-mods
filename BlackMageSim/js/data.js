@@ -30,6 +30,7 @@ window.BLM = window.BLM || {};
   // levelKey when it played before Endwalker's stat squish: 6.0 cut level 80's divisor from 3300 to 1300 and shrank
   // every item, so Shadowbringers numbers (gear with 5000+ main stat) only work with the old table.
   B.LEVELS = {
+    100: { main: 440, sub: 420, div: 2780, ap: 237, apTank: 190, det: 140 },   // Dawntrail (Allagan Studies' level 100 table)
     90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
     80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
     shb80: { main: 340, sub: 380, div: 3300, ap: 165, apTank: 115, det: 130 },   // level 80 in 5.x (Allagan Studies)

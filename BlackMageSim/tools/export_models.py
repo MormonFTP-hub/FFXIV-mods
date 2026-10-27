@@ -171,6 +171,14 @@ JOB_MODELS = {
         "stance": "bt_2gl_emp",
         "attrs": {},
     },
+    # Heavensward Scholar: Savant's (the 3.x artifact gear) and the Alexandrian Metal Codex (w1727).
+    "sch-hw": {
+        "actionsFrom": "sch",
+        "gear": {s: [168, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1727, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
     # Stormblood Summoner: Channeler's (the 4.x artifact gear) and the Omega Grimoire (Alphascape, 4.4).
     "smn-sb": {
         "actionsFrom": "smn",

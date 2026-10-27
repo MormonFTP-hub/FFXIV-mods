@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -128,7 +128,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ### Scholar / Arcanist
 1. ARR 2.0 (2013-08-27 → 2013-12-16): Aetherflow 60s (+20% MP), Energy Drain, Virus, Bane, Eye for an Eye, Rouse, Shadow Flare, Sustain (HP cost); Adloquium 30, Succor 35, Leeches 40, Sacred Soil 45, Lustrate 50 (20% max HP); Eos and Selene. **Rating 3/5:** Virus, Bane and Shadow Flare; a DoT-heavy launch.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Lustrate 25%, Bane 8y, Virus Antibody, Sustain costs MP. **Rating 4/5:** Classic ARR Scholar: DoT spreading and fairy management.
-3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Indomitability 52, Broil 54, Deployment Tactics 56 (120s), Emergency Tactics 58, Dissipation 60 (180s); Lustrate 600 potency. **Rating 5/5:** Bane, Energy Drain and Dissipation; widely called Scholar's golden age.
+3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Indomitability 52, Broil 54, Deployment Tactics 56 (120s), Emergency Tactics 58, Dissipation 60 (180s); Lustrate 600 potency. ← built **Rating 5/5:** Bane, Energy Drain and Dissipation; widely called Scholar's golden age.
 4. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Faerie Gauge + Aetherpact/Fey Union; Excogitation 62, Broil II 64, Chain Stratagem 66; Quickened Aetherflow (20% chance −10s); Aetherflow 10% MP; Virus, Sustain, Miasma II removed. **Rating 4/5:** Fae Gauge, Excogitation and Chain Stratagem; complex and loved.
 5. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Excogitation 800 / 45s / 45s recast; Emergency Tactics 20s; Quickened Aetherflow 100% −5s; Miasma II back, Sustain back in 4.1. ← built **Rating 5/5:** Full DoT kit plus Aetherpact; the Scholar people miss most.
 6. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Excogitation heals on expiry. ← built **Rating 5/5:** Same beloved SB kit.
