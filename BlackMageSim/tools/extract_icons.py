@@ -146,12 +146,17 @@ AST_ACTIONS = {
     "celestialOpposition": (16553, "Celestial Opposition"), "timeDilation": (3611, "Time Dilation"),
     "clericStance": (7567, "Cleric Stance"), "largesse": (7570, "Largesse"), "swiftcast": (7561, "Swiftcast"),
     "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+    # Heavensward only: the 3.x spells removed in 4.0, and the Conjurer cross-class skills.
+    "malefic": (3596, "Malefic"), "malefic2": (3598, "Malefic II"), "combust": (3599, "Combust"),
+    "luminiferousAether": (3607, "Luminiferous Aether"), "disable": (3609, "Disable"), "aero": (121, "Aero"),
+    "protect": (123, "Protect"), "stoneskin": (129, "Stoneskin"),
 }
 AST_STATUSES = {
     "theBalance": 829, "theBole": 830, "theArrow": 831, "theSpear": 832, "theEwer": 833, "theSpire": 834,
     "enhancedRoyalRoad": 816, "expandedRoyalRoad": 817, "extendedRoyalRoad": 818, "lightspeed": 841, "combust2": 843,
     "earthlyDominance": 1224, "giantDominance": 1248, "diurnalSect": 839, "nocturnalSect": 840, "clericStance": 145,
     "largesse": 1207, "lucidDreaming": "Lucid Dreaming", "swiftcast": "Swiftcast", "surecast": "Surecast",
+    "combust": "Combust", "aero": "Aero", "luminiferousAether": "Luminiferous Aether",
     "sprint": "Sprint", "medicated": "Medicated",
 }
 
@@ -338,7 +343,9 @@ JOBS = {
             "overrides": {"draw": 3101, "redraw": 3105, "undraw": 3102, "minorArcana": 3106, "stellarBurst": 3144, "stellarExplosion": 3144},
             "uncross": {"diurnalSect": "255,220,120", "nocturnalSect": "140,150,255", "royalRoad": "255,215,130",
                         "spread": "200,210,255", "sleeveDraw": "230,200,255", "timeDilation": "170,210,255",
-                        "emptyRoad": "200,190,160", "undrawSpread": "200,210,255"},
+                        "emptyRoad": "200,190,160", "undrawSpread": "200,210,255", "malefic": "200,170,255",
+                        "malefic2": "210,160,255", "combust": "255,200,120", "luminiferousAether": "150,200,255",
+                        "disable": "200,190,230", "aero": "140,230,170", "protect": "220,220,160", "stoneskin": "210,190,150"},
             "tincture": "Grade 8 Tincture of Mind", "classjob": 33},
     # Summon and Summon II point at the removed-action icon; Eos's and Selene's Embrace stand in for them.
     "sch": {"actions": SCH_ACTIONS, "statuses": SCH_STATUSES, "overrides": {"summon": 2826, "summon2": 2836},

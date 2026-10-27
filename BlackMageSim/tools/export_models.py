@@ -163,6 +163,14 @@ JOB_MODELS = {
         "stance": "bt_2gl_emp",
         "attrs": {},
     },
+    # Heavensward Astrologian: Welkin (the 3.x artifact gear) and the Alexandrian Metal Meter (w2101 b48).
+    "ast-hw": {
+        "actionsFrom": "ast",
+        "gear": {s: [266, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2101, "body": 48, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2gl_emp",
+        "attrs": {},
+    },
     # Stormblood Summoner: Channeler's (the 4.x artifact gear) and the Omega Grimoire (Alphascape, 4.4).
     "smn-sb": {
         "actionsFrom": "smn",

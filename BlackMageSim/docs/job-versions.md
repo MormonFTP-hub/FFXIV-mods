@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -146,7 +146,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. HW 3.07–3.15 (2015-08-25 → 2016-02-22): Synastry 90s; Celestial Opposition 120s; Balance/Bole/Arrow 30s. **Rating 4/5:** Longer card buffs; the card game starts to click.
 4. HW 3.2–3.26 (2016-02-23 → 2016-06-06): Shuffle → Redraw (no repeat); Luminiferous Aether 24s. **Rating 4/5:** Redraw replaces Shuffle; liked.
 5. HW 3.3–3.38 (2016-06-07 → 2016-09-26): Spread 30s; Nocturnal Aspected Helios barrier 120%. **Rating 4/5:** Faster Spread; liked.
-6. HW 3.4–3.57 (2016-09-27 → 2017-06-19): cards held 30s; Redraw 30s; Balance/Bole 20%; Celestial Opposition +10s. **Rating 5/5:** Spread, Royal Road and 30s card holds; deep card play, heavily missed.
+6. HW 3.4–3.57 (2016-09-27 → 2017-06-19): cards held 30s; Redraw 30s; Balance/Bole 20%; Celestial Opposition +10s. ← built **Rating 5/5:** Spread, Royal Road and 30s card holds; deep card play, heavily missed.
 7. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Undraw, Earthly Star 62, Malefic III 64, Minor Arcana 66 (Lord/Lady of Crowns), Hyper Lightspeed, Sleeve Draw 70. **Rating 4/5:** Minor Arcana and Sleeve Draw arrive.
 8. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Balance 10%; Spear +10% crit; Undraw 3s; Hyper Lightspeed on Essential Dignity. ← built **Rating 5/5:** Royal Road and Minor Arcana manipulation; Astrologian's most loved era.
 9. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Spear 30s. ← built **Rating 5/5:** Same beloved SB card game.
