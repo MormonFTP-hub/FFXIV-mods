@@ -1,4 +1,4 @@
-# Striking Dummy Sim (Black Mage, Samurai)
+# Striking Dummy Sim (Black Mage, Samurai, Gunbreaker)
 
 A browser game: play a job the way it was in an older patch, at level 90 on a striking dummy. Each job version has that patch's kit and numbers, and they all share the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise openers and loops the way they played back then.
 
@@ -10,6 +10,7 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 |---|---|---|
 | Black Mage | Endwalker 6.5 | Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23% |
 | Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
+| Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
 
 More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files).
 
@@ -29,6 +30,7 @@ then go to http://localhost:8797.
 |---|---|
 | Hotbar 1 | `1` – `=`. Black Mage: Fire III, Fire IV, Despair, Fire, Blizzard III, Blizzard IV, Blizzard, Thunder III, Xenoglossy, Foul, Umbral Soul, Scathe. Samurai: Hakaze, Jinpu, Gekko, Shifu, Kasha, Yukikaze, Iaijutsu, Tsubame-gaeshi, Ogi Namikiri, Enpi, Hagakure, Meditate |
 | Hotbar 2 | `Shift` + `1` – `=`. Black Mage: Sharpcast, Triplecast, Swiftcast, Ley Lines, Between the Lines, Amplifier, Manafont, Transpose, Lucid Dreaming, Tincture, Addle, Manaward. Samurai: Kaiten, Shinten, Senei, Shoha, Meikyo Shisui, Ikishoten, Gyoten, Yaten, True North, Tincture, Feint, Third Eye |
+| Gunbreaker bars | Keen Edge, Brutal Shell, Solid Barrel, Gnashing Fang (turns into Savage Claw and Wicked Talon), Continuation, Burst Strike, Sonic Break, Double Down, Lightning Shot, Rough Divide, Royal Guard, Provoke; then No Mercy, Bloodfest, Blasting Zone, Bow Shock, Tincture and the defensive cooldowns |
 | Hotbar 3 | `Q` `E` `R` `F` `T` `G` `Z` `X` `C` `V` `B` `Y`: role actions and Sprint (Samurai also has Guren here) |
 | Move | `W` `A` `S` `D` or arrows, `Space` to jump |
 | Camera | Hold the right mouse button and drag to turn the camera and your character. While it's held, `A` `D` strafe and `S` backpedals at walking pace. Left drag turns just the camera, both buttons run forward, the wheel zooms. The camera stays where you put it; Settings can make it follow the dummy |
@@ -50,10 +52,11 @@ python -P -E BlackMageSim/tools/extract_icons.py
 python -P -E BlackMageSim/tools/export_models.py
 ```
 
-- **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets for each job, with each `_hr1` icon decoded. Dawntrail points the rows of actions it removed at the generic removed-action icon, so their Endwalker icons are pinned by number: Sharpcast (002657), Hissatsu: Kaiten (003168) and Kaeshi: Higanbana (003181).
-- **Models** (`work/game-models.js`, about 6.7 MB). One Hyur Midlander man per job, resolved and baked by PMP Viewer and skinned to the game's skeleton:
+- **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets for each job, with each `_hr1` icon decoded. Dawntrail points the rows of actions it removed at the generic removed-action icon, so their Endwalker icons are pinned by number: Sharpcast (002657), Hissatsu: Kaiten (003168), Kaeshi: Higanbana (003181) and Rough Divide (003418).
+- **Models** (`work/game-models.js`, about 6.7 MB; the binary part is gzipped and the page inflates it as it loads). One Hyur Midlander man per job, resolved and baked by PMP Viewer and skinned to the game's skeleton:
   - **Black Mage:** the Endwalker artifact gear (Archmage's, set 778) and a Moonward Rod.
   - **Samurai:** the Endwalker artifact gear (Sakonji, set 785), a katana in the right hand and its scabbard at the left hip.
+  - **Gunbreaker:** the Endwalker artifact gear (Bastion's, set 787) and the Diadochos Gunblade from 6.4, in the gunblade stance (`bt_2gb_emp`).
   - **Dummies:** the Thavnairian, Glade, Oasis and Crystarium housing striking dummies. Pick one in Settings.
   - **Animations:** the game's own: each job's battle stance and run (`bt_rod_emp`, `bt_2kt_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`. Iaijutsu plays `cbbm_mgc_sam_1` → `_2lp` → `_3` for Midare, `_3c` for Higanbana and `_3g` for Tenka Goken. Textures shared between the characters are stored once.
 
@@ -87,10 +90,17 @@ python BlackMageSim/tools/build_single.py
 - **Kenki, Sen and Meditation.** A gauge with the Kenki blade (max 100), the three Sen and three Meditation pips. Iaijutsu and Ogi Namikiri add Meditation; three let you use Shoha.
 - **Timing.** Type your skill speed or your GCD with Fuka (the 2.14 tier is 579). Fuka takes 13% off weaponskills, Iaijutsu casts and auto-attacks. Auto-attacks start when you engage and keep going while you're in reach.
 
+### Gunbreaker (Endwalker 6.2–6.58, the long Bloodfest)
+
+- **The 6.x kit.** Keen Edge, Brutal Shell, Solid Barrel, Lightning Shot, Burst Strike, Gnashing Fang → Savage Claw → Wicked Talon on one button, Continuation (Jugular Rip, Abdomen Tear, Eye Gouge, Hypervelocity), Sonic Break, Double Down, No Mercy, Bloodfest, Blasting Zone, Bow Shock, Rough Divide (2 charges), Royal Guard, Camouflage, Nebula, Aurora (2 charges), Superbolide, Heart of Light, Heart of Corundum, the tank role actions, Sprint and a Grade 8 Tincture of Strength.
+- **Powder Gauge.** Three cartridges. Solid Barrel adds one at the end of its combo, Bloodfest adds three (and is on its 120s recast). Gnashing Fang and Burst Strike cost one, Double Down two. Cartridge weaponskills don't break the Keen Edge combo.
+- **No Mercy.** +20% damage for 20s every 60s. DoTs from Sonic Break and Bow Shock keep the bonus they were applied with.
+- **Tank damage.** Tanks use the lower attack power modifier (156 at level 90 against 195) and Tenacity adds to their damage.
+
 ### Both
 
 - **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and the job's Endwalker-style gauge.
-- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear.
+- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear, and the Gunbreaker bot about 8,400 in 6.5 gear.
 
 ## Notes on accuracy
 
@@ -101,7 +111,8 @@ Some things are reconstructed rather than read off a 6.x source:
 - Ice spells cost no MP while in Umbral Ice. Blizzard IV straight after Blizzard III at 0 MP needs this to work the way it did. Fire spells under Umbral Ice I/II, and ice spells under Astral Fire I/II, cost half and a quarter.
 - The gear set, the Grade 8 Tincture cap (262 INT) and the spell application delays are close approximations, so hits land within a few percent of what you remember, not to the point.
 - Samurai's 6.0x numbers (Hakaze 180; Jinpu, Shifu and Yukikaze 280; Gekko and Kasha 320/370; Midare 660; Kaeshi: Setsugekka 990; Ogi Namikiri 900; Kaeshi: Namikiri 1350; Shinten 270; Senei 800; Shoha 580; Higanbana 200 + 30 per tick) are worked back from what the 6.1 patch notes changed. Its gear is a rough 6.0 best-in-slot set (Strength 2563, weapon damage 120, skill speed 579). The Grade 6 tincture caps at 189 Strength.
-- AoE actions (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV, Fuga, Mangetsu, Oka, Kyuten) are left out since there's one dummy. Tenka Goken, Guren and Ogi Namikiri are cones and lines in the game but only hit the one dummy here. Aetherial Manipulation is left out because it needs a party member.
+- Gunbreaker's numbers are the 6.4–6.58 values from the wiki's patch histories (Keen Edge 200, Brutal Shell 160/300 from 6.4; Solid Barrel 140/360 and Blasting Zone 720 from 6.2; Gnashing Fang 380, Savage Claw 440, Wicked Talon 540 and the Continuation follow-ups from 6.11). Its gear is a rough item level 665 set at the 2.50 GCD (Strength 3330, weapon damage 132, Tenacity 751). The opener in its help follows the version's rules but isn't copied from a published guide.
+- AoE actions (Flare, Freeze, High Fire II, High Blizzard II, Thunder IV, Fuga, Mangetsu, Oka, Kyuten, Demon Slice, Demon Slaughter, Fated Circle, Danger Zone) are left out since there's one dummy. Tenka Goken, Guren and Ogi Namikiri are cones and lines in the game but only hit the one dummy here. Aetherial Manipulation is left out because it needs a party member.
 - Icons, models and animations come from your own game install when you've run the two tools, and are drawn in code otherwise. Spell effects and sounds are made for this page, not the game's VFX and audio. Two of the exporter's choices: it shows the coat's sleeves (PMP Viewer's pre-Dawntrail visibility tables hide them under these gloves, which left the arms empty), and it draws the housing dummies fully opaque (background textures keep other data in alpha). FINAL FANTASY XIV © SQUARE ENIX. This is a fan-made, non-commercial practice tool, not affiliated with Square Enix.
 
 ## Files
@@ -112,6 +123,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/engine.js` | Combat engine shared by every job: GCD, casts, queue, cooldowns and charges, combos, positionals, auto-attacks, MP/DoT ticks, damage formula |
 | `js/jobs/blm_ew.js` | Black Mage, Endwalker 6.5: actions, gauge, rules, help text |
 | `js/jobs/sam_ew.js` | Samurai, Endwalker 6.08: actions, gauge, rules, help text |
+| `js/jobs/gnb_ew.js` | Gunbreaker, Endwalker 6.2–6.58: actions, Powder Gauge, rules, help text |
 | `js/scene.js` | Canvas scene: camera, arena, dummy, drawn figures, spell and weaponskill effects |
 | `js/ui.js` | HUD: hotbars, gauge, statuses, cast bar, chat, flytext, meter, windows |
 | `js/main.js` | Input, keybinds, drag and drop, countdown, parse tracking, frame loop |
@@ -124,6 +136,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **1.6.0**: Gunbreaker, Endwalker 6.2–6.58, the version with Bloodfest on its 120s recast. Comes with the Powder Gauge, the Gnashing Fang and Continuation chains, its game icons, model and animations, gunblade effects and sounds, and an opener in the help. The engine now does tank damage (the 156 attack modifier and Tenacity) and has the tank role actions. The model data is gzipped, so three jobs still fit in a share file under 10 MB.
 - **1.5.1**: Mouse camera like the game's standard controls. Right drag turns the camera and your character (A/D strafe, S backpedals at 2.4 yalms a second), left drag turns only the camera, both buttons run forward, and the wheel zooms. The camera no longer swings round to the dummy on its own (a Settings switch brings that back), and Settings has a mouse camera speed.
 - **1.5.0**: Jobs and versions. Pick a job and the patch to play it at (`J`); each version keeps its own hotbars. Samurai joins as Endwalker 6.08, the last patch with Hissatsu: Kaiten. It comes with its gauge, combos and positionals, auto-attacks, Iaijutsu and Tsubame-gaeshi, game icons, model and animations, sword effects and sounds, and its opener in the help. The engine is now shared, with each job version in its own file.
 - **1.4.0**: The game's own models and animations: the Black Mage in Archmage's gear with a Moonward Rod, a choice of four striking dummies, and every action's real cast and ability motion. Exported from your install by `tools/export_models.py`. The camera sits closer and you start 10 yalms from the dummy.

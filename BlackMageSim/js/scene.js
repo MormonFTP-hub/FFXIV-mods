@@ -277,11 +277,22 @@
         thirdEye: ['255,255,255', '200,220,255'], trueNorth: ['150,255,200', '255,255,255'], bloodbath: ['220,40,60', '255,120,120'],
         feint: ['230,180,120'], secondWind: ['150,255,170', '255,255,255'], armsLength: ['200,200,255'], legSweep: ['255,230,150'],
         tincture: ['255,120,190', '255,220,240'], sprint: ['255,220,120'],
+        noMercy: ['120,170,255', '255,255,255', '170,150,255'], bloodfest: ['220,40,60', '255,120,90', '255,220,150'],
+        royalGuard: ['150,190,255', '255,255,255'], camouflage: ['170,190,220'], nebula: ['130,110,255', '200,190,255'],
+        aurora: ['120,255,200', '200,255,240'], superbolide: ['255,240,180', '255,255,255', '255,200,120'],
+        heartOfLight: ['255,240,200', '255,255,255'], heartOfCorundum: ['170,200,255', '255,255,255'],
+        rampart: ['220,200,150', '255,255,255'], reprisal: ['230,180,120'], lowBlow: ['255,230,150'], interject: ['255,230,150'],
+        provoke: ['255,120,80'], shirk: ['200,200,220'],
       }[id] || ['255,220,180'];
-      if (id === 'ikishoten' || id === 'kaiten') {
+      if (id === 'bloodfest') {
+        this.emit(40, { x: 0, y: 1.3, z: 0, spread: 0.6, speed: 0.8, life: 0.9, size: 0.3, colors });
+        this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 2.2, r1: 0.4, dur: 0.6, color: colors[0] });
+        return;
+      }
+      if (id === 'ikishoten' || id === 'kaiten' || id === 'noMercy' || id === 'superbolide') {
         this.emit(id === 'ikishoten' ? 60 : 34, { x: p.x, y: 0.2, z: p.z, spread: 1.0, spreadY: 0.1, speed: 0.6, vy: id === 'ikishoten' ? 5 : 3.5, life: 0.8, size: 0.24, colors, grav: -1 });
         this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 0.4, r1: id === 'ikishoten' ? 3 : 2, dur: 0.5, color: colors[0] });
-      } else if (id === 'feint' || id === 'legSweep') {
+      } else if (id === 'feint' || id === 'legSweep' || id === 'reprisal' || id === 'lowBlow' || id === 'interject' || id === 'provoke') {
         this.emit(20, { x: 0, y: 1.8, z: 0, spread: 0.8, speed: 0.6, vy: -1.5, life: 0.8, size: 0.3, colors });
       } else {
         this.emit(26, { x: p.x, y: 1.0, z: p.z, spread: 0.6, speed: 2.2, flatY: 0.3, vy: 1.5, life: 0.7, size: 0.22, colors });
@@ -303,7 +314,7 @@
       const T = { x: 0, y: 1.3, z: 0 };
       const fx = A[id] && A[id].fx;
       if (ev.dot) {
-        const colors = fx === 'higanbana' ? ['255,60,60', '255,170,150'] : ['255,240,120', '220,180,255'];
+        const colors = fx === 'higanbana' ? ['255,60,60', '255,170,150'] : fx && fx.startsWith('gnb') ? ['110,170,255', '220,235,255'] : ['255,240,120', '220,180,255'];
         this.emit(8, { x: T.x, y: T.y, z: T.z, spread: 0.6, speed: 2, life: 0.3, size: 0.15, colors });
         return;
       }
@@ -467,6 +478,84 @@
           sparks(60, ['255,90,60', '255,210,120', '255,255,255'], { speed: 5 });
           this.shake = 0.12;
           break;
+        // Gunbreaker: blue-white gunblade arcs, and a powder blast whenever a cartridge goes off.
+        case 'gnbSlash':
+          S({ tilt: -0.4, color: '170,205,255' });
+          sparks(12, ['200,225,255', '255,255,255']);
+          this.shake = Math.max(this.shake, 0.03);
+          break;
+        case 'gnbSlash2':
+          S({ tilt: 0.5, a0: -0.5, a1: 2.7, color: '150,190,255' });
+          sparks(14, ['200,225,255', '255,255,255']);
+          this.shake = Math.max(this.shake, 0.035);
+          break;
+        case 'gnbBarrel':
+          S({ tilt: 0.05, r: 1.5, w: 0.45, color: '120,170,255' });
+          flash(1.6, '150,190,255');
+          sparks(20, ['160,200,255', '255,255,255', '255,220,140']);
+          this.shake = Math.max(this.shake, 0.05);
+          break;
+        case 'gnbShot':
+          flash(1.2, '150,200,255');
+          sparks(18, ['150,200,255', '255,255,255'], { speed: 4.5 });
+          break;
+        case 'gnbBurst':
+          S({ tilt: -0.2, r: 1.6, w: 0.5, color: '255,200,110' });
+          this.addFx({ type: 'flash', ...T, r: 2.4, dur: 0.35, color: '255,190,90' });
+          sparks(40, ['255,210,120', '255,140,60', '255,255,255'], { speed: 5, grav: -1 });
+          this.emit(16, { ...T, spread: 0.6, speed: 1, vy: 2, life: 1.2, size: 0.5, colors: ['70,60,70', '50,45,55'], grav: -0.6, drag: 1 });
+          this.shake = Math.max(this.shake, 0.08);
+          break;
+        case 'gnbFang': case 'gnbFang2': case 'gnbFang3': {
+          const k = fx === 'gnbFang' ? 1 : fx === 'gnbFang2' ? 1.1 : 1.25;
+          S({ tilt: 0.8, r: 1.4 * k, w: 0.32, color: '140,120,255' });
+          S({ tilt: 0.55, r: 1.25 * k, w: 0.28, delay: 0.05, color: '190,170,255' });
+          S({ tilt: 0.3, r: 1.1 * k, w: 0.24, delay: 0.1, color: '120,170,255' });
+          flash(1.8 * k, '170,150,255');
+          sparks(Math.round(30 * k), ['170,150,255', '255,255,255', '120,170,255'], { speed: 4.5 });
+          this.shake = Math.max(this.shake, 0.06 * k);
+          break;
+        }
+        case 'gnbSonic':
+          S({ tilt: 0.02, r: 1.8, w: 0.6, color: '120,180,255', a0: 3.0, a1: -0.6 });
+          flash(2.2, '150,200,255');
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.5, r1: 4, dur: 0.6, color: '140,190,255' });
+          sparks(40, ['140,190,255', '255,255,255'], { speed: 5, flatY: 0.3 });
+          this.shake = Math.max(this.shake, 0.07);
+          break;
+        case 'gnbDouble':
+          S({ tilt: 0.6, r: 2.0, w: 0.6, color: '255,190,90' });
+          S({ tilt: -0.6, r: 2.0, w: 0.6, delay: 0.12, color: '120,170,255' });
+          this.addFx({ type: 'flash', ...T, r: 3.4, dur: 0.45, color: '255,210,150' });
+          this.addFx({ type: 'ring', x: 0, z: 0, r0: 0.6, r1: 6, dur: 0.7, color: '255,200,120' });
+          this.addFx({ type: 'pillar', x: 0, z: 0, h: 6, w: 1.8, dur: 0.6, color: '255,170,80' });
+          sparks(80, ['255,210,120', '255,140,60', '255,255,255', '140,190,255'], { speed: 6, spread: 1 });
+          this.emit(24, { ...T, spread: 1, speed: 1.2, vy: 2.5, life: 1.4, size: 0.6, colors: ['70,60,70', '50,45,55'], grav: -0.5, drag: 1 });
+          this.shake = 0.16;
+          this.screenFlash = 0.08;
+          break;
+        case 'gnbCont':
+          flash(1.1, '255,210,140');
+          sparks(16, ['255,220,150', '255,255,255', '140,190,255'], { speed: 4 });
+          this.shake = Math.max(this.shake, 0.03);
+          break;
+        case 'gnbZone':
+          S({ tilt: 0.9, r: 1.7, w: 0.5, color: '120,170,255' });
+          S({ tilt: -0.9, r: 1.7, w: 0.5, delay: 0.08, color: '170,150,255' });
+          this.addFx({ type: 'pillar', x: 0, z: 0, h: 5, w: 1.4, dur: 0.5, color: '130,170,255' });
+          flash(2.6, '160,190,255');
+          sparks(50, ['140,180,255', '255,255,255', '180,160,255'], { speed: 5 });
+          this.shake = 0.11;
+          break;
+        case 'gnbBow': {
+          const p = this.e.pos;
+          this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 0.5, r1: 5, dur: 0.6, color: '150,190,255' });
+          this.addFx({ type: 'ring', x: p.x, z: p.z, r0: 0.3, r1: 3.5, dur: 0.5, color: '255,220,160' });
+          flash(1.8, '150,190,255');
+          sparks(30, ['150,190,255', '255,255,255'], { speed: 4 });
+          this.shake = Math.max(this.shake, 0.07);
+          break;
+        }
         case 'shoha':
           S({ tilt: 0.3, r: 1.5, w: 0.4, color: '255,220,120' });
           S({ tilt: -0.5, r: 1.4, w: 0.4, delay: 0.08, color: '140,180,255' });
@@ -1002,12 +1091,14 @@
 
     drawPlayer(p) {
       if (this.e.job.id === 'sam') this.drawSamurai(p);
+      else if (this.e.job.id === 'gnb') this.drawSamurai(p, { pants: '#1a1c24', top: '#2a2f3d', trim: '#5f86c9', belt: '#3a2c22', sleeve: '#232733', sheath: false, blade: 1.2, bladeW: 0.06 });
       else this.drawMage(p);
     }
 
     // The drawn Samurai, for when the game's models aren't loaded: hakama, kimono, the katana and its sheath.
     // Iaijutsu holds the blade sheathed with a hand on the hilt; a weaponskill swings it up.
-    drawSamurai(p) {
+    drawSamurai(p, look) {
+      const L = Object.assign({ pants: '#1c2133', top: '#d8d0bf', trim: '#a3262a', belt: '#8c1c20', sleeve: '#c9c1af', sheath: true, blade: 1.05, bladeW: 0.035 }, look);
       const ctx = this.ctx, U = p.s, e = this.e;
       const iai = !!e.casting;
       const swing = this.release > 0 ? this.release / 0.45 : 0;
@@ -1018,13 +1109,15 @@
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
       // Sheath at the left hip, angled back.
-      ctx.strokeStyle = '#1a0f0c'; ctx.lineWidth = Math.max(2, 0.075 * U);
-      ctx.beginPath(); ctx.moveTo(-0.12 * U, -0.98 * U); ctx.lineTo(-0.82 * U, -0.62 * U); ctx.stroke();
-      ctx.strokeStyle = '#b8902f'; ctx.lineWidth = Math.max(1, 0.02 * U);
-      ctx.beginPath(); ctx.moveTo(-0.7 * U, -0.68 * U); ctx.lineTo(-0.74 * U, -0.6 * U); ctx.stroke();
+      if (L.sheath) {
+        ctx.strokeStyle = '#1a0f0c'; ctx.lineWidth = Math.max(2, 0.075 * U);
+        ctx.beginPath(); ctx.moveTo(-0.12 * U, -0.98 * U); ctx.lineTo(-0.82 * U, -0.62 * U); ctx.stroke();
+        ctx.strokeStyle = '#b8902f'; ctx.lineWidth = Math.max(1, 0.02 * U);
+        ctx.beginPath(); ctx.moveTo(-0.7 * U, -0.68 * U); ctx.lineTo(-0.74 * U, -0.6 * U); ctx.stroke();
+      }
 
       // Hakama: wide pleated trousers.
-      ctx.fillStyle = '#1c2133';
+      ctx.fillStyle = L.pants;
       ctx.beginPath();
       ctx.moveTo(-0.27 * U, -0.98 * U);
       ctx.lineTo(-0.52 * U + sway, -0.02 * U); ctx.lineTo(-0.06 * U + sway * 0.5, -0.02 * U);
@@ -1036,13 +1129,13 @@
       for (const x of [-0.3, -0.16, 0.16, 0.3]) { ctx.beginPath(); ctx.moveTo(x * 0.7 * U, -0.9 * U); ctx.lineTo(x * 1.4 * U, -0.05 * U); ctx.stroke(); }
 
       // Kimono top with a red collar, and the obi.
-      ctx.fillStyle = '#d8d0bf';
+      ctx.fillStyle = L.top;
       ctx.beginPath();
       ctx.moveTo(-0.31 * U, -1.5 * U); ctx.lineTo(-0.34 * U, -0.94 * U); ctx.lineTo(0.34 * U, -0.94 * U); ctx.lineTo(0.31 * U, -1.5 * U);
       ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = '#a3262a'; ctx.lineWidth = Math.max(1.5, 0.04 * U);
+      ctx.strokeStyle = L.trim; ctx.lineWidth = Math.max(1.5, 0.04 * U);
       ctx.beginPath(); ctx.moveTo(-0.15 * U, -1.5 * U); ctx.lineTo(0.03 * U, -1.1 * U); ctx.lineTo(0.15 * U, -1.5 * U); ctx.stroke();
-      ctx.fillStyle = '#8c1c20';
+      ctx.fillStyle = L.belt;
       ctx.fillRect(-0.34 * U, -1.04 * U, 0.68 * U, 0.11 * U);
 
       // Right arm and the katana. Iaijutsu: hand on the hilt at the hip. Otherwise the blade is out, low and
@@ -1055,8 +1148,8 @@
       } else {
         const ang = -0.35 - swing * 1.9;   // from horizontal; negative is up
         handX = (0.46 + swing * 0.08) * U; handY = (-1.0 - swing * 0.35) * U;
-        tipX = handX + Math.cos(ang) * 1.05 * U; tipY = handY + Math.sin(ang) * 1.05 * U;
-        ctx.strokeStyle = '#c9ced8'; ctx.lineWidth = Math.max(1.5, 0.035 * U);
+        tipX = handX + Math.cos(ang) * L.blade * U; tipY = handY + Math.sin(ang) * L.blade * U;
+        ctx.strokeStyle = '#c9ced8'; ctx.lineWidth = Math.max(1.5, L.bladeW * U);
         ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(tipX, tipY); ctx.stroke();
         ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = Math.max(1, 0.012 * U);
         ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(tipX, tipY); ctx.stroke();
@@ -1067,14 +1160,14 @@
       ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(handX, handY); ctx.stroke();
       ctx.fillStyle = '#b8902f';
       ctx.beginPath(); ctx.arc(handX, handY, 0.04 * U, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#c9c1af';
+      ctx.fillStyle = L.sleeve;
       ctx.beginPath();
       ctx.moveTo(shX, shY); ctx.lineTo(handX + 0.05 * U, handY - 0.02 * U); ctx.lineTo(handX - 0.04 * U, handY + 0.08 * U); ctx.lineTo(0.22 * U, -1.26 * U);
       ctx.closePath(); ctx.fill();
       ctx.fillStyle = '#e0c2a0';
       ctx.beginPath(); ctx.arc(handX, handY + 0.02 * U, 0.05 * U, 0, Math.PI * 2); ctx.fill();
       // Left arm hangs by the sheath.
-      ctx.fillStyle = '#c9c1af';
+      ctx.fillStyle = L.sleeve;
       ctx.beginPath();
       ctx.moveTo(-0.29 * U, -1.44 * U); ctx.lineTo(-0.44 * U, -0.92 * U); ctx.lineTo(-0.33 * U, -0.88 * U); ctx.lineTo(-0.2 * U, -1.26 * U);
       ctx.closePath(); ctx.fill();

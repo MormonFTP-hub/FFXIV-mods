@@ -328,16 +328,19 @@
 
     snapshot(a) { return this.job.snapshot(a, this); }
 
-    // FFXIV damage formula at level 90 (6.x level modifiers). opts.auto: an auto-attack (weapon damage scaled by
-    // delay); opts.crit: always a critical hit.
+    // FFXIV damage formula at level 90 (6.x level modifiers). The attack power modifier is 195, or 156 for tanks
+    // (stats.apMod), and tanks add Tenacity. opts.auto: an auto-attack (weapon damage scaled by delay); opts.crit:
+    // always a critical hit.
     damage(potency, snap, isDot, opts) {
       const s = this.stats;
       opts = opts || {};
-      const fAP = Math.floor(195 * (snap.main - 390) / 390) + 100;
+      const fAP = Math.floor((s.apMod || 195) * (snap.main - 390) / 390) + 100;
       const fDET = Math.floor(140 * (s.det - 390) / 1900) + 1000;
+      const fTNC = s.ten ? Math.floor(100 * (s.ten - 400) / 1900) + 1000 : 1000;
       let fWD = Math.floor(390 * s.jobMod / 1000) + s.wd;
       if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
       let d = Math.floor(Math.floor(potency * fAP * fDET / 100) / 1000);
+      d = Math.floor(d * fTNC / 1000);
       if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - 400) / 1900) + 1000) / 1000);
       d = Math.floor(Math.floor(d * fWD / 100) * s.trait / 100);
       const critRate = Math.floor(200 * (s.crit - 400) / 1900 + 50) / 1000;

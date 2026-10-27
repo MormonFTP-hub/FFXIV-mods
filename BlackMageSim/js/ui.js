@@ -681,7 +681,7 @@ ${job.helpHtml(seq, ic)}
       let html = '<div class="jobnote">Pick a job, then the version of the game to play it as. Each version keeps its own hotbars.</div><div class="jobgrid">';
       for (const id of B.JOB_ORDER) {
         const def = B.JOBS[id];
-        html += `<div class="jobcard${id === cur.id ? ' on' : ''}"><div class="jh"><img src="${B.jobIcon(id)}" alt=""><div><b>${esc(def.name)}</b><small>${esc(def.abbr)} · ${def.role === 'caster' ? 'Magical ranged DPS' : def.role === 'melee' ? 'Melee DPS' : esc(def.role)}</small></div></div>`;
+        html += `<div class="jobcard${id === cur.id ? ' on' : ''}"><div class="jh"><img src="${B.jobIcon(id)}" alt=""><div><b>${esc(def.name)}</b><small>${esc(def.abbr)} · ${{ caster: 'Magical ranged DPS', melee: 'Melee DPS', tank: 'Tank', healer: 'Healer', ranged: 'Physical ranged DPS' }[def.role] || esc(def.role)}</small></div></div>`;
         for (const v of def.versions) {
           const on = id === cur.id && v.id === cur.version;
           html += `<button class="ver${on ? ' on' : ''}" data-job="${id}" data-ver="${v.id}"><b>${esc(v.label)}</b><small>${esc(v.note || '')}</small></button>`;

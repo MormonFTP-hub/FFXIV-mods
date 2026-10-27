@@ -13,18 +13,33 @@
       this.sc = scene;
       this.settings = settings;
       this.ch = null;
+      this.ready = false;
       this.ok = !!(window.THREE && B.GAME_MODELS && B.GAME_MODELS.jobs);
       if (this.ok) {
-        try { this.build(); } catch (err) { console.error('Game models failed to load:', err); this.ok = false; }
+        this.load().catch((err) => { console.error('Game models failed to load:', err); this.ok = false; this.setEnabled(); });
       }
-      this.canvas.style.display = this.active() ? '' : 'none';
+      this.canvas.style.display = 'none';
     }
 
-    active() { return this.ok && this.settings.gameModels !== false && !!this.ch; }
+    active() { return this.ok && this.ready && this.settings.gameModels !== false && !!this.ch; }
+
+    // The binary is gzipped (tools/export_models.py); the browser inflates it, then the scene is built.
+    async load() {
+      const G = B.GAME_MODELS;
+      const bin = atob(G.bin), bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      if (G.binEncoding === 'gzip') {
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+        this.buf = await new Response(stream).arrayBuffer();
+      } else this.buf = bytes.buffer;
+      this.build();
+      this.ready = true;
+      this.setJob();
+    }
 
     // Show the current job's character, building it the first time.
     setJob() {
-      if (!this.ok) return;
+      if (!this.ok || !this.ready) return;
       const id = B.jobId, G = B.GAME_MODELS;
       if (this.ch) this.ch.group.visible = false;
       this.ch = null;
@@ -41,7 +56,7 @@
 
     setEnabled() {
       this.canvas.style.display = this.active() ? '' : 'none';
-      if (this.ok) this.showDummy(this.settings.dummy);
+      if (this.ok && this.ready) this.showDummy(this.settings.dummy);
     }
 
     view(spec) {
@@ -53,13 +68,10 @@
     // ---------- building ----------
     build() {
       const T = THREE, G = B.GAME_MODELS;
-      const bin = atob(G.bin), bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      this.buf = bytes.buffer;
-
       this.renderer = new T.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true });
       this.renderer.setClearColor(0x000000, 0);
       this.renderer.outputEncoding = T.sRGBEncoding;
+      if (this.sc.W) this.resize(this.sc.W, this.sc.H, this.sc.dpr);
       this.scene3 = new T.Scene();
       this.camera = new T.PerspectiveCamera(55, 1, 0.1, 300);
 
@@ -88,7 +100,6 @@
       this.showDummy(this.settings.dummy);
       this.tipWorld = new T.Vector3();
       this.wire();
-      this.setJob();
     }
 
     // Textures are shared between materials and characters (G.textures holds each once).
@@ -316,7 +327,7 @@
 
     // ---------- frame ----------
     resize(w, h, dpr) {
-      if (!this.ok) return;
+      if (!this.renderer) return;
       this.renderer.setPixelRatio(Math.min(dpr, 1.5));
       this.renderer.setSize(w, h, false);
       this.canvas.style.width = w + 'px';

@@ -79,6 +79,20 @@
           this.noise('bandpass', 3000, 1, 0.22, 0.45); this.tone('sine', 120, 50, 0.4, 0.3);
           this.tone('triangle', 2400, 2350, 0.5, 0.04, 0.05);
           break;
+        // Gunbreaker: a swish, and a gunshot crack and thump when a cartridge fires.
+        case 'gnbSlash': case 'gnbSlash2': case 'gnbFang': case 'gnbFang2': case 'gnbFang3':
+          this.noise('bandpass', 3600, 1.1, 0.15, 0.32); this.tone('sawtooth', 820, 260, 0.12, 0.04);
+          if (kind !== 'gnbSlash' && kind !== 'gnbSlash2') { this.noise('highpass', 2500, 0.8, 0.08, 0.45, 0.05); this.tone('sine', 140, 50, 0.25, 0.35, 0.05); }
+          break;
+        case 'gnbBarrel': case 'gnbShot': case 'gnbCont': case 'gnbBurst':
+          this.noise('highpass', 2000, 0.8, 0.09, 0.55); this.tone('sine', 150, 45, 0.3, 0.4);
+          if (kind === 'gnbBurst') this.noise('lowpass', 900, 1, 0.5, 0.4, 0.04);
+          break;
+        case 'gnbSonic': case 'gnbZone': case 'gnbBow': case 'gnbDouble':
+          this.noise('highpass', 1800, 0.8, 0.1, 0.6); this.noise('lowpass', 800, 0.8, 0.7, 0.55, 0.05);
+          this.tone('sine', 90, 30, 0.7, 0.5, 0.03);
+          if (kind === 'gnbDouble') { this.noise('highpass', 2200, 0.8, 0.1, 0.6, 0.14); this.tone('sine', 80, 30, 0.6, 0.45, 0.16); }
+          break;
         case 'midare': case 'ogi': case 'senei': case 'shoha':
           [0, 0.07, 0.14].forEach(d => this.noise('bandpass', 3200 + d * 6000, 1, 0.16, 0.4, d));
           this.noise('lowpass', 1100, 0.8, 0.6, 0.5, 0.1); this.tone('sine', 90, 35, 0.6, 0.45, 0.1);

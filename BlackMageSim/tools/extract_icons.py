@@ -67,6 +67,30 @@ SAM_STATUSES = {
     "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
 }
 
+GNB_ACTIONS = {
+    "keenEdge": (16137, "Keen Edge"), "noMercy": (16138, "No Mercy"), "brutalShell": (16139, "Brutal Shell"),
+    "camouflage": (16140, "Camouflage"), "royalGuard": (16142, "Royal Guard"), "lightningShot": (16143, "Lightning Shot"),
+    "solidBarrel": (16145, "Solid Barrel"), "gnashingFang": (16146, "Gnashing Fang"), "savageClaw": (16147, "Savage Claw"),
+    "nebula": (16148, "Nebula"), "wickedTalon": (16150, "Wicked Talon"), "aurora": (16151, "Aurora"),
+    "superbolide": (16152, "Superbolide"), "sonicBreak": (16153, "Sonic Break"), "roughDivide": (16154, "Rough Divide"),
+    "continuation": (16155, "Continuation"), "jugularRip": (16156, "Jugular Rip"), "abdomenTear": (16157, "Abdomen Tear"),
+    "eyeGouge": (16158, "Eye Gouge"), "bowShock": (16159, "Bow Shock"), "heartOfLight": (16160, "Heart of Light"),
+    "burstStrike": (16162, "Burst Strike"), "bloodfest": (16164, "Bloodfest"), "blastingZone": (16165, "Blasting Zone"),
+    "heartOfCorundum": (25758, "Heart of Corundum"), "hypervelocity": (25759, "Hypervelocity"),
+    "doubleDown": (25760, "Double Down"),
+    "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
+    "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
+    "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+GNB_STATUSES = {
+    "noMercy": "No Mercy", "brutalShell": "Brutal Shell", "royalGuard": "Royal Guard", "camouflage": "Camouflage",
+    "nebula": "Nebula", "aurora": "Aurora", "superbolide": "Superbolide", "sonicBreak": "Sonic Break",
+    "bowShock": "Bow Shock", "readyToRip": "Ready to Rip", "readyToTear": "Ready to Tear",
+    "readyToGouge": "Ready to Gouge", "readyToBlast": "Ready to Blast", "heartOfCorundum": "Heart of Corundum",
+    "heartOfLight": "Heart of Light", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
+    "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -75,6 +99,9 @@ JOBS = {
     # Tsubame-gaeshi (003180) and Kaeshi: Goken (003182). No current action uses either icon.
     "sam": {"actions": SAM_ACTIONS, "statuses": SAM_STATUSES, "overrides": {"kaiten": 3168, "kaeshiHiganbana": 3181},
             "tincture": "Grade 6 Tincture of Strength", "classjob": 34},
+    # Rough Divide (removed in 7.0 for Trajectory) keeps its icon at 003418, between Sonic Break and Continuation.
+    "gnb": {"actions": GNB_ACTIONS, "statuses": GNB_STATUSES, "overrides": {"roughDivide": 3418},
+            "tincture": "Grade 8 Tincture of Strength", "classjob": 37},
 }
 
 

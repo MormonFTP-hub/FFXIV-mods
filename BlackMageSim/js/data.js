@@ -69,6 +69,36 @@ window.BLM = window.BLM || {};
         desc: 'Stuns target.\nDuration: 3s',
       },
     },
+    tank: {
+      rampart: {
+        name: 'Rampart', kind: 'ogcd', recast: 90, role: true,
+        desc: 'Reduces damage taken by 20%.\nDuration: 20s',
+      },
+      lowBlow: {
+        name: 'Low Blow', kind: 'ogcd', recast: 25, role: true, target: true, range: 3,
+        desc: 'Stuns target.\nDuration: 5s',
+      },
+      provoke: {
+        name: 'Provoke', kind: 'ogcd', recast: 30, role: true, target: true, range: 25,
+        desc: 'Gesture threateningly, placing yourself at the top of a target\'s enmity list and increasing enmity to that of the current enmity leader plus a set amount.',
+      },
+      interject: {
+        name: 'Interject', kind: 'ogcd', recast: 30, role: true, target: true, range: 3,
+        desc: 'Interrupts the use of a target\'s action.',
+      },
+      reprisal: {
+        name: 'Reprisal', kind: 'ogcd', recast: 60, role: true, target: true, range: 5,
+        desc: 'Reduces damage dealt by nearby enemies by 10%.\nDuration: 10s',
+      },
+      armsLength: {
+        name: 'Arm\'s Length', kind: 'ogcd', recast: 120, role: true,
+        desc: 'Creates a barrier nullifying most knockback and draw-in effects.\nDuration: 6s',
+      },
+      shirk: {
+        name: 'Shirk', kind: 'ogcd', recast: 120, role: true,
+        desc: 'Diverts 25% of enmity to target party member.',
+      },
+    },
   };
 
   B.GENERAL_ACTIONS = {
@@ -100,6 +130,8 @@ window.BLM = window.BLM || {};
     bloodbath: { name: 'Bloodbath', self: true, icon: 'st_bloodbath' },
     armsLength: { name: 'Arm\'s Length', self: true, icon: 'st_armslength' },
     feint: { name: 'Feint', self: false, icon: 'st_feint' },
+    rampart: { name: 'Rampart', self: true, icon: 'st_rampart' },
+    reprisal: { name: 'Reprisal', self: false, icon: 'st_reprisal' },
   };
 
   // Role actions that just put a status up.
@@ -114,6 +146,9 @@ window.BLM = window.BLM || {};
     secondWind: () => {},
     armsLength: (e) => e.addStatus('armsLength', 6),
     legSweep: () => {},
+    rampart: (e) => e.addStatus('rampart', 20),
+    reprisal: (e) => e.addTStatus('reprisal', 10),
+    lowBlow: () => {}, provoke: () => {}, interject: () => {}, shirk: () => {},
     sprint: (e) => e.addStatus('sprint', 10),
     tincture: (e) => e.addStatus('medicated', 30),
   };
