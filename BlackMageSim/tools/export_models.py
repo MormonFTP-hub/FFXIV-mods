@@ -134,6 +134,8 @@ JOB_MODELS = {
         "weapons": [("main", {"kind": "weapon", "id": 1805, "body": 1, "variant": 1}, "n_buki_r"),
                     ("off", {"kind": "weapon", "id": 1855, "body": 1, "variant": 1}, "n_buki_l")],
         "stance": "bt_dgr_dgr",
+        # The dagger stance has only an idle; the fist stance's run keeps the hands free the same way.
+        "run": ("bt_2ff_emp/resident/move_a.pap", "cbbm_02f_lp0"),
         "attrs": {},
     },
     # Heavensward Machinist: Machinist's (the 3.x artifact gear) and the Alexandrian Metal Cannon (w2018, holster w2099).
@@ -373,6 +375,21 @@ def export_rigid(pack, sc, blob, label, opaque=False):
     return meshes, mats
 
 
+# An off-hand can use its main hand's material (the Alexandrian Metal Daggers' w1855 names /mt_w1805b0001_a.mtrl),
+# which lives in that weapon's folder, not the off-hand's.
+_material_path = resolve.nonhuman_material_path
+
+
+def _weapon_material_path(name, folder, material_id):
+    m = re.match(r"/?mt_w(\d{4})b(\d{4})_", name)
+    if m and f"/w{m.group(1)}/" not in folder:
+        folder = f"chara/weapon/w{m.group(1)}/obj/body/b{m.group(2)}"
+    return _material_path(name, folder, material_id)
+
+
+resolve.nonhuman_material_path = _weapon_material_path
+
+
 def export_weapon(pack, label, spec, bone):
     sc, blob = resolve.creature(None, spec)
     meshes, mats = export_rigid(pack, sc, blob, label)
@@ -475,7 +492,7 @@ def export_anims(pack, job, cfg):
     stance = cfg["stance"]
     out = {"basic": {}, "actions": {}}
     basic = {"idle": (stance + "/resident/idle.pap", "cbbm_id0"),
-             "run": (stance + "/resident/move_a.pap", "cbbm_02f_lp0"),
+             "run": cfg.get("run") or (stance + "/resident/move_a.pap", "cbbm_02f_lp0"),
              "item": ("bt_common/resident/action.pap", "cbbm_itm_1")}
     seen = _seen
     for k, (rel, name) in basic.items():
