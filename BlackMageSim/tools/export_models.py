@@ -59,6 +59,14 @@ JOB_MODELS = {
         "stance": "bt_rod_emp",
         "attrs": {"top": {"atr_ude": True}},
     },
+    # Stormblood Black Mage: Seventh Hell (the SB artifact gear) and the Omega Rod from Alphascape (4.4).
+    "blm-sb": {
+        "actionsFrom": "blm",
+        "gear": {s: [324, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1001, "body": 71, "variant": 1}, "n_buki_r")],
+        "stance": "bt_rod_emp",
+        "attrs": {"top": {"atr_ude": True}},
+    },
     "sam": {
         "gear": {s: [785, 1] for s in SLOTS},                              # Sakonji (Endwalker AF)
         "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 63, "variant": 1}, "n_buki_r"),   # Classical Samurai Blade (6.1)
