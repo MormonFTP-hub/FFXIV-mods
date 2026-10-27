@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -178,7 +178,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. HW 3.0–3.05 (2015-06-23 → 2015-08-24): Form Shift, Meditation / The Forbidden Chakra, Elixir Field, Purification, Tornado Kick (60s, needs GL III). **Rating 4/5:** Tornado Kick and the Forbidden Chakra arrive.
 4. HW 3.07–3.57 (2015-08-25 → 2017-06-19): Tornado Kick 40s; GL 14s, 10/20/30%. **Rating 5/5:** GL III upkeep, Tornado Kick and Chakra; a hardcore Monk favourite.
 5. SB 4.0–4.18 (2017-06-20 → 2018-01-29): Riddle of Earth, Wind Tackle / Riddle of Wind, Riddle of Fire (+30% but +15% weaponskill recast), Brotherhood; GL 16s; Perfect Balance 180s; Mantra 120s. **Rating 4/5:** Riddle of Fire with its recast penalty; intense.
-6. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Perfect Balance 60s; Mantra 90s; Riddle of Wind grants GL; Brotherhood affects self (party in 4.3). **Rating 5/5:** SB Monk with Brotherhood and GL juggling; often named the most fun Monk.
+6. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Perfect Balance 60s; Mantra 90s; Riddle of Wind grants GL; Brotherhood affects self (party in 4.3). ← built **Rating 5/5:** SB Monk with Brotherhood and GL juggling; often named the most fun Monk.
 7. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): Enlightenment, Anatman, Six-sided Star; 4th GL stack under Fists of Wind; Perfect Balance 120s; Shoulder Tackle 2 charges; Tornado Kick needs max GL. **Rating 3/5:** GL IV under Fists of Wind; downtime hurt.
 8. ShB 5.05–5.25 (2019-07-29 → 2020-08-10): forms 15s; Riddle of Fire 25%, no recast penalty; Form Shift refreshes GL in Coeurl form. **Rating 3/5:** GL upkeep through downtime; Monk topped dissatisfaction in a 5.25 survey.
 9. ShB 5.3–5.35 (2020-08-11 → 2020-12-07): Perfect Balance 90s; Form Shift GL refresh in any form. **Rating 3/5:** Cheaper GL refresh; still mixed.
@@ -197,7 +197,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 5. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Battle Litany, Blood of the Dragon (+30% Jump/Spineshatter, 15s, 60s), Fang and Claw, Wheeling Thrust, Geirskogul. **Rating 4/5:** Blood of the Dragon upkeep with Fang and Claw; liked.
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Dragon Gauge with 4 Eyes → Life of the Dragon; Mirage Dive, Nastrond, Dragon Sight, Sonic Thrust; Blood of the Dragon 15s. **Rating 4/5:** Eyes and Life of the Dragon debut.
 7. SB 4.05–4.06 (2017-07-17 → 2017-10-09): Blood of the Dragon 20s (+10s from Sonic Thrust, max 30s); Elusive Jump 30s; Dragon Sight 12y. **Rating 4/5:** Blood extended by Sonic Thrust; liked.
-8. SB 4.1–4.58 (2017-10-10 → 2019-07-01): 3 Eyes max; Geirskogul 30s; Blood can't be used during Life. **Rating 5/5:** Eyes, Life of the Dragon and Mirage Dive; Dragoon's most loved form.
+8. SB 4.1–4.58 (2017-10-10 → 2019-07-01): 3 Eyes max; Geirskogul 30s; Blood can't be used during Life. ← built **Rating 5/5:** Eyes, Life of the Dragon and Mirage Dive; Dragoon's most loved form.
 9. ShB 5.0 (2019-07-02 → 2019-07-14): Heavy Thrust removed, Disembowel grants Power Surge; Geirskogul needs 2 eyes; Blood 30s; Stardiver. **Rating 4/5:** Stardiver; Blood upkeep remains.
 10. ShB 5.01–5.58 (2019-07-15 → 2021-12-06): Power Surge 30s; 5.1 Blood recast 25s. **Rating 4/5:** Same kit; well liked.
 11. EW 6.0–6.28 (2021-12-07 → 2023-01-09): Blood of the Dragon becomes a trait; Life of the Dragon fixed 20s; Wyrmwind Thrust; Spineshatter Dive 2 charges. **Rating 3/5:** Blood of the Dragon becomes a trait; simpler, mixed.

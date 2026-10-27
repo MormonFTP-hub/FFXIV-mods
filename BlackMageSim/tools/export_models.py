@@ -67,6 +67,23 @@ JOB_MODELS = {
         "stance": "bt_rod_emp",
         "attrs": {"top": {"atr_ude": True}},
     },
+    # Stormblood Monk: Seventh Heaven (the 4.x artifact gear) and the Omega Knuckles, a pair (w1601 and w1651).
+    "mnk-sb": {
+        "actionsFrom": "mnk",
+        "gear": {s: [323, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1601, "body": 2, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 1651, "body": 2, "variant": 1}, "n_buki_l")],
+        "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
+    # Stormblood Dragoon: Trueblood (the 4.x artifact gear) and the Omega Trident.
+    "drg-sb": {
+        "actionsFrom": "drg",
+        "gear": {s: [321, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 501, "body": 73, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sp_emp",
+        "attrs": {},
+    },
     # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
     "sch-sb": {
         "actionsFrom": "sch",

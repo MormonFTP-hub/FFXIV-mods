@@ -452,6 +452,7 @@
             if (h.expires !== undefined && now > h.expires + EPS) continue;
             const r = this.damage(h.potency, h.snap, false, h);
             this.emit('hit', { id: h.id, amount: r.amount, crit: r.crit, dh: r.dh, dot: false, auto: !!h.auto, positional: h.positional, t: now });
+            if (h.onResult) h.onResult(r);          // a job reacting to how it landed (Monk's chakra on crits)
             // The rest of the pack, each with the action's falloff (a job can pass its own, e.g. a combo's).
             const aoe = h.aoe !== undefined ? h.aoe : a.aoe;
             if (aoe && !h.auto) {

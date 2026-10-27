@@ -172,6 +172,51 @@ SCH_STATUSES = {
     "swiftcast": "Swiftcast", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Dragoon (Stormblood 4.x). Row 85 is now Lance Charge; in Stormblood it was Blood for Blood.
+DRG_ACTIONS = {
+    "trueThrust": (75, "True Thrust"), "vorpalThrust": (78, "Vorpal Thrust"), "fullThrust": (84, "Full Thrust"),
+    "impulseDrive": (81, "Impulse Drive"), "disembowel": (87, "Disembowel"), "chaosThrust": (88, "Chaos Thrust"),
+    "heavyThrust": (79, "Heavy Thrust"), "piercingTalon": (90, "Piercing Talon"), "doomSpike": (86, "Doom Spike"),
+    "sonicThrust": (7397, "Sonic Thrust"), "fangAndClaw": (3554, "Fang and Claw"), "wheelingThrust": (3556, "Wheeling Thrust"),
+    "jump": (92, "Jump"), "spineshatterDive": (95, "Spineshatter Dive"), "dragonfireDive": (96, "Dragonfire Dive"),
+    "mirageDive": (7399, "Mirage Dive"), "geirskogul": (3555, "Geirskogul"), "nastrond": (7400, "Nastrond"),
+    "bloodOfTheDragon": (3553, "Blood of the Dragon"), "lifeSurge": (83, "Life Surge"), "bloodForBlood": (85, "Lance Charge"),
+    "battleLitany": (3557, "Battle Litany"), "dragonSight": (7398, "Dragon Sight"), "elusiveJump": (94, "Elusive Jump"),
+    "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
+    "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "invigorate": (7544, "Invigorate"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+DRG_STATUSES = {
+    "heavyThrust": 115, "lifeSurge": 116, "chaosThrust": 118, "piercingResDown": 820, "bloodOfTheDragon": 736,
+    "battleLitany": 786, "sharperFangAndClaw": 802, "enhancedWheelingThrust": 803, "rightEye": 1183, "diveReady": 1243,
+    "bloodForBlood": "Blood for Blood", "lifeOfTheDragon": "Life of the Dragon",
+    "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+}
+# Monk (Stormblood 4.2–4.58).
+MNK_ACTIONS = {
+    "bootshine": (53, "Bootshine"), "trueStrike": (54, "True Strike"), "snapPunch": (56, "Snap Punch"),
+    "dragonKick": (74, "Dragon Kick"), "twinSnakes": (61, "Twin Snakes"), "demolish": (66, "Demolish"),
+    "armOfTheDestroyer": (62, "Arm of the Destroyer"), "oneIlmPunch": (72, "One Ilm Punch"), "rockbreaker": (70, "Rockbreaker"),
+    "formShift": (4262, "Form Shift"), "meditation": (3546, "Meditation"), "forbiddenChakra": (3547, "the Forbidden Chakra"),
+    "tornadoKick": (3543, "Tornado Kick"), "steelPeak": (64, "Steel Peak"), "howlingFist": (67, "Howling Fist"),
+    "elixirField": (3545, "Elixir Field"), "shoulderTackle": (71, "Shoulder Tackle"), "fireTackle": (7866, "Fire Tackle"),
+    "windTackle": (7865, "Wind Tackle"), "earthTackle": (7864, "Earth Tackle"), "riddleOfWind": (7868, "Riddle of Wind"),
+    "internalRelease": (59, "Internal Release"), "perfectBalance": (69, "Perfect Balance"), "riddleOfFire": (7395, "Riddle of Fire"),
+    "brotherhood": (7396, "Brotherhood"), "riddleOfEarth": (7394, "Riddle of Earth"), "fistsOfFire": (63, "Fists of Fire"),
+    "fistsOfWind": (73, "Fists of Wind"), "fistsOfEarth": (60, "Fists of Earth"), "mantra": (65, "Mantra"),
+    "purification": (3544, "Purification"),
+    "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
+    "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "invigorate": (7544, "Invigorate"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+MNK_STATUSES = {
+    "gl1": 111, "gl2": 112, "gl3": 113, "opoOpo": 107, "raptor": 108, "coeurl": 109, "perfectBalance": 110,
+    "twinSnakes": 101, "bluntResDown": 98, "demolish": 246, "riddleOfWind": 1244, "internalRelease": "Internal Release",
+    "riddleOfFire": "Riddle of Fire", "brotherhood": "Brotherhood", "fistsOfFire": "Fists of Fire",
+    "fistsOfWind": "Fists of Wind", "fistsOfEarth": "Fists of Earth", "riddleOfEarth": "Riddle of Earth", "mantra": "Mantra",
+    "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -201,6 +246,18 @@ JOBS = {
                         "embrace": "120,230,170", "whisperingDawn": "150,240,170", "feyCovenant": "150,220,200",
                         "feyIllumination": "170,240,200", "dissipation": "130,210,180"},
             "tincture": "Grade 8 Tincture of Mind", "classjob": 28},
+    # Removed in later expansions: struck through (uncross) or pointing at the removed-action icon (overrides).
+    "drg": {"actions": DRG_ACTIONS, "statuses": DRG_STATUSES, "overrides": {"spineshatterDive": 2579, "dragonSight": 2587},
+            "uncross": {"spineshatterDive": "120,150,255", "bloodOfTheDragon": "230,70,60", "heavyThrust": "230,180,120",
+                        "piercingTalon": "200,200,230", "elusiveJump": "120,170,255"},
+            "tincture": "Grade 8 Tincture of Strength", "classjob": 22},
+    "mnk": {"actions": MNK_ACTIONS, "statuses": MNK_STATUSES,
+            "overrides": {"steelPeak": 211, "howlingFist": 2530, "meditation": 218},
+            "uncross": {"steelPeak": "240,170,90", "internalRelease": "240,120,80", "fistsOfFire": "255,110,60",
+                        "fistsOfEarth": "200,170,110", "fistsOfWind": "140,230,170", "shoulderTackle": "230,170,110",
+                        "purification": "160,210,255", "mantra": "150,230,160", "oneIlmPunch": "230,150,90",
+                        "armOfTheDestroyer": "240,170,90"},
+            "tincture": "Grade 8 Tincture of Strength", "classjob": 20},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",
@@ -377,7 +434,10 @@ def main():
         for key, (rid, _) in acts.items():
             put(f"{job}:{key}", cfg["overrides"].get(key) or action.value(rid, icol), cfg.get("uncross", {}).get(key))
 
-        sids = {k: (v if isinstance(v, int) else by_name[v]) for k, v in cfg["statuses"].items()}
+        sids = {k: (v if isinstance(v, int) else by_name.get(v)) for k, v in cfg["statuses"].items()}
+        for k in [k for k, v in sids.items() if v is None]:
+            print(f"  no status named {cfg['statuses'][k]!r} ({job}:{k}); the drawn icon stays")
+            del sids[k]
         sicol = icon_col(status, list(sids.values()), 10000)
         for key, rid in sids.items():
             base = status.value(rid, sicol)
