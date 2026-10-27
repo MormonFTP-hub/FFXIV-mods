@@ -16,14 +16,14 @@ The plan for the sim: every job, in every version it has had. This is the list o
 
 ## Endwalker first
 
-Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Built ones are ticked.
+Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Built ones are ticked (4 so far).
 
 | Job | Endwalker versions |
 |---|---|
 | Paladin | 6.0–6.08 · 6.1–6.28 · 6.3–6.38 · 6.4–6.58 (minor) |
 | Warrior | 6.0–6.08 · 6.1–6.58 |
 | Dark Knight | 6.0–6.08 · 6.1–6.18 · 6.2–6.58 |
-| Gunbreaker | 6.0–6.18 · **6.2–6.58 ✔** |
+| Gunbreaker | **6.0–6.18 ✔** · **6.2–6.58 ✔** |
 | White Mage | 6.0–6.08 · 6.1–6.18 · 6.2–6.28 (minor) · 6.3–6.58 |
 | Scholar | 6.0–6.08 · 6.1–6.58 (minor) |
 | Astrologian | 6.0–6.18 · 6.2–6.58 |
@@ -92,7 +92,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ### Gunbreaker (from 5.0)
 1. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): 2 Cartridges max; Gnashing Fang 30s with Savage Claw / Wicked Talon as separate buttons; Bloodfest 90s (+2); Sonic Break 60s; Nebula 10s.
 2. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Nebula 15s.
-3. EW 6.0–6.18 (2021-12-07 → 2022-08-22): 3 Cartridges (Bloodfest +3, 90s); Double Down; Hypervelocity; Gnashing Fang combo on one button; Aurora 2 charges.
+3. EW 6.0–6.18 (2021-12-07 → 2022-08-22): 3 Cartridges (Bloodfest +3, 90s); Double Down; Hypervelocity; Gnashing Fang combo on one button; Aurora 2 charges. ← built
 4. EW 6.2–6.58 (2022-08-23 → 2024-07-01): Bloodfest 120s; Continuation 5y. ← built
 5. DT 7.0–7.05 (2024-07-02 → 2024-11-11): Ready to Break (Sonic Break a 2.5s GCD); Ready to Reign → Reign of Beasts / Noble Blood / Lion Heart; Fated Brand; Great Nebula; Trajectory. Bloodfest still 120s.
 6. DT 7.1–7.38 (2024-11-12 → 2025-12-15): Double Down costs 1; Superbolide 50% HP.

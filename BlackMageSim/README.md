@@ -10,6 +10,7 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 |---|---|---|
 | Black Mage | Endwalker 6.5 | Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23% |
 | Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
+| Gunbreaker | Endwalker 6.0–6.18 | Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
 
 More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files). The full list of versions to build, every job from 2.0 to 7.57 (217 of them, with Endwalker's 44 first), is in [docs/job-versions.md](docs/job-versions.md).
@@ -90,17 +91,18 @@ python BlackMageSim/tools/build_single.py
 - **Kenki, Sen and Meditation.** A gauge with the Kenki blade (max 100), the three Sen and three Meditation pips. Iaijutsu and Ogi Namikiri add Meditation; three let you use Shoha.
 - **Timing.** Type your skill speed or your GCD with Fuka (the 2.14 tier is 579). Fuka takes 13% off weaponskills, Iaijutsu casts and auto-attacks. Auto-attacks start when you engage and keep going while you're in reach.
 
-### Gunbreaker (Endwalker 6.2–6.58, the long Bloodfest)
+### Gunbreaker (Endwalker 6.0–6.18 and 6.2–6.58)
 
 - **The 6.x kit.** Keen Edge, Brutal Shell, Solid Barrel, Lightning Shot, Burst Strike, Gnashing Fang → Savage Claw → Wicked Talon on one button, Continuation (Jugular Rip, Abdomen Tear, Eye Gouge, Hypervelocity), Sonic Break, Double Down, No Mercy, Bloodfest, Blasting Zone, Bow Shock, Rough Divide (2 charges), Royal Guard, Camouflage, Nebula, Aurora (2 charges), Superbolide, Heart of Light, Heart of Corundum, the tank role actions, Sprint and a Grade 8 Tincture of Strength.
-- **Powder Gauge.** Three cartridges. Solid Barrel adds one at the end of its combo, Bloodfest adds three (and is on its 120s recast). Gnashing Fang and Burst Strike cost one, Double Down two. Cartridge weaponskills don't break the Keen Edge combo.
+- **Two versions.** 6.0–6.18 has Bloodfest on 90s, so it only lines up with No Mercy every 3 minutes, and Continuation reaches 3 yalms; 6.2–6.58 has the 120s Bloodfest and 5-yalm Continuation. Each has its own potencies and gear (6.0 item level 600 against 6.5 item level 665).
+- **Powder Gauge.** Three cartridges. Solid Barrel adds one at the end of its combo, Bloodfest adds three. Gnashing Fang and Burst Strike cost one, Double Down two. Cartridge weaponskills don't break the Keen Edge combo.
 - **No Mercy.** +20% damage for 20s every 60s. DoTs from Sonic Break and Bow Shock keep the bonus they were applied with.
 - **Tank damage.** Tanks use the lower attack power modifier (156 at level 90 against 195) and Tenacity adds to their damage.
 
 ### Both
 
 - **HUD.** Hotbars with the GCD sweep, cooldown numbers, charge counts, MP cost and proc borders. Also a cast bar, party list, target bar with your DoT, buff row, battle log, flytext and the job's Endwalker-style gauge.
-- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear, and the Gunbreaker bot about 8,400 in 6.5 gear.
+- **Parses.** The meter starts on your first hit, or at the end of a countdown. Pulls end after 10s of not acting, or at a fixed pull length from Settings. Each pull gets a breakdown: DPS, GCD uptime, per-action damage and crit/DH, and a timeline of every cast and weave. DPS is coloured against a scripted bot playing that job version. The colours are a rough guide only, with no raid buffs. The Samurai bot does about 8,200 DPS in its 6.0 gear; the Gunbreaker bot about 5,300 in 6.0–6.18 (6.0 gear) and 8,400 in 6.2–6.58 (6.5 gear).
 
 ## Notes on accuracy
 
@@ -136,6 +138,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **1.6.1**: Gunbreaker's other Endwalker version, 6.0–6.18, with Bloodfest on its original 90s recast, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures. Pick it under Gunbreaker in the job window (`J`).
 - **1.6.0**: Gunbreaker, Endwalker 6.2–6.58, the version with Bloodfest on its 120s recast. Comes with the Powder Gauge, the Gnashing Fang and Continuation chains, its game icons, model and animations, gunblade effects and sounds, and an opener in the help. The engine now does tank damage (the 156 attack modifier and Tenacity) and has the tank role actions. The model data is gzipped, so three jobs still fit in a share file under 10 MB.
 - **1.5.1**: Mouse camera like the game's standard controls. Right drag turns the camera and your character (A/D strafe, S backpedals at 2.4 yalms a second), left drag turns only the camera, both buttons run forward, and the wheel zooms. The camera no longer swings round to the dummy on its own (a Settings switch brings that back), and Settings has a mouse camera speed.
 - **1.5.0**: Jobs and versions. Pick a job and the patch to play it at (`J`); each version keeps its own hotbars. Samurai joins as Endwalker 6.08, the last patch with Hissatsu: Kaiten. It comes with its gauge, combos and positionals, auto-attacks, Iaijutsu and Tsubame-gaeshi, game icons, model and animations, sword effects and sounds, and its opener in the help. The engine is now shared, with each job version in its own file.
