@@ -12,7 +12,7 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 | Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
 
-More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files).
+More jobs and expansions go in as `js/jobs/<job>_<version>.js`, one file per version (see Files). The full list of versions to build, every job from 2.0 to 7.57 (217 of them, with Endwalker's 44 first), is in [docs/job-versions.md](docs/job-versions.md).
 
 ## Playing
 
