@@ -9,6 +9,7 @@ Press `J` (or the job button, top left) to pick a job, then the patch to play it
 | Job | Version | What makes it that version |
 |---|---|---|
 | Black Mage | Endwalker 6.5 | Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23% |
+| Black Mage | Shadowbringers 5.0–5.58 | Level 80. Enochian as a button (30s, lost when Astral Fire or Umbral Ice drops), Xenoglossy 750, Despair 380, one-charge Sharpcast and Triplecast, 18s procs, Spaekona's gear and the Edenmorn Rod |
 | Samurai | Endwalker 6.08 (Kaiten) | Hissatsu: Kaiten, Midare Setsugekka 660, Kaeshi: Setsugekka 990. Patch 6.1 (April 2022) removed Kaiten and reworked the job, so 6.0–6.08 is the whole Kaiten era |
 | Gunbreaker | Endwalker 6.0–6.18 | Bloodfest on a 90s recast against the 60s No Mercy, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures |
 | Gunbreaker | Endwalker 6.2–6.58 | Bloodfest on a 120s recast (6.2 raised it from 90s), Double Down for 2 cartridges, Sonic Break as a 60s weaponskill, 6.4 potencies |
@@ -140,6 +141,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **1.8.0**: Black Mage, Shadowbringers 5.0–5.58, the first version below level 90. The engine now takes a level per job version, including level 80 as it was before Endwalker's stat squish (divisor 3300, gear with 5,000+ Intelligence), and a version can wear its own era's gear model. Numbers from the archived 5.58 job guide and The Balance's 5.58 guides; its opener is The Balance's for the 2.33 tier. Build order from here: every version, highest rating first.
 - **1.7.0**: Version ratings in the job window. Each playable version shows how players remember it (1–5, with the reason), each job has a history strip of every version it has had, coloured by rating, and the jobs not built yet are listed with theirs. The ratings live in `docs/job-versions.md`.
 - **1.6.1**: Gunbreaker's other Endwalker version, 6.0–6.18, with Bloodfest on its original 90s recast, Continuation at 3 yalms, the 6.11 potencies, 6.0-era gear and Grade 6 tinctures. Pick it under Gunbreaker in the job window (`J`).
 - **1.6.0**: Gunbreaker, Endwalker 6.2–6.58, the version with Bloodfest on its 120s recast. Comes with the Powder Gauge, the Gnashing Fang and Continuation chains, its game icons, model and animations, gunblade effects and sounds, and an opener in the help. The engine now does tank damage (the 156 attack modifier and Tenacity) and has the tank role actions. The model data is gzipped, so three jobs still fit in a share file under 10 MB.

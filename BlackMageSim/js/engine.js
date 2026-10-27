@@ -26,7 +26,7 @@
 
     // The job version's level and its formula modifiers.
     get level() { return this.job.level || 90; }
-    get lv() { return B.LEVELS[this.level]; }
+    get lv() { return B.LEVELS[this.job.levelKey || this.level]; }
 
     get stats() {
       const st = this.job.stats;

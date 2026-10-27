@@ -2,7 +2,8 @@
 // played differently before 6.0: Enochian is a button (30s recast, needs Astral Fire or Umbral Ice, lost when they
 // drop, and Fire IV and Blizzard IV need it), Polyglot builds while Enochian is up, no Paradox or Amplifier, one
 // charge each of Sharpcast and Triplecast, an 18s Firestarter and Thundercloud, and Foul still has a cast. Numbers
-// are the final 5.5x values from the FFXIV wiki's patch histories.
+// are the final 5.58 values: the archived 5.58 job guide (tooltips), the FFXIV wiki's pre-6.0 page revisions, and
+// The Balance's 5.58 guides for gear and openers. Level 80 here uses the pre-squish formula (B.LEVELS.shb80).
 (function (B) {
   const EW = B.BlackMageEW;
 
@@ -25,20 +26,20 @@
     },
     thunder3: {
       name: 'Thunder III', kind: 'gcd', school: 'thunder', potency: 70, mp: 400, cast: 2.5, delay: 0.8, target: true,
-      dot: { potency: 50, duration: 24 },
-      desc: 'Deals lightning damage with a potency of 70.\nAdditional Effect: Lightning damage over time\nPotency: 50\nDuration: 24s\nAdditional Effect: 10% chance after each tick that the next Thunder spell will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 18s',
+      dot: { potency: 40, duration: 24 },
+      desc: 'Deals lightning damage with a potency of 70.\nAdditional Effect: Lightning damage over time\nPotency: 40\nDuration: 24s\nAdditional Effect: 10% chance after each tick that the next Thunder spell will add its full damage over time amount to its initial damage, have no cast time, and cost no MP\nDuration: 18s',
     },
     fire4: {
       name: 'Fire IV', kind: 'gcd', school: 'fire', potency: 300, mp: 800, cast: 2.8, delay: 1.16, target: true,
       desc: 'Deals fire damage with a potency of 300.\nCan only be executed while under the effects of both Astral Fire and Enochian.',
     },
     blizzard4: {
-      name: 'Blizzard IV', kind: 'gcd', school: 'ice', potency: 300, mp: 800, cast: 2.5, delay: 1.16, target: true,
+      name: 'Blizzard IV', kind: 'gcd', school: 'ice', potency: 300, mp: 800, cast: 2.8, delay: 1.16, target: true,
       desc: 'Deals ice damage with a potency of 300.\nAdditional Effect: Grants 3 Umbral Hearts\nUmbral Heart Bonus: Nullifies Astral Fire\'s MP cost increase for Fire spells and reduces MP cost for Flare by one-third\nCan only be executed while under the effects of both Umbral Ice and Enochian.',
     },
     despair: {
       name: 'Despair', kind: 'gcd', school: 'fire', potency: 380, mp: 800, cast: 3.0, delay: 0.56, target: true,
-      desc: 'Deals fire damage with a potency of 380.\nAdditional Effect: Grants Astral Fire III\nDuration: 15s\nCan only be executed while under the effect of Astral Fire.\nRequires at least 800 MP and consumes all remaining MP.',
+      desc: 'Deals fire damage with a potency of 380.\nAdditional Effect: Grants Astral Fire III\nDuration: 15s\nCan only be executed while under the effects of both Astral Fire and Enochian.\nRequires at least 800 MP and consumes all remaining MP.',
     },
     xenoglossy: {
       name: 'Xenoglossy', kind: 'gcd', school: 'none', potency: 750, mp: 0, cast: 0, delay: 0.63, target: true,
@@ -46,7 +47,7 @@
     },
     foul: {
       name: 'Foul', kind: 'gcd', school: 'none', potency: 650, mp: 0, cast: 2.5, delay: 1.16, target: true,
-      desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 650 for the first enemy, and 10% less for all remaining enemies.\nPolyglot Cost: 1',
+      desc: 'Deals unaspected damage to target and all enemies nearby it with a potency of 650 for the first enemy, and 25% less for all remaining enemies.\nPolyglot Cost: 1',
     },
     scathe: {
       name: 'Scathe', kind: 'gcd', school: 'none', potency: 100, mp: 800, cast: 0, delay: 0.67, target: true,
@@ -89,6 +90,8 @@
       desc: 'Creates a barrier that nullifies damage totaling up to 30% of maximum HP.\nDuration: 20s',
     },
     ...B.ROLE_ACTIONS.caster,
+    // 5.x Lucid Dreaming: potency 50, so 500 MP a tick (Endwalker raised it to 55).
+    lucidDreaming: Object.assign({}, B.ROLE_ACTIONS.caster.lucidDreaming, { desc: 'Gradually restores MP.\nPotency: 50\nDuration: 21s' }),
     ...B.GENERAL_ACTIONS,
     tincture: B.tincture('int4'),
   };
@@ -97,13 +100,16 @@
     constructor() {
       super();
       this.level = 80;
+      this.levelKey = 'shb80';
       this.model = 'blm-shb';
       this.actions = ACTIONS;
       this.statuses = Object.assign({}, this.statuses, { enochian: { name: 'Enochian', self: true, icon: 'st_enochian' } });
-      this.cfg = { enochian: 1.15, polyMax: 2, fsDur: 18, tcDur: 18, sharpDur: 15, manafont: 3000, tincture: 'int4', marker: 'ENOCHIAN' };
-      // A rough 5.5 best-in-slot set (item level 535, Eden's Promise and augmented Crystarium); spell speed in Settings.
-      this.stats = { hp: 52000, main: 2412, mainStat: 'int', jobMod: 115, trait: 130, wd: 120, det: 1636, crit: 2214,
-        dh: 1448, speed: 1100, delay: 3.28 };
+      this.cfg = { enochian: 1.15, polyMax: 2, fsDur: 18, tcDur: 18, sharpDur: 15, manafont: 3000, tincture: 'int4', marker: 'ENOCHIAN', lucid: 500 };
+      // The Balance's 5.58 crit set at the 2.33 GCD (2030 spell speed): Edenmorn and Augmented Cryptlurker's gear
+      // with the Blade's Fury relic, item level 530–535, pre-squish stats. Spell speed is typed in Settings; their
+      // speed set was 3655 (2.17).
+      this.stats = { hp: 63000, main: 5604, mainStat: 'int', jobMod: 115, trait: 130, wd: 180, det: 1635, crit: 4142,
+        dh: 1964, speed: 2030, delay: 3.28 };
       this.selfStatusOrder = ['enochian', 'circleOfPower', 'leyLines', 'triplecast', 'swiftcast', 'sharpcast', 'firestarter',
         'thundercloud', 'medicated', 'lucidDreaming', 'manaward', 'surecast', 'sprint'];
       this.defaultBars = [
@@ -116,8 +122,8 @@
         ['Role Actions', ['swiftcast', 'lucidDreaming', 'addle', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 9000;
-      this.referenceGcd = 2.4;
+      this.referenceDps = 21500;     // a scripted 5.58 rotation at 2.33 parses about 19,000–20,500 on the dummy
+      this.referenceGcd = 2.33;
       this.startDistance = 10;
     }
 
@@ -132,7 +138,7 @@
     check(id, e) {
       const g = e.g;
       switch (id) {
-        case 'fire4': if (g.element <= 0 || !g.enochian) return g.element <= 0 ? 'Unable to execute action. Astral Fire required.' : 'Unable to execute action. Enochian required.'; break;
+        case 'fire4': case 'despair': if (g.element <= 0 || !g.enochian) return g.element <= 0 ? 'Unable to execute action. Astral Fire required.' : 'Unable to execute action. Enochian required.'; break;
         case 'blizzard4': case 'umbralSoul': if (g.element >= 0 || !g.enochian) return g.element >= 0 ? 'Unable to execute action. Umbral Ice required.' : 'Unable to execute action. Enochian required.'; break;
         case 'enochian': if (g.element === 0) return 'Unable to execute action. Astral Fire or Umbral Ice required.'; break;
       }
@@ -140,7 +146,7 @@
     }
 
     checkCompletion(id, e) {
-      if ((id === 'fire4' || id === 'blizzard4') && !e.g.enochian) return 'Interrupted';
+      if ((id === 'fire4' || id === 'blizzard4' || id === 'despair') && !e.g.enochian) return 'Interrupted';
       return super.checkCompletion(id, e);
     }
 
@@ -185,14 +191,14 @@
       return `
 <h3>How it plays (Shadowbringers 5.0–5.58)</h3>
 <p>The level 80 Black Mage many players call the job's best. <b>Enochian</b> is a button here: press it once you're in Astral Fire or Umbral Ice, and it stays up (+15% damage, and Fire IV and Blizzard IV unlocked) until the element drops. Let Astral Fire or Umbral Ice run out and Enochian goes with it. Then you're stuck with no Fire IV until you get back into an element and its 30s recast is ready. Every 30s of Enochian gives a Polyglot (max 2) for Xenoglossy or Foul.</p>
-<p>No Paradox or Amplifier yet, and Sharpcast and Triplecast have one charge each. Firestarter and Thundercloud last only 18s, so use them quickly. Foul still has a 2.5s cast; Xenoglossy is instant. Thunder III's DoT lasts 24s.</p>
+<p>No Paradox or Amplifier yet, and Sharpcast and Triplecast have one charge each. Firestarter and Thundercloud last only 18s, so use them quickly. Foul still has a 2.5s cast; Xenoglossy is instant. Thunder III's DoT lasts 24s, and a Thundercloud Thunder III hits for 390. In Astral Fire there's no MP regen at all, Lucid Dreaming included.</p>
 <h3>Standard rotation</h3>
 ${seq(['blizzard3', 'blizzard4', 'fire3', 'fire4', 'fire4', 'fire4', 'fire', 'fire4', 'fire4', 'fire4', 'despair'])}
-<p>Fire (once in the middle) refreshes Astral Fire's 15s timer. Keep Thunder III up, using Thundercloud procs when they come. Use Xenoglossy for movement or before Polyglot overcaps, and Manafont after Despair for another Fire IV and Despair.</p>
-<h3>A typical 5.x opener</h3>
-${seq(['fire3', ['enochian'], 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire4', 'fire4', ['leyLines'], 'fire4', ['sharpcast'], 'fire', 'fire4', 'fire4', 'despair', ['manafont'], 'fire4', 'despair', 'blizzard3', 'blizzard4', 'thunder3', 'fire3'])}
-<p>Start Fire III so it lands as the countdown ends, and press Enochian straight after. Stand in Ley Lines for the 15% cast and GCD speed.</p>
-<p style="color:#a9a3b4">The 5.5 numbers: Fire IV 300, Despair 380, Xenoglossy 750, Foul 650, Fire III and Blizzard III 240, Thunder III 70 + 50 per tick for 24s, Astral Fire III ×1.8, Enochian ×1.15, Manafont +3000 MP (180s), Ley Lines 90s.</p>`;
+<p>Fire in the middle refreshes Astral Fire's 15s timer (Fire IV doesn't). Keep Thunder III up, using Thundercloud procs when they come. Use Xenoglossy for movement or before Polyglot overcaps, and Manafont after Despair for another Fire IV and Despair.</p>
+<h3>The 5.58 opener (2.33 tier)</h3>
+${seq(['blizzard3', ['enochian'], 'thunder3', 'fire3', ['triplecast'], 'fire4', ['tincture'], 'fire4', ['leyLines'], 'fire4', 'fire4', 'fire4', 'despair', 'thunder3', ['manafont'], 'fire4', 'despair', 'blizzard3', 'blizzard4', 'xenoglossy', 'fire3'])}
+<p>The Balance's "No Blizzard IV" opener: Sharpcast about 12s before the pull, then start Blizzard III at −4s so it lands as the countdown ends, and press Enochian straight after. The second Thunder III is the Thundercloud from Sharpcast. At 3600+ spell speed (2.17) they used the JP opener instead, starting with Fire III. Stand in Ley Lines for the 15% cast and GCD speed.</p>
+<p style="color:#a9a3b4">The 5.58 numbers: Fire IV 300, Despair 380, Xenoglossy 750, Foul 650, Fire III and Blizzard III 240, Blizzard IV 300 (2.8s cast), Thunder III 70 + 40 per tick for 24s, Astral Fire III ×1.8, Enochian ×1.15, Manafont +3000 MP (180s), Ley Lines 90s, Lucid Dreaming 500 MP a tick, Grade 4 tincture +464 Intelligence.</p>`;
     }
   }
 

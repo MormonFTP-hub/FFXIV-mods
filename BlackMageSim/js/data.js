@@ -20,10 +20,13 @@ window.BLM = window.BLM || {};
   B.COMBO_TIME = 30;
 
   // Level modifiers for the damage and speed formulas: main stat, substat and divisor, the attack power multiplier
-  // for non-tanks and tanks, and Determination's coefficient. A job version sets its level (default 90).
+  // for non-tanks and tanks, and Determination's coefficient. A job version sets its level (default 90), and
+  // levelKey when it played before Endwalker's stat squish: 6.0 cut level 80's divisor from 3300 to 1300 and shrank
+  // every item, so Shadowbringers numbers (gear with 5000+ main stat) only work with the old table.
   B.LEVELS = {
     90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
     80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
+    shb80: { main: 340, sub: 380, div: 3300, ap: 165, apTank: 115, det: 130 },   // level 80 in 5.x (Allagan Studies)
   };
 
   // The current job's tables. These objects stay the same; their contents change with the job.
@@ -120,7 +123,7 @@ window.BLM = window.BLM || {};
     int: { name: 'Grade 8 Tincture of Intelligence', cap: 262 },
     str: { name: 'Grade 8 Tincture of Strength', cap: 262 },
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
-    int4: { name: 'Grade 4 Tincture of Intelligence', cap: 165 },   // the 5.4/5.5 tier
+    int4: { name: 'Grade 4 Tincture of Intelligence', cap: 464 },   // the 5.4/5.5 tier (pre-squish stats)
   };
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,

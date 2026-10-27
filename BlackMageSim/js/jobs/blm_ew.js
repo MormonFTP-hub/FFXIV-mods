@@ -124,7 +124,7 @@
       this.statuses = STATUSES;
       // What older versions change: Enochian's bonus (Enhanced Enochian III after 6.4), Polyglot cap, proc and
       // Sharpcast durations, Manafont's MP, the tincture, and the label on the gauge's marker.
-      this.cfg = { enochian: 1.23, polyMax: 2, fsDur: 30, tcDur: 40, sharpDur: 30, manafont: 3000, tincture: 'int', marker: 'PARADOX' };
+      this.cfg = { enochian: 1.23, polyMax: 2, fsDur: 30, tcDur: 40, sharpDur: 30, manafont: 3000, tincture: 'int', marker: 'PARADOX', lucid: B.LUCID_REGEN };
       // Rough 6.5 best-in-slot stats; spell speed is typed in Settings.
       this.stats = { hp: 74210, main: 3375, mainStat: 'int', jobMod: 115, trait: 130, wd: 132, det: 1886, crit: 2541,
         dh: 1435, speed: 1160, delay: 3.28 };
@@ -401,7 +401,7 @@
       const el = e.g.element;
       if (el > 0) return 0;
       let gain = el < 0 ? UI_REGEN[-el - 1] : B.BASE_REGEN;
-      if (e.has('lucidDreaming')) gain += B.LUCID_REGEN;
+      if (e.has('lucidDreaming')) gain += this.cfg.lucid;
       return gain;
     }
     mpTickNote(e) { return e.g.element > 0 ? 'no regen in Astral Fire' : null; }
