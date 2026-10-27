@@ -84,9 +84,10 @@
       this.statuses = STATUSES;
       this.tp = { max: 1000, regen: 60 };
       this.comboTime = 10;
-      // A rough 3.5 Alexander Savage set (item level ~270, the Alexandrian Metal Axe: 80 weapon damage, 3.36 delay).
+      // A rough 3.5 Alexander Savage set (item level ~270, the Alexandrian Metal Axe: 85 weapon damage, 3.36 delay),
+      // Heavensward-era stats (today's item data is the 4.0 rescale).
       // Heavensward had no Direct Hit.
-      this.stats = { hp: 50000, main: 1300, mainStat: 'str', jobMod: 105, trait: 100, wd: 80, det: 650, crit: 1050,
+      this.stats = { hp: 50000, main: 1450, mainStat: 'str', jobMod: 105, trait: 100, wd: 85, det: 650, crit: 1050,
         dh: 354, speed: 550, delay: 3.36 };
       this.speedName = 'Skill speed';
       this.tierHaste = 0;
@@ -106,7 +107,7 @@
         ['Cross-class', ['internalRelease', 'provoke', 'awareness', 'convalescence', 'flash', 'secondWind']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 1860;     // a scripted 3.5 Deliverance rotation parses about 1,750 on the dummy
+      this.referenceDps = 2110;     // a scripted 3.5 Deliverance rotation parses about 2,000 on the dummy
       this.referenceGcd = 2.42;
       this.startDistance = 3.2;
     }

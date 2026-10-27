@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -176,7 +176,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 1. ARR 2.0 (2013-08-27 → 2013-12-16): 3 Greased Lightning stacks (7/14/21%, 12s); True Strike rear crit; Shoulder Tackle 90s; Twin Snakes 12s; Demolish DoT only. **Rating 3/5:** Greased Lightning at three stacks; early days.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Shoulder Tackle 30s; True Strike flat 190; Demolish initial hit; Twin Snakes 15s; GL 9/18/27%; Internal Release 10%. **Rating 4/5:** Greased Lightning upkeep and positionals; Monk's identity set.
 3. HW 3.0–3.05 (2015-06-23 → 2015-08-24): Form Shift, Meditation / The Forbidden Chakra, Elixir Field, Purification, Tornado Kick (60s, needs GL III). **Rating 4/5:** Tornado Kick and the Forbidden Chakra arrive.
-4. HW 3.07–3.57 (2015-08-25 → 2017-06-19): Tornado Kick 40s; GL 14s, 10/20/30%. **Rating 5/5:** GL III upkeep, Tornado Kick and Chakra; a hardcore Monk favourite.
+4. HW 3.07–3.57 (2015-08-25 → 2017-06-19): Tornado Kick 40s; GL 14s, 10/20/30%. ← built **Rating 5/5:** GL III upkeep, Tornado Kick and Chakra; a hardcore Monk favourite.
 5. SB 4.0–4.18 (2017-06-20 → 2018-01-29): Riddle of Earth, Wind Tackle / Riddle of Wind, Riddle of Fire (+30% but +15% weaponskill recast), Brotherhood; GL 16s; Perfect Balance 180s; Mantra 120s. **Rating 4/5:** Riddle of Fire with its recast penalty; intense.
 6. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Perfect Balance 60s; Mantra 90s; Riddle of Wind grants GL; Brotherhood affects self (party in 4.3). ← built **Rating 5/5:** SB Monk with Brotherhood and GL juggling; often named the most fun Monk.
 7. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): Enlightenment, Anatman, Six-sided Star; 4th GL stack under Fists of Wind; Perfect Balance 120s; Shoulder Tackle 2 charges; Tornado Kick needs max GL. **Rating 3/5:** GL IV under Fists of Wind; downtime hurt.
@@ -293,7 +293,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ### Summoner / Arcanist
 1. ARR 2.0–2.05 (2013-08-27 → 2013-12-16): Aetherflow, Energy Drain, Fester; Bio, Bio II, Miasma, Miasma II, Shadow Flare; Bane; Contagion; Spur, Rouse, Enkindle; 6s summon casts. **Rating 3/5:** DoT summoner with Egis; early days.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Bane 8y, no overwrite of longer DoTs; Sustain costs MP. **Rating 4/5:** Bane DoT spreading; liked.
-3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Painflare, Ruin III, Tri-disaster, Dreadwyrm Trance (3 Aethertrail), Deathflare. **Rating 5/5:** Tri-disaster, Bane and Dreadwyrm Trance; widely missed.
+3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Painflare, Ruin III, Tri-disaster, Dreadwyrm Trance (3 Aethertrail), Deathflare. ← built **Rating 5/5:** Tri-disaster, Bane and Dreadwyrm Trance; widely missed.
 4. SB 4.0–4.06 (2017-06-20 → 2017-10-09): Summon Bahamut; Trance 20s; Fester 5s; Ruin IV procs; Aetherpact / Devotion; Spur removed. ← built **Rating 5/5:** Summon Bahamut's debut; iconic.
 5. SB 4.1–4.58 (2017-10-10 → 2019-07-01): summons 3s; instant Ruin III in Trance; Further Ruin; Devotion party-wide. ← built **Rating 5/5:** Stormblood Summoner; the 'most missed version' in many threads.
 6. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Egi Assault I/II; Firebird Trance alternating with Dreadwyrm; Trance 60s; Rouse, Contagion, Shadow Flare removed. **Rating 3/5:** Firebird Trance; DoTs kept but strict demi phases.

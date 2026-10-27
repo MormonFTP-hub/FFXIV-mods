@@ -110,6 +110,23 @@ JOB_MODELS = {
         "stance": "bt_2ax_emp",
         "attrs": {},
     },
+    # Heavensward Monk: Tantra (the 3.x artifact gear) and the Alexandrian Metal Knuckles (w328 / w378).
+    "mnk-hw": {
+        "actionsFrom": "mnk",
+        "gear": {s: [161, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 328, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 378, "body": 1, "variant": 1}, "n_buki_l")],
+        "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
+    # Heavensward Summoner: Caller's (the 3.x artifact gear) and the Alexandrian Metal Grimoire.
+    "smn-hw": {
+        "actionsFrom": "smn",
+        "gear": {s: [167, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1726, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
     # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
     "sch-sb": {
         "actionsFrom": "sch",

@@ -118,11 +118,15 @@ SMN_ACTIONS = {
     "inferno": (801, "Inferno"), "wyrmwave": (7428, "Wyrmwave"), "akhMorn": (7449, "Akh Morn"),
     "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"), "addle": (7560, "Addle"),
     "surecast": (7559, "Surecast"), "sprint": (3, "Sprint"),
+    # Heavensward: the three DoTs, Spur and the Archer cross-class Raging Strikes.
+    "bio": (17864, "Bio"), "bio2": (17865, "Bio II"), "miasma": (168, "Miasma"), "spur": (183, "Spur"),
+    "ragingStrikes": (101, "Raging Strikes"),
 }
 SMN_STATUSES = {
     "bio3": "Bio III", "miasma3": "Miasma III", "dreadwyrmTrance": "Dreadwyrm Trance", "furtherRuin": "Further Ruin",
     "rouse": "Rouse", "devotion": "Devotion", "shadowFlare": "Shadow Flare", "swiftcast": "Swiftcast",
     "lucidDreaming": "Lucid Dreaming", "addle": "Addle", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
+    "bio": "Bio", "bio2": "Bio II", "miasma": "Miasma", "spur": "Spur", "ragingStrikes": "Raging Strikes",
 }
 
 # Astrologian (Stormblood 4.x): the cards are their own actions ("the Balance" ...), played from Draw.
@@ -205,6 +209,9 @@ MNK_ACTIONS = {
     "brotherhood": (7396, "Brotherhood"), "riddleOfEarth": (7394, "Riddle of Earth"), "fistsOfFire": (63, "Fists of Fire"),
     "fistsOfWind": (73, "Fists of Wind"), "fistsOfEarth": (60, "Fists of Earth"), "mantra": (65, "Mantra"),
     "purification": (3544, "Purification"),
+    # Heavensward only: Touch of Death, and the Lancer and Marauder cross-class skills (row 85 is Blood for Blood then).
+    "touchOfDeath": (68, "Touch of Death"), "fracture": (33, "Fracture"), "bloodForBlood": (85, "Lance Charge"),
+    "featherfoot": (55, "Featherfoot"),
     "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
     "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
     "invigorate": (7544, "Invigorate"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
@@ -311,11 +318,12 @@ JOBS = {
                         "piercingTalon": "200,200,230", "elusiveJump": "120,170,255"},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 22},
     "mnk": {"actions": MNK_ACTIONS, "statuses": MNK_STATUSES,
-            "overrides": {"steelPeak": 211, "howlingFist": 2530, "meditation": 218},
+            "overrides": {"steelPeak": 207, "howlingFist": 2530, "meditation": 218},
             "uncross": {"steelPeak": "240,170,90", "internalRelease": "240,120,80", "fistsOfFire": "255,110,60",
                         "fistsOfEarth": "200,170,110", "fistsOfWind": "140,230,170", "shoulderTackle": "230,170,110",
                         "purification": "160,210,255", "mantra": "150,230,160", "oneIlmPunch": "230,150,90",
-                        "armOfTheDestroyer": "240,170,90"},
+                        "armOfTheDestroyer": "240,170,90", "touchOfDeath": "200,90,220", "fracture": "235,140,90",
+                        "featherfoot": "150,220,170"},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 20},
     "brd": {"actions": BRD_ACTIONS, "statuses": BRD_STATUSES, "overrides": {},
             "uncross": {"straightShot": "230,200,120", "quickNock": "220,190,140", "repellingShot": "200,220,240",
@@ -341,7 +349,7 @@ JOBS = {
                         "enkindle": "255,175,90", "windBlade": "120,235,150", "shockwave": "170,230,170",
                         "aerialSlash": "110,230,185", "contagion": "160,225,95", "aerialBlast": "100,240,175",
                         "crimsonCyclone": "255,125,65", "burningStrike": "255,145,70", "radiantShield": "255,205,95",
-                        "flamingCrush": "255,110,50", "inferno": "255,95,45"},
+                        "flamingCrush": "255,110,50", "inferno": "255,95,45", "miasma": "150,110,220", "spur": "240,170,80"},
             "tincture": "Grade 8 Tincture of Intelligence", "classjob": 27},
 }
 

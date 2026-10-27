@@ -264,7 +264,7 @@
 
     spell(id, e) {
       const a = this.actions[id], g = e.g;
-      e.mp -= this.mpCost(id, e);
+      e.mp = Math.max(0, e.mp - this.mpCost(id, e));
       let potency = a.potency;
       if (a.ruin && e.tHas('ruination')) potency += 20;
       if (id === 'ruin4') e.removeStatus('furtherRuin');

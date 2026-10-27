@@ -115,6 +115,11 @@
         ['Role Actions', ['trueNorth', 'invigorate', 'feint', 'bloodbath', 'secondWind', 'legSweep', 'armsLength']],
         ['General', ['sprint', 'tincture']],
       ];
+      // What the Heavensward version (mnk_hw.js) changes.
+      this.glDur = GL_DUR;
+      this.fofMult = 1.06;
+      this.deepMeditation = true;           // chakra from critical weaponskills (4.0 on)
+      this.tackles = true;                  // Tackle Mastery (4.0 on)
       this.referenceDps = 8250;     // a scripted 4.5 rotation parses about 7,800 on the dummy
       this.referenceGcd = 2.05;
       this.startDistance = 3.2;
@@ -131,7 +136,7 @@
     // Meditation turns into The Forbidden Chakra at five chakra; Shoulder Tackle into the Fists' Tackle.
     resolveId(id, e) {
       if (id === 'meditation' && e.g.chakra >= 5 && e.inCombat) return 'forbiddenChakra';
-      if (id === 'shoulderTackle') {
+      if (id === 'shoulderTackle' && this.tackles) {
         if (e.has('fistsOfFire')) return 'fireTackle';
         if (e.has('fistsOfWind')) return 'windTackle';
         if (e.has('fistsOfEarth')) return 'earthTackle';
@@ -159,7 +164,7 @@
     snapshot(a, e) {
       let mult = 1 + 0.10 * this.gl(e), critAdd = 0;
       if (e.has('twinSnakes')) mult *= 1.10;
-      if (e.has('fistsOfFire')) mult *= 1.06;
+      if (e.has('fistsOfFire')) mult *= this.fofMult;
       if (e.has('riddleOfFire')) mult *= 1.30;
       if (e.has('brotherhood')) mult *= 1.05;
       if (e.tHas('bluntResDown')) mult *= 1.10;
@@ -177,7 +182,7 @@
       const n = Math.min(3, this.gl(e) + 1);
       for (const k of GL_KEYS) e.removeStatus(k, true);
       g.gl = n;
-      e.addStatus(GL_KEYS[n - 1], GL_DUR);
+      e.addStatus(GL_KEYS[n - 1], this.glDur);
     }
     openChakra(e) { if (e.g.chakra < 5) { e.g.chakra++; e.emit('chakra', {}); } }
 
@@ -204,7 +209,7 @@
       const snap = this.snapshot(a, e);
       const after = a.dot ? () => e.addTStatus(id, a.dot.duration, { snap, dot: { potency: a.dot.potency, id } }) : null;
       // Chakra: Deep Meditation opens one 50% of the time a weaponskill crits; Brotherhood 30% of the time on any.
-      const onResult = (r) => { if (r.crit && Math.random() < 0.5) this.openChakra(e); };
+      const onResult = (r) => { if (this.deepMeditation && r.crit && Math.random() < 0.5) this.openChakra(e); };
       e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (pos ? 'hit' : 'miss') : null, crit, onResult });
       if (e.has('brotherhood') && Math.random() < 0.3) this.openChakra(e);
     }
@@ -228,7 +233,7 @@
         case 'riddleOfEarth':
           this.fists(e, 'fistsOfEarth');
           e.addStatus('riddleOfEarth', 30);
-          if (this.gl(e)) e.statuses[GL_KEYS[g.gl - 1]].until = e.now + GL_DUR;
+          if (this.gl(e)) e.statuses[GL_KEYS[g.gl - 1]].until = e.now + this.glDur;
           return;
         case 'fistsOfFire': case 'fistsOfWind': case 'fistsOfEarth': this.fists(e, id); return;
         case 'mantra': e.addStatus('mantra', 15); return;
@@ -311,6 +316,9 @@ ${seq([['perfectBalance'], 'snapPunch', ['internalRelease'], ['tincture'], 'twin
 <p style="color:#a9a3b4">The 4.5 numbers: Bootshine 140, True Strike 160 (180 rear), Snap Punch 150 (170 flank), Dragon Kick 120 (140 flank), Twin Snakes 110 (130 flank), Demolish 50 (70 rear) + 50 × 18s, Tornado Kick 330, The Forbidden Chakra 250, Steel Peak 150, Howling Fist 210, Elixir Field 220, Fire Tackle 130, Fists of Fire 6%. Greased Lightning's haste and Riddle of Fire's slowdown are taken as adding up. Auto-attacks 110 potency at 2.56s; gear approximate.</p>`;
     }
   }
+
+  B.MonkSB = MonkSB;
+  B.MNK_SB = { ACTIONS, STATUSES };
 
   B.registerJob({
     id: 'mnk', name: 'Monk', abbr: 'MNK', role: 'melee', classJob: 20,
