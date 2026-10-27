@@ -45,7 +45,7 @@
       A.invigorate = { name: 'Invigorate', kind: 'ogcd', recast: 120, role: true, desc: 'Instantly restores 400 TP.' };
       A.bloodbath = { name: 'Bloodbath', kind: 'ogcd', recast: 90, role: true, desc: 'Converts 25% of physical damage dealt into HP.\nDuration: 15s' };
       A.featherfoot = { name: 'Featherfoot', kind: 'ogcd', recast: 90, desc: 'Increases evasion by 12%.\nDuration: 10s' };
-      A.tincture = Object.assign({}, B.tincture('str'), { name: 'X-Potion of Strength', desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
+      A.tincture = Object.assign({}, B.tincture('str'), { name: 'X-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {
         touchOfDeath: { name: 'Touch of Death', self: false, icon: 'st_tod' },

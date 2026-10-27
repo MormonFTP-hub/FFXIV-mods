@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -207,7 +207,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Ninja / Rogue (from 2.4)
 1. ARR 2.4–2.57 (2014-10-28 → 2015-06-22): Mudras and Ninjutsu (Fuma, Katon, Raiton, Hyoton, Huton +15% speed 70s, Doton, Suiton); Kassatsu. **Rating 4/5:** Ninjutsu, Huton upkeep and Trick Attack from behind; an exciting new job.
-2. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Smoke Screen, Armor Crush, Shadewalker, Duality, Dream Within a Dream. **Rating 5/5:** Shadewalker, Duality and Dream Within a Dream; Heavensward Ninja is fondly remembered.
+2. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Smoke Screen, Armor Crush, Shadewalker, Duality, Dream Within a Dream. ← built **Rating 5/5:** Shadewalker, Duality and Dream Within a Dream; Heavensward Ninja is fondly remembered.
 3. SB 4.0–4.58 (2017-06-20 → 2019-07-01): Ninki gauge; Ten Chi Jin; Enhanced Mug; Bhavacakra, Hellfrog. **Rating 4/5:** Ninki and Ten Chi Jin; liked.
 4. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): Bunshin; Kassatsu 2 charges +30%; Ten Chi Jin 150%; Mug 110s; Shadow Fang in the combo. **Rating 3/5:** Bunshin and Kassatsu rework; awkward mudras.
 5. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Mudras 2 charges / 20s; Kassatsu one free Ninjutsu; Ten Chi Jin rework; Bunshin 5 stacks 90s; Trick Attack 5% any direction; Shadow Fang oGCD. **Rating 4/5:** Mudra charges made Ninjutsu fluid; well liked.
@@ -255,7 +255,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 2. HW 3.01–3.05 (2015-07-07 → 2015-08-24): Gauss Barrel instant +30%. **Rating 3/5:** Instant Gauss Barrel; better.
 3. HW 3.07–3.15 (2015-08-25 → 2016-02-22): Quick Reload 30s (15s with trait), 30 TP. **Rating 4/5:** Quick Reload loop; liked.
 4. HW 3.2–3.38 (2016-02-23 → 2016-09-26): Hypercharge 20s; turret vulnerability 10%. **Rating 4/5:** Longer Hypercharge; liked.
-5. HW 3.4–3.57 (2016-09-27 → 2017-06-19): Reload ammo no longer expires. **Rating 5/5:** Ammo, Reload, Hypercharge and Wildfire bursts; a cult favourite.
+5. HW 3.4–3.57 (2016-09-27 → 2017-06-19): Reload ammo no longer expires. ← built **Rating 5/5:** Ammo, Reload, Hypercharge and Wildfire bursts; a cult favourite.
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Heat Gauge and Overheat, heated shots, Cooldown, Flamethrower, Barrel Stabilizer 120s, Overdrive; Reload 30s 3 rounds; Wildfire 60s 10s. **Rating 3/5:** Heat gauge debut; rough edges.
 7. SB 4.05 (2017-07-17 → 2017-08-06): Barrel Stabilizer 60s; Quick Reload no heat drop; heat per shot 5; Overloads doubled. **Rating 4/5:** Barrel Stabilizer at 60s; liked.
 8. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Overheat +20%; Gauss Barrel 2s; Hot Shot 60s. ← built **Rating 5/5:** Heat and Overheat juggling; Stormblood Machinist is widely missed.

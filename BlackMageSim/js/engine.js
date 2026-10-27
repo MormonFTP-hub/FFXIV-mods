@@ -530,7 +530,8 @@
         const au = this.job.autoAttack;
         const delay = au.delay * (100 - (this.job.autoHaste ? this.job.autoHaste(this) : 0)) / 100;
         this.autoNext = now + delay;
-        if (this.targeted && this.distToTarget() - B.DUMMY_RADIUS <= au.range) {
+        // job.noAutos: auto-attacks switched off (Heavensward Machinist's Gauss Barrel).
+        if (this.targeted && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
           this.queueHit('auto', au.potency, this.snapshot({ school: 'physical', auto: true }), 0.1, null, { auto: true });
         }
       }

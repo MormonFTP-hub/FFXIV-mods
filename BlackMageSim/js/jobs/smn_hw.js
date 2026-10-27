@@ -45,7 +45,7 @@
       set('summon3', { cast: 6, mp: 1768 });
       set('physick', { mp: 530 });
       A.ragingStrikes = { name: 'Raging Strikes', kind: 'ogcd', recast: 180, role: true, desc: 'Increases damage dealt by 20%.\nDuration: 20s' };
-      A.tincture = Object.assign({}, B.tincture('int'), { name: 'X-Potion of Intelligence', desc: 'This diluted brew temporarily increases intelligence.\nIntelligence +16% (Max 81)\nDuration: 15s' });
+      A.tincture = Object.assign({}, B.tincture('int'), { name: 'X-Potion of Intelligence', dur: 15, desc: 'This diluted brew temporarily increases intelligence.\nIntelligence +16% (Max 81)\nDuration: 15s' });
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {
         bio: { name: 'Bio', self: false, icon: 'st_bio' },

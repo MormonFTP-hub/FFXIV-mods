@@ -255,11 +255,20 @@ MCH_ACTIONS = {
     "rookAutoturret": (2864, "Rook Autoturret"), "rookOverdrive": (7415, "Rook Overdrive"), "rookOverload": (7416, "Rook Overload"),
     "volleyFire": (2891, "Volley Fire"), "invigorate": (7544, "Invigorate"), "secondWind": (7541, "Second Wind"),
     "headGraze": (7551, "Head Graze"), "peloton": (7557, "Peloton"), "sprint": (3, "Sprint"), "auto": (8, "Shot"),
+    # Heavensward only (removed in 4.0, or the Archer and Lancer cross-class skills of 3.x).
+    "leadShot": (2869, "Lead Shot"), "grenadoShot": (2871, "Grenado Shot"), "heartbreak": (2875, "Heartbreak"),
+    "blank": (2888, "Blank"), "suppressiveFire": (2883, "Suppressive Fire"), "legGraze": (2877, "Leg Graze"),
+    "footGraze": (2884, "Foot Graze"), "bishopAutoturret": (2865, "Bishop Autoturret"), "turretRetrieval": (3487, "Turret Retrieval"),
+    "dismantle": (2887, "Dismantle"), "rendMind": (2882, "Rend Mind"), "ragingStrikes": (101, "Raging Strikes"),
+    "hawksEye": (99, "Hawk's Eye"), "quellingStrikes": (104, "Quelling Strikes"), "bloodForBlood": (85, "Lance Charge"),
+    "keenFlurry": (77, "Keen Flurry"), "feint": (76, "Feint"),
 }
 MCH_STATUSES = {
     "hotShot": 855, "enhancedSlugShot": "Enhanced Slug Shot", "cleanerShot": "Cleaner Shot", "reassembled": "Reassembled",
     "wildfire": "Wildfire", "rapidFire": "Rapid Fire", "gaussBarrel": "Gauss Barrel", "flamethrower": "Flamethrower",
     "vulnerabilityUp": "Vulnerability Up", "ammunition": 862, "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
+    "leadShot": "Lead Shot", "ragingStrikes": "Raging Strikes", "hawksEye": "Hawk's Eye", "bloodForBlood": "Blood for Blood",
+    "quellingStrikes": "Quelling Strikes", "keenFlurry": "Keen Flurry", "dismantle": "Dismantle", "hypercharge": "Hypercharge",
 }
 
 # Warrior (Heavensward 3.x). Most of its 3.x kit was removed later, so many icons are struck through.
@@ -281,6 +290,32 @@ WAR_STATUSES = {
     "uncontrollable": "Uncontrollable", "unchained": "Unchained", "rawIntuition": "Raw Intuition", "vengeance": "Vengeance",
     "holmgang": "Holmgang", "thrillOfBattle": "Thrill of Battle", "foresight": "Foresight", "bloodbath": "Bloodbath",
     "internalRelease": "Internal Release", "slashingResDown": "Slashing Resistance Down", "sprint": "Sprint", "medicated": "Medicated",
+}
+
+# Ninja (Heavensward 3.x). Much of the 3.x kit was removed later, so many icons are struck through.
+NIN_ACTIONS = {
+    "spinningEdge": (2240, "Spinning Edge"), "gustSlash": (2242, "Gust Slash"), "aeolianEdge": (2255, "Aeolian Edge"),
+    "armorCrush": (3563, "Armor Crush"), "dancingEdge": (2251, "Dancing Edge"), "shadowFang": (2257, "Shadow Fang"),
+    "mutilate": (2244, "Mutilate"), "deathBlossom": (2254, "Death Blossom"), "throwingDagger": (2247, "Throwing Dagger"),
+    "trickAttack": (2258, "Trick Attack"), "sneakAttack": (2250, "Sneak Attack"), "mug": (2248, "Mug"), "jugulate": (2256, "Jugulate"),
+    "dreamWithinADream": (3566, "Dream Within a Dream"), "assassinate": (2246, "Assassinate"), "duality": (3567, "Duality"),
+    "kassatsu": (2264, "Kassatsu"), "ten": (2259, "Ten"), "chi": (2261, "Chi"), "jin": (2263, "Jin"), "ninjutsu": (2260, "Ninjutsu"),
+    "fumaShuriken": (2265, "Fuma Shuriken"), "katon": (2266, "Katon"), "raiton": (2267, "Raiton"), "hyoton": (2268, "Hyoton"),
+    "huton": (2269, "Huton"), "doton": (2270, "Doton"), "suiton": (2271, "Suiton"), "rabbitMedium": (2272, "Rabbit Medium"),
+    "kissOfTheWasp": (2243, "Kiss of the Wasp"), "kissOfTheViper": (2252, "Kiss of the Viper"), "hide": (2245, "Hide"),
+    "shukuchi": (2262, "Shukuchi"), "goad": (2249, "Goad"), "shadeShift": (2241, "Shade Shift"), "shadewalker": (3564, "Shadewalker"),
+    "smokeScreen": (3565, "Smoke Screen"),
+    # Pugilist and Lancer cross-class skills (row 85 is Blood for Blood then).
+    "internalRelease": (59, "Internal Release"), "bloodForBlood": (85, "Lance Charge"), "invigorate": (80, "Invigorate"),
+    "secondWind": (57, "Second Wind"), "featherfoot": (55, "Featherfoot"), "mantra": (65, "Mantra"), "keenFlurry": (77, "Keen Flurry"),
+    "feint": (76, "Feint"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+NIN_STATUSES = {
+    "huton": "Huton", "suiton": "Suiton", "hidden": "Hidden", "mudra": "Mudra", "kassatsu": "Kassatsu", "duality": "Duality",
+    "kissOfTheWasp": "Kiss of the Wasp", "kissOfTheViper": "Kiss of the Viper", "internalRelease": "Internal Release",
+    "bloodForBlood": "Blood for Blood", "shadeShift": "Shade Shift", "shadewalker": "Shadewalker", "featherfoot": "Featherfoot",
+    "mantra": "Mantra", "keenFlurry": "Keen Flurry", "shadowFang": "Shadow Fang", "mutilate": "Mutilation",
+    "dancingEdge": "Slashing Resistance Down", "trickAttack": "Vulnerability Up", "doton": "Doton", "sprint": "Sprint", "medicated": "Medicated",
 }
 
 JOBS = {
@@ -335,8 +370,24 @@ JOBS = {
                         "spreadShot": "220,190,140", "reload": "210,210,170", "quickReload": "210,210,170", "rapidFire": "255,190,110",
                         "hypercharge": "255,140,90", "gaussBarrel": "170,210,255", "barrelStabilizer": "170,210,255",
                         "flamethrower": "255,120,60", "rookAutoturret": "170,190,230", "rookOverdrive": "255,150,90",
-                        "rookOverload": "255,150,90"},
+                        "rookOverload": "255,150,90", "leadShot": "200,200,210", "grenadoShot": "255,170,90", "heartbreak": "230,110,110",
+                        "blank": "230,200,140", "suppressiveFire": "220,190,120", "legGraze": "200,190,150", "footGraze": "200,190,150",
+                        "bishopAutoturret": "200,170,230", "turretRetrieval": "170,190,230", "dismantle": "200,200,200", "rendMind": "180,170,230",
+                        "hawksEye": "230,200,120", "quellingStrikes": "170,200,230", "bloodForBlood": "230,100,90", "keenFlurry": "200,200,230",
+                        "feint": "200,200,220"},
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 31},
+    "nin": {"actions": NIN_ACTIONS, "statuses": NIN_STATUSES, "overrides": {},
+            "uncross": {"spinningEdge": "190,210,200", "gustSlash": "160,210,170", "aeolianEdge": "140,220,200", "armorCrush": "160,200,230",
+                        "dancingEdge": "230,120,160", "shadowFang": "150,110,210", "mutilate": "200,90,120", "deathBlossom": "220,120,180",
+                        "throwingDagger": "200,200,210", "trickAttack": "180,120,230", "sneakAttack": "170,140,220", "mug": "220,180,90",
+                        "jugulate": "210,90,90", "dreamWithinADream": "180,130,240", "assassinate": "200,80,100", "duality": "200,150,240",
+                        "kassatsu": "230,120,120", "huton": "120,220,170", "hyoton": "130,200,255", "doton": "190,150,90",
+                        "suiton": "100,170,255", "katon": "255,130,70", "raiton": "200,170,255", "fumaShuriken": "200,200,220",
+                        "kissOfTheWasp": "240,200,80", "kissOfTheViper": "120,200,110", "goad": "220,200,120", "shadewalker": "140,120,200",
+                        "smokeScreen": "170,170,190", "internalRelease": "240,170,90", "bloodForBlood": "230,100,90",
+                        "invigorate": "120,200,120", "secondWind": "120,220,150", "featherfoot": "150,220,170", "mantra": "240,200,120",
+                        "keenFlurry": "200,200,230", "feint": "200,200,220"},
+            "tincture": "Draconian Potion of Dexterity", "classjob": 30},
     "war": {"actions": WAR_ACTIONS, "statuses": WAR_STATUSES, "overrides": {},
             "uncross": {k: "235,140,90" for k in ("heavySwing", "skullSunder", "butchersBlock", "maim", "stormsPath", "stormsEye",
                         "overpower", "tomahawk", "fracture", "fellCleave", "decimate", "innerBeast", "steelCyclone", "brutalSwing",

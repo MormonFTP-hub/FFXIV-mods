@@ -48,7 +48,7 @@
     tincture: B.tincture('str'),
     auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
   };
-  ACTIONS.tincture = Object.assign({}, ACTIONS.tincture, { name: 'X-Potion of Strength', desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
+  ACTIONS.tincture = Object.assign({}, ACTIONS.tincture, { name: 'X-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
 
   const STATUSES = {
     deliverance: { name: 'Deliverance', self: true, icon: 'st_deliverance' },

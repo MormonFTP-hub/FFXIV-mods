@@ -180,7 +180,8 @@ window.BLM = window.BLM || {};
     reprisal: (e) => e.addTStatus('reprisal', 10),
     lowBlow: () => {}, provoke: () => {}, interject: () => {}, shirk: () => {},
     sprint: (e) => e.addStatus('sprint', 10),
-    tincture: (e) => e.addStatus('medicated', 30),
+    // Heavensward potions lasted 15s (the tincture's dur).
+    tincture: (e) => e.addStatus('medicated', (e.job.actions.tincture && e.job.actions.tincture.dur) || 30),
   };
 
   // ---------- job registry ----------

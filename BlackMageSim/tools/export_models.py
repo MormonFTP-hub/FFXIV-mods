@@ -127,6 +127,24 @@ JOB_MODELS = {
         "stance": "bt_2bk_emp",
         "attrs": {},
     },
+    # Heavensward Ninja: Iga (the 3.x artifact gear) and the Alexandrian Metal Daggers (w1805 / w1855).
+    "nin-hw": {
+        "actionsFrom": "nin",
+        "gear": {s: [169, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1805, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 1855, "body": 1, "variant": 1}, "n_buki_l")],
+        "stance": "bt_dgr_dgr",
+        "attrs": {},
+    },
+    # Heavensward Machinist: Machinist's (the 3.x artifact gear) and the Alexandrian Metal Cannon (w2018, holster w2099).
+    "mch-hw": {
+        "actionsFrom": "mch",
+        "gear": {s: [265, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2018, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("holster", {"kind": "weapon", "id": 2099, "body": 1, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2gn_emp",
+        "attrs": {},
+    },
     # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
     "sch-sb": {
         "actionsFrom": "sch",
