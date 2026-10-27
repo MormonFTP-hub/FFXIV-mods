@@ -37,10 +37,12 @@
       this.setJob();
     }
 
-    // Show the current job's character, building it the first time.
+    // Show the current job's character, building it the first time. A version can have its own (job.model, e.g.
+    // Shadowbringers gear), otherwise it uses the job's.
     setJob() {
       if (!this.ok || !this.ready) return;
-      const id = B.jobId, G = B.GAME_MODELS;
+      const G = B.GAME_MODELS;
+      const id = B.job && B.job.model && G.jobs[B.job.model] ? B.job.model : B.jobId;
       if (this.ch) this.ch.group.visible = false;
       this.ch = null;
       if (G.jobs[id]) {
