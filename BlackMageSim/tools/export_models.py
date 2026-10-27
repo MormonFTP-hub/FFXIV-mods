@@ -75,6 +75,15 @@ JOB_MODELS = {
         "attrs": {},
     },
     # Shadowbringers Gunbreaker: Bodyguard's (the ShB artifact gear) and the Edenmorn Gunblade from Eden's Promise.
+    # Stormblood Samurai: Myochin (the SB artifact gear) and the Omega Samurai Blade from Alphascape (4.4), with its sheath.
+    "sam-sb": {
+        "actionsFrom": "sam",
+        "gear": {s: [377, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 34, "variant": 1}, "n_buki_r"),
+                    ("sheath", {"kind": "weapon", "id": 2251, "body": 48, "variant": 1}, "j_buki_kosi_l")],
+        "stance": "bt_2kt_emp",
+        "attrs": {},
+    },
     "gnb-shb": {
         "actionsFrom": "gnb",
         "gear": {s: [542, 1] for s in SLOTS},
