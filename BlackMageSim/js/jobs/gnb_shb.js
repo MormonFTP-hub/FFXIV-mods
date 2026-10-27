@@ -44,7 +44,7 @@
         ['Role Actions', ['rampart', 'lowBlow', 'provoke', 'interject', 'reprisal', 'armsLength', 'shirk']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 20000;
+      this.referenceDps = 15900;     // a scripted 5.58 rotation at 2.41 parses about 15,000 on the dummy
       this.referenceGcd = 2.41;
       this.startDistance = 3.2;
     }
