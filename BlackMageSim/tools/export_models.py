@@ -127,6 +127,32 @@ JOB_MODELS = {
         "stance": "bt_2bk_emp",
         "attrs": {},
     },
+    # Endwalker Paladin and Warrior: the 6.4 savage set (Ascension of Fending, e0826) with the Sword and Kite Shield of
+    # Ascension (w217 b3, w101 b125) and the Bardiche of Ascension (w401 b132).
+    "pld-ew": {
+        "actionsFrom": "pld",
+        "gear": {s: [826, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 217, "body": 3, "variant": 1}, "n_buki_r"),
+                    ("shield", {"kind": "weapon", "id": 101, "body": 125, "variant": 1}, "n_buki_tate_l")],
+        "stance": "bt_swd_sld",
+        "attrs": {},
+    },
+    "war-ew": {
+        "actionsFrom": "war",
+        "gear": {s: [826, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 401, "body": 132, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
+    # Endwalker Monk: the 6.4 savage set (Ascension of Striking, e0827) and the Knuckles of Ascension (w323 / w373 b46).
+    "mnk-ew": {
+        "actionsFrom": "mnk",
+        "gear": {s: [827, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 323, "body": 46, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 373, "body": 46, "variant": 1}, "n_buki_l")],
+        "stance": "bt_clw_clw",
+        "attrs": {},
+    },
     # Dawntrail Paladin: the 7.4 savage set (Grand Champion's, e0908), the Grand Champion's Falchion (w220 b24) and
     # Kite Shield (w114 b22).
     "pld-dt": {

@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57, Paladin EW 6.3–6.38 and 6.4–6.58, Warrior EW 6.0–6.08 and 6.1–6.58, Monk EW 6.0–6.08, 6.1–6.28 and 6.3–6.58.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -62,8 +62,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 8. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Sentinel 15s. **Rating 4/5:** The comfortable ShB Paladin many still point to.
 9. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Requiescat 5 stacks; Confiteor → Blade of Faith / Truth / Valor; Expiacion; Holy Sheltron. **Rating 3/5:** Blade combo added, but Goring Blade and Valor DoTs clashed.
 10. EW 6.1–6.28 (2022-04-12 → 2023-01-09): Blade of Faith needs Blade of Faith Ready (from Requiescat ending); Holy Spirit / Circle / Clemency don't break combos. **Rating 3/5:** Blade of Faith Ready tweak; plays much the same.
-11. EW 6.3–6.38 (2023-01-10 → 2023-05-22): Fight or Flight all damage, 20s; Goring Blade a 700-potency 60s GCD; Requiescat 4 stacks + Confiteor Ready; Divine Might; Sheltron 15% reduction; Bulwark back. **Rating 4/5:** The 6.3 rework gave a clean Fight or Flight burst; widely praised.
-12. EW 6.4–6.58 (2023-05-23 → 2024-07-01) (minor): Atonement doesn't break combos. **Rating 4/5:** The polished 6.3 kit.
+11. EW 6.3–6.38 (2023-01-10 → 2023-05-22): Fight or Flight all damage, 20s; Goring Blade a 700-potency 60s GCD; Requiescat 4 stacks + Confiteor Ready; Divine Might; Sheltron 15% reduction; Bulwark back. ← built **Rating 4/5:** The 6.3 rework gave a clean Fight or Flight burst; widely praised.
+12. EW 6.4–6.58 (2023-05-23 → 2024-07-01) (minor): Atonement doesn't break combos. ← built **Rating 4/5:** The polished 6.3 kit.
 13. DT 7.0–7.57 (2024-07-02 → present): Goring Blade Ready from Fight or Flight; Atonement → Supplication → Sepulchre; Imperator; Blade of Honor; Guardian. ← built **Rating 4/5:** Supplication, Sepulchre and Blade of Honor; one of Dawntrail's better-received tanks.
 
 ### Warrior / Marauder
@@ -77,8 +77,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 8. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): single stance; Infuriate 2 charges → Nascent Chaos → Chaotic Cyclone / Inner Chaos; Mythril Tempest; Nascent Flash. **Rating 4/5:** One stance and Inner Chaos; simple but very satisfying.
 9. ShB 5.1–5.21 (2019-10-29 → 2020-08-10): Vengeance 15s; Holmgang 8s; Raw Intuition 6s. **Rating 4/5:** The same kit with longer defensives.
 10. ShB 5.3–5.58 (2020-08-11 → 2021-12-06): Storm's Eye stacks to 60s. **Rating 3/5:** Storm's Eye stacking added bookkeeping; mixed.
-11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Surging Tempest; Inner Release / Berserk 60s, 3 stacks; Primal Rend; Onslaught 3 charges; Orogeny; Bloodwhetting. **Rating 4/5:** Primal Rend and 60s Inner Release; fun burst, famously self-sufficient.
-12. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Inner Release stacks only on Fell Cleave / Decimate. **Rating 4/5:** Same kit; Inner Release only on Fell Cleave and Decimate.
+11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Surging Tempest; Inner Release / Berserk 60s, 3 stacks; Primal Rend; Onslaught 3 charges; Orogeny; Bloodwhetting. ← built **Rating 4/5:** Primal Rend and 60s Inner Release; fun burst, famously self-sufficient.
+12. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Inner Release stacks only on Fell Cleave / Decimate. ← built **Rating 4/5:** Same kit; Inner Release only on Fell Cleave and Decimate.
 13. DT 7.0 (2024-07-02 → 2024-07-15): Primal Wrath, Primal Ruination; Inner Chaos needs 50 gauge; Damnation. **Rating 3/5:** Primal Wrath and Ruination added buttons to an already simple loop.
 14. DT 7.01–7.57 (2024-07-16 → present): Primal Ruination Ready 20s. **Rating 3/5:** Fine, but seen as part of Dawntrail's homogenization.
 
@@ -183,9 +183,9 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 8. ShB 5.05–5.25 (2019-07-29 → 2020-08-10): forms 15s; Riddle of Fire 25%, no recast penalty; Form Shift refreshes GL in Coeurl form. **Rating 3/5:** GL upkeep through downtime; Monk topped dissatisfaction in a 5.25 survey.
 9. ShB 5.3–5.35 (2020-08-11 → 2020-12-07): Perfect Balance 90s; Form Shift GL refresh in any form. **Rating 3/5:** Cheaper GL refresh; still mixed.
 10. ShB 5.4–5.58 (2020-12-08 → 2021-12-06): GL becomes a passive speed trait; Perfect Balance 6 stacks/15s; Formless Fist; Tornado Kick 45s; Riddle of Earth 3 charges; potency pass. **Rating 3/5:** GL stacks removed; relief for some, a loss for others.
-11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Masterful Blitz with Beast Chakra / Nadi; Perfect Balance 3 stacks, 2 charges; Riddle of Fire 60s 15%; Riddle of Wind back (auto delay −50%); Brotherhood 120s; Thunderclap; Disciplined Fist. **Rating 4/5:** Masterful Blitz and Nadi; well received.
-12. EW 6.1–6.28 (2022-04-12 → 2023-01-09): Perfect Balance can't be used while holding Beast Chakra. **Rating 4/5:** Perfect Balance fix; liked.
-13. EW 6.3–6.58 (2023-01-10 → 2024-07-01) (minor, defensive): Riddle of Earth 120s, 20% reduction + Earth's Reply. **Rating 4/5:** Riddle of Earth rework; liked.
+11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Masterful Blitz with Beast Chakra / Nadi; Perfect Balance 3 stacks, 2 charges; Riddle of Fire 60s 15%; Riddle of Wind back (auto delay −50%); Brotherhood 120s; Thunderclap; Disciplined Fist. ← built **Rating 4/5:** Masterful Blitz and Nadi; well received.
+12. EW 6.1–6.28 (2022-04-12 → 2023-01-09): Perfect Balance can't be used while holding Beast Chakra. ← built **Rating 4/5:** Perfect Balance fix; liked.
+13. EW 6.3–6.58 (2023-01-10 → 2024-07-01) (minor, defensive): Riddle of Earth 120s, 20% reduction + Earth's Reply. ← built **Rating 4/5:** Riddle of Earth rework; liked.
 14. DT 7.0 (2024-07-02 → 2024-07-15): Fury stacks replace Disciplined Fist and the Demolish DoT; Anatman removed; Fire's Reply, Wind's Reply; Brotherhood 20s. **Rating 2/5:** Fury stacks replaced Disciplined Fist and Demolish's DoT; seen as gutted.
 15. DT 7.01–7.57 (2024-07-16 → present): Raptor's Fury max 1, Coeurl's Fury max 2; Dragon Kick grants Opo-opo's Fury only in Opo-opo form; potency pass. **Rating 2/5:** Smaller Fury caps; still seen as simplified.
 

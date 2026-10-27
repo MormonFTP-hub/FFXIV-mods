@@ -360,7 +360,8 @@
       if (L.formula === 'hw') return this.damageHW(potency, snap, isDot, opts);
       const ap = s.apMod || (this.job.role === 'tank' ? L.apTank : L.ap);
       const fAP = Math.floor(ap * (snap.main - L.main) / L.main) + 100;
-      const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000;
+      // opts.dhDet: a guaranteed direct hit gains from the Direct Hit stat through Determination (6.2 on).
+      const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000 + (opts.dhDet ? Math.floor(L.det * (s.dh - L.sub) / L.div) : 0);
       const fTNC = s.ten ? Math.floor((L.ten || 100) * (s.ten - L.sub) / L.div) + 1000 : 1000;     // 112 at level 100
       let fWD = Math.floor(L.main * s.jobMod / 1000) + s.wd;
       if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
@@ -373,7 +374,7 @@
       const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
       const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000 + (snap.dhAdd || 0);   // snap.dhAdd: Battle Voice
       const crit = opts.crit || Math.random() < critRate;
-      const dh = Math.random() < dhRate;
+      const dh = opts.dh || Math.random() < dhRate;     // opts.dh: a guaranteed direct hit
       if (crit) d = Math.floor(d * critMult);
       if (dh) d = Math.floor(d * 1.25);
       d = Math.floor(d * (95 + Math.random() * 10) / 100);

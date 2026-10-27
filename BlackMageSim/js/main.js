@@ -18,6 +18,7 @@
       settings: Object.assign({}, B.DEFAULT_SETTINGS, { versions: {}, speed: {} }),
       barsByJob: {},
       binds: B.DEFAULT_BINDS.map(r => r.slice()),
+      barsSeenV: 2,
     };
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
@@ -30,7 +31,8 @@
       if (saved.barsByJob && typeof saved.barsByJob === 'object') store.barsByJob = saved.barsByJob;
       else if (saved.bars) store.barsByJob['blm:ew65'] = saved.bars;                                  // from 1.x
       if (okGrid(saved.binds, v => v === null || typeof v === 'string')) store.binds = saved.binds;
-      if (saved.barsSeen && typeof saved.barsSeen === 'object') store.barsSeen = saved.barsSeen;
+      // barsSeen v2: saved bars from before an action was added get one more pass that puts it in a free slot.
+      if (saved.barsSeen && typeof saved.barsSeen === 'object' && saved.barsSeenV === 2) store.barsSeen = saved.barsSeen;
     }
     if (!B.JOBS[store.settings.job]) store.settings.job = B.JOB_ORDER[0];
     return store;
@@ -191,12 +193,18 @@
       if (!okGrid(have, v => v === null || !!A[v])) this.store.barsByJob[key] = this.job.defaultBars.map(r => r.slice());
       const bars = this.store.barsByJob[key];
       const seen = (this.store.barsSeen = this.store.barsSeen || {})[key] = this.store.barsSeen[key] || [];
-      if (!seen.length) bars.forEach(r => r.forEach(v => { if (v) seen.push(v); }));
       const placed = new Set(bars.flat());
+      // A default action this layout hasn't had yet goes in its default slot, or the first free one (same row first).
+      const free = (b) => {
+        for (const r of [b, ...bars.keys()]) { const i = bars[r].indexOf(null); if (i >= 0) return [r, i]; }
+        return null;
+      };
       this.job.defaultBars.forEach((r, b) => r.forEach((id, i) => {
         if (!id || seen.includes(id)) return;
         seen.push(id);
-        if (!placed.has(id) && bars[b][i] === null) bars[b][i] = id;
+        if (placed.has(id)) return;
+        const at = bars[b][i] === null ? [b, i] : free(b);
+        if (at) { bars[at[0]][at[1]] = id; placed.add(id); }
       }));
       return bars;
     },

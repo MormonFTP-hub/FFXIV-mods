@@ -225,6 +225,11 @@ MNK_ACTIONS = {
     "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
     "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
     "invigorate": (7544, "Invigorate"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Endwalker.
+    "sixSidedStar": (16476, "Six-sided Star"), "shadowOfTheDestroyer": (25767, "Shadow of the Destroyer"),
+    "fourPointFury": (16473, "Four-point Fury"), "enlightenment": (16474, "Enlightenment"), "masterfulBlitz": (25764, "Masterful Blitz"),
+    "celestialRevolution": (25765, "Celestial Revolution"), "risingPhoenix": (25768, "Rising Phoenix"), "phantomRush": (25769, "Phantom Rush"),
+    "thunderclap": (25762, "Thunderclap"), "anatman": (16475, "Anatman"),
 }
 MNK_STATUSES = {
     "gl1": 111, "gl2": 112, "gl3": 113, "opoOpo": 107, "raptor": 108, "coeurl": 109, "perfectBalance": 110,
@@ -232,6 +237,7 @@ MNK_STATUSES = {
     "riddleOfFire": "Riddle of Fire", "brotherhood": "Brotherhood", "fistsOfFire": "Fists of Fire",
     "fistsOfWind": "Fists of Wind", "fistsOfEarth": "Fists of Earth", "riddleOfEarth": "Riddle of Earth", "mantra": "Mantra",
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
+    "formlessFist": "Formless Fist", "disciplinedFist": "Disciplined Fist", "leadenFist": "Leaden Fist",
 }
 
 # Bard (Stormblood 4.06–4.58).
@@ -293,6 +299,12 @@ WAR_ACTIONS = {
     "foresight": (32, "Foresight"), "bloodbath": (34, "Bloodbath"), "internalRelease": (59, "Internal Release"),
     "provoke": (18, "Provoke"), "awareness": (13, "Awareness"), "convalescence": (12, "Convalescence"), "flash": (14, "Flash"),
     "secondWind": (57, "Second Wind"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Endwalker.
+    "fellCleaveEw": (3549, "Fell Cleave"), "innerChaos": (16465, "Inner Chaos"), "innerRelease": (7389, "Inner Release"),
+    "primalRend": (25753, "Primal Rend"), "upheaval": (7387, "Upheaval"), "orogeny": (25752, "Orogeny"), "onslaught": (7386, "Onslaught"),
+    "mythrilTempest": (16462, "Mythril Tempest"), "chaoticCyclone": (16463, "Chaotic Cyclone"), "bloodwhetting": (25751, "Bloodwhetting"),
+    "shakeItOff": (7388, "Shake It Off"), "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "interject": (7538, "Interject"),
+    "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
 }
 WAR_STATUSES = {
     "maim": "Maim", "stormsEye": "Storm's Eye", "fracture": "Fracture", "berserk": "Berserk", "pacification": "Pacification",
@@ -300,6 +312,8 @@ WAR_STATUSES = {
     "uncontrollable": "Uncontrollable", "unchained": "Unchained", "rawIntuition": "Raw Intuition", "vengeance": "Vengeance",
     "holmgang": "Holmgang", "thrillOfBattle": "Thrill of Battle", "foresight": "Foresight", "bloodbath": "Bloodbath",
     "internalRelease": "Internal Release", "slashingResDown": "Slashing Resistance Down", "sprint": "Sprint", "medicated": "Medicated",
+    "surgingTempest": "Surging Tempest", "innerRelease": 1177, "primalRendReady": "Primal Rend Ready", "nascentChaos": "Nascent Chaos",
+    "bloodwhetting": "Bloodwhetting", "shakeItOff": "Shake It Off", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
 }
 
 # Ninja (Heavensward 3.x). Much of the 3.x kit was removed later, so many icons are struck through.
@@ -340,7 +354,7 @@ PLD_ACTIONS = {
     "prominence": (16457, "Prominence"), "clemency": (3541, "Clemency"), "ironWill": (28, "Iron Will"),
     "holySheltron": (25746, "Holy Sheltron"), "intervention": (7382, "Intervention"), "cover": (27, "Cover"),
     "guardian": (36920, "Guardian"), "bulwark": (22, "Bulwark"), "hallowedGround": (30, "Hallowed Ground"),
-    "divineVeil": (3540, "Divine Veil"), "passageOfArms": (7385, "Passage of Arms"),
+    "divineVeil": (3540, "Divine Veil"), "passageOfArms": (7385, "Passage of Arms"), "requiescat": (7383, "Requiescat"),
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
@@ -349,7 +363,7 @@ PLD_STATUSES = {
     "fightOrFlight": 76, "requiescat": 1368, "confiteorReady": 3019, "goringBladeReady": 3847, "atonementReady": 1902,
     "supplicationReady": 3827, "sepulchreReady": 3828, "divineMight": 2673, "bladeOfHonorReady": 3831, "circleOfScorn": 248,
     "ironWill": 79, "holySheltron": "Holy Sheltron", "guardian": "Guardian", "bulwark": 77, "hallowedGround": 82,
-    "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal",
+    "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal", "swordOath": "Sword Oath",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
 }
 
@@ -447,7 +461,7 @@ JOBS = {
             "uncross": {"steelPeak": "240,170,90", "internalRelease": "240,120,80", "fistsOfFire": "255,110,60",
                         "fistsOfEarth": "200,170,110", "fistsOfWind": "140,230,170", "shoulderTackle": "230,170,110",
                         "purification": "160,210,255", "mantra": "150,230,160", "oneIlmPunch": "230,150,90",
-                        "armOfTheDestroyer": "240,170,90", "touchOfDeath": "200,90,220", "fracture": "235,140,90",
+                        "armOfTheDestroyer": "240,170,90", "anatman": "180,200,240", "touchOfDeath": "200,90,220", "fracture": "235,140,90",
                         "featherfoot": "150,220,170"},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 20},
     "brd": {"actions": BRD_ACTIONS, "statuses": BRD_STATUSES, "overrides": {},

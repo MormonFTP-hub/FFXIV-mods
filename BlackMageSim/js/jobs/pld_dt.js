@@ -144,7 +144,7 @@
 
     snapshot(a, e) {
       const mult = e.has('fightOrFlight') ? FOF : 1;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.strdt4.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey || 'strdt4'].cap : 0);
       return { mult, main };
     }
 
@@ -189,10 +189,10 @@
           if (this.useStack(e)) potency = a.req;
           const k = BLADES.indexOf(id);
           g.blade = k < 3 ? { next: BLADES[k + 1], until: e.now + 30 } : null;
-          if (id === 'bladeOfValor') e.addStatus('bladeOfHonorReady', 30);
+          if (id === 'bladeOfValor' && this.bladeOfHonor !== false) e.addStatus('bladeOfHonorReady', 30);
           break;
         }
-        case 'fightOrFlight': e.addStatus('fightOrFlight', 20); e.addStatus('goringBladeReady', 30); break;
+        case 'fightOrFlight': e.addStatus('fightOrFlight', 20); if (this.goringReady !== false) e.addStatus('goringBladeReady', 30); break;
         case 'imperator':
           e.addStatus('requiescat', 30, { stacks: 4 });
           e.addStatus('confiteorReady', 30);
@@ -284,6 +284,7 @@ ${seq(['holySpirit', 'fastBlade', 'riotBlade', ['tincture'], 'royalAuthority', [
     }
   }
 
+  B.PaladinDT = PaladinDT;
   B.registerJob({
     id: 'pld', name: 'Paladin', abbr: 'PLD', role: 'tank', classJob: 19,
     versions: [{ id: 'dt70', label: 'Dawntrail 7.0–7.57', history: 'DT 7.0–7.57', note: 'Level 100. Atonement → Supplication → Sepulchre, Divine Might Holy Spirit, Fight or Flight into Goring Blade, Imperator into Confiteor and the Blades, Blade of Honor; 7.05\'s numbers', create: () => new PaladinDT() }],

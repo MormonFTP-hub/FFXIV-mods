@@ -134,6 +134,10 @@ window.BLM = window.BLM || {};
     int: { name: 'Grade 8 Tincture of Intelligence', cap: 262 },
     str: { name: 'Grade 8 Tincture of Strength', cap: 262 },
     str6: { name: 'Grade 6 Tincture of Strength', cap: 189 },   // the 6.0x tier
+    str7: { name: 'Grade 7 Tincture of Strength', cap: 223 },   // the 6.2/6.3 tier
+    mnd6: { name: 'Grade 6 Tincture of Mind', cap: 189 },
+    mnd7: { name: 'Grade 7 Tincture of Mind', cap: 223 },
+    mnd: { name: 'Grade 8 Tincture of Mind', cap: 262 },
     int4: { name: 'Grade 4 Tincture of Intelligence', cap: 464 },   // the 5.4/5.5 tier (pre-squish stats)
     str4: { name: 'Grade 4 Tincture of Strength', cap: 464 },
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
