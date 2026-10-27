@@ -21,9 +21,9 @@
       this.level = 60;
       this.levelKey = 'hw60';
       this.model = 'ast-hw';
-      // MP costs are Heavensward's: a share of level 60's 8,840 (Gamer Escape's MP Base). The pool is a guess: 124% of
-      // level 60's base plus about 411 Piety.
-      this.maxMp = 14500;
+      // MP costs are Heavensward's: a share of level 60's 8,840 (Gamer Escape's MP Base). The pool is fitted to archived
+      // 2016 Lodestone profiles, floor(1.20 × (8,840 + 5.389 × (Piety − 218))), at this set's 629 Piety.
+      this.maxMp = 13265;
       const S = this.actions;
       const A = {
         malefic: spell({ name: 'Malefic', potency: 150, cast: 2.5, mp: 354, orb: true, desc: 'Deals unaspected damage with a potency of 150.' }),
@@ -83,7 +83,7 @@
       // stats. main is Mind, which Cleric Stance makes your Intelligence; without it you'd hit with about 228.
       // Magick and Mend II: +30% to the healer's damage. No Direct Hit before 4.0.
       this.stats = { hp: 24000, mainStat: 'mnd', main: 1570, int: 228, jobMod: 115, trait: 130, wd: 115, det: 670, crit: 870,
-        dh: 354, speed: 640, piety: 411, delay: 3.2 };
+        dh: 354, speed: 640, piety: 629, delay: 3.2 };
       this.selfStatusOrder = ['clericStance', 'theBalance', 'theSpear', 'theArrow', 'theEwer', 'theBole', 'theSpire', 'enhancedRoyalRoad',
         'extendedRoyalRoad', 'expandedRoyalRoad', 'lightspeed', 'swiftcast', 'luminiferousAether', 'medicated', 'diurnalSect', 'nocturnalSect',
         'surecast', 'sprint'];
@@ -173,7 +173,7 @@
 <h3>The 3.5 opener</h3>
 ${seq([['diurnalSect'], ['clericStance'], ['spreadBalance'], 'combust', 'combust2', ['tincture'], 'malefic2', 'malefic2', ['celestialOpposition'], 'malefic2', ['draw'], 'malefic2', 'malefic2', 'malefic2', 'combust', 'malefic2'])}
 <p>From the FFXIV wiki's 2017 Astrologian page and Mimi's guide (3.15): Diurnal Sect and Cleric Stance before the pull, a Balance drawn and Spread beforehand (and another card turned into Royal Road), played as you start; Celestial Opposition stretches it.</p>
-<p style="color:#a9a3b4">The 3.4–3.5 numbers: Malefic 150, Malefic II 200, Combust 40 × 18s, Combust II 45 × 30s, Gravity 200, Aero 50 + 25 × 18s, the Balance +20% (30% Enhanced), Cleric Stance +10%, Magick and Mend II +30%. Heavensward's damage formula is the community fit (Dervy, 2015–16); gear is approximate (item level ~270, Mind about 1,570). Not documented: the exact MP pool (about 14,500 here), whether the Mind potion had to be drunk before Cleric Stance, and the healing spells' exact MP. Cards are drawn at random, 1 in 6 each; Time Dilation couldn't be used on yourself.</p>`;
+<p style="color:#a9a3b4">The 3.4–3.5 numbers: Malefic 150, Malefic II 200, Combust 40 × 18s, Combust II 45 × 30s, Gravity 200, Aero 50 + 25 × 18s, the Balance +20% (30% Enhanced), Cleric Stance +10%, Magick and Mend II +30%. Heavensward's damage formula is the community fit (Dervy, 2015–16); gear is approximate (item level ~270, Mind about 1,570). The MP pool is fitted to archived 2016 character profiles. Not documented: whether the Mind potion had to be drunk before Cleric Stance, and the healing spells' exact MP. Cards are drawn at random, 1 in 6 each; Time Dilation couldn't be used on yourself.</p>`;
     }
   }
 

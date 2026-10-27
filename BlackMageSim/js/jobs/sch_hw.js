@@ -19,9 +19,9 @@
       this.level = 60;
       this.levelKey = 'hw60';
       this.model = 'sch-hw';
-      // MP costs are shares of level 60's 8,840 (Gamer Escape's MP Base); the pool is a guess from Scholar's 119% MP
-      // modifier and the gear's Piety.
-      this.maxMp = 13900;
+      // MP costs are shares of level 60's 8,840 (Gamer Escape's MP Base). The pool is fitted to archived 2016 Lodestone
+      // profiles, floor(1.20 × (8,840 + 5.389 × (Piety − 218))), at 775 Piety (Scholar's 1.20 is the healers' value).
+      this.maxMp = 14210;
       const S = this.actions;
       this.actions = {
         broil: spell({ name: 'Broil', potency: 170, cast: 2.5, mp: 530, orb: true, desc: 'Deals unaspected damage with a potency of 170.' }),
@@ -73,8 +73,8 @@
       });
       // A rough 3.5 set (item level ~270 healer gear, the Alexandrian Metal Codex), Heavensward-era stats. main is Mind,
       // which Cleric Stance makes your Intelligence; without it you'd hit with about 250. Maim and Mend II: +30%.
-      this.stats = { hp: 23500, mainStat: 'mnd', main: 1560, int: 250, jobMod: 115, trait: 130, wd: 115, det: 670, crit: 870,
-        dh: 354, speed: 640, piety: 411, delay: 3.12 };
+      this.stats = { hp: 23500, mainStat: 'mnd', main: 1590, int: 250, jobMod: 115, trait: 130, wd: 115, det: 700, crit: 620,
+        dh: 354, speed: 710, piety: 775, delay: 3.12 };
       this.selfStatusOrder = ['clericStance', 'feyWind', 'swiftcast', 'dissipation', 'rouse', 'medicated', 'emergencyTactics', 'surecast', 'sprint'];
       this.targetStatusOrder = ['bio2', 'bio', 'miasma', 'aero', 'miasma2', 'shadowFlare'];
       this.defaultBars = [
@@ -132,9 +132,9 @@
         }
         case 'energyDrain': {
           this.spendFlow(e);
-          // How much MP isn't documented; 5% of the pool here (with Energy Siphon's doubling).
+          // The tooltip gives no number: ARR's 266 at level 50 (with Energy Siphon) scaled to level 60 is about 884.
           const before = e.mp;
-          e.mp = Math.min(e.maxMp, e.mp + Math.round(e.maxMp * 0.05));
+          e.mp = Math.min(e.maxMp, e.mp + 884);
           if (e.mp > before) e.emit('mpGain', { amount: e.mp - before, source: 'lucid' });
           e.queueHit(id, a.potency, this.snapshot(a, e), a.delay);
           return;
@@ -175,7 +175,7 @@
 <h3>An opener for this version</h3>
 ${seq([['clericStance'], 'bio2', 'miasma', ['tincture'], 'bio', 'aero', 'shadowFlare', 'ruin2', ['energyDrain'], ['energyDrain'], 'broil', 'ruin2', ['energyDrain'], ['aetherflow'], 'broil', 'broil'])}
 <p>Summon Selene before the pull (not under Cleric Stance; the faerie keeps your stats from when she was summoned), then turn on Cleric Stance. Spend Aetherflow before pressing it again, and Dissipation for three more Energy Drains when you can resummon. Based on the wiki's 2017 Scholar page.</p>
-<p style="color:#a9a3b4">The 3.5 numbers: Broil 170, Ruin 80, Ruin II 80, Bio 40 × 18s, Bio II 35 × 30s, Miasma 20 + 35 × 24s, Miasma II 20 + 10 × 15s, Shadow Flare 25 × 30s, Energy Drain 150, Aero 50 + 25 × 18s, Cleric Stance +10%, Maim and Mend II +30%, Fey Wind 3%. Heavensward's damage formula is the community fit (Dervy, 2015–16); gear is approximate (item level ~270). Not documented: the MP pool (about 13,900 here) and how much MP Energy Drain gave (5% here).</p>`;
+<p style="color:#a9a3b4">The 3.5 numbers: Broil 170, Ruin 80, Ruin II 80, Bio 40 × 18s, Bio II 35 × 30s, Miasma 20 + 35 × 24s, Miasma II 20 + 10 × 15s, Shadow Flare 25 × 30s, Energy Drain 150, Aero 50 + 25 × 18s, Cleric Stance +10%, Maim and Mend II +30%, Fey Wind 3%. Heavensward's damage formula is the community fit (Dervy, 2015–16); gear is approximate (item level ~270). The MP pool (14,210) is fitted to archived 2016 character profiles; how much MP Energy Drain gave isn't documented (about 884 here, ARR's value scaled).</p>`;
     }
   }
 

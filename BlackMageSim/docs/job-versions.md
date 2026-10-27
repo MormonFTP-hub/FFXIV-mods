@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57, Monk HW 3.07–3.57, Summoner HW 3.0–3.57, Ninja HW 3.0–3.57, Machinist HW 3.4–3.57, Astrologian HW 3.4–3.57, Scholar HW 3.0–3.57, Paladin DT 7.0–7.57, White Mage DT 7.0–7.05, 7.1–7.38 and 7.4–7.57, Viper DT 7.05–7.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -64,7 +64,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 10. EW 6.1–6.28 (2022-04-12 → 2023-01-09): Blade of Faith needs Blade of Faith Ready (from Requiescat ending); Holy Spirit / Circle / Clemency don't break combos. **Rating 3/5:** Blade of Faith Ready tweak; plays much the same.
 11. EW 6.3–6.38 (2023-01-10 → 2023-05-22): Fight or Flight all damage, 20s; Goring Blade a 700-potency 60s GCD; Requiescat 4 stacks + Confiteor Ready; Divine Might; Sheltron 15% reduction; Bulwark back. **Rating 4/5:** The 6.3 rework gave a clean Fight or Flight burst; widely praised.
 12. EW 6.4–6.58 (2023-05-23 → 2024-07-01) (minor): Atonement doesn't break combos. **Rating 4/5:** The polished 6.3 kit.
-13. DT 7.0–7.57 (2024-07-02 → present): Goring Blade Ready from Fight or Flight; Atonement → Supplication → Sepulchre; Imperator; Blade of Honor; Guardian. **Rating 4/5:** Supplication, Sepulchre and Blade of Honor; one of Dawntrail's better-received tanks.
+13. DT 7.0–7.57 (2024-07-02 → present): Goring Blade Ready from Fight or Flight; Atonement → Supplication → Sepulchre; Imperator; Blade of Honor; Guardian. ← built **Rating 4/5:** Supplication, Sepulchre and Blade of Honor; one of Dawntrail's better-received tanks.
 
 ### Warrior / Marauder
 1. ARR 2.0 (2013-08-27 → 2013-12-16): Defiance + Wrath (5 stacks → Inner Beast, Steel Cyclone, Unchained); Inner Beast heals 300% of damage; Unchained 180s. **Rating 3/5:** Wrath stacks and Unchained; brief and nostalgic.
@@ -121,9 +121,9 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 11. EW 6.1–6.18 (2022-04-12 → 2022-08-22): Lily timer 30→20s; Afflatus Misery 900→1240. **Rating 3/5:** Faster Lilies and a bigger Misery; fine.
 12. EW 6.2–6.28 (2022-08-23 → 2023-01-09) (minor): Liturgy of the Bell 15→20s. **Rating 3/5:** Longer Liturgy; fine.
 13. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Assize 45→40s. **Rating 3/5:** Faster Assize; fine.
-14. DT 7.0–7.05 (2024-07-02 → 2024-11-11): Presence of Mind 120s + Sacred Sight → Glare IV (92, 640); Medica III (96); Temperance → Divine Caress (100); Tetragrammaton 2 charges; Aetherial Shift. **Rating 4/5:** Glare IV and Medica III gave White Mage more to do; well received.
-15. DT 7.1–7.38 (2024-11-12 → 2025-12-15): Holy / Holy III 1.5s cast; Divine Caress 30y. **Rating 4/5:** Faster Holy; liked.
-16. DT 7.4–7.57 (2025-12-16 → present): Confession −10% damage taken; start duties with full Lilies and Blood Lily; Glare III 350, Misery 1400. **Rating 4/5:** Start with full Lilies; liked.
+14. DT 7.0–7.05 (2024-07-02 → 2024-11-11): Presence of Mind 120s + Sacred Sight → Glare IV (92, 640); Medica III (96); Temperance → Divine Caress (100); Tetragrammaton 2 charges; Aetherial Shift. ← built **Rating 4/5:** Glare IV and Medica III gave White Mage more to do; well received.
+15. DT 7.1–7.38 (2024-11-12 → 2025-12-15): Holy / Holy III 1.5s cast; Divine Caress 30y. ← built **Rating 4/5:** Faster Holy; liked.
+16. DT 7.4–7.57 (2025-12-16 → present): Confession −10% damage taken; start duties with full Lilies and Blood Lily; Glare III 350, Misery 1400. ← built **Rating 4/5:** Start with full Lilies; liked.
 
 ### Scholar / Arcanist
 1. ARR 2.0 (2013-08-27 → 2013-12-16): Aetherflow 60s (+20% MP), Energy Drain, Virus, Bane, Eye for an Eye, Rouse, Shadow Flare, Sustain (HP cost); Adloquium 30, Succor 35, Leeches 40, Sacred Soil 45, Lustrate 50 (20% max HP); Eos and Selene. **Rating 3/5:** Virus, Bane and Shadow Flare; a DoT-heavy launch.
@@ -234,7 +234,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Viper (from 7.0)
 1. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Noxious Gnash debuff; venoms 40s; Serpent's Ire 120s. **Rating 3/5:** Noxious Gnash upkeep; short-lived.
-2. DT 7.05–7.57 (2024-07-30 → present): Noxious Gnash removed; Reaving Fangs, Vicewinder, Vicepit; Honed Steel / Honed Reavers; venoms 60s; potency pass. **Rating 4/5:** Reworked Viper; flashy and popular.
+2. DT 7.05–7.57 (2024-07-30 → present): Noxious Gnash removed; Reaving Fangs, Vicewinder, Vicepit; Honed Steel / Honed Reavers; venoms 60s; potency pass. ← built **Rating 4/5:** Reworked Viper; flashy and popular.
 
 ## Physical ranged (28 versions: BRD 10, MCH 14, DNC 4)
 

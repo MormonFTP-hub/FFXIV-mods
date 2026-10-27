@@ -127,6 +127,34 @@ JOB_MODELS = {
         "stance": "bt_2bk_emp",
         "attrs": {},
     },
+    # Dawntrail Paladin: the 7.4 savage set (Grand Champion's, e0908), the Grand Champion's Falchion (w220 b24) and
+    # Kite Shield (w114 b22).
+    "pld-dt": {
+        "actionsFrom": "pld",
+        "gear": {s: [908, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 220, "body": 24, "variant": 1}, "n_buki_r"),
+                    ("shield", {"kind": "weapon", "id": 114, "body": 22, "variant": 1}, "n_buki_tate_l")],
+        "stance": "bt_swd_sld",
+        "attrs": {},
+    },
+    # Dawntrail White Mage: the 7.4 savage set (Grand Champion's of Healing, e0910) and the Grand Champion's Cane (w827 b18).
+    "whm-dt": {
+        "actionsFrom": "whm",
+        "gear": {s: [910, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 827, "body": 18, "variant": 1}, "n_buki_r")],
+        "stance": "bt_rod_emp",
+        "attrs": {},
+    },
+    # Dawntrail Viper: the 7.4 savage set (Grand Champion's of Scouting, e0909) and the Grand Champion's Twinfangs
+    # (w3101 / w3151 b29).
+    "vpr-dt": {
+        "actionsFrom": "vpr",
+        "gear": {s: [909, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 3101, "body": 29, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 3151, "body": 29, "variant": 1}, "n_buki_l")],
+        "stance": "bt_bld_bld",
+        "attrs": {},
+    },
     # Heavensward Ninja: Iga (the 3.x artifact gear) and the Alexandrian Metal Daggers (w1805 / w1855).
     "nin-hw": {
         "actionsFrom": "nin",

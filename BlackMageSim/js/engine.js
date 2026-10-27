@@ -361,7 +361,7 @@
       const ap = s.apMod || (this.job.role === 'tank' ? L.apTank : L.ap);
       const fAP = Math.floor(ap * (snap.main - L.main) / L.main) + 100;
       const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000;
-      const fTNC = s.ten ? Math.floor(100 * (s.ten - L.sub) / L.div) + 1000 : 1000;
+      const fTNC = s.ten ? Math.floor((L.ten || 100) * (s.ten - L.sub) / L.div) + 1000 : 1000;     // 112 at level 100
       let fWD = Math.floor(L.main * s.jobMod / 1000) + s.wd;
       if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
       let d = Math.floor(Math.floor(potency * fAP * fDET / 100) / 1000);

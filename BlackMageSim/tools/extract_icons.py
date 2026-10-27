@@ -328,6 +328,82 @@ NIN_STATUSES = {
     "dancingEdge": "Slashing Resistance Down", "trickAttack": "Vulnerability Up", "doton": "Doton", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Paladin (Dawntrail 7.x): the current kit, so nothing is struck through.
+PLD_ACTIONS = {
+    "fastBlade": (9, "Fast Blade"), "riotBlade": (15, "Riot Blade"), "royalAuthority": (3539, "Royal Authority"),
+    "atonement": (16460, "Atonement"), "supplication": (36918, "Supplication"), "sepulchre": (36919, "Sepulchre"),
+    "goringBlade": (3538, "Goring Blade"), "holySpirit": (7384, "Holy Spirit"), "holyCircle": (16458, "Holy Circle"),
+    "confiteor": (16459, "Confiteor"), "bladeOfFaith": (25748, "Blade of Faith"), "bladeOfTruth": (25749, "Blade of Truth"),
+    "bladeOfValor": (25750, "Blade of Valor"), "fightOrFlight": (20, "Fight or Flight"), "imperator": (36921, "Imperator"),
+    "bladeOfHonor": (36922, "Blade of Honor"), "expiacion": (25747, "Expiacion"), "circleOfScorn": (23, "Circle of Scorn"),
+    "intervene": (16461, "Intervene"), "shieldLob": (24, "Shield Lob"), "totalEclipse": (7381, "Total Eclipse"),
+    "prominence": (16457, "Prominence"), "clemency": (3541, "Clemency"), "ironWill": (28, "Iron Will"),
+    "holySheltron": (25746, "Holy Sheltron"), "intervention": (7382, "Intervention"), "cover": (27, "Cover"),
+    "guardian": (36920, "Guardian"), "bulwark": (22, "Bulwark"), "hallowedGround": (30, "Hallowed Ground"),
+    "divineVeil": (3540, "Divine Veil"), "passageOfArms": (7385, "Passage of Arms"),
+    "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
+    "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
+    "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+PLD_STATUSES = {
+    "fightOrFlight": 76, "requiescat": 1368, "confiteorReady": 3019, "goringBladeReady": 3847, "atonementReady": 1902,
+    "supplicationReady": 3827, "sepulchreReady": 3828, "divineMight": 2673, "bladeOfHonorReady": 3831, "circleOfScorn": 248,
+    "ironWill": 79, "holySheltron": "Holy Sheltron", "guardian": "Guardian", "bulwark": 77, "hallowedGround": 82,
+    "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal",
+    "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
+}
+
+# Viper (Dawntrail 7.05+): the current kit.
+VPR_ACTIONS = {
+    "steelFangs": (34606, "Steel Fangs"), "reavingFangs": (34607, "Reaving Fangs"), "huntersSting": (34608, "Hunter's Sting"),
+    "swiftskinsSting": (34609, "Swiftskin's Sting"), "flankstingStrike": (34610, "Flanksting Strike"),
+    "flanksbaneFang": (34611, "Flanksbane Fang"), "hindstingStrike": (34612, "Hindsting Strike"), "hindsbaneFang": (34613, "Hindsbane Fang"),
+    "steelMaw": (34614, "Steel Maw"), "reavingMaw": (34615, "Reaving Maw"), "huntersBite": (34616, "Hunter's Bite"),
+    "swiftskinsBite": (34617, "Swiftskin's Bite"), "jaggedMaw": (34618, "Jagged Maw"), "bloodiedMaw": (34619, "Bloodied Maw"),
+    "vicewinder": (34620, "Vicewinder"), "huntersCoil": (34621, "Hunter's Coil"), "swiftskinsCoil": (34622, "Swiftskin's Coil"),
+    "vicepit": (34623, "Vicepit"), "huntersDen": (34624, "Hunter's Den"), "swiftskinsDen": (34625, "Swiftskin's Den"),
+    "reawaken": (34626, "Reawaken"), "firstGeneration": (34627, "First Generation"), "secondGeneration": (34628, "Second Generation"),
+    "thirdGeneration": (34629, "Third Generation"), "fourthGeneration": (34630, "Fourth Generation"), "ouroboros": (34631, "Ouroboros"),
+    "writhingSnap": (34632, "Writhing Snap"), "uncoiledFury": (34633, "Uncoiled Fury"), "deathRattle": (34634, "Death Rattle"),
+    "lastLash": (34635, "Last Lash"), "twinfangBite": (34636, "Twinfang Bite"), "twinbloodBite": (34637, "Twinblood Bite"),
+    "twinfangThresh": (34638, "Twinfang Thresh"), "twinbloodThresh": (34639, "Twinblood Thresh"), "firstLegacy": (34640, "First Legacy"),
+    "secondLegacy": (34641, "Second Legacy"), "thirdLegacy": (34642, "Third Legacy"), "fourthLegacy": (34643, "Fourth Legacy"),
+    "uncoiledTwinfang": (34644, "Uncoiled Twinfang"), "uncoiledTwinblood": (34645, "Uncoiled Twinblood"), "slither": (34646, "Slither"),
+    "serpentsIre": (34647, "Serpent's Ire"), "serpentsTail": (35920, "Serpent's Tail"), "twinfang": (35921, "Twinfang"),
+    "twinblood": (35922, "Twinblood"),
+    "trueNorth": (7546, "True North"), "feint": (7549, "Feint"), "bloodbath": (7542, "Bloodbath"),
+    "secondWind": (7541, "Second Wind"), "armsLength": (7548, "Arm's Length"), "legSweep": (7863, "Leg Sweep"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+VPR_STATUSES = {
+    "huntersInstinct": 3668, "swiftscaled": 3669, "readyToReawaken": 3671, "honedSteel": 3672, "honedReavers": 3772,
+    "flankstungVenom": "Flankstung Venom", "flanksbaneVenom": "Flanksbane Venom", "hindstungVenom": "Hindstung Venom",
+    "hindsbaneVenom": "Hindsbane Venom", "grimhuntersVenom": "Grimhunter's Venom", "grimskinsVenom": "Grimskin's Venom",
+    "huntersVenom": "Hunter's Venom", "swiftskinsVenom": "Swiftskin's Venom", "fellhuntersVenom": "Fellhunter's Venom",
+    "fellskinsVenom": "Fellskin's Venom", "poisedForTwinfang": "Poised for Twinfang", "poisedForTwinblood": "Poised for Twinblood",
+    "reawakened": "Reawakened", "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint",
+    "medicated": "Medicated",
+}
+
+# White Mage (Dawntrail 7.x): the current kit.
+WHM_ACTIONS = {
+    "glare3": (25859, "Glare III"), "glare4": (37009, "Glare IV"), "dia": (16532, "Dia"), "afflatusMisery": (16535, "Afflatus Misery"),
+    "holy3": (25860, "Holy III"), "afflatusSolace": (16531, "Afflatus Solace"), "afflatusRapture": (16534, "Afflatus Rapture"),
+    "medica3": (37010, "Medica III"), "cure2": (135, "Cure II"), "cure3": (131, "Cure III"), "regen": (137, "Regen"),
+    "assize": (3571, "Assize"), "presenceOfMind": (136, "Presence of Mind"), "thinAir": (7430, "Thin Air"),
+    "temperance": (16536, "Temperance"), "divineCaress": (37011, "Divine Caress"), "plenaryIndulgence": (7433, "Plenary Indulgence"),
+    "tetragrammaton": (3570, "Tetragrammaton"), "divineBenison": (7432, "Divine Benison"), "asylum": (3569, "Asylum"),
+    "benediction": (140, "Benediction"), "aquaveil": (25861, "Aquaveil"), "liturgyOfTheBell": (25862, "Liturgy of the Bell"),
+    "aetherialShift": (37008, "Aetherial Shift"), "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"),
+    "surecast": (7559, "Surecast"), "rescue": (7571, "Rescue"), "esuna": (7568, "Esuna"), "repose": (16560, "Repose"),
+    "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+WHM_STATUSES = {
+    "presenceOfMind": 157, "sacredSight": 3879, "thinAir": "Thin Air", "temperance": "Temperance", "divineGrace": "Divine Grace",
+    "confession": "Confession", "aquaveil": "Aquaveil", "dia": 1871, "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming",
+    "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -390,6 +466,12 @@ JOBS = {
                         "hawksEye": "230,200,120", "quellingStrikes": "170,200,230", "bloodForBlood": "230,100,90", "keenFlurry": "200,200,230",
                         "feint": "200,200,220"},
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 31},
+    "whm": {"actions": WHM_ACTIONS, "statuses": WHM_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
+    "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Gemdraught of Dexterity", "classjob": 41},
+    "pld": {"actions": PLD_ACTIONS, "statuses": PLD_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Gemdraught of Strength", "classjob": 19},
     "nin": {"actions": NIN_ACTIONS, "statuses": NIN_STATUSES, "overrides": {},
             "uncross": {"spinningEdge": "190,210,200", "gustSlash": "160,210,170", "aeolianEdge": "140,220,200", "armorCrush": "160,200,230",
                         "dancingEdge": "230,120,160", "shadowFang": "150,110,210", "mutilate": "200,90,120", "deathBlossom": "220,120,180",

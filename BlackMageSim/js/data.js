@@ -30,7 +30,7 @@ window.BLM = window.BLM || {};
   // levelKey when it played before Endwalker's stat squish: 6.0 cut level 80's divisor from 3300 to 1300 and shrank
   // every item, so Shadowbringers numbers (gear with 5000+ main stat) only work with the old table.
   B.LEVELS = {
-    100: { main: 440, sub: 420, div: 2780, ap: 237, apTank: 190, det: 140 },   // Dawntrail (Allagan Studies' level 100 table)
+    100: { main: 440, sub: 420, div: 2780, ap: 237, apTank: 190, det: 140, ten: 112 },   // Dawntrail (Allagan Studies' level 100 table)
     90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
     80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
     shb80: { main: 340, sub: 380, div: 3300, ap: 165, apTank: 115, det: 130 },   // level 80 in 5.x (Allagan Studies)
@@ -140,6 +140,12 @@ window.BLM = window.BLM || {};
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
     mnd3sb: { name: 'Grade 3 Infusion of Mind', cap: 225 },
     dex3sb: { name: 'Grade 3 Infusion of Dexterity', cap: 225 },
+    // Dawntrail's 7.4 tier: Grade 4 Gemdraughts, HQ +10% up to 541.
+    strdt4: { name: 'Grade 4 Gemdraught of Strength', cap: 541 },
+    dexdt4: { name: 'Grade 4 Gemdraught of Dexterity', cap: 541 },
+    mnddt4: { name: 'Grade 4 Gemdraught of Mind', cap: 541 },
+    mnddt2: { name: 'Grade 2 Gemdraught of Mind', cap: 392 },     // the 7.05 tier
+    mnddt3: { name: 'Grade 3 Gemdraught of Mind', cap: 461 },     // the 7.2 tier
   };
   // Healers cast like casters (cast bars, spell effects).
   B.isCaster = (job) => job.role === 'caster' || job.role === 'healer';
