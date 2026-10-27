@@ -102,6 +102,14 @@ JOB_MODELS = {
         "stance": "bt_2gn_emp",
         "attrs": {},
     },
+    # Heavensward Warrior: Ravager's (the 3.x artifact gear) and the Alexandrian Metal Axe (Alexander Savage, 3.4).
+    "war-hw": {
+        "actionsFrom": "war",
+        "gear": {s: [162, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 408, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
     # Stormblood Scholar: Orator's (the 4.x artifact gear) and the Omega Codex (Alphascape, 4.4).
     "sch-sb": {
         "actionsFrom": "sch",

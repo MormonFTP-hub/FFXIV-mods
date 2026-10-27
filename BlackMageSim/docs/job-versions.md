@@ -44,7 +44,7 @@ Endwalker (6.0–6.58, Dec 2021 – Jul 2024) has 44 versions across 19 jobs. Bu
 
 ## Build order
 
-The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58.
+The user's order from here: every remaining version, highest rating first; within a rating, newest expansion first (each older expansion needs new engine pieces, built once and reused). One at a time, straight on to the next without asking (the user's instruction of 2026-10-27). Built outside Endwalker so far: Black Mage ShB 5.0–5.58, Gunbreaker ShB 5.1–5.58, Black Mage SB 4.2–4.58, Samurai SB 4.0–4.58, Summoner SB 4.1–4.58 and 4.0–4.06, Astrologian SB 4.05–4.18, 4.2–4.25, 4.3–4.38 and 4.4–4.58, Scholar SB 4.05–4.18, 4.2–4.25 and 4.3–4.58, Monk SB 4.2–4.58, Dragoon SB 4.1–4.58, Bard SB 4.06–4.58, Machinist SB 4.06–4.58, Warrior HW 3.0–3.57.
 
 
 ## Tanks (45 versions: PLD 13, WAR 14, DRK 11, GNB 7)
@@ -69,7 +69,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ### Warrior / Marauder
 1. ARR 2.0 (2013-08-27 → 2013-12-16): Defiance + Wrath (5 stacks → Inner Beast, Steel Cyclone, Unchained); Inner Beast heals 300% of damage; Unchained 180s. **Rating 3/5:** Wrath stacks and Unchained; brief and nostalgic.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Inner Beast heal 100% + 20% reduction; Unchained 120s; Vengeance 30% mitigation; Holmgang pull. **Rating 4/5:** Defiance tanking with Inner Beast heals; the original Warrior feel.
-3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Deliverance + Abandon → Fell Cleave, Decimate; Raw Intuition; Equilibrium. **Rating 5/5:** Deliverance/Defiance stance dancing for Fell Cleave; often called Warrior's best.
+3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Deliverance + Abandon → Fell Cleave, Decimate; Raw Intuition; Equilibrium. ← built **Rating 5/5:** Deliverance/Defiance stance dancing for Fell Cleave; often called Warrior's best.
 4. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Beast Gauge; Inner Release (120s, halves costs); Berserk 60s +30%; Storm's Eye +20%; Upheaval, Onslaught, Shake It Off. **Rating 3/5:** Beast Gauge launch, but swapping stance halved it.
 5. SB 4.05–4.06 (2017-07-17 → 2017-10-09): gauge kept on stance swap; Inner Release and Unchained free. **Rating 4/5:** Free Inner Release and stance swaps; stance dancing is back.
 6. SB 4.1–4.18 (2017-10-10 → 2018-01-29): Deliverance turns Inner Beast etc. into Fell Cleave etc.; Shake It Off a party barrier. **Rating 4/5:** Deliverance turns your buttons into Fell Cleave; still a stance-dance job.

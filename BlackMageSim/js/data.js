@@ -33,6 +33,9 @@ window.BLM = window.BLM || {};
     90: { main: 390, sub: 400, div: 1900, ap: 195, apTank: 156, det: 140 },
     80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 130 },
     shb80: { main: 340, sub: 380, div: 3300, ap: 165, apTank: 115, det: 130 },   // level 80 in 5.x (Allagan Studies)
+    // Heavensward (3.x): damage = potency × (WD/25 + 1) × main/9 × (1 + DET/7290), crit (CRT−354)/(858×5) + 5% for
+    // 1.45× + the same, no Direct Hit; Skill Speed on the 4.x shape with 354 / 858. formula: 'hw' switches the engine.
+    hw60: { main: 218, sub: 354, div: 858, det: 118, ap: 100, apTank: 100, formula: 'hw' },
     sb70: { main: 292, sub: 364, div: 2170, ap: 125, apTank: 105, det: 130 },    // level 70 in 4.x (Allagan Studies)
   };
 

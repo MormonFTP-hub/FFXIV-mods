@@ -255,6 +255,27 @@ MCH_STATUSES = {
     "vulnerabilityUp": "Vulnerability Up", "ammunition": 862, "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Warrior (Heavensward 3.x). Most of its 3.x kit was removed later, so many icons are struck through.
+WAR_ACTIONS = {
+    "heavySwing": (31, "Heavy Swing"), "skullSunder": (35, "Skull Sunder"), "butchersBlock": (47, "Butcher's Block"),
+    "maim": (37, "Maim"), "stormsPath": (42, "Storm's Path"), "stormsEye": (45, "Storm's Eye"), "overpower": (41, "Overpower"),
+    "tomahawk": (46, "Tomahawk"), "fracture": (33, "Fracture"), "fellCleave": (3549, "Fell Cleave"), "decimate": (3550, "Decimate"),
+    "innerBeast": (49, "Inner Beast"), "steelCyclone": (51, "Steel Cyclone"), "brutalSwing": (39, "Brutal Swing"),
+    "berserk": (38, "Berserk"), "defiance": (48, "Defiance"), "deliverance": (3548, "Deliverance"), "infuriate": (52, "Infuriate"),
+    "unchained": (50, "Unchained"), "equilibrium": (3552, "Equilibrium"), "rawIntuition": (3551, "Raw Intuition"),
+    "vengeance": (44, "Vengeance"), "holmgang": (43, "Holmgang"), "thrillOfBattle": (40, "Thrill of Battle"),
+    "foresight": (32, "Foresight"), "bloodbath": (34, "Bloodbath"), "internalRelease": (59, "Internal Release"),
+    "provoke": (18, "Provoke"), "awareness": (13, "Awareness"), "convalescence": (12, "Convalescence"), "flash": (14, "Flash"),
+    "secondWind": (57, "Second Wind"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+}
+WAR_STATUSES = {
+    "maim": "Maim", "stormsEye": "Storm's Eye", "fracture": "Fracture", "berserk": "Berserk", "pacification": "Pacification",
+    "defiance": "Defiance", "deliverance": "Deliverance", "wrath": "Wrath", "abandon": "Abandon", "infuriated": "Infuriated",
+    "uncontrollable": "Uncontrollable", "unchained": "Unchained", "rawIntuition": "Raw Intuition", "vengeance": "Vengeance",
+    "holmgang": "Holmgang", "thrillOfBattle": "Thrill of Battle", "foresight": "Foresight", "bloodbath": "Bloodbath",
+    "internalRelease": "Internal Release", "slashingResDown": "Slashing Resistance Down", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -308,6 +329,12 @@ JOBS = {
                         "flamethrower": "255,120,60", "rookAutoturret": "170,190,230", "rookOverdrive": "255,150,90",
                         "rookOverload": "255,150,90"},
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 31},
+    "war": {"actions": WAR_ACTIONS, "statuses": WAR_STATUSES, "overrides": {},
+            "uncross": {k: "235,140,90" for k in ("heavySwing", "skullSunder", "butchersBlock", "maim", "stormsPath", "stormsEye",
+                        "overpower", "tomahawk", "fracture", "fellCleave", "decimate", "innerBeast", "steelCyclone", "brutalSwing",
+                        "berserk", "defiance", "deliverance", "infuriate", "unchained", "equilibrium", "rawIntuition", "vengeance",
+                        "holmgang", "thrillOfBattle", "foresight", "bloodbath", "internalRelease", "awareness", "convalescence")},
+            "tincture": "Grade 8 Tincture of Strength", "classjob": 21},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",

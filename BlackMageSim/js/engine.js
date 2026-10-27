@@ -357,6 +357,7 @@
     damage(potency, snap, isDot, opts) {
       const s = this.stats, L = this.lv;
       opts = opts || {};
+      if (L.formula === 'hw') return this.damageHW(potency, snap, isDot, opts);
       const ap = s.apMod || (this.job.role === 'tank' ? L.apTank : L.ap);
       const fAP = Math.floor(ap * (snap.main - L.main) / L.main) + 100;
       const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000;
@@ -377,6 +378,26 @@
       if (dh) d = Math.floor(d * 1.25);
       d = Math.floor(d * (95 + Math.random() * 10) / 100);
       d = Math.floor(d * snap.mult);
+      return { amount: d, crit, dh };
+    }
+
+    // Heavensward's formula (Dervy's fits, 2015–16): weaponskills and spells potency/100 × (WD/25 + 1) × main/9 ×
+    // (1 + DET/7290); auto-attacks (WD/3 × delay/34 + 1) × main/6.8 × (1 + DET/6795) per swing; DoT ticks gain
+    // 1 + (Skill Speed − 354)/6800. Crit rate (CRT − 354)/4290 + 5% for 1.45× + the same. No Direct Hit before 4.0.
+    damageHW(potency, snap, isDot, opts) {
+      const s = this.stats;
+      let d;
+      if (opts.auto) d = (potency / 100) * (s.wd / 3 * s.delay / 34 + 1) * (snap.main / 6.8) * (1 + s.det / 6795);
+      else d = (potency / 100) * (s.wd / 25 + 1) * (snap.main / 9) * (1 + s.det / 7290);
+      if (isDot) d *= 1 + (s.speed - 354) / 6800;
+      d *= (s.trait || 100) / 100;
+      const step = (s.crit - 354) / 4290;
+      const crit = opts.crit || Math.random() < 0.05 + step + (snap.critAdd || 0);
+      const dh = Math.random() < (snap.dhAdd || 0);
+      if (crit) d *= 1.45 + step;
+      if (dh) d *= 1.25;
+      d *= (95 + Math.random() * 10) / 100;
+      d = Math.max(1, Math.floor(d * snap.mult) - 1);
       return { amount: d, crit, dh };
     }
 
