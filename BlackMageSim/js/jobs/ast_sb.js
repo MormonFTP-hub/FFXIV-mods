@@ -1,14 +1,18 @@
-// Astrologian, Stormblood (4.05–4.58) at level 70, in four versions. The Stormblood card game: Draw a card, then play
+// Astrologian, Stormblood (4.0–4.58) at level 70, in five versions. The Stormblood card game: Draw a card, then play
 // it on yourself (the Balance +10% damage, the Spear +10% crit, the Arrow 10% haste, the Ewer MP), turn it into a
 // Royal Road buff for the next card (Enhanced ×1.5, Extended ×2 duration, Expanded AoE at half), keep it in the
 // Spread, or turn it into Lord of Crowns (300) or Lady of Crowns with Minor Arcana; Sleeve Draw fills all of that at
 // once. Damage is Malefic III, Combust II, Earthly Star and Lord of Crowns, with Cleric Stance.
+//  - 4.0–4.01: the Balance is +20% damage (Enhanced 30%), and the Spear has no crit: it cuts the recast of abilities
+//    used under it by 20% (20s). Undraw recasts in 5s; no Empty Road or Undraw Spread yet (both 4.05). Numbers from
+//    2017's job guide (Wayback) and the 4.05 patch notes. ref: scaled from the 4.05 bot by the bigger Balance.
 //  - 4.05–4.18: the Spear lasts 20s, Malefic has a 2.5s cast, Lightspeed costs 25% potency (150s).
 //  - 4.2–4.25: the Spear lasts 30s.
 //  - 4.3–4.38: Malefic 1.5s casts, Aspected Helios 2.5s, Lightspeed −50% MP with no potency cost (120s).
 //  - 4.4–4.58: Minor Arcana and Lord / Lady of Crowns recast 1s (was 5s).
 // Numbers are the game data at 4.11, 4.2, 4.25, 4.38 and 4.58 (xivapi's datamining; there's none before 4.11), and
-// the wiki's patch histories.
+// the wiki's patch histories. The tincture is the one of the time: the ungraded Infusion (max 137) to 4.18, Grade 2
+// (165) in 4.2–4.38, Grade 3 (225) from 4.4.
 (function (B) {
   const EPS = 1e-6;
   // Stormblood MP at level 70: 124% (Astrologian's modifier) of 12,000 plus 6,000 × (Piety − 292) / 2,170. Healers
@@ -37,13 +41,16 @@
   // ref: a scripted bot (Lucid on cooldown, Lightspeed for MP, cards on itself) parses about 2,650 / 3,300 / 3,800 / 4,650
   // in these four over 5 minutes; the first two are MP-limited, as healers were before 4.3's Lightspeed.
   const VERSIONS = {
-    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', spear: 20, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i340', ref: 2820,
+    sb40: { label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', spear: 20, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i340', ref: 2900,
+      early: true, balance: 0.20, tincture: 'mnd1sb',
+      note: 'Level 70, the launch: the Balance +20%, the Spear cuts ability recasts by 20% (no crit), Undraw 5s, no Empty Road or Undraw Spread' },
+    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', spear: 20, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i340', ref: 2810, tincture: 'mnd1sb',
       note: 'Level 70. The Stormblood card game: Balance 10%, the Spear 20s, Royal Road, Spread, Minor Arcana and Sleeve Draw. 2.5s Malefic, Lightspeed costs 25% potency' },
-    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', spear: 30, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i370', ref: 3470,
+    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', spear: 30, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i370', ref: 3460, tincture: 'mnd2sb',
       note: 'Level 70. As 4.05 with the Spear lasting 30s; Sigmascape gear' },
-    sb43: { label: 'Stormblood 4.3–4.38', history: 'SB 4.3–4.38', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 4030,
+    sb43: { label: 'Stormblood 4.3–4.38', history: 'SB 4.3–4.38', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 4020, tincture: 'mnd2sb',
       note: 'Level 70. 1.5s Malefic casts, Lightspeed −50% MP with no damage cost (120s)' },
-    sb44: { label: 'Stormblood 4.4–4.58', history: 'SB 4.4–4.58', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 1, gear: 'i400', ref: 4900,
+    sb44: { label: 'Stormblood 4.4–4.58', history: 'SB 4.4–4.58', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 1, gear: 'i400', ref: 4900, tincture: 'mnd3sb',
       note: 'Level 70. Minor Arcana and Lord of Crowns on 1s recasts; Alphascape gear' },
   };
 
@@ -76,8 +83,8 @@
       stellarExplosion: { name: 'Stellar Explosion', kind: 'hit', potency: 200, aoe: true, school: 'astral', delay: 0.4, big: true, sound: 'paradox' },
       draw: ab({ name: 'Draw', recast: 30, holdCd: true, desc: 'Draws a card (arcanum) from your divining deck.\nDuration: 30s\nRecast timer begins once the card is used or its effect ends.\nDraw changes to the card you drew; play it on yourself.' }),
       redraw: ab({ name: 'Redraw', recast: 30, desc: 'Draws a different card in place of the one you hold.' }),
-      undraw: ab({ name: 'Undraw', recast: 3, desc: 'Returns the drawn card to the deck.' }),
-      royalRoad: ab({ name: 'Royal Road', recast: 15, desc: 'Returns the drawn card to the deck and enhances the next card played:\nthe Balance or the Bole: Enhanced Royal Road, 150% effect\nthe Arrow or the Spear: Extended Royal Road, double duration\nthe Ewer or the Spire: Expanded Royal Road, an AoE version at half effect\nRoyal Road changes to Empty Road while a road effect is stored.' }),
+      undraw: ab({ name: 'Undraw', recast: V.early ? 5 : 3, desc: 'Returns the drawn card to the deck.' }),
+      royalRoad: ab({ name: 'Royal Road', recast: 15, desc: 'Returns the drawn card to the deck and enhances the next card played:\nthe Balance or the Bole: Enhanced Royal Road, 150% effect\nthe Arrow or the Spear: Extended Royal Road, double duration\nthe Ewer or the Spire: Expanded Royal Road, an AoE version at half effect' + (V.early ? '' : '\nRoyal Road changes to Empty Road while a road effect is stored.') }),
       emptyRoad: ab({ name: 'Empty Road', recast: 3, desc: 'Removes the stored Royal Road effect.' }),
       spread: ab({ name: 'Spread', recast: 30, holdCd: true, desc: 'Places the drawn card in the Spread, where it keeps indefinitely.\nRecast timer begins once the spread card is used or returned.\nSpread changes to the spread card; play it on yourself.' }),
       undrawSpread: ab({ name: 'Undraw Spread', recast: 3, desc: 'Returns the spread card to the deck.' }),
@@ -105,13 +112,15 @@
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 120, role: true, desc: 'Reduces enmity by half.\nAdditional Effect: Refresh\nPotency: 80\nDuration: 21s' }),
       surecast: ab({ name: 'Surecast', recast: 30, role: true, desc: 'Spells can be cast without interruption.\nDuration: 5s' }),
       ...B.GENERAL_ACTIONS,
-      tincture: B.tincture('mnd3sb'),
+      tincture: B.tincture(V.tincture),
     };
+    // Empty Road and Undraw Spread came in 4.05.
+    if (V.early) { delete A.emptyRoad; delete A.undrawSpread; }
     const effect = {
-      balance: 'Increases damage dealt by 10%.\nDuration: 30s',
+      balance: `Increases damage dealt by ${Math.round((V.balance || 0.10) * 100)}%.\nDuration: 30s`,
       bole: 'Reduces damage taken by 20%.\nDuration: 30s',
       arrow: 'Reduces weaponskill and spell cast time and recast time, and auto-attack delay by 10%.\nDuration: 30s',
-      spear: `Increases critical hit rate by 10%.\nDuration: ${V.spear}s`,
+      spear: V.early ? `Reduces ability recast time by 20%.\nDuration: ${V.spear}s` : `Increases critical hit rate by 10%.\nDuration: ${V.spear}s`,
       ewer: 'Grants Refresh (potency 50).\nDuration: 15s',
       spire: 'Grants TP regeneration.\nDuration: 15s',
     };
@@ -176,6 +185,11 @@
         ['Role Actions', ['clericStance', 'swiftcast', 'lucidDreaming', 'largesse', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
+      if (V.early) {
+        const gone = (x) => x === 'emptyRoad' || x === 'undrawSpread';
+        this.defaultBars = this.defaultBars.map(r => r.map(x => (gone(x) ? null : x)));
+        this.actionGroups = this.actionGroups.map(([n, ids]) => [n, ids.filter(x => !gone(x))]);
+      }
       this.referenceDps = V.ref;
       this.referenceGcd = 2.45;
       this.startDistance = 12;
@@ -189,7 +203,7 @@
       const g = e.g;
       if (id === 'draw' && g.card) return g.card;
       if (id === 'spread' && g.spread) return 'spread' + cap(g.spread);
-      if (id === 'royalRoad' && g.road) return 'emptyRoad';
+      if (id === 'royalRoad' && g.road && !this.V.early) return 'emptyRoad';
       if (id === 'minorArcana' && g.arcana) return g.arcana === 'lord' ? 'lordOfCrowns' : 'ladyOfCrowns';
       if (id === 'earthlyStar' && g.star) return 'stellarDetonation';
       return id;
@@ -242,12 +256,18 @@
 
     snapshot(a, e) {
       let mult = 1, critAdd = 0;
-      if (e.has('theBalance')) mult *= 1 + 0.10 * (e.statuses.theBalance.mag || 1);
-      if (e.has('theSpear')) critAdd += 0.10 * (e.statuses.theSpear.mag || 1);
+      if (e.has('theBalance')) mult *= 1 + (this.V.balance || 0.10) * (e.statuses.theBalance.mag || 1);
+      if (e.has('theSpear') && !this.V.early) critAdd += 0.10 * (e.statuses.theSpear.mag || 1);
       if (e.has('clericStance')) mult *= 1.05;
       if (e.has('lightspeed')) mult *= this.V.ls.potency;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.mnd3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.V.tincture].cap : 0);
       return { mult, main, critAdd };
+    }
+
+    // 4.0–4.01's Spear: abilities whose recast starts under it recast 20% faster (the Expanded Spear is half that).
+    recastScale(id, e) {
+      if (!this.V.early || !e.has('theSpear') || this.actions[id].kind !== 'ogcd') return 1;
+      return 1 - 0.2 * (e.statuses.theSpear.mag || 1);
     }
 
     resolve(id, e) {
@@ -414,18 +434,18 @@
       return `
 <h3>How it plays (${V.label})</h3>
 <p>Level 70 Astrologian on a dummy, so the job is damage and cards. Keep <b>Combust II</b> up (50 a tick for 30s) and fill with <b>Malefic III</b> (220, ${V.malefic}s cast). <b>Earthly Star</b> (60s) goes on the dummy; detonate it after 10s, when it has become Giant Dominance, for a 200-potency Stellar Explosion (150 if you're early); it goes off by itself at 20s. <b>Cleric Stance</b> is +5% for 15s every 90s.</p>
-<p><b>Draw</b> (30s, counted from when the card is used) changes into the card you drew; press it to play the card on yourself. The Balance is +10% damage for 30s, the Spear +10% crit for ${V.spear}s, the Arrow 10% faster casts and GCD, the Ewer MP. The Bole and the Spire do nothing for damage, so turn them into something else: <b>Royal Road</b> spends the card to enhance the next one (Balance and Bole: 150%, Arrow and Spear: double length, Ewer and Spire: AoE at half), <b>Minor Arcana</b> turns it into Lord of Crowns (300 damage) or Lady of Crowns, and <b>Spread</b> keeps a card for later (the Spread button then plays it). <b>Sleeve Draw</b> (120s) fills all of them at once. <b>Time Dilation</b> adds 15s to your card, <b>Celestial Opposition</b> 10s to all your buffs.</p>
+<p><b>Draw</b> (30s, counted from when the card is used) changes into the card you drew; press it to play the card on yourself. The Balance is +${Math.round((V.balance || 0.10) * 100)}% damage for 30s, the Spear ${V.early ? `cuts the recast of abilities you use under it by 20% for ${V.spear}s (no crit until 4.05)` : `+10% crit for ${V.spear}s`}, the Arrow 10% faster casts and GCD, the Ewer MP. The Bole and the Spire do nothing for damage, so turn them into something else: <b>Royal Road</b> spends the card to enhance the next one (Balance and Bole: 150%, Arrow and Spear: double length, Ewer and Spire: AoE at half), <b>Minor Arcana</b> turns it into Lord of Crowns (300 damage) or Lady of Crowns, and <b>Spread</b> keeps a card for later (the Spread button then plays it). <b>Sleeve Draw</b> (120s) fills all of them at once. <b>Time Dilation</b> adds 15s to your card, <b>Celestial Opposition</b> 10s to all your buffs.</p>
 <p>${V.ls.potency < 1 ? '<b>Lightspeed</b> takes 2.5s off casts and 25% off MP for 10s, but also 25% off your damage: it\'s for moving, not for damage.' : '<b>Lightspeed</b> takes 2.5s off casts (Malefic is instant) and halves MP for 10s, with no damage penalty since 4.3.'} Minor Arcana and Lord of Crowns are on ${V.arcana}s recasts.</p>
 <h3>An opener for this version</h3>
 ${seq(['malefic3', ['clericStance'], ['draw'], 'combust2', ['balance'], ['tincture'], 'malefic3', ['earthlyStar'], 'malefic3', ['sleeveDraw'], ['balance'], 'malefic3', ['minorArcana'], ['lordOfCrowns'], 'malefic3', ['stellarDetonation'], 'malefic3', 'malefic3'])}
 <p>Draw before the pull and hold the Balance (or Spread it); cards drawn mid-fight that aren't the Balance or Spear go to Royal Road or Minor Arcana. The opener above assumes the draws went your way: play what you get. This follows the version's rules; it isn't copied from a published guide.</p>
-<p style="color:#a9a3b4">Numbers are the game data for this patch. Cards are drawn at random, 1 in 6 each, and Minor Arcana is Lord or Lady at even odds, which isn't in the data. The Ewer's Refresh is counted as 600 MP a tick. Gear stats are approximate.</p>`;
+<p style="color:#a9a3b4">${V.early ? 'Numbers are 2017\'s job guide and the 4.05 patch notes (no game data before 4.11). What\'s different in 4.0–4.01: the Balance +20% (Enhanced 30%), the Spear a 20% ability-recast cut instead of crit, Undraw 5s, and no Empty Road or Undraw Spread, so a stored Royal Road stays until a card uses it and a Spread card can only leave by being played.' : 'Numbers are the game data for this patch.'} Cards are drawn at random, 1 in 6 each, and Minor Arcana is Lord or Lady at even odds, which isn't in the data. The Ewer's Refresh is counted as 600 MP a tick. Gear stats are approximate.</p>`;
     }
   }
 
   B.AstrologianSB = AstrologianSB;
   B.registerJob({
     id: 'ast', name: 'Astrologian', abbr: 'AST', role: 'healer', classJob: 33,
-    versions: ['sb44', 'sb43', 'sb42', 'sb405'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new AstrologianSB(v) })),
+    versions: ['sb44', 'sb43', 'sb42', 'sb405', 'sb40'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new AstrologianSB(v) })),
   });
 })(window.BLM);

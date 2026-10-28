@@ -160,6 +160,9 @@ window.BLM = window.BLM || {};
     mnd3sb: { name: 'Grade 3 Infusion of Mind', cap: 225 },
     dex3sb: { name: 'Grade 3 Infusion of Dexterity', cap: 225 },
     dex1sb: { name: 'Infusion of Dexterity', cap: 137 },           // 4.0–4.1x
+    str1sb: { name: 'Infusion of Strength', cap: 137 },
+    mnd1sb: { name: 'Infusion of Mind', cap: 137 },
+    mnd2sb: { name: 'Grade 2 Infusion of Mind', cap: 165 },        // 4.2–4.3x: HQ +10%, max 165
     // Dawntrail's 7.4 tier: Grade 4 Gemdraughts, HQ +10% up to 541.
     strdt4: { name: 'Grade 4 Gemdraught of Strength', cap: 541 },
     strdt3: { name: 'Grade 3 Gemdraught of Strength', cap: 461 },     // the 7.2 tier

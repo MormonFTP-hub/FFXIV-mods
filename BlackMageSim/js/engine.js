@@ -165,7 +165,8 @@
     // it drew is used).
     startCd(id) {
       const c = this.cd(id);
-      if (c.charges === c.max) c.nextAt = this.now + c.recast;
+      const scale = this.job.recastScale ? this.job.recastScale(id, this) : 1;     // e.g. 4.0's Spear: -20% ability recasts
+      if (c.charges === c.max) c.nextAt = this.now + c.recast * scale;
       c.charges--;
     }
     cdTick() {

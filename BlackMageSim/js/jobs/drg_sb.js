@@ -41,7 +41,8 @@
     dragonSight: ab({ name: 'Dragon Sight', recast: 120, desc: 'Grants Right Eye to self, increasing damage dealt by 10%, and Left Eye (+5%) to a party member.\nDuration: 20s\nHere, with no party, only Right Eye.' }),
     elusiveJump: ab({ name: 'Elusive Jump', recast: 30, lock: 0.8, desc: 'Executes a jump to a location 15 yalms behind you.\nAdditional Effect: Removes Heavy and Bind, and reduces enmity by half' }),
     // The melee role actions of 4.5 (five could be slotted in Stormblood; these are the usual ones).
-    trueNorth: ab({ name: 'True North', recast: 90, role: true, desc: 'Nullifies all action direction requirements.\nDuration: 15s' }),
+    // 150s until 4.5 (90s after): most of this version's run.
+    trueNorth: ab({ name: 'True North', recast: 150, role: true, desc: 'Nullifies all action direction requirements.\nDuration: 15s' }),
     invigorate: ab({ name: 'Invigorate', recast: 120, role: true, desc: 'Instantly restores 400 TP.' }),
     feint: ab({ name: 'Feint', recast: 120, role: true, target: true, range: 10, desc: 'Lowers target\'s strength and dexterity by 10%.\nDuration: 10s' }),
     bloodbath: ab({ name: 'Bloodbath', recast: 90, role: true, desc: 'Converts a portion of physical damage dealt into HP.\nDuration: 20s' }),
@@ -121,7 +122,7 @@
         case 'mirageDive': if (!e.has('diveReady')) return 'Unable to execute action. Dive Ready required.'; break;
         case 'geirskogul': if (g.mode !== 'blood' || !this.dragon(e)) return 'Unable to execute action. Blood of the Dragon required.'; break;
         case 'nastrond': if (g.mode !== 'life' || !this.dragon(e)) return 'Unable to execute action. Life of the Dragon required.'; break;
-        case 'bloodOfTheDragon': if (g.mode === 'life') return 'Unable to execute action while under the effect of Life of the Dragon.'; break;
+        case 'bloodOfTheDragon': if (g.mode === 'life' && !this.bloodInLife) return 'Unable to execute action while under the effect of Life of the Dragon.'; break;
       }
       return null;
     }
@@ -143,12 +144,12 @@
 
     snapshot(a, e) {
       let mult = 1, critAdd = 0;
-      if (e.has('heavyThrust')) mult *= 1.10;
+      if (e.has('heavyThrust')) mult *= this.heavyMult || 1.10;
       if (e.has('bloodForBlood')) mult *= 1.15;
       if (e.has('rightEye')) mult *= 1.10;
       if (e.tHas('piercingResDown')) mult *= 1.05;
       if (e.has('battleLitany')) critAdd += 0.15;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.str3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey || 'str3sb'].cap : 0);
       return { mult, main, critAdd };
     }
 
@@ -171,7 +172,7 @@
         const bonus = (e.statuses[mine] && e.statuses[mine].bonus) || 0;
         potency += bonus;
         e.removeStatus(mine, true);
-        if (!bonus) e.addStatus(other, 10, { bonus: 100 });
+        if (!bonus) e.addStatus(other, 10, { bonus: this.lanceBonus || 100 });
         this.extendBlood(e);
       } else {
         // Any other weaponskill ends both procs.
@@ -181,7 +182,7 @@
       if (id === 'chaosThrust' && combo && this.dragon(e)) e.addStatus('enhancedWheelingThrust', 10, { bonus: 0 });
       if (id === 'heavyThrust') e.addStatus('heavyThrust', 30);
       if (id === 'disembowel' && combo) e.addTStatus('piercingResDown', 30);
-      if (id === 'sonicThrust' && combo) this.extendBlood(e);
+      if (id === 'sonicThrust' && combo && this.sonicExtends !== false) this.extendBlood(e);
       const crit = e.has('lifeSurge');
       if (crit) e.removeStatus('lifeSurge');
       const snap = this.snapshot(a, e);
@@ -199,17 +200,17 @@
           break;
         case 'mirageDive':
           e.removeStatus('diveReady');
-          if (this.dragon(e)) { g.eyes = Math.min(3, g.eyes + 1); e.emit('eyes', {}); }
+          if (this.dragon(e)) { g.eyes = Math.min(this.eyesMax || 3, g.eyes + 1); e.emit('eyes', {}); }
           break;
         case 'geirskogul':
           // Three Eyes: Blood becomes Life of the Dragon, for what was left of Blood plus 10s (up to 30s).
-          if (g.eyes >= 3) {
+          if (g.eyes >= (this.eyesMax || 3)) {
             const left = g.until - e.now;
             g.eyes = 0;
             this.setDragon(e, 'life', Math.min(GAUGE_MAX, left + LIFE_EXTRA));
           }
           break;
-        case 'bloodOfTheDragon': this.setDragon(e, 'blood', Math.max(BLOOD, g.mode === 'blood' ? g.until - e.now : 0)); return;
+        case 'bloodOfTheDragon': this.setDragon(e, 'blood', Math.max(this.bloodDur || BLOOD, g.mode === 'blood' ? g.until - e.now : 0)); return;
         case 'lifeSurge': e.addStatus('lifeSurge', 10); return;
         case 'bloodForBlood': e.addStatus('bloodForBlood', 20); return;
         case 'battleLitany': e.addStatus('battleLitany', 20); return;
@@ -234,7 +235,7 @@
     process(e) {
       const g = e.g;
       if (g.mode && e.now >= g.until - EPS) {
-        if (g.mode === 'life') this.setDragon(e, 'blood', BLOOD);
+        if (g.mode === 'life') this.setDragon(e, 'blood', this.bloodDur || BLOOD);
         else this.setDragon(e, null, 0);
       }
     }
@@ -245,7 +246,7 @@
       if (id === 'fangAndClaw') return e.has('sharperFangAndClaw') && this.dragon(e);
       if (id === 'wheelingThrust') return e.has('enhancedWheelingThrust') && this.dragon(e);
       if (id === 'mirageDive') return e.has('diveReady');
-      if (id === 'geirskogul') return e.g.eyes >= 3;
+      if (id === 'geirskogul') return e.g.eyes >= (this.eyesMax || 3);
       if (id === 'nastrond') return true;
       return false;
     }
@@ -267,10 +268,10 @@
   <rect x="24" y="52" width="312" height="16" rx="8" fill="#1d1a2a" stroke="rgba(255,255,255,.2)"/>
   <rect id="dg-bar" x="24" y="52" width="0" height="16" rx="8" fill="url(#dg-blood)"/>
   <text x="24" y="100" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">DRAGON'S EYES</text>
-  ${[0, 1, 2].map(k => `<ellipse id="dg-e${k}" cx="${150 + k * 40}" cy="96" rx="15" ry="9" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}
+  ${[0, 1, 2, 3].slice(0, this.eyesMax || 3).map(k => `<ellipse id="dg-e${k}" cx="${140 + k * 40}" cy="96" rx="15" ry="9" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}
 </svg>`;
       const $ = (s) => root.querySelector(s);
-      this.dg = { lbl: $('#dg-lbl'), t: $('#dg-t'), bar: $('#dg-bar'), eyes: [0, 1, 2].map(k => $('#dg-e' + k)), cache: {} };
+      this.dg = { lbl: $('#dg-lbl'), t: $('#dg-t'), bar: $('#dg-bar'), eyes: [0, 1, 2, 3].slice(0, this.eyesMax || 3).map(k => $('#dg-e' + k)), cache: {} };
     }
 
     gaugeUpdate(e) {
@@ -282,7 +283,7 @@
         G.bar.setAttribute('fill', v === 'life' ? 'url(#dg-life)' : 'url(#dg-blood)');
       });
       put('t', Math.round(left * 10), () => { G.bar.setAttribute('width', String(312 * Math.min(1, left / GAUGE_MAX))); G.t.textContent = left > 0 ? left.toFixed(1) : ''; });
-      for (let i = 0; i < 3; i++) put('e' + i, g.eyes > i, v => { G.eyes[i].setAttribute('fill', v ? 'url(#dg-eye)' : '#2a2535'); G.eyes[i].setAttribute('filter', v ? 'url(#dg-g)' : ''); });
+      for (let i = 0; i < G.eyes.length; i++) put('e' + i, g.eyes > i, v => { G.eyes[i].setAttribute('fill', v ? 'url(#dg-eye)' : '#2a2535'); G.eyes[i].setAttribute('filter', v ? 'url(#dg-g)' : ''); });
     }
 
     helpHtml(seq) {
@@ -297,6 +298,7 @@ ${seq(['heavyThrust', ['tincture'], ['bloodForBlood'], 'impulseDrive', ['dragonS
     }
   }
 
+  B.DragoonSB = DragoonSB;
   B.registerJob({
     id: 'drg', name: 'Dragoon', abbr: 'DRG', role: 'melee', classJob: 22,
     versions: [{ id: 'sb41', label: 'Stormblood 4.1–4.58', history: 'SB 4.1–4.58', note: 'Level 70. Two five-hit combos with Lance Mastery, Blood of the Dragon kept up by Fang and Claw / Wheeling Thrust, three Eyes for Life of the Dragon and Nastrond, Blood for Blood', create: () => new DragoonSB() }],

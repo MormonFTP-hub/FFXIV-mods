@@ -44,7 +44,8 @@
     mantra: ab({ name: 'Mantra', recast: 90, desc: 'Increases HP recovery via healing actions for self and nearby party members by 20%.\nDuration: 15s' }),
     purification: ab({ name: 'Purification', recast: 120, desc: 'Restores 300 TP and halves enmity.\nCan only be executed with five chakra open; spends them.' }),
     // The melee role actions of 4.5 (five could be slotted in Stormblood; these are the usual ones).
-    trueNorth: ab({ name: 'True North', recast: 90, role: true, desc: 'Nullifies all action direction requirements.\nDuration: 15s' }),
+    // 150s until 4.5 (90s after): most of this version's run.
+    trueNorth: ab({ name: 'True North', recast: 150, role: true, desc: 'Nullifies all action direction requirements.\nDuration: 15s' }),
     invigorate: ab({ name: 'Invigorate', recast: 120, role: true, desc: 'Instantly restores 400 TP.' }),
     feint: ab({ name: 'Feint', recast: 120, role: true, target: true, range: 10, desc: 'Lowers target\'s strength and dexterity by 10%.\nDuration: 10s' }),
     bloodbath: ab({ name: 'Bloodbath', recast: 90, role: true, desc: 'Converts a portion of physical damage dealt into HP.\nDuration: 20s' }),
@@ -166,10 +167,10 @@
       if (e.has('twinSnakes')) mult *= 1.10;
       if (e.has('fistsOfFire')) mult *= this.fofMult;
       if (e.has('riddleOfFire')) mult *= 1.30;
-      if (e.has('brotherhood')) mult *= 1.05;
+      if (e.has('brotherhood') && this.brotherhoodSelf !== false) mult *= 1.05;
       if (e.tHas('bluntResDown')) mult *= 1.10;
       if (e.has('internalRelease')) critAdd += 0.30;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.str3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey || 'str3sb'].cap : 0);
       return { mult, main, critAdd };
     }
 
@@ -211,7 +212,7 @@
       // Chakra: Deep Meditation opens one 50% of the time a weaponskill crits; Brotherhood 30% of the time on any.
       const onResult = (r) => { if (this.deepMeditation && r.crit && Math.random() < 0.5) this.openChakra(e); };
       e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (pos ? 'hit' : 'miss') : null, crit, onResult });
-      if (e.has('brotherhood') && Math.random() < 0.3) this.openChakra(e);
+      if (e.has('brotherhood') && this.brotherhoodSelf !== false && Math.random() < 0.3) this.openChakra(e);
     }
 
     ability(id, e) {
@@ -223,9 +224,9 @@
           break;
         case 'forbiddenChakra': g.chakra = 0; e.emit('chakra', {}); break;
         case 'purification': g.chakra = 0; e.tp = Math.min(e.job.tp.max, e.tp + 300); return;
-        case 'windTackle': e.addStatus('riddleOfWind', 10); this.gap(e); break;
+        case 'windTackle': e.addStatus('riddleOfWind', this.rowDur || 10); this.gap(e); break;
         case 'fireTackle': case 'earthTackle': case 'shoulderTackle': this.gap(e); break;
-        case 'riddleOfWind': e.removeStatus('riddleOfWind'); this.addGl(e); break;
+        case 'riddleOfWind': e.removeStatus('riddleOfWind'); if (this.rowGl !== false) this.addGl(e); break;
         case 'internalRelease': e.addStatus('internalRelease', 15); return;
         case 'perfectBalance': e.addStatus('perfectBalance', 10); return;
         case 'riddleOfFire': e.addStatus('riddleOfFire', 20); this.fists(e, 'fistsOfFire'); return;
@@ -320,6 +321,7 @@ ${seq([['perfectBalance'], 'snapPunch', ['internalRelease'], ['tincture'], 'twin
   B.MonkSB = MonkSB;
   B.MNK_SB = { ACTIONS, STATUSES };
 
+  B.MonkSB = MonkSB;
   B.registerJob({
     id: 'mnk', name: 'Monk', abbr: 'MNK', role: 'melee', classJob: 20,
     versions: [{ id: 'sb42', label: 'Stormblood 4.2–4.58', history: 'SB 4.2–4.58', note: 'Level 70. Forms and Greased Lightning III, Tornado Kick, Riddle of Fire, Brotherhood, Perfect Balance every 60s, chakra and The Forbidden Chakra, Fire Tackle', create: () => new MonkSB() }],

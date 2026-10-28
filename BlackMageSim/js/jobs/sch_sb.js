@@ -1,13 +1,18 @@
-// Scholar, Stormblood (4.05–4.58) at level 70, in three versions. The damage kit didn't change across Stormblood:
+// Scholar, Stormblood (4.0–4.58) at level 70, in four versions. The damage kit didn't change across Stormblood:
 // Broil II, Bio II and Miasma (Miasma II for AoE), Energy Drain on Aetherflow (each Aetherflow action takes 5s off
 // Aetherflow's recast: Quickened Aetherflow), Chain Stratagem (+15% crit taken), Shadow Flare, Cleric Stance. The
 // faerie deals no damage; Selene's Fey Wind is 3% haste. Dissipation trades the faerie for three Aetherflow stacks,
 // and in Stormblood you resummon it yourself. What the versions change is the healing side:
+//  - 4.0–4.01: no Miasma II (back in 4.05); Quickened Aetherflow is a 20% chance per Aetherflow action of taking 10s
+//    off (so Aetherflow every ~54s); Summon a 6s cast; Excogitation 650 / 30s on a 60s recast, Indomitability 400,
+//    Emergency Tactics 30s. Numbers from 2017's job guide (Wayback) and the 4.05 / 4.1 patch notes; Summon's MP is a
+//    guess (2,400, the Heavensward value). ref: scaled from the 4.05 bot by the slower Aetherflow (no bot of its own).
 //  - 4.05–4.18: Excogitation doesn't heal when it runs out; Aetherpact 5s; Whispering Dawn a 2s cast (100).
 //  - 4.2–4.25: Excogitation also heals when it expires.
 //  - 4.3–4.58: Whispering Dawn instant (120), Aetherpact 3s, Dissolve Union 1s.
 // Numbers are the game data at 4.11, 4.2, 4.25, 4.38 and 4.58 (xivapi's datamining; none before 4.11) and the
-// Lodestone patch notes.
+// Lodestone patch notes. The tincture is the one of the time: the ungraded Infusion (max 137) to 4.18, Grade 2 (165)
+// in 4.2–4.25, Grade 3 (225) from 4.3.
 (function (B) {
   const EPS = 1e-6;
   const FALLOFF = [1, 0.8, 0.6, 0.4, 0.2];
@@ -21,11 +26,14 @@
   // ref: a scripted bot parses about 2,650 / 3,300 / 4,150 in these three over 5 minutes (the gear tier is the difference).
   // Weapon magic damage 134 / 140 / 146 is from the 4.58 item data.
   const VERSIONS = {
-    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', gear: 'i340', excogExpiry: false, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 2820,
+    sb40: { label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', gear: 'i340', excogExpiry: false, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 2760,
+      early: true, tincture: 'mnd1sb',
+      note: 'Level 70, the launch: no Miasma II, Quickened Aetherflow a 20% chance of 10s, Summon a 6s cast; Excogitation 650 / 30s' },
+    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', gear: 'i340', excogExpiry: false, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 2810, tincture: 'mnd1sb',
       note: 'Level 70. Broil II, Bio II and Miasma, Energy Drain with Quickened Aetherflow, Chain Stratagem, Selene\'s Fey Wind; Excogitation 800 / 45s' },
-    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', gear: 'i370', excogExpiry: true, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 3520,
+    sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', gear: 'i370', excogExpiry: true, aetherpact: 5, dawnCast: 2, dawn: 100, ref: 3510, tincture: 'mnd2sb',
       note: 'Level 70. As 4.05, with Excogitation also healing when it expires; Sigmascape gear' },
-    sb43: { label: 'Stormblood 4.3–4.58', history: 'SB 4.3–4.58', gear: 'i400', excogExpiry: true, aetherpact: 3, dawnCast: 0, dawn: 120, ref: 4380,
+    sb43: { label: 'Stormblood 4.3–4.58', history: 'SB 4.3–4.58', gear: 'i400', excogExpiry: true, aetherpact: 3, dawnCast: 0, dawn: 120, ref: 4380, tincture: 'mnd3sb',
       note: 'Level 70. Whispering Dawn instant, Aetherpact 3s; Alphascape gear' },
   };
 
@@ -34,7 +42,8 @@
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
 
   function buildActions(V) {
-    return {
+    const E = V.early;
+    const A = {
       broil2: spell({ name: 'Broil II', potency: 230, cast: 2.5, mp: 720, orb: true, desc: 'Deals unaspected damage with a potency of 230.' }),
       bio2: spell({ name: 'Bio II', potency: 0, mp: 720, dot: { potency: 35, duration: 30 }, sound: 'dot', desc: 'Deals unaspected damage over time.\nPotency: 35\nDuration: 30s' }),
       miasma: spell({ name: 'Miasma', potency: 20, cast: 2.5, mp: 600, dot: { potency: 35, duration: 24 }, desc: 'Deals unaspected damage with a potency of 20.\nAdditional Effect: Unaspected damage over time\nPotency: 35\nDuration: 24s' }),
@@ -50,20 +59,20 @@
       bane: ab({ name: 'Bane', recast: 10, flow: true, target: true, range: 25, desc: 'Spreads a target\'s Bio and Miasma effects to nearby enemies, with potency reduced by 20% for the second enemy, 40% for the third, 60% for the fourth and 80% for the rest.\nAetherflow Gauge Cost: 1' }),
       shadowFlare: ab({ name: 'Shadow Flare', recast: 60, target: true, range: 25, school: 'none', dot: { potency: 50, duration: 15, aoe: true }, desc: 'Creates a patch of dark miasma on the ground, dealing unaspected damage with a potency of 50 to any enemies who enter.\nDuration: 15s\nAdditional Effect: Slow +5%' }),
       chainStratagem: ab({ name: 'Chain Stratagem', recast: 120, target: true, range: 25, desc: 'Increases rate at which target takes critical hits by 15%.\nDuration: 15s' }),
-      aetherflow: ab({ name: 'Aetherflow', recast: 60, desc: 'Restores 10% of maximum MP.\nAdditional Effect: Aetherflow III\nQuickened Aetherflow: each Aetherflow action shortens its recast by 5s.' }),
+      aetherflow: ab({ name: 'Aetherflow', recast: 60, desc: `Restores 10% of maximum MP.\nAdditional Effect: Aetherflow III\nQuickened Aetherflow: ${E ? 'each Aetherflow action has a 20% chance of shortening its recast by 10s' : 'each Aetherflow action shortens its recast by 5s'}.` }),
       dissipation: ab({ name: 'Dissipation', recast: 180, desc: 'Dismisses your faerie, granting you Aetherflow III and increasing healing magic potency by 20%.\nDuration: 30s\nCannot summon your faerie while under the effect of Dissipation.' }),
       physick: heal({ name: 'Physick', cast: 2, mp: 600, desc: 'Restores target\'s HP.\nCure Potency: 400' }),
       adloquium: heal({ name: 'Adloquium', cast: 2, mp: 1560, desc: 'Restores target\'s HP.\nCure Potency: 300\nAdditional Effect: Erects a magicked barrier which nullifies damage equaling the amount of HP restored. When critical HP is restored, also grants Catalyze.' }),
-      succor: heal({ name: 'Succor', cast: 2.5, mp: 2040, desc: 'Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: 150\nAdditional Effect: Erects a magicked barrier which nullifies damage equaling 150% of the amount of HP restored.' }),
+      succor: heal({ name: 'Succor', cast: 2.5, mp: 2040, desc: `Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: 150\nAdditional Effect: Erects a magicked barrier which nullifies damage equaling ${E ? '' : '150% of '}the amount of HP restored.` }),
       lustrate: ab({ name: 'Lustrate', recast: 1, flow: true, desc: 'Restores target\'s HP.\nCure Potency: 600\nAetherflow Gauge Cost: 1' }),
-      indomitability: ab({ name: 'Indomitability', recast: 30, flow: true, desc: 'Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: 500\nAetherflow Gauge Cost: 1' }),
-      excogitation: ab({ name: 'Excogitation', recast: 45, flow: true, desc: `Grants self or target party member the effect of Excogitation, restoring HP when their HP falls below 50%${V.excogExpiry ? ' or when the effect expires' : ''}.\nCure Potency: 800\nDuration: 45s\nAetherflow Gauge Cost: 1` }),
+      indomitability: ab({ name: 'Indomitability', recast: 30, flow: true, desc: `Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: ${E ? 400 : 500}\nAetherflow Gauge Cost: 1` }),
+      excogitation: ab({ name: 'Excogitation', recast: E ? 60 : 45, flow: true, desc: `Grants self or target party member the effect of Excogitation, restoring HP when their HP falls below 50%${V.excogExpiry ? ' or when the effect expires' : ''}.\nCure Potency: ${E ? 650 : 800}\nDuration: ${E ? 30 : 45}s\nAetherflow Gauge Cost: 1` }),
       sacredSoil: ab({ name: 'Sacred Soil', recast: 30, flow: true, desc: 'Creates a designated area in which party members will only suffer 90% of all damage inflicted.\nDuration: 15s\nAetherflow Gauge Cost: 1' }),
       deploymentTactics: ab({ name: 'Deployment Tactics', recast: 120, desc: 'Extends Galvanize effect cast on self or target to all party members within a radius of 15 yalms.' }),
-      emergencyTactics: ab({ name: 'Emergency Tactics', recast: 20, desc: 'Transforms the next Galvanize effect into a healing effect.\nDuration: 15s' }),
+      emergencyTactics: ab({ name: 'Emergency Tactics', recast: E ? 30 : 20, desc: 'Transforms the next Galvanize effect into a healing effect.\nDuration: 15s' }),
       aetherpact: ab({ name: 'Aetherpact', recast: V.aetherpact, desc: 'Orders your faerie to execute Fey Union, gradually restoring a party member\'s HP.\nCure Potency: 480\nFaerie Gauge Cost: 10 per tick\nPress again to dissolve the union.' }),
-      summon: heal({ name: 'Summon', cast: 3, mp: 1200, faerie: 'eos', desc: 'Summons Eos, a faerie healer.' }),
-      summon2: heal({ name: 'Summon II', cast: 3, mp: 1200, faerie: 'selene', desc: 'Summons Selene, a faerie healer. Selene keeps Fey Wind up: 3% faster casts and GCD for you and nearby party members (30s, every 60s).' }),
+      summon: heal({ name: 'Summon', cast: E ? 6 : 3, mp: E ? 2400 : 1200, faerie: 'eos', desc: 'Summons Eos, a faerie healer.' }),
+      summon2: heal({ name: 'Summon II', cast: E ? 6 : 3, mp: E ? 2400 : 1200, faerie: 'selene', desc: 'Summons Selene, a faerie healer. Selene keeps Fey Wind up: 3% faster casts and GCD for you and nearby party members (30s, every 60s).' }),
       whisperingDawn: ab({ name: 'Whispering Dawn', recast: 60, desc: `Orders Eos to gradually restore the HP of party members nearby.\nCure Potency: ${V.dawn}\nDuration: 21s${V.dawnCast ? `\nCast time: ${V.dawnCast}s (Eos's)` : ''}` }),
       feyCovenant: ab({ name: 'Fey Covenant', recast: 120, desc: 'Orders Eos to increase magic defense of nearby party members by 20%.\nDuration: 20s' }),
       feyIllumination: ab({ name: 'Fey Illumination', recast: 120, desc: 'Orders Eos to increase healing magic potency of nearby party members by 10%.\nDuration: 20s' }),
@@ -73,10 +82,13 @@
       largesse: ab({ name: 'Largesse', recast: 90, role: true, desc: 'Increases healing magic potency by 20%.\nDuration: 20s' }),
       swiftcast: ab({ name: 'Swiftcast', recast: 60, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 120, role: true, desc: 'Reduces enmity by half.\nAdditional Effect: Refresh\nPotency: 80\nDuration: 21s' }),
-      surecast: ab({ name: 'Surecast', recast: 30, role: true, desc: 'Spells can be cast without interruption.\nDuration: 5s' }),
+      surecast: ab({ name: 'Surecast', recast: 30, role: true, desc: E ? 'Next spell is cast without interruption.\nAdditional Effect: Nullifies most knockback and draw-in effects\nDuration: 10s' : 'Spells can be cast without interruption.\nDuration: 5s' }),
       ...B.GENERAL_ACTIONS,
-      tincture: B.tincture('mnd3sb'),
+      tincture: B.tincture(V.tincture),
     };
+    // Miasma II was cut in 4.0 and came back in 4.05.
+    if (E) delete A.miasma2;
+    return A;
   }
 
   const STATUSES = {
@@ -126,6 +138,10 @@
         ['Role Actions', ['clericStance', 'swiftcast', 'lucidDreaming', 'largesse', 'surecast']],
         ['General', ['sprint', 'tincture']],
       ];
+      if (V.early) {
+        this.defaultBars = this.defaultBars.map(r => r.map(x => (x === 'miasma2' ? null : x)));
+        this.actionGroups = this.actionGroups.map(([n, ids]) => [n, ids.filter(x => x !== 'miasma2')]);
+      }
       this.referenceDps = V.ref;
       this.referenceGcd = 2.45;
       this.startDistance = 12;
@@ -172,7 +188,7 @@
       let mult = 1, critAdd = 0;
       if (e.has('clericStance')) mult *= 1.05;
       if (e.tHas('chainStratagem')) critAdd += 0.15;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.mnd3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.V.tincture].cap : 0);
       return { mult, main, critAdd };
     }
 
@@ -202,12 +218,13 @@
       if (a.potency) e.queueHit(id, a.potency, this.snapshot(a, e), a.delay, after);
     }
 
-    // Quickened Aetherflow: each Aetherflow action takes 5s off Aetherflow's recast.
+    // Quickened Aetherflow: each Aetherflow action takes 5s off Aetherflow's recast (4.0–4.01: a 20% chance of 10s).
     spendFlow(e) {
       const g = e.g;
       g.flow--;
       const c = e.cds.aetherflow;
-      if (c && c.nextAt !== null) c.nextAt = Math.max(e.now, c.nextAt - 5);
+      const cut = this.V.early ? (Math.random() < 0.2 ? 10 : 0) : 5;
+      if (cut && c && c.nextAt !== null) c.nextAt = Math.max(e.now, c.nextAt - cut);
     }
 
     ability(id, e) {
@@ -245,7 +262,7 @@
           if (e.has('feyUnion')) e.removeStatus('feyUnion');
           else { e.addStatus('feyUnion', 1e9, { permanent: true }); g.unionNext = e.now + 3; }
           return;
-        case 'excogitation': e.addStatus('excogitation', 45); return;
+        case 'excogitation': e.addStatus('excogitation', this.V.early ? 30 : 45); return;
         case 'emergencyTactics': e.addStatus('emergencyTactics', 15); return;
         case 'clericStance': e.addStatus('clericStance', 15); return;
         case 'largesse': e.addStatus('largesse', 20); return;
@@ -316,17 +333,17 @@
       return `
 <h3>How it plays (${V.label})</h3>
 <p>Level 70 Scholar on a dummy: damage and MP. Keep <b>Bio II</b> (35 a tick for 30s, instant) and <b>Miasma</b> (20 + 35 a tick for 24s) up and fill with <b>Broil II</b> (230, 2.5s cast). <b>Ruin II</b> is instant for moving and for making room for abilities, since a 2.5s cast leaves no gap to weave in.</p>
-<p><b>Aetherflow</b> (60s) gives three stacks and 10% MP. Spend them on <b>Energy Drain</b> (150, and some MP back): each Aetherflow action takes 5s off Aetherflow's recast (Quickened Aetherflow), so it's back every 45s. <b>Chain Stratagem</b> (+15% crit on the dummy, 120s) goes with <b>Cleric Stance</b> (+5%, 90s); <b>Shadow Flare</b> is a 60s ground DoT. Selene (Summon II) keeps <b>Fey Wind</b> on you, 3% faster casts. <b>Dissipation</b> gives three more stacks but sends the faerie away for 30s, and in Stormblood you have to summon it back yourself (3s, 1,200 MP).</p>
+<p><b>Aetherflow</b> (60s) gives three stacks and 10% MP. Spend them on <b>Energy Drain</b> (150, and some MP back): ${V.early ? 'each Aetherflow action has a 20% chance of taking 10s off Aetherflow\'s recast (Quickened Aetherflow), so it\'s back every 54s or so' : 'each Aetherflow action takes 5s off Aetherflow\'s recast (Quickened Aetherflow), so it\'s back every 45s'}. <b>Chain Stratagem</b> (+15% crit on the dummy, 120s) goes with <b>Cleric Stance</b> (+5%, 90s); <b>Shadow Flare</b> is a 60s ground DoT. Selene (Summon II) keeps <b>Fey Wind</b> on you, 3% faster casts. <b>Dissipation</b> gives three more stacks but sends the faerie away for 30s, and in Stormblood you have to summon it back yourself (${V.early ? '6s, 2,400 MP' : '3s, 1,200 MP'}).</p>
 <h3>An opener for this version</h3>
 ${seq(['broil2', 'bio2', ['tincture'], ['clericStance'], 'miasma', 'ruin2', ['chainStratagem'], ['aetherflow'], 'broil2', 'ruin2', ['energyDrain'], ['energyDrain'], 'broil2', 'ruin2', ['energyDrain'], ['shadowFlare'], 'broil2', 'broil2'])}
 <p>Summon Selene before the pull. This follows the version's rules; it isn't copied from a published guide.</p>
-<p style="color:#a9a3b4">Numbers are the game data for this patch: Broil II 230, Bio II 35 × 30s, Miasma 20 + 35 × 24s, Miasma II 100 + 25 × 12s, Ruin II 100, Energy Drain 150, Shadow Flare 50 a tick for 15s, Chain Stratagem +15% crit, Fey Wind 3%. Energy Drain's MP is a guess (5%); gear is approximate. The heals are on the hotbar for the feel of the kit; on a dummy they do nothing.</p>`;
+<p style="color:#a9a3b4">${V.early ? 'Numbers are 2017\'s job guide and the 4.05 / 4.1 patch notes (no game data before 4.11); Summon\'s 2,400 MP is a guess' : 'Numbers are the game data for this patch'}: Broil II 230, Bio II 35 × 30s, Miasma 20 + 35 × 24s, ${V.early ? 'no Miasma II (back in 4.05)' : 'Miasma II 100 + 25 × 12s'}, Ruin II 100, Energy Drain 150, Shadow Flare 50 a tick for 15s, Chain Stratagem +15% crit, Fey Wind 3%. Energy Drain's MP is a guess (5%); gear is approximate. The heals are on the hotbar for the feel of the kit; on a dummy they do nothing.</p>`;
     }
   }
 
   B.ScholarSB = ScholarSB;
   B.registerJob({
     id: 'sch', name: 'Scholar', abbr: 'SCH', role: 'healer', classJob: 28,
-    versions: ['sb43', 'sb42', 'sb405'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new ScholarSB(v) })),
+    versions: ['sb43', 'sb42', 'sb405', 'sb40'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new ScholarSB(v) })),
   });
 })(window.BLM);

@@ -102,6 +102,49 @@ JOB_MODELS = {
         "stance": "bt_2gn_emp",
         "attrs": {},
     },
+    # Stormblood tanks: their 4.x artifact gear (Chivalrous e0318, Brutal e0320, Abyss e0328) and the Omega weapons from
+    # Alphascape (4.4): Omega Sword w201 b107 with the Omega Shield w108, Omega Battleaxe w401 b80, Omega Claymore w1501 b73.
+    "pld-sb": {
+        "actionsFrom": "pld",
+        "gear": {s: [318, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 201, "body": 107, "variant": 1}, "n_buki_r"),
+                    ("shield", {"kind": "weapon", "id": 108, "body": 1, "variant": 1}, "n_buki_tate_l")],
+        "stance": "bt_swd_sld",
+        "attrs": {},
+    },
+    "war-sb": {
+        "actionsFrom": "war",
+        "gear": {s: [320, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 401, "body": 80, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
+    "drk-sb": {
+        "actionsFrom": "drk",
+        "gear": {s: [328, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1501, "body": 73, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sw_emp",
+        "attrs": {},
+    },
+    # Stormblood Ninja: Kage-kakushi (the 4.x artifact gear, e0327) and the Omega Sickles, a pair (w1809 and w1859).
+    "nin-sb": {
+        "actionsFrom": "nin",
+        "gear": {s: [327, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1809, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 1859, "body": 1, "variant": 1}, "n_buki_l")],
+        "stance": "bt_dgr_dgr",
+        "run": ("bt_2ff_emp/resident/move_a.pap", "cbbm_02f_lp0"),
+        "attrs": {},
+    },
+    # Stormblood Red Mage: Duelist's (the 4.x artifact gear, e0378) and the Omega Smallsword with its focus (w2351 b41).
+    "rdm-sb": {
+        "actionsFrom": "rdm",
+        "gear": {s: [378, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2301, "body": 49, "variant": 1}, "n_buki_r"),
+                    ("focus", {"kind": "weapon", "id": 2351, "body": 41, "variant": 1}, "n_buki_l")],
+        "stance": "bt_2rp_emp",
+        "attrs": {},
+    },
     # Heavensward Warrior: Ravager's (the 3.x artifact gear) and the Alexandrian Metal Axe (Alexander Savage, 3.4).
     "war-hw": {
         "actionsFrom": "war",

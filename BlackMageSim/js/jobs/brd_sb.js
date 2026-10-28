@@ -118,7 +118,7 @@
       if (e.has('straightShot')) critAdd += 0.10;
       if (this.songOn(e)) critAdd += 0.02;            // the song's party Critical Up
       if (e.has('battleVoice')) dhAdd += 0.15;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.dex3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey || 'dex3sb'].cap : 0);
       return { mult, main, critAdd, dhAdd };
     }
 
@@ -148,7 +148,7 @@
       if (id === 'heavyShot' && Math.random() < 0.2) e.addStatus('straighterShot', 10);
       if (id === 'straightShot') {
         if (e.has('straighterShot')) { crit = true; e.removeStatus('straighterShot'); }
-        e.addStatus('straightShot', 30);
+        e.addStatus('straightShot', this.ssDur || 30);
       }
       if (id === 'refulgentArrow') e.removeStatus('straighterShot');
       const snap = this.snapshot(a, e);
@@ -270,6 +270,7 @@ ${seq(['straightShot', ['wanderersMinuet'], ['ragingStrikes'], 'stormbite', ['em
     }
   }
 
+  B.BardSB = BardSB;
   B.registerJob({
     id: 'brd', name: 'Bard', abbr: 'BRD', role: 'ranged', classJob: 23,
     versions: [{ id: 'sb406', label: 'Stormblood 4.06–4.58', history: 'SB 4.06–4.58', note: 'Level 70. Caustic Bite and Stormbite with Iron Jaws, Straighter Shot into Refulgent Arrow, the three songs and their Repertoire, Barrage, Pitch Perfect', create: () => new BardSB() }],
