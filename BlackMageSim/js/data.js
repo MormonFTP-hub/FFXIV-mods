@@ -154,10 +154,12 @@ window.BLM = window.BLM || {};
     intdt2: { name: 'Grade 2 Gemdraught of Intelligence', cap: 392 },   // the 7.05 tier
     intdt4: { name: 'Grade 4 Gemdraught of Intelligence', cap: 541 },   // the 7.4 tier
     mnd4: { name: 'Grade 4 Tincture of Mind', cap: 464 },
-    int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
+    int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },
+    int1sb: { name: 'Infusion of Intelligence', cap: 137 },        // 4.0–4.1x: HQ +10%, max 137   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
     mnd3sb: { name: 'Grade 3 Infusion of Mind', cap: 225 },
     dex3sb: { name: 'Grade 3 Infusion of Dexterity', cap: 225 },
+    dex1sb: { name: 'Infusion of Dexterity', cap: 137 },           // 4.0–4.1x
     // Dawntrail's 7.4 tier: Grade 4 Gemdraughts, HQ +10% up to 541.
     strdt4: { name: 'Grade 4 Gemdraught of Strength', cap: 541 },
     strdt3: { name: 'Grade 3 Gemdraught of Strength', cap: 461 },     // the 7.2 tier

@@ -146,12 +146,12 @@
       let mult = 1, critAdd = 0;
       const pet = !!(a && a.pet);
       if (!pet) {
-        if (e.has('hotShot')) mult *= 1.10;
+        if (e.has('hotShot')) mult *= this.hotShotMult || 1.10;
         if (this.barrel(e) && a && a.shot) mult *= 1.05;
-        if (this.overheated(e)) mult *= 1.20;
+        if (this.overheated(e)) mult *= this.overheatMult || 1.20;
       }
       if (e.tHas('vulnerabilityUp')) mult *= 1.05;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.dex3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.tinctureKey || 'dex3sb'].cap : 0);
       return { mult, main, critAdd };
     }
 
@@ -178,13 +178,13 @@
       let potency = a.comboFrom && combo ? a.comboPotency : a.potency;
       if (id === 'cooldown' && (g.heat >= 50 || this.overheated(e))) potency = a.heatPotency;
       const ammo = g.ammo > 0;
-      if (ammo) { g.ammo--; potency += 30; if (!g.ammo) e.removeStatus('ammunition', true); }
+      if (ammo) { g.ammo--; potency += this.ammoBonus || 30; if (!g.ammo) e.removeStatus('ammunition', true); }
       const kind = a.combo || id;
       if (kind === 'slugShot' && e.has('enhancedSlugShot')) { potency += a.slugBonus || 100; e.removeStatus('enhancedSlugShot'); }
       if (kind === 'cleanShot' && e.has('cleanerShot')) { potency += a.cleanBonus || 140; e.removeStatus('cleanerShot'); }
       if (a.slugProc && (ammo || Math.random() < 0.5)) e.addStatus('enhancedSlugShot', 10);
       if (a.cleanProc && (ammo || Math.random() < 0.5)) e.addStatus('cleanerShot', 10);
-      if (id === 'hotShot') e.addStatus('hotShot', 60);
+      if (id === 'hotShot') e.addStatus('hotShot', this.hotShotDur || 60);
       if (id === 'cooldown') this.addHeat(e, -25);
       else if (!ammo) this.addHeat(e, 5);
       if (g.rapid > 0) { g.rapid--; if (!g.rapid) e.removeStatus('rapidFire'); }
@@ -265,7 +265,7 @@
       if (e.has('flamethrower') && now >= g.flameNext - EPS) {
         g.flameNext += 1;
         e.queueHit('flamethrower', 60, this.snapshot(this.actions.flamethrower, e), 0.1);
-        this.addHeat(e, 2);
+        this.addHeat(e, this.flameHeat || 2);
       }
       // Wildfire goes off.
       const wf = e.tStatuses.wildfire;
@@ -338,6 +338,7 @@ ${seq(['hotShot', ['hypercharge'], ['barrelStabilizer'], 'heatedSplitShot', ['ga
     }
   }
 
+  B.MachinistSB = MachinistSB;
   B.registerJob({
     id: 'mch', name: 'Machinist', abbr: 'MCH', role: 'ranged', classJob: 31,
     versions: [{ id: 'sb406', label: 'Stormblood 4.06–4.58', history: 'SB 4.06–4.58', note: 'Level 70. Heat and Overheat with the Gauss Barrel, ammunition, the Heated combo, Wildfire, Rapid Fire, Flamethrower, the Rook Autoturret with Hypercharge and Overdrive', create: () => new MachinistSB() }],

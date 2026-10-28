@@ -314,6 +314,8 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/jobs/war_ew.js` | Warrior, Endwalker 6.0–6.08 and 6.1–6.58: the Beast Gauge, Inner Release, guaranteed critical direct hits |
 | `js/jobs/pld_shb.js` | Paladin, Shadowbringers 5.0–5.08 and 5.1–5.58, built on the Dawntrail class: Sword Oath, Requiescat by MP, spells on a flat 2.50s |
 | `js/jobs/war_shb.js` | Warrior, Shadowbringers 5.0–5.08 and 5.1–5.21, built on the Endwalker class: Storm's Eye, the 10s Inner Release |
+| `js/jobs/mch_sb405.js` | Machinist, Stormblood 4.05, built on the 4.06–4.58 class |
+| `js/jobs/blm_sb4.js` | Black Mage, Stormblood 4.0–4.01 and 4.05–4.1x, built on the 4.2–4.58 class |
 | `js/jobs/pct_dt.js` | Pictomancer, Dawntrail 7.0–7.05 and 7.1–7.57: paint, motifs, muses, Hyperphantasia |
 | `js/jobs/rdm_ew.js` | Red Mage, Endwalker 6.0–6.58 and Dawntrail 7.05–7.3x, built on the Shadowbringers class: Mana Stacks, Manafication, Grand Impact, Prefulgence |
 | `js/jobs/mch_ew.js` | Machinist, Endwalker 6.0–6.18, 6.2–6.28 and 6.3–6.58, built on the Shadowbringers class: Chain Saw, the Queen per version |
@@ -348,6 +350,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **2.21.0**: Machinist, Stormblood 4.05 (Hot Shot +8% for 30s, Overheat +10%, a 10s Gauss Barrel, Gauss Round 200, Ricochet 300). Black Mage, Stormblood 4.0–4.01 and 4.05–4.1x (Fire IV 260, 12s Firestarter / Thundercloud, 12s Transpose; 4.0's 3s Fire IV / Blizzard IV, 90s Triplecast and MP costs), with Deltascape gear and the ungraded Infusion.
 - **2.20.0**: Pictomancer, Dawntrail 7.0–7.05 and 7.1–7.57 (a new job). A job's haste can now apply to some actions only (Hyperphantasia), and a job can set a GCD's recast (Rainbow Bright).
 - **2.19.0**: Red Mage, Endwalker 6.0–6.58 and Dawntrail 7.05–7.3x.
 - **2.18.0**: Machinist, Endwalker 6.0–6.18, 6.2–6.28 and 6.3–6.58; Dancer, Endwalker 6.0–6.08 and 6.1–6.58; Bard, Endwalker 6.0–6.58.

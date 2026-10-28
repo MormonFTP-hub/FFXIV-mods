@@ -142,6 +142,7 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'blizzard4', 'fire3', ['leyLines']
     helpHtml(seq) { return B.BLM_SB.help(seq); }
   }
 
+  B.BlackMageSB = BlackMageSB;
   B.registerJob({
     id: 'blm', name: 'Black Mage', abbr: 'BLM', role: 'caster', classJob: 25,
     versions: [{ id: 'sb42', label: 'Stormblood 4.2–4.58', history: 'SB 4.2–4.58', note: 'Level 70. One Polyglot for Foul, 13s Astral Fire, Convert, 60s Sharpcast, Enochian as a button, Stormblood MP', create: () => new BlackMageSB() }],
