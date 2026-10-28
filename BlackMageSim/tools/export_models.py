@@ -387,6 +387,24 @@ JOB_MODELS = {
         "stance": "bt_2bw_emp",
         "attrs": {},
     },
+    # Endwalker and Dawntrail Red Mage: Atrophy (e0692) with the Foil of Ascension (w2301 b96, focus w2379 b1), and
+    # Roseblood (e0786) with Babyface Champion's Tuck (w2311 b2, focus w2351 b85).
+    "rdm-ew": {
+        "actionsFrom": "rdm",
+        "gear": {s: [692, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2301, "body": 96, "variant": 1}, "n_buki_r"),
+                    ("focus", {"kind": "weapon", "id": 2379, "body": 1, "variant": 1}, "n_buki_l")],
+        "stance": "bt_2rp_emp",
+        "attrs": {},
+    },
+    "rdm-dt": {
+        "actionsFrom": "rdm",
+        "gear": {s: [786, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2311, "body": 2, "variant": 1}, "n_buki_r"),
+                    ("focus", {"kind": "weapon", "id": 2351, "body": 85, "variant": 1}, "n_buki_l")],
+        "stance": "bt_2rp_emp",
+        "attrs": {},
+    },
     "gnb-shb": {
         "actionsFrom": "gnb",
         "gear": {s: [542, 1] for s in SLOTS},

@@ -313,6 +313,7 @@ ${opener}
     }
   }
 
+  B.RedMageShB = RedMageShB;
   B.registerJob({
     id: 'rdm', name: 'Red Mage', abbr: 'RDM', role: 'caster', classJob: 35,
     versions: ['shb51', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new RedMageShB(v) })),

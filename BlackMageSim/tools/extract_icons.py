@@ -528,10 +528,14 @@ RDM_ACTIONS = {
     "engagement": (16527, "Engagement"), "acceleration": (7518, "Acceleration"), "embolden": (7520, "Embolden"),
     "manafication": (7521, "Manafication"), "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"),
     "surecast": (7559, "Surecast"), "addle": (7560, "Addle"), "sprint": (3, "Sprint"),
+    "verthunder3": (25855, "Verthunder III"), "veraero3": (25856, "Veraero III"), "jolt3": (37004, "Jolt III"),
+    "resolution": (25858, "Resolution"), "grandImpact": (37006, "Grand Impact"), "viceOfThorns": (37005, "Vice of Thorns"),
+    "prefulgence": (37007, "Prefulgence"),
 }
 RDM_STATUSES = {
     "dualcast": 1249, "verfireReady": 1234, "verstoneReady": 1235, "acceleration": 1238, "embolden": 1239, "manafication": 1971,
     "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast", "addle": 1203, "sprint": "Sprint", "medicated": "Medicated",
+    "magickedSwordplay": 3875, "thornedFlourish": 3876, "grandImpactReady": 3877, "prefulgenceReady": 3878,
 }
 # Dancer (Shadowbringers 5.x).
 DNC_ACTIONS = {
