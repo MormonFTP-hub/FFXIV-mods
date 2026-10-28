@@ -112,10 +112,12 @@
       ms = Math.floor(ms * (100 - (haste || 0)) / 100);
       return Math.floor(ms / 10) / 100;
     }
-    haste() { return this.job.haste ? this.job.haste(this) : 0; }
+    haste(id) { return this.job.haste ? this.job.haste(this, id) : 0; }     // id: the GCD being started, for haste on some actions only
     gcdRecast(id) {
       if (id && A[id] && A[id].fixedRecast) return A[id].fixedRecast;     // a tank's spell: no spell speed on tank gear
-      return this.speedScale((id && A[id] && A[id].recast) || 2.5, this.haste());
+      const own = id && this.job.gcdRecastFor ? this.job.gcdRecastFor(id, this) : null;     // e.g. Rainbow Bright's 2.5s Rainbow Drip
+      if (own) return own;
+      return this.speedScale((id && A[id] && A[id].recast) || 2.5, this.haste(id));
     }
 
     // GCD for a speed stat, with the job's standing haste (Samurai tiers are quoted with Fuka on: 2.14).

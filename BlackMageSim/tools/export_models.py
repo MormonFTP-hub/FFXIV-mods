@@ -405,6 +405,16 @@ JOB_MODELS = {
         "stance": "bt_2rp_emp",
         "attrs": {},
     },
+    # Dawntrail Pictomancer: Pictomancer's artifact gear (e0841) and the Grand Champion's Flat Brush (w2901 b47) with its
+    # palette (w2951 b50).
+    "pct-dt": {
+        "actionsFrom": "pct",
+        "gear": {s: [841, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2901, "body": 47, "variant": 1}, "n_buki_r"),
+                    ("palette", {"kind": "weapon", "id": 2951, "body": 50, "variant": 1}, "n_buki_l")],
+        "stance": "bt_brs_plt",
+        "attrs": {},
+    },
     "gnb-shb": {
         "actionsFrom": "gnb",
         "gear": {s: [542, 1] for s in SLOTS},

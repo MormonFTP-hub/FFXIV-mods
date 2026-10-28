@@ -562,6 +562,31 @@ DNC_STATUSES = {
     "flourishingStarfall": 2700, "flourishingFinish": 2698,
 }
 
+# Pictomancer (Dawntrail 7.x).
+PCT_ACTIONS = {
+    "fireInRed": (34650, "Fire in Red"), "aeroInGreen": (34651, "Aero in Green"),
+    "waterInBlue": (34652, "Water in Blue"), "blizzardInCyan": (34653, "Blizzard in Cyan"),
+    "stoneInYellow": (34654, "Stone in Yellow"), "thunderInMagenta": (34655, "Thunder in Magenta"),
+    "holyInWhite": (34662, "Holy in White"), "cometInBlack": (34663, "Comet in Black"),
+    "rainbowDrip": (34688, "Rainbow Drip"), "starPrism": (34681, "Star Prism"), "hammerStamp": (34678, "Hammer Stamp"),
+    "hammerBrush": (34679, "Hammer Brush"), "polishingHammer": (34680, "Polishing Hammer"),
+    "creatureMotif": (34689, "Creature Motif"), "pomMotif": (34664, "Pom Motif"), "wingMotif": (34665, "Wing Motif"),
+    "clawMotif": (34666, "Claw Motif"), "mawMotif": (34667, "Maw Motif"), "hammerMotif": (34668, "Hammer Motif"),
+    "starrySkyMotif": (34669, "Starry Sky Motif"), "livingMuse": (35347, "Living Muse"), "pomMuse": (34670, "Pom Muse"),
+    "wingedMuse": (34671, "Winged Muse"), "clawedMuse": (34672, "Clawed Muse"), "fangedMuse": (34673, "Fanged Muse"),
+    "mogOfTheAges": (34676, "Mog of the Ages"), "retributionOfTheMadeen": (34677, "Retribution of the Madeen"),
+    "strikingMuse": (34674, "Striking Muse"), "starryMuse": (34675, "Starry Muse"),
+    "subtractivePalette": (34683, "Subtractive Palette"), "temperaCoat": (34685, "Tempera Coat"),
+    "smudge": (34684, "Smudge"), "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"),
+    "surecast": (7559, "Surecast"), "addle": (7560, "Addle"), "sprint": (3, "Sprint"),
+}
+PCT_STATUSES = {
+    "aetherhues": "Aetherhues", "subtractivePalette": "Subtractive Palette", "monochromeTones": "Monochrome Tones", "hammerTime": "Hammer Time",
+    "starryMuse": "Starry Muse", "subtractiveSpectrum": "Subtractive Spectrum", "hyperphantasia": "Hyperphantasia", "rainbowBright": "Rainbow Bright",
+    "starstruck": "Starstruck", "temperaCoat": "Tempera Coat", "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast",
+    "addle": "Addle", "sprint": "Sprint", "medicated": "Medicated",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -632,6 +657,8 @@ JOBS = {
             "tincture": "Grade 4 Tincture of Intelligence", "classjob": 35},
     "dnc": {"actions": DNC_ACTIONS, "statuses": DNC_STATUSES, "overrides": {},
             "tincture": "Grade 4 Tincture of Dexterity", "classjob": 38},
+    "pct": {"actions": PCT_ACTIONS, "statuses": PCT_STATUSES, "overrides": {},
+            "tincture": "Grade 4 Gemdraught of Intelligence", "classjob": 42},
     "whm": {"actions": WHM_ACTIONS, "statuses": WHM_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},

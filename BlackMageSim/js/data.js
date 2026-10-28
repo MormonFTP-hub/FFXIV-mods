@@ -151,6 +151,8 @@ window.BLM = window.BLM || {};
     dex8: { name: 'Grade 8 Tincture of Dexterity', cap: 262 },    // the 6.4 tier
     int2: { name: 'Grade 2 Tincture of Intelligence', cap: 339 },
     intdt3: { name: 'Grade 3 Gemdraught of Intelligence', cap: 461 },   // the 7.2 tier
+    intdt2: { name: 'Grade 2 Gemdraught of Intelligence', cap: 392 },   // the 7.05 tier
+    intdt4: { name: 'Grade 4 Gemdraught of Intelligence', cap: 541 },   // the 7.4 tier
     mnd4: { name: 'Grade 4 Tincture of Mind', cap: 464 },
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
