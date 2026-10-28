@@ -323,6 +323,7 @@ WAR_ACTIONS = {
     "mythrilTempest": (16462, "Mythril Tempest"), "chaoticCyclone": (16463, "Chaotic Cyclone"), "bloodwhetting": (25751, "Bloodwhetting"),
     "shakeItOff": (7388, "Shake It Off"), "nascentFlash": (16464, "Nascent Flash"), "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "interject": (7538, "Interject"),
     "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
+    "anticipation": (7536, "Anticipation"),
 }
 WAR_STATUSES = {
     "maim": "Maim", "stormsEye": "Storm's Eye", "fracture": "Fracture", "berserk": "Berserk", "pacification": "Pacification",
@@ -390,6 +391,11 @@ PLD_ACTIONS = {
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"),
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Stormblood 4.x (row 28 is Iron Will now; its icon is still Shield Oath's).
+    "savageBlade": (11, "Savage Blade"), "rageOfHalone": (21, "Rage of Halone"), "shieldBash": (16, "Shield Bash"),
+    "shieldSwipe": (25, "Shield Swipe"), "swordOath": (26, "Sword Oath"), "shieldOath": (28, "Iron Will"),
+    "convalescence": (7532, "Convalescence"), "anticipation": (7536, "Anticipation"), "awareness": (7534, "Awareness"),
+    "ultimatum": (7539, "Ultimatum"),
 }
 PLD_STATUSES = {
     "fightOrFlight": 76, "requiescat": 1368, "confiteorReady": 3019, "goringBladeReady": 3847, "atonementReady": 1902,
@@ -398,6 +404,7 @@ PLD_STATUSES = {
     "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal", "swordOath": "Sword Oath",
     "sentinel": "Sentinel", "sheltron": "Sheltron", "goringBlade": "Goring Blade",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
+    "shieldOath": 79,
 }
 
 # Viper (Dawntrail 7.05+): the current kit.
@@ -510,12 +517,16 @@ DRK_ACTIONS = {
     "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "provoke": (7533, "Provoke"), "interject": (7538, "Interject"),
     "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
     "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    # Stormblood 4.x.
+    "spinningSlash": (3619, "Spinning Slash"), "powerSlash": (3627, "Power Slash"), "darkside": (3628, "Darkside"),
+    "darkArts": (3635, "Dark Arts"), "darkPassenger": (3633, "Dark Passenger"),
 }
 DRK_STATUSES = {
     "darkside": "Darkside", "bloodWeapon": 742, "delirium": "Delirium", "blackestNight": "Blackest Night",
     "darkArts": "Dark Arts", "grit": "Grit", "shadowWall": "Shadow Wall", "darkMind": "Dark Mind", "livingDead": "Living Dead",
     "darkMissionary": "Dark Missionary", "saltedEarth": "Salted Earth", "rampart": "Rampart", "reprisal": "Reprisal",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
+    "theBlackestNight": "Blackest Night",
 }
 
 # Red Mage (Shadowbringers 5.x).
@@ -669,8 +680,12 @@ JOBS = {
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Dexterity", "classjob": 41},
     "drk": {"actions": DRK_ACTIONS, "statuses": DRK_STATUSES, "overrides": {},
+            "uncross": {"spinningSlash": "200,120,150", "powerSlash": "210,90,120", "darkside": "170,80,200", "darkArts": "210,70,100",
+                        "darkPassenger": "150,90,210", "plunge": "180,100,210"},
             "tincture": "Grade 4 Tincture of Strength", "classjob": 32},
     "pld": {"actions": PLD_ACTIONS, "statuses": PLD_STATUSES, "overrides": {},
+            "uncross": {"savageBlade": "200,200,235", "swordOath": "235,200,120", "shieldSwipe": "180,200,235", "convalescence": "140,220,170",
+                        "anticipation": "200,180,140", "awareness": "200,160,225", "ultimatum": "235,120,90"},
             "tincture": "Grade 4 Gemdraught of Strength", "classjob": 19},
     "nin": {"actions": NIN_ACTIONS, "statuses": NIN_STATUSES, "overrides": {},
             "uncross": {"spinningEdge": "190,210,200", "gustSlash": "160,210,170", "aeolianEdge": "140,220,200", "armorCrush": "160,200,230",
@@ -682,13 +697,14 @@ JOBS = {
                         "kissOfTheWasp": "240,200,80", "kissOfTheViper": "120,200,110", "goad": "220,200,120", "shadewalker": "140,120,200",
                         "smokeScreen": "170,170,190", "internalRelease": "240,170,90", "bloodForBlood": "230,100,90",
                         "invigorate": "120,200,120", "secondWind": "120,220,150", "featherfoot": "150,220,170", "mantra": "240,200,120",
-                        "keenFlurry": "200,200,230", "feint": "200,200,220"},
+                        "keenFlurry": "200,200,230", "feint": "200,200,220", "invigorate2": "120,200,120", "goad2": "220,200,120"},
             "tincture": "Draconian Potion of Dexterity", "classjob": 30},
     "war": {"actions": WAR_ACTIONS, "statuses": WAR_STATUSES, "overrides": {},
             "uncross": {k: "235,140,90" for k in ("heavySwing", "skullSunder", "butchersBlock", "maim", "stormsPath", "stormsEye",
                         "overpower", "tomahawk", "fracture", "fellCleave", "decimate", "innerBeast", "steelCyclone", "brutalSwing",
                         "berserk", "defiance", "deliverance", "infuriate", "unchained", "equilibrium", "rawIntuition", "vengeance",
-                        "holmgang", "thrillOfBattle", "foresight", "bloodbath", "internalRelease", "awareness", "convalescence")},
+                        "holmgang", "thrillOfBattle", "foresight", "bloodbath", "internalRelease", "awareness", "convalescence",
+                        "anticipation", "provoke")},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 21},
     "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",

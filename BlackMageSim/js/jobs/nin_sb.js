@@ -86,7 +86,7 @@
         ['Role Actions', ['trueNorth', 'invigorate2', 'feint2', 'bloodbath', 'secondWind2', 'armsLength', 'legSweep', 'goad2']],
         ['General', ['sprint', 'tincture']],
       ];
-      this.referenceDps = 8000;
+      this.referenceDps = 6620;     // a scripted rotation parses about 6,250 on the dummy
       this.referenceGcd = 2.12;
     }
 
