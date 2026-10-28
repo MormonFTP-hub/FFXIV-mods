@@ -364,6 +364,7 @@ ${seq([['jin'], ['chi'], ['ten'], ['huton'], ['ten'], ['chi'], ['jin'], ['suiton
   const KEEPS_HIDDEN = { hide: 1, kissOfTheWasp: 1, kissOfTheViper: 1, kassatsu: 1, duality: 1, internalRelease: 1, bloodForBlood: 1, invigorate: 1,
     tincture: 1, sprint: 1, shadeShift: 1, shadewalker: 1, featherfoot: 1, mantra: 1, keenFlurry: 1, secondWind: 1, smokeScreen: 1 };
 
+  B.NinjaHW = NinjaHW;
   B.registerJob({
     id: 'nin', name: 'Ninja', abbr: 'NIN', role: 'melee', classJob: 30,
     versions: [{ id: 'hw30', label: 'Heavensward 3.0–3.57', history: 'HW 3.0–3.57', note: 'Level 60. Huton, Kiss of the Viper, Ten/Chi/Jin off the GCD with Rabbit Medium, Suiton into Trick Attack, Kassatsu Raiton, Duality, Shadow Fang and Mutilate, on TP, with Heavensward\'s damage formula', create: () => new NinjaHW() }],

@@ -360,6 +360,8 @@ NIN_ACTIONS = {
     "bhavacakra": (7402, "Bhavacakra"), "hellfrogMedium": (7401, "Hellfrog Medium"), "bunshin": (16493, "Bunshin"),
     "tenChiJin": (7403, "Ten Chi Jin"), "meisui": (16489, "Meisui"),
     "trueNorth": (7546, "True North"), "bloodbath": (7542, "Bloodbath"), "legSweep": (7863, "Leg Sweep"), "armsLength": (7548, "Arm's Length"),
+    # Stormblood's role actions (their own rows; Heavensward's cross-class ones keep the plain keys).
+    "invigorate2": (7544, "Invigorate"), "feint2": (7549, "Feint"), "secondWind2": (7541, "Second Wind"), "goad2": (7543, "Goad"),
 }
 NIN_STATUSES = {
     "huton": "Huton", "suiton": "Suiton", "hidden": "Hidden", "mudra": "Mudra", "kassatsu": "Kassatsu", "duality": "Duality",
@@ -368,6 +370,7 @@ NIN_STATUSES = {
     "mantra": "Mantra", "keenFlurry": "Keen Flurry", "shadowFang": "Shadow Fang", "mutilate": "Mutilation",
     "dancingEdge": "Slashing Resistance Down", "trickAttack": "Vulnerability Up", "doton": "Doton", "sprint": "Sprint", "medicated": "Medicated",
     "tenChiJin": 1186, "bunshin": 1954, "assassinateReady": 1955, "trueNorth": 1250, "bloodbath": 84, "armsLength": 1209,
+    "shadowFangSlash": 572, "feint": 1195,
 }
 
 # Paladin (Dawntrail 7.x): the current kit, so nothing is struck through.
@@ -531,11 +534,13 @@ RDM_ACTIONS = {
     "verthunder3": (25855, "Verthunder III"), "veraero3": (25856, "Veraero III"), "jolt3": (37004, "Jolt III"),
     "resolution": (25858, "Resolution"), "grandImpact": (37006, "Grand Impact"), "viceOfThorns": (37005, "Vice of Thorns"),
     "prefulgence": (37007, "Prefulgence"),
+    "scatter": (7509, "Scatter"),
 }
 RDM_STATUSES = {
     "dualcast": 1249, "verfireReady": 1234, "verstoneReady": 1235, "acceleration": 1238, "embolden": 1239, "manafication": 1971,
     "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming", "surecast": "Surecast", "addle": 1203, "sprint": "Sprint", "medicated": "Medicated",
     "magickedSwordplay": 3875, "thornedFlourish": 3876, "grandImpactReady": 3877, "prefulgenceReady": 3878,
+    "impactful": 1367,
 }
 # Dancer (Shadowbringers 5.x).
 DNC_ACTIONS = {
