@@ -534,19 +534,20 @@
     }
 
     // ---------- hotbar setup ----------
-    // A walk through the job's GCDs (then, if you like, its abilities): press the key you want for each one, or click a
-    // slot, and it goes on the slot that key is bound to. It opens by itself on a job version with no saved hotbars,
-    // and from the Actions window. The bars update as you go; nothing is saved until you finish or skip.
-    openBarSetup(phase = 'gcd', manual = false) {
+    // A walk through everything on the job's default hotbars, its GCDs first and then its abilities and items: press the
+    // key you want for each one, or click a slot, and it goes on the slot that key is bound to. It opens by itself on a
+    // job version with no saved hotbars, and from the Actions window. The bars update as you go; nothing is saved until
+    // you finish or skip.
+    openBarSetup(manual = false) {
       const app = this.app;
       if (app.keybindMode) app.toggleKeybind(false);
       const bars = app.bars();
-      const want = (id) => id && A[id] && (phase === 'gcd' ? A[id].kind === 'gcd' : A[id].kind === 'ogcd');
-      const queue = [...new Set(this.e.job.defaultBars.flat().filter(want))];
+      const ids = [...new Set(this.e.job.defaultBars.flat().filter(id => id && A[id]))];
+      const queue = [...ids.filter(id => A[id].kind === 'gcd'), ...ids.filter(id => A[id].kind !== 'gcd')];
       if (!queue.length) { this.closeBarSetup(true); return; }
       const start = bars.map(r => r.slice());
       for (const r of bars) r.forEach((id, i) => { if (queue.includes(id)) r[i] = null; });
-      this.barSetup = { phase, queue, pos: 0, history: [], start, msg: '', manual };
+      this.barSetup = { queue, pos: 0, history: [], start, msg: '', manual };
       this.refreshBars();
       this.openWindow('win-barsetup');
       this.renderBarSetup();
@@ -570,28 +571,37 @@
       const bars = this.app.bars(), binds = this.app.store.binds, job = this.e.job;
       const where = (id) => { for (let b = 0; b < 3; b++) { const i = bars[b].indexOf(id); if (i >= 0) return keyLabel(binds[b][i]) || `bar ${b + 1}`; } return null; };
       const skipped = new Set(S.history.filter(h => h.skipped).map(h => h.id));
-      const what = S.phase === 'gcd' ? 'GCD' : 'ability';
-      // An action asked again (its key was taken) shows once, at its last place in the queue.
-      const strip = '<div class="bsq">' + S.queue.map((id, j) => {
+      const isGcd = (id) => A[id].kind === 'gcd';
+      // An action asked again (its key was taken) shows once, at its last place in the queue; the GCDs and the
+      // abilities each get their own row.
+      const cell = (id, j) => {
         if (S.queue.lastIndexOf(id) !== j) return '';
         const k = where(id), state = j === S.pos ? 'now' : skipped.has(id) && j < S.pos ? 'off' : k ? 'set' : '';
         return `<div class="bsi ${state}" title="${esc(A[id].name)}"><img src="${B.icon(id)}" alt=""><small>${j === S.pos ? '…' : k ? esc(k) : skipped.has(id) ? 'off' : ''}</small></div>`;
-      }).join('') + '</div>';
+      };
+      const row = (gcd) => S.queue.map((id, j) => (isGcd(id) === gcd ? cell(id, j) : '')).join('');
+      const g = row(true), o = row(false);
+      const strip = (g ? `<div class="bsrow"><small>GCDs</small><div class="bsq">${g}</div></div>` : '') +
+        (o ? `<div class="bsrow"><small>Abilities</small><div class="bsq">${o}</div></div>` : '');
       let html;
       if (S.pos < S.queue.length) {
         const id = S.queue[S.pos], a = A[id];
-        const sub = a.kind === 'gcd' ? (a.cast ? a.cast.toFixed(1) + 's cast' : 'Instant') + (a.potency ? ` · ${a.potency} potency` : '') : `Recast ${a.recast}s`;
-        html = `<div class="bsintro">${esc(job.name)}, ${esc(job.versionLabel)}: press the key you want for each ${what}, or click a hotbar slot. Your keybinds decide which slot a key fills.</div>
-          <div class="bscur"><img src="${B.icon(id)}" alt=""><div><small>${what === 'GCD' ? 'GCD' : 'Ability'} ${S.pos + 1} of ${S.queue.length}</small><b>${esc(a.name)}</b><span>${kindLabel(a)} · ${sub}</span></div></div>
+        const sub = a.kind === 'gcd' ? (a.cast ? a.cast.toFixed(1) + 's cast' : 'Instant') + (a.potency ? ` · ${a.potency} potency` : '') : a.recast ? `Recast ${a.recast}s` : '';
+        const n = (gcd) => [...new Set(S.queue.filter(x => isGcd(x) === gcd))].length;
+        const at = isGcd(id) ? `GCD ${Math.min(S.pos + 1, n(true))} of ${n(true)}` : `Ability ${Math.min(S.pos + 1 - n(true), n(false))} of ${n(false)}`;
+        html = `<div class="bsintro">${esc(job.name)}, ${esc(job.versionLabel)}: press the key you want for each GCD, then each ability, or click a hotbar slot. Your keybinds decide which slot a key fills.</div>
+          <div class="bscur"><img src="${B.icon(id)}" alt=""><div><small>${at}</small><b>${esc(a.name)}</b><span>${kindLabel(a)}${sub ? ' · ' + sub : ''}</span></div></div>
           <div class="bsmsg">${S.msg || 'Press a hotbar key: <kbd>1</kbd>–<kbd>=</kbd>, <kbd>Shift</kbd>+<kbd>1</kbd>–<kbd>=</kbd>, <kbd>Q</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>F</kbd> … Backspace goes back.'}</div>
           ${strip}
           <div class="bsbtn"><button data-bs="back"${S.history.length ? '' : ' disabled'}>Back</button><button data-bs="off">Leave it off</button><span></span>
-            <button data-bs="skip">${S.phase === 'ogcd' ? 'Skip, keep the abilities where they are' : S.manual ? 'Cancel, keep my hotbar' : 'Skip, use the default hotbar'}</button></div>`;
+            <button data-bs="finish" title="Everything not asked yet goes to its usual slot, or a free one">Finish here</button>
+            <button data-bs="skip">${S.manual ? 'Cancel, keep my hotbar' : 'Skip, use the default hotbar'}</button></div>`;
       } else {
-        const ids = [...new Set(S.queue)], placed = ids.filter(id => where(id)).length, off = ids.length - placed;
-        html = `<div class="bsintro">${placed} ${what}${placed === 1 ? '' : 's'} placed${off ? `, ${off} left off (drag them on from the Actions window any time)` : ''}.${S.phase === 'gcd' ? ' Abilities stayed in their usual slots, moved along where a GCD took their key.' : ''}</div>
+        const ids = [...new Set(S.queue)], pl = (gcd) => ids.filter(id => isGcd(id) === gcd && where(id)).length;
+        const off = ids.filter(id => !where(id)).length;
+        html = `<div class="bsintro">${pl(true)} GCD${pl(true) === 1 ? '' : 's'} and ${pl(false)} abilit${pl(false) === 1 ? 'y' : 'ies'} placed${off ? `, ${off} left off (drag them on from the Actions window any time)` : ''}.</div>
           ${strip}
-          <div class="bsbtn"><button data-bs="back">Back</button><span></span>${S.phase === 'gcd' ? '<button data-bs="ogcd">Set up abilities too</button>' : ''}<button data-bs="done" class="main">Done</button></div>`;
+          <div class="bsbtn"><button data-bs="back">Back</button><span></span><button data-bs="done" class="main">Done</button></div>`;
       }
       const box = $('#barsetup');
       box.innerHTML = html;
@@ -601,8 +611,22 @@
         else if (k === 'off') this.barSetupStep({ id: S.queue[S.pos], skipped: true });
         else if (k === 'skip') this.closeBarSetup(false);
         else if (k === 'done') this.closeBarSetup(true);
-        else if (k === 'ogcd') { const manual = S.manual; this.closeBarSetup(true); this.openBarSetup('ogcd', manual); }
+        else if (k === 'finish') this.barSetupFinish();
       }));
+    }
+
+    // Finish early: everything not asked yet goes to its usual slot if that's free, otherwise the first free one.
+    barSetupFinish() {
+      const S = this.barSetup, bars = this.app.bars(), def = this.e.job.defaultBars;
+      const placed = new Set(bars.flat());
+      for (const id of S.queue.slice(S.pos)) {
+        if (placed.has(id)) continue;
+        let at = null;
+        def.forEach((r, b) => r.forEach((x, i) => { if (x === id && !at && bars[b][i] === null) at = [b, i]; }));
+        for (let b = 0; b < 3 && !at; b++) { const i = bars[b].indexOf(null); if (i >= 0) at = [b, i]; }
+        if (at) { bars[at[0]][at[1]] = id; placed.add(id); }
+      }
+      this.closeBarSetup(true);
     }
 
     // A key pressed during setup: the slot it's bound to gets the current action.
@@ -680,7 +704,7 @@
         html += '</div>';
       }
       $('#actlist').innerHTML = html;
-      $('#actlist .bsopen').addEventListener('click', () => this.openBarSetup('gcd', true));
+      $('#actlist .bsopen').addEventListener('click', () => this.openBarSetup(true));
       $('#actlist').querySelectorAll('.aitem').forEach(el => {
         el.addEventListener('pointerdown', (ev) => { ev.preventDefault(); this.app.drag.begin(ev, { from: 'list', id: el.dataset.id }); });
         el.addEventListener('pointerenter', () => { if (!this.app.drag.active) this.showTip(el.dataset.id, el); });
@@ -697,7 +721,7 @@
       $('#helpbody').innerHTML = `
 <h3>Controls</h3>
 <table>
-<tr><td>Hotbars</td><td>Keys <kbd>1</kbd>–<kbd>=</kbd>, <kbd>Shift</kbd>+<kbd>1</kbd>–<kbd>=</kbd>, and <kbd>Q</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>F</kbd> … for bar 3, or click a slot. Rebind with <kbd>K</kbd>. The first time you play a job version, the hotbar setup asks for a key for each GCD (Actions window, <kbd>P</kbd>, runs it again).</td></tr>
+<tr><td>Hotbars</td><td>Keys <kbd>1</kbd>–<kbd>=</kbd>, <kbd>Shift</kbd>+<kbd>1</kbd>–<kbd>=</kbd>, and <kbd>Q</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>F</kbd> … for bar 3, or click a slot. Rebind with <kbd>K</kbd>. The first time you play a job version, the hotbar setup asks for a key for each GCD, then each ability (Actions window, <kbd>P</kbd>, runs it again).</td></tr>
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
 <tr><td>Camera</td><td>Hold the right mouse button and drag to turn the camera and your character: while it's held, <kbd>A</kbd> <kbd>D</kbd> strafe and <kbd>S</kbd> backpedals at walking pace. Drag with the left button to turn just the camera. Hold both buttons to run forward. The wheel zooms.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>

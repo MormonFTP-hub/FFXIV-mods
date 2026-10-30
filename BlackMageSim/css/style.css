@@ -374,6 +374,8 @@ button.chip:hover { background: rgba(255, 255, 255, 0.12); }
 .bscur span { font-size: 13px; color: var(--muted); }
 .bsmsg { min-height: 20px; font-size: 13.5px; color: var(--text); }
 #barsetup kbd { font: 600 12px var(--num); background: #0d0c12; border: 1px solid #555; border-radius: 3px; padding: 0 5px; color: var(--text); }
+.bsrow { display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: start; }
+.bsrow > small { padding-top: 10px; font: 600 10.5px var(--num); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .bsq { display: flex; flex-wrap: wrap; gap: 6px; }
 .bsi { width: 42px; text-align: center; opacity: .5; }
 .bsi img { display: block; width: 36px; height: 36px; margin: 0 auto; border-radius: 6px; border: 2px solid transparent; }
