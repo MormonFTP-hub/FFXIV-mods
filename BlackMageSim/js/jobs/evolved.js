@@ -518,7 +518,7 @@ ${seq([['tincture'], 'glare3', 'highGlare', 'holySanctuary', ['plenaryIndulgence
       this.chargerSpec = [{ key: 'bane', label: 'Dragonsbane', max: 3, period: 10, color: '#e070ff' }];
       this.gaugeLines = [
         (e) => `Sinister ${e.g.sinister ? '●' : '○'}   Dexter ${e.g.dexter ? '●' : '○'}   Wyrmwind ${e.g.wyrmwind}`,
-        (e) => `Blood of the Dragon ${'●'.repeat(e.g.blood)}${'○'.repeat(3 - e.g.blood)}`,
+        (e) => `Blood of the Dragon ${'●'.repeat(e.g.blood)}${'○'.repeat(3 - e.g.blood)}   Sky High ${e.has('skyHighReady') || e.has('heavensFallReady') ? '●' : '○'}`,
       ];
       this.stats = { hp: 227580, main: 6513, mainStat: 'str', jobMod: 115, trait: 100, wd: 158, det: 2506, crit: 3605, dh: 1982, speed: 420, delay: 2.8 };
       this.speedName = 'Skill speed';

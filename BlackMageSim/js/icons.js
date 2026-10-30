@@ -117,9 +117,15 @@
     return (cache[id] = build(art, 64, 64, 7));
   };
 
+  // A status with no game icon of its own borrows the one its `icon` names (Evolved Sky High Ready wears Dragon's Flight's).
+  const borrowed = (key) => {
+    const st = B.STATUSES && B.STATUSES[key];
+    return st && st.icon ? gameIcon(`st:${B.jobId}:${st.icon.replace(/^st_/, '')}`) : null;
+  };
+
   // Stacking statuses (Triplecast) have one game icon per stack count, with the number drawn in.
   const stIcon = (key, stacks) => (stacks && (gameIcon(`st:${B.jobId}:${key}:${stacks}`) || gameIcon(`st:${key}:${stacks}`)))
-    || gameIcon(`st:${B.jobId}:${key}`) || gameIcon('st:' + key);
+    || gameIcon(`st:${B.jobId}:${key}`) || gameIcon('st:' + key) || borrowed(key);
   B.statusHasStackArt = (key, stacks) => !!(stacks && (gameIcon(`st:${B.jobId}:${key}:${stacks}`) || gameIcon(`st:${key}:${stacks}`)));
 
   B.statusIcon = function (key, stacks) {
