@@ -9,13 +9,19 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      and parses, so every published file stays under the 16 MB limit.
                      The icons (work/game-icons.js, ~16 MB) go next to it as game-icons-0.js,
                      -1.js, ...: whole icons per file, each file under 10 MB.
+And a folder:
+  site/              a website to upload to a free static host (Cloudflare Pages, GitHub
+                     Pages, Netlify): the page as index.html with the icon and model files
+                     beside it, every file under 25 MB (Cloudflare Pages' limit).
 """
 import json
 import re
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "build"
+SITE = OUT / "site"
 
 
 def inline(html: str, keep=()) -> str:
@@ -95,6 +101,17 @@ def fragment(html: str) -> str:
     return head.strip() + "\n" + body.strip() + "\n"
 
 
+def site(page: str, files) -> None:
+    """Write build/site/: the whole page as index.html, with its icon and model files beside it."""
+    SITE.mkdir(exist_ok=True)
+    for old in SITE.iterdir():
+        if old.is_file():
+            old.unlink()
+    (SITE / "index.html").write_text(page, encoding="utf-8")
+    for name in files:
+        shutil.copyfile(OUT / name, SITE / name)
+
+
 def main():
     src = (ROOT / "index.html").read_text(encoding="utf-8")
     OUT.mkdir(exist_ok=True)
@@ -102,9 +119,14 @@ def main():
     chunks = model_chunks()
     icons = icon_chunks()
     keep = {"work/game-models.js": chunks, "work/game-icons.js": icons}
-    (OUT / "artifact.html").write_text(fragment(inline(src, keep=keep)), encoding="utf-8")
+    page = inline(src, keep=keep)
+    (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
+    site(page, [*icons, *chunks])
     for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks):
         print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
+    files = sorted(SITE.iterdir())
+    print(f"{SITE}  {len(files)} files, {sum(f.stat().st_size for f in files) / 1024 / 1024:.0f} MB, "
+          f"largest {max(f.stat().st_size for f in files) / 1024 / 1024:.1f} MB")
 
 
 if __name__ == "__main__":

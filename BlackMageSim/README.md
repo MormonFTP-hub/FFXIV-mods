@@ -189,6 +189,17 @@ To share it, send the link under [Play it](#play-it). The build script also bund
 python BlackMageSim/tools/build_single.py
 ```
 
+### Putting it on a website
+
+The build script also writes `build/site/`: the page as `index.html` with its icon and model files beside it (11 files, about 92 MB, none over 12 MB). Any free static host can serve that folder as it is. On Cloudflare Pages (free, no traffic limit, files up to 25 MB):
+
+1. Make a free account at https://dash.cloudflare.com.
+2. Open **Workers & Pages**, create a **Pages** project and choose to upload your files yourself (direct upload) rather than connect Git.
+3. Name the project (the site becomes `name.pages.dev`) and drag in the `build/site` folder.
+4. To update it, run the build script again and upload the folder again to the same project.
+
+The folder holds Square Enix's icons and models, so keep the site free: no ads or paywalls. `build/` is git-ignored, so none of it goes into the repo.
+
 ## What's in it
 
 ### Black Mage (Endwalker 6.5)
@@ -463,7 +474,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
 | `tools/export_models.py` | Pulls each job's character, weapons and animations, and the dummies, into `work/game-models.js` |
 | `tools/build_versions.py` | Turns `docs/job-versions.md` into `js/versions.js` |
-| `tools/build_single.py` | Bundles everything into one HTML file for sharing |
+| `tools/build_single.py` | Bundles everything for sharing: one HTML file, the claude.ai page with its icon and model files, and `build/site/`, a folder ready to upload to a static host |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
