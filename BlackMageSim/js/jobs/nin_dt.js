@@ -50,6 +50,10 @@
       set(A, 'bhavacakra', { potency: V.bhava, desc: `Deals unaspected damage with a potency of ${V.bhava}.\nMeisui Potency: ${V.bhava + 150}\nNinki Gauge Cost: 50\n※Changes to Zesho Meppo under Higi.` });
       set(A, 'meisui', { desc: 'Dispel Shadow Walker, increasing the Ninki Gauge by 50.\nAdditional Effect: The next Bhavacakra or Zesho Meppo is 150 stronger\nDuration: 30s' });
       set(A, 'tenChiJin', { desc: 'Temporarily converts each of the three mudra into a ninjutsu action.\nDuration: 6s\nAdditional Effect: Grants Tenri Jindo Ready\nDuration: 30s\n※Changes to Tenri Jindo while under Tenri Jindo Ready.' });
+      // No Huton buff to extend any more (its haste is a trait).
+      set(A, 'hakkeMujinsatsu', { desc: A.hakkeMujinsatsu.desc.replace(/\nCombo Bonus: Extends Huton[^\n]*/, '') });
+      set(A, 'phantomKamaitachi', { desc: A.phantomKamaitachi.desc.replace('\nAdditional Effect: Extends Huton by 10s', '') });
+      set(A, 'ninjutsu', { desc: A.ninjutsu.desc.replace('not shortened by Huton', 'not shortened by haste') });
       A.kunaisBane = ab({ name: 'Kunai\'s Bane', recast: 60, potency: V.bane, target: true, range: B.MELEE_RANGE, aoe: true, delay: 0.6, fx: 'slash3', desc: `Delivers an attack with a potency of ${V.bane}.\nAdditional Effect: Increases your damage dealt to target by 10%\nDuration: 15s\nCan only be executed while under the effect of Shadow Walker.` });
       A.dokumori = ab({ name: 'Dokumori', recast: 120, potency: V.doku, target: true, range: B.MELEE_RANGE, delay: 0.6, fx: 'slash', desc: `Delivers an attack with a potency of ${V.doku}.\nAdditional Effect: Increases damage taken by target by 5%\nDuration: 20s\nAdditional Effect: Grants Higi\nDuration: 30s\nAdditional Effect: Increases Ninki Gauge by 40` });
       A.zeshoMeppo = ab({ name: 'Zesho Meppo', recast: 1, cdGroup: 'bhava', potency: V.zesho, ninkiCost: 50, target: true, range: B.MELEE_RANGE, delay: 0.6, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.zesho}.\nMeisui Potency: ${V.zesho + 150}\nNinki Gauge Cost: 50\nCan only be executed while under the effect of Higi.` });

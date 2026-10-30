@@ -35,7 +35,7 @@
     bloodOfTheDragon: ab({ name: 'Blood of the Dragon', recast: 60, desc: 'Increases the potency of Jump and Spineshatter Dive by 30%.\nDuration: 15s\nAdditional Effect: Full Thrust and Chaos Thrust combos grant Sharper Fang and Claw or Enhanced Wheeling Thrust.\nFang and Claw and Wheeling Thrust extend it by 15s (to 30s); Geirskogul shortens it by 10s.' }),
     powerSurge: ab({ name: 'Power Surge', recast: 60, desc: 'Increases the potency of the next Jump or Spineshatter Dive by 50%.\nDuration: 10s' }),
     lifeSurge: ab({ name: 'Life Surge', recast: 50, desc: 'Ensures the next weaponskill is a critical hit.\nDuration: 10s' }),
-    battleLitany: ab({ name: 'Battle Litany', recast: 180, desc: 'Increases critical hit rate of self and nearby party members by 15%.\nDuration: 20s' }),
+    battleLitany: ab({ name: 'Battle Litany', recast: 180, desc: 'Increases critical hit rate by 15%.\nDuration: 20s' }),     // party-wide only from 4.0
     bloodForBlood: ab({ name: 'Blood for Blood', recast: 80, desc: 'Increases damage dealt by 30% while increasing damage taken by 15% (Enhanced Blood for Blood).\nDuration: 20s' }),
     invigorate: ab({ name: 'Invigorate', recast: 120, desc: 'Instantly restores 500 TP (Exhilarate).' }),
     elusiveJump: ab({ name: 'Elusive Jump', recast: 180, desc: 'Executes a 15-yalm backflip.' }),

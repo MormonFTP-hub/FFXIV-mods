@@ -69,7 +69,7 @@
       pot('fire2', 100, { mp: 1326, cast: 3.0, desc: 'Deals fire damage with a potency of 100 to target and all enemies nearby it.\nAdditional Effect: Grants Astral Fire or removes Umbral Ice\nDuration: 12s' });
       pot('blizzard2', 50, { mp: 707, cast: 2.0 });
       pot('freeze', 100, { mp: 1768 });
-      set(A, 'flare', { potency: 260, cast: 4.0, aoe: [1, 0.9, 0.8, 0.7, 0.6, 0.5] });
+      set(A, 'flare', { potency: 260, cast: 4.0, aoe: [1, 0.9, 0.8, 0.7, 0.6, 0.5], desc: 'Deals fire damage to a target and all enemies nearby it with a potency of 260 for the first enemy, 10% less for the second, 20% less for the third, 30% less for the fourth, 40% less for the fifth, and 50% less for all remaining enemies.\nAdditional Effect: Grants Astral Fire III and removes Umbral Ice\nDuration: 12s\nConsumes all remaining MP.' });
       const tc = V.tc || 0.1, tdot = V.tdot || 40;
       const thunder = (name, p, mp, cast, dur) => Object.assign({}, A.thunder3, {
         name, potency: p, mp, cast, tcChance: tc, dot: { potency: tdot, duration: dur }, look: 'thunder3',

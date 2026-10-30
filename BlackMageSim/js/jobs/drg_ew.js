@@ -59,6 +59,7 @@
       set(A, 'battleLitany', { recast: 120, desc: 'Increases critical hit rate of self and nearby party members by 10%.\nDuration: 15s' });
       set(A, 'lifeSurge', { recast: V.lifeSurge, charges: 2, desc: `Ensures critical damage for the next weaponskill.\nDuration: 5s\nMaximum Charges: 2\nRecast: ${V.lifeSurge}s` });
       set(A, 'dragonSight', { desc: `Grants Right Eye to self, increasing damage dealt by 10%.${V.sightNorth ? ' Also nullifies your positional requirements.' : ''}\nDuration: 20s` });
+      A.feint = B.ROLE_ACTIONS.melee.feint;     // 6.0's wording, not the 5.x one drg_shb.js uses
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

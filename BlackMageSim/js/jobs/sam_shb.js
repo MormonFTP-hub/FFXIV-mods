@@ -31,7 +31,7 @@
       tincture: 'str1', ref: 14920,
       stats: { hp: 62000, main: 4182, wd: 122, det: 2172, crit: 2858, dh: 3072, speed: 685 },
       gear: 'the 5.05 Eden\'s Gate set at 2.14 with Shifu (Strength 4,182, 122 weapon damage; no launch-week set survives), with 5.0\'s Tincture of Strength',
-      note: 'The launch Samurai: Tsubame-gaeshi\'s Kaeshi with a 1.5s cast, Kaiten on 5s, Meikyo on 60s, Meditation 30s and a weaker Shoha' },
+      note: 'The launch Samurai: Tsubame-gaeshi\'s Kaeshi with a 1.8s cast, Kaiten on 5s, Meikyo on 60s, Meditation 30s and a weaker Shoha' },
   };
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.45 }, o);
   const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
@@ -88,6 +88,7 @@
         set(A, 'shoha', { potency: 400, desc: 'Delivers an attack with a potency of 400.\nCan only be executed after accumulating three stacks of Meditation by executing Iaijutsu, Tsubame-gaeshi, or Meditate while in combat.\nMeditation effect fades upon execution.' });
       }
       set(A, 'trueNorth', { desc: 'Nullifies all action direction requirements.\nDuration: 10s\nMaximum Charges: 2' });
+      set(A, 'feint', { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.x's wording
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

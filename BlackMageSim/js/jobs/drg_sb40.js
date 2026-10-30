@@ -42,7 +42,7 @@
       set(A, 'fullThrust', { comboPotency: V.full, desc: A.fullThrust.desc.replace('450', String(V.full)) });
       set(A, 'disembowel', { comboPotency: V.disembowel, desc: A.disembowel.desc.replace('240', String(V.disembowel)) });
       set(A, 'heavyThrust', { potency: V.heavy[0], posBonus: V.heavy[1], desc: `Delivers an attack with a potency of ${V.heavy[0]}.\n180 when executed from a target's flank.\nAdditional Effect: Increases damage dealt by 15%\nDuration: 30s` });
-      set(A, 'chaosThrust', { potency: V.chaos[0], comboPotency: V.chaos[1], posBonus: V.chaos[2], desc: `Delivers an attack with a potency of ${V.chaos[0]}.\nCombo Action: Disembowel\nCombo Potency: ${V.chaos[1]}\nRear Combo Potency: ${V.chaos[1] + V.chaos[2]}\nCombo Bonus: Damage over time\nPotency: 35\nDuration: 30s` });
+      set(A, 'chaosThrust', { potency: V.chaos[0], comboPotency: V.chaos[1], posBonus: V.chaos[2], desc: `Delivers an attack with a potency of ${V.chaos[0]}.\n${V.chaos[0] + V.chaos[2]} when executed from a target's rear.\nCombo Action: Disembowel\nCombo Potency: ${V.chaos[1]}\nRear Combo Potency: ${V.chaos[1] + V.chaos[2]}\nCombo Bonus: Damage over time\nPotency: 35\nDuration: 30s\nCombo Bonus: Grants Enhanced Wheeling Thrust while under the effect of Blood of the Dragon\nDuration: 10s` });
       for (const k of ['fangAndClaw', 'wheelingThrust']) set(A, k, { potency: V.fang[0], posBonus: V.fang[1], desc: A[k].desc.replace('260', String(V.fang[0])).replace('300', String(V.fang[0] + V.fang[1])).replace(/\+100/g, `+${V.lance}`) });
       set(A, 'jump', { potency: 250, desc: A.jump.desc.replace('260', '250') });
       set(A, 'spineshatterDive', { potency: 200, desc: A.spineshatterDive.desc.replace('210', '200') });

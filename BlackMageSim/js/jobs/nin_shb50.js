@@ -4,7 +4,7 @@
 // Edge's second finisher (220 and a 70-potency DoT for 24s); the Ninki Gauge gains 8 for every weaponskill that lands
 // (Shukiho II) and 40 from Mug and from Meisui (Suiton's 20s turned into Ninki); 80 Ninki buys Bhavacakra (500),
 // Hellfrog Medium (400) or Bunshin, a 15s shadow that repeats each weaponskill (200 melee, 100 ranged or AoE, +4 Ninki
-// each). Kassatsu has two charges: it resets Ninjutsu and makes the next one 30% stronger, turning Katon and Hyoton into
+// each). Kassatsu (60s, one charge) resets Ninjutsu and makes the next one 30% stronger, turning Katon and Hyoton into
 // Goka Mekkyaku (400) and Hyosho Ranryu (600). Trick Attack: 340 (500 rear) and, from the rear, +10% damage taken for
 // 10s. Dream Within a Dream readies Assassinate. Numbers are the game data at 5.08 (xivapi's datamining) checked
 // against 5.0 and 5.1; gear is The Balance's 5.58 set (no 5.0x Ninja set survives). ref: a scripted bot parses about
@@ -57,17 +57,19 @@
       set(A, 'hyoton', { potency: 140, range: 25, desc: 'Deals ice damage with a potency of 140.\nAdditional Effect: Bind\nDuration: 15s\nMudra Combination: Ten→Jin or Chi→Jin' });
       set(A, 'huton', { desc: 'Reduces weaponskill recast time and auto-attack delay by 15%.\nDuration: 70s\nMudra Combination: Jin→Chi→Ten or Chi→Jin→Ten' });
       set(A, 'doton', { dot: { potency: 45, duration: 24, aoe: true }, desc: 'Creates a patch of corrupted earth, dealing damage with a potency of 45 to any enemies who enter.\nDuration: 24s\nMudra Combination: Ten→Jin→Chi or Jin→Ten→Chi' });
-      set(A, 'suiton', { potency: 130, range: 25, desc: 'Deals water damage with a potency of 130.\nAdditional Effect: Grants Suiton\nDuration: 20s\nSuiton Effect: Allows the execution of Trick Attack without Hide.\nMudra Combination: Ten→Chi→Jin or Chi→Ten→Jin' });
+      set(A, 'suiton', { potency: 130, range: 25, desc: 'Deals water damage with a potency of 130.\nAdditional Effect: Grants Suiton\nDuration: 20s\nSuiton Effect: Allows the execution of Trick Attack without Hidden.\nMudra Combination: Ten→Chi→Jin or Chi→Ten→Jin' });
       A.gokaMekkyaku = jutsu({ name: 'Goka Mekkyaku', potency: 400, aoe: true, fx: 'slashFire', desc: 'Deals fire damage with a potency of 400 to target and all enemies nearby it.\nMudra Combination: Chi→Ten or Jin→Ten\nCan only be executed while under the effect of Kassatsu.' });
       A.hyoshoRanryu = jutsu({ name: 'Hyosho Ranryu', potency: 600, fx: 'gnbZone', desc: 'Deals ice damage with a potency of 600.\nMudra Combination: Chi→Jin or Ten→Jin\nCan only be executed while under the effect of Kassatsu.' });
-      set(A, 'trickAttack', { potency: 340, posBonus: 160, desc: 'Delivers an attack with a potency of 340.\n500 when executed from a target\'s rear.\nRear Bonus: Increases target\'s damage taken by 10%\nDuration: 10s\nCan only be executed while under the effect of Hide or Suiton.' });
+      set(A, 'trickAttack', { potency: 340, posBonus: 160, desc: 'Delivers an attack with a potency of 340.\n500 when executed from a target\'s rear.\nRear Bonus: Increases target\'s damage taken by 10%\nDuration: 10s\nCan only be executed while under the effect of Hidden or Suiton.' });
       set(A, 'mug', { potency: 150, recast: 110, desc: 'Delivers an attack with a potency of 150.\nAdditional Effect: Increases Ninki Gauge by 40' });
       set(A, 'dreamWithinADream', { potency: 200, recast: 60, desc: 'Delivers a threefold attack, each hit with a potency of 200.\nAdditional Effect: Grants Assassinate Ready\nDuration: 10s' });
       set(A, 'assassinate', { potency: 200, recast: 1, desc: 'Delivers a critical direct hit with a potency of 200.\nCan only be executed while under the effect of Assassinate Ready.' });
       set(A, 'bhavacakra', { potency: 500, recast: 1, cdGroup: 'bhava', desc: 'Deals unaspected damage with a potency of 500.\nNinki Gauge Cost: 80\nShares a recast timer with Hellfrog Medium.' });
       set(A, 'hellfrogMedium', { potency: 400, recast: 1, cdGroup: 'bhava', aoe: 0.5, desc: 'Deals fire damage to target and all enemies nearby it with a potency of 400 for the first enemy, and 50% less for all remaining enemies.\nNinki Gauge Cost: 80\nShares a recast timer with Bhavacakra.' });
-      set(A, 'tenChiJin', { recast: 100, ninki: undefined, desc: 'Resets the Ninjutsu recast timer. The next three mudra each execute a Ninjutsu, 150% stronger: the first Fuma Shuriken, then the Ninjutsu the signs so far make. The same Ninjutsu can\'t be used twice; only mudras while it lasts.\nDuration: 10s' });
-      set(A, 'kassatsu', { recast: 60, charges: 2, desc: 'Resets the Ninjutsu recast timer while increasing damage for the next Ninjutsu by 30%.\nKaton and Hyoton become Goka Mekkyaku and Hyosho Ranryu.\nDuration: 15s\nMaximum Charges: 2' });
+      set(A, 'tenChiJin', { recast: 100, ninki: undefined, desc: 'Resets the Ninjutsu recast timer. The next three mudra each execute a Ninjutsu with potency increased by 150%: the first Fuma Shuriken, then the Ninjutsu the signs so far make.\nDuration: 10s\nOnly mudra can be used while it lasts, and the same Ninjutsu can\'t be executed twice.' });
+      // One charge (it was Shukuchi that got a second in 5.0).
+      set(A, 'kassatsu', { recast: 60, desc: 'Resets the Ninjutsu recast timer while increasing damage for the next Ninjutsu by 30%.\nKaton and Hyoton become Goka Mekkyaku and Hyosho Ranryu.\nDuration: 15s' });
+      A.feint = Object.assign({}, A.feint, { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.x's wording
       A.bunshin = ab({ name: 'Bunshin', recast: 110, ninki: 80, desc: 'Your shadow becomes animate, attacking enemies each time you execute a weaponskill. Shadow attack potency varies based on the attack executed, but is not affected by combo bonuses.\nMelee Attack Potency: 200\nRanged Attack Potency: 100\nArea Attack Potency: 100\nNinki Gauge increases by 4 each time your shadow lands an attack.\nDuration: 15s\nNinki Gauge Cost: 80' });
       A.meisui = ab({ name: 'Meisui', recast: 60, desc: 'Dispel Suiton, increasing the Ninki Gauge by 40.\nCan only be executed while in combat.' });
       set(A, 'shukuchi', { charges: 2 });
@@ -203,7 +205,7 @@
       return `
 <h3>How it plays (Shadowbringers 5.0–5.08)</h3>
 <p>Level 80 Ninja before the 5.1 rework. Keep <b>Huton</b> up (+15% weaponskill and auto-attack speed, up to 70s): <b>Spinning Edge → Gust Slash → Armor Crush</b> (flank, 440) adds 30s, <b>Aeolian Edge</b> (rear, 460) is the damage finisher, and <b>Shadow Fang</b> (Spinning Edge's other finisher, 220 + 70 × 24s) keeps its DoT up. Every weaponskill that lands adds 8 Ninki.</p>
-<p><b>Ten, Chi and Jin</b> are off the GCD and share Ninjutsu's 20s recast: weave the signs, then <b>Ninjutsu</b> (two signs ending in Chi: <b>Raiton</b> 400; three ending in Jin: <b>Suiton</b>, which allows <b>Trick Attack</b> — 500 from the rear and +10% damage taken for 10s). <b>Kassatsu</b> (two charges) resets Ninjutsu and makes the next one 30% stronger; Hyoton becomes <b>Hyosho Ranryu</b> (600). <b>Ten Chi Jin</b> (100s) turns the next three signs into three Ninjutsu at +150% (Fuma → Raiton → Suiton). <b>Meisui</b> turns Suiton into 40 Ninki.</p>
+<p><b>Ten, Chi and Jin</b> are off the GCD and share Ninjutsu's 20s recast: weave the signs, then <b>Ninjutsu</b> (two signs ending in Chi: <b>Raiton</b> 400; three ending in Jin: <b>Suiton</b>, which allows <b>Trick Attack</b> — 500 from the rear and +10% damage taken for 10s). <b>Kassatsu</b> (60s) resets Ninjutsu and makes the next one 30% stronger; Hyoton becomes <b>Hyosho Ranryu</b> (600). <b>Ten Chi Jin</b> (100s) turns the next three signs into three Ninjutsu at +150% (Fuma → Raiton → Suiton). <b>Meisui</b> turns Suiton into 40 Ninki.</p>
 <p>80 Ninki buys <b>Bhavacakra</b> (500) or <b>Bunshin</b> (110s): for 15s a shadow repeats each weaponskill at 200 and adds 4 Ninki. <b>Mug</b> (110s) gives 40; <b>Dream Within a Dream</b> (3 × 200) readies <b>Assassinate</b> (200, a critical direct hit).</p>
 <h3>The opener</h3>
 ${seq([['jin'], ['chi'], ['ten'], ['huton'], ['ten'], ['chi'], ['jin'], ['suiton'], 'spinningEdge', ['kassatsu'], 'gustSlash', ['tincture'], 'aeolianEdge', ['mug'], ['bunshin'], 'spinningEdge', ['trickAttack'], ['dreamWithinADream'], 'shadowFang', ['ten'], ['jin'], ['hyoshoRanryu'], ['tenChiJin'], ['ten'], ['chi'], ['jin'], 'spinningEdge', ['assassinate'], ['bhavacakra'], 'gustSlash', 'aeolianEdge'])}
@@ -214,6 +216,6 @@ ${seq([['jin'], ['chi'], ['ten'], ['huton'], ['ten'], ['chi'], ['jin'], ['suiton
 
   B.registerJob({
     id: 'nin', name: 'Ninja', abbr: 'NIN', role: 'melee', classJob: 30,
-    versions: [{ id: 'shb50', label: 'Shadowbringers 5.0–5.08', history: 'ShB 5.0–5.08', note: 'Level 80 before the 5.1 rework: mudras off the GCD on Ninjutsu\'s 20s timer, Shadow Fang in the combo, Ninki from every weaponskill for Bhavacakra and a 15s Bunshin, Kassatsu with two charges, Ten Chi Jin +150%', create: () => new NinjaShB50() }],
+    versions: [{ id: 'shb50', label: 'Shadowbringers 5.0–5.08', history: 'ShB 5.0–5.08', note: 'Level 80 before the 5.1 rework: mudras off the GCD on Ninjutsu\'s 20s timer, Shadow Fang in the combo, Ninki from every weaponskill for Bhavacakra and a 15s Bunshin, Kassatsu on 60s, Ten Chi Jin +150%', create: () => new NinjaShB50() }],
   });
 })(window.BLM);

@@ -71,6 +71,8 @@
     shukuchi: ab({ name: 'Shukuchi', recast: 60, charges: 2, desc: 'Move quickly to the specified location.\nMaximum Charges: 2' }),
     shadeShift: ab({ name: 'Shade Shift', recast: 120, desc: 'Create shadows that nullify damage up to 20% of maximum HP.\nDuration: 20s' }),
     ...B.ROLE_ACTIONS.melee,
+    // 5.x's Feint (6.0 reworded it to physical / magic damage dealt; nin_ew.js puts that back).
+    feint: Object.assign({}, B.ROLE_ACTIONS.melee.feint, { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' }),
     ...B.GENERAL_ACTIONS,
     tincture: B.tincture('dex4'),
     auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },

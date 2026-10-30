@@ -39,10 +39,98 @@
       gear: 'Magus\'s set with The Spirit of the Whalaqee (Intelligence 542, about 82 weapon damage)',
       note: 'Level 50, the debut: spells 1–49, Moon Flute and Bristle, Song of Torment, Feather Rain, Eruption, Shock Strike, Glass Dance' },
   };
-  const UNUSABLE = { coldFog: 1, chelonianGate: 1, finalSting: 1, selfDestruct: 1, chocoMeteor: 1, revengeBlast: 1, devour: 0, basicInstinct: 1, aetherialMimicry: 1,
+  const UNUSABLE = { coldFog: 1, chelonianGate: 1, finalSting: 1, selfDestruct: 1, chocoMeteor: 1, revengeBlast: 1, devour: 0, basicInstinct: 1, aethericMimicry: 1,
     schiltron: 1, rehydration: 1, forceField: 1, dimensionalShift: 1, wildRage: 1 };
   // GCD spells with a recast of their own roll it with spell speed, except these two.
   const FIXED_CD = { offGuard: 1, peculiarLight: 1 };
+  // Each spell's tooltip, in the game's phrasing: [shape, text]. {p} is the cap's potency, {d} / {t} its DoT's potency and
+  // duration; a function gets the version (for what changed between caps). Shapes set where it reaches: self (no
+  // target), pb (centred on you; the data's radius), melee (3y), cone and line (their length is the range), ground
+  // and anything else on a target at 25y (Feather Rain 30y). The effects a lone dummy ignores are kept as text only.
+  const TIPS = {
+    waterCannon: [0, 'Deals water damage with a potency of {p}.'],
+    flameThrower: ['cone', 'Deals fire damage with a potency of {p} to all enemies in a cone before you.'],
+    aquaBreath: ['cone', 'Deals water damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Dropsy\nPotency: {d}\nDuration: {t}s'],
+    flyingFrenzy: [0, 'Delivers a jumping physical attack with a potency of {p} to target and all enemies nearby it.\nCannot be executed while bound.'],
+    drillCannons: ['line', 'Deals physical damage with a potency of {p} to all enemies in a straight line before you.'],
+    highVoltage: ['pb', 'Deals lightning damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Paralysis'],
+    songOfTorment: [0, (V) => `Deals damage with a potency of {p}.\nAdditional Effect: Bleeding\nPotency: {d}\nDuration: {t}s${V.level >= 70 ? '\nCannot be stacked with Nightbloom\'s Bleeding.' : ''}`],
+    glower: ['line', 'Deals lightning damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Paralysis\nDuration: 6s'],
+    plaincracker: ['pb', 'Deals earth damage with a potency of {p} to all nearby enemies.'],
+    bristle: ['self', (V) => `Increases the potency of the next spell cast by 50%.\nDuration: 30s${V.level >= 60 ? '\nEffect cannot be stacked with Harmonized.' : ''}`],
+    sharpenedKnife: ['melee', 'Deals physical damage with a potency of {p}.'],
+    bloodDrain: [0, 'Deals damage with a potency of {p}.\nAdditional Effect: Absorbs a portion of damage dealt as MP'],
+    bombToss: [0, 'Deals fire damage with a potency of {p} to all enemies in a designated area.\nAdditional Effect: Stun\nDuration: 3s'],
+    offGuard: [0, 'Increases target\'s damage taken by 5%.\nDuration: 15s\nShares a recast timer with Peculiar Light.\nRecast timer cannot be affected by status effects or gear attributes.'],
+    flyingSardine: [0, 'Deals physical damage with a potency of {p}.\nAdditional Effect: Interrupts the target'],
+    fourTonzeWeight: [0, 'Drops a weight on a designated area, dealing physical damage with a potency of {p} to all enemies in it.\nAdditional Effect: Heavy +40%'],
+    theLook: ['cone', 'Deals damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Increased enmity'],
+    badBreath: ['cone', 'Inflicts Slow, Heavy, Blind, Paralysis, Poison and Malodorous on all enemies in a cone before you, and interrupts the target.'],
+    mightyGuard: ['self', (V) => `Reduces damage taken by 40% while reducing damage dealt by ${V.level >= 70 ? 40 : 70}%. Also increases enmity.\nEffect ends upon reuse.`],
+    toadOil: ['self', 'Increases evasion by 20%.\nDuration: 180s'],
+    theRamsVoice: ['pb', 'Deals ice damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Deep Freeze\nDuration: 12s'],
+    theDragonsVoice: ['pb', 'Deals lightning damage with a potency of {p} to all enemies between 8 and 20 yalms around you.\nAdditional Effect: Paralysis'],
+    thousandNeedles: ['pb', 'Deals a fixed 1,000 damage, split evenly among all nearby enemies.'],
+    inkJet: ['cone', 'Deals damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Blind\nDuration: 30s'],
+    fireAngon: [0, 'Deals physical fire damage with a potency of {p} to target and all enemies nearby it.'],
+    moonFlute: ['self', 'Grants Waxing Nocturne, increasing damage dealt by 50% and movement speed by 30%.\nDuration: 15s\nWhen it ends, grants Waning Nocturne: no auto-attacks, spells or abilities.\nDuration: 15s'],
+    mindBlast: ['pb', 'Deals damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Paralysis'],
+    peculiarLight: ['self', 'Increases magic damage taken by nearby enemies by 5%.\nDuration: 15s\nShares a recast timer with Off-guard.\nRecast timer cannot be affected by status effects or gear attributes.'],
+    featherRain: [0, 'Deals wind damage with a potency of {p} to all enemies in a designated area.\nAdditional Effect: Windburn\nPotency: {d}\nDuration: {t}s\nShares a recast timer with Eruption.'],
+    eruption: [0, 'Deals fire damage with a potency of {p} to all enemies in a designated area.\nShares a recast timer with Feather Rain.'],
+    mountainBuster: ['cone', 'Deals physical earth damage with a potency of {p} to all enemies in a cone before you.\nShares a recast timer with Shock Strike.'],
+    shockStrike: [0, 'Deals lightning damage with a potency of {p} to target and all enemies nearby it.\nShares a recast timer with Mountain Buster.'],
+    glassDance: ['cone', 'Deals ice damage with a potency of {p} to all enemies in a wide arc before you.\nShares a recast timer with Veil of the Whorl.'],
+    alpineDraft: ['line', 'Deals wind damage with a potency of {p} to all enemies in a straight line before you.'],
+    proteanWave: ['cone', 'Deals water damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Knockback 15 yalms'],
+    northerlies: ['cone', 'Deals ice damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Freezes enemies afflicted with Dropsy'],
+    electrogenesis: [0, 'Deals lightning damage with a potency of {p} to target and all enemies nearby it.'],
+    kaltstrahl: ['cone', 'Deals physical damage with a potency of {p} to all enemies in a cone before you.'],
+    abyssalTransfixion: [0, 'Deals physical damage with a potency of {p}.\nAdditional Effect: Paralysis\nDuration: 30s'],
+    magicHammer: [0, (V) => `Deals damage with a potency of {p} to target and all enemies nearby it.\nAdditional Effect: Conked (Intelligence and Mind −10%)\nDuration: 10s\nAdditional Effect: Restores 10% of maximum MP${V.level >= 80 ? '\nShares a recast timer with Candy Cane.' : ''}`],
+    sonicBoom: [0, 'Deals wind damage with a potency of {p}.'],
+    whistle: ['self', 'Increases the potency of the next physical damage spell cast by 80%.\nDuration: 30s\nEffect cannot be stacked with Boost.'],
+    whiteKnightsTour: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Bind'],
+    blackKnightsTour: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Slow +20%'],
+    perpetualRay: [0, 'Deals damage with a potency of {p}.\nAdditional Effect: Stun that ignores stun resistance\nDuration: 1s'],
+    reflux: [0, 'Deals lightning damage with a potency of {p}.\nAdditional Effect: Heavy +40%'],
+    devour: ['melee', 'Deals damage with a potency of {p}.\nAdditional Effect: Increases maximum HP by 20%\nDuration: 15s'],
+    condensedLibra: [0, 'Inflicts Physical, Astral or Umbral Attenuation on the target, increasing damage taken of that type by 5%.\nDuration: 30s\nOnly one of these can be on a target at a time.'],
+    surpanakha: ['cone', 'Deals earth damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Surpanakha\'s Fury, raising Surpanakha\'s potency by 50% per stack (max 3)\nDuration: 3s\nThe effect ends upon use of any other action.\nMaximum Charges: 4'],
+    quasar: ['pb', 'Deals damage with a potency of {p} to all nearby enemies.\nShares a recast timer with J Kick.'],
+    jKick: [0, 'Delivers a jumping physical attack with a potency of {p} to target and all enemies nearby it.\nCannot be executed while bound.\nShares a recast timer with Quasar.'],
+    tripleTrident: ['melee', 'Delivers a threefold physical attack, each hit with a potency of {p}.'],
+    tingle: [0, 'Deals lightning damage with a potency of {p} to target and all enemies nearby it.\nAdditional Effect: Increases the potency of the next physical damage spell cast by 100\nDuration: 15s'],
+    tatamiGaeshi: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Stun\nDuration: 3s'],
+    stotram: ['pb', 'Deals damage with a potency of {p} to all nearby enemies.'],
+    saintlyBeam: [0, 'Deals damage with a potency of {p} to target and all enemies nearby it.'],
+    feculentFlood: ['line', 'Deals earth damage with a potency of {p} to all enemies in a straight line before you.'],
+    theRoseOfDestruction: [0, (V) => `Deals damage with a potency of {p}.\nShares a recast timer with Chelonian Gate${V.level >= 80 ? ' and Ruby Dynamics' : ''}.`],
+    blaze: [0, 'Deals ice damage with a potency of {p} to target and all enemies nearby it.'],
+    mustardBomb: [0, 'Deals fire damage with a potency of {p} to target and all enemies nearby it.\nAdditional Effect: Fire damage over time\nPotency: {d}\nDuration: {t}s'],
+    aetherialSpark: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Damage over time\nPotency: {d}\nDuration: {t}s'],
+    hydroPull: ['pb', 'Deals water damage with a potency of {p} to all nearby enemies and draws them in.'],
+    maledictionOfWater: ['line', 'Deals water damage with a potency of {p} to all enemies in a straight line before you.'],
+    matraMagic: [0, 'Deals damage eight times, each hit with a potency of {p}.\nShares a recast timer with Angel\'s Snack and Dragon Force.'],
+    peripheralSynthesis: ['line', 'Deals physical damage with a potency of {p} to all enemies in a straight line before you.\nAdditional Effect: Lightheaded'],
+    bothEnds: ['pb', 'Deals physical damage with a potency of {p} to all nearby enemies.\nShares a recast timer with Nightbloom.'],
+    phantomFlurry: ['cone', 'Delivers a physical attack with a potency of {p} to all enemies in a cone before you, then again each second for 5s.\nUsing it again while channelling ends it with a final attack of 600 potency.\nNo other actions can be used while channelling.'],
+    nightbloom: ['pb', 'Deals damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Bleeding\nPotency: {d}\nDuration: {t}s\nCannot be stacked with Song of Torment\'s Bleeding.\nShares a recast timer with Both Ends.'],
+    goblinPunch: ['melee', 'Deals physical damage with a potency of {p}.\nFront Potency: 220'],
+    rightRound: ['pb', 'Deals physical damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Knockback 10 yalms'],
+    peatPelt: [0, 'Deals earth damage with a potency of {p} to target and all enemies nearby it.\nAdditional Effect: Begrimed\nPotency: {d}\nDuration: {t}s'],
+    deepClean: ['pb', 'Deals physical damage with a potency of {p} to all nearby enemies.\nAdditional Effect: Removes Begrimed from enemies hit, granting Spick-and-span (regen) for each\nDuration: 15s'],
+    rubyDynamics: ['cone', 'Deals physical damage with a potency of {p} to all enemies in a cone before you.\nShares a recast timer with The Rose of Destruction and Chelonian Gate.'],
+    divinationRune: ['cone', 'Deals damage with a potency of {p} to all enemies in a cone before you.\nAdditional Effect: Restores MP for each enemy hit'],
+    convictionMarcato: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you.\nWinged Redemption Potency: 440'],
+    wingedReprobation: ['line'],
+    laserEye: [0, 'Deals damage with a potency of {p} to target and all enemies nearby it.'],
+    candyCane: [0, 'Deals damage with a potency of {p} to target and all enemies nearby it.\nAdditional Effect: Candy Cane (Strength and Dexterity −10%)\nDuration: 10s\nAdditional Effect: Restores 10% of maximum MP\nShares a recast timer with Magic Hammer.'],
+    breathOfMagic: ['cone'],
+    seaShanty: ['pb', 'Deals water damage with a potency of {p} to all nearby enemies.'],
+    apokalypsis: ['line', 'Deals damage with a potency of {p} to all enemies in a straight line before you, then again each second for 10s.\nNo other actions can be used while channelling.\nShares a recast timer with Being Mortal.'],
+    beingMortal: ['pb', 'Deals damage with a potency of {p} to all nearby enemies.\nShares a recast timer with Apokalypsis.'],
+  };
 
   function buildActions(V) {
     const A = {};
@@ -60,6 +148,20 @@
       };
       if (ogcd) { a.cd = undefined; }
       else if (s.recast_s > 2.5) { a.cd = s.recast_s; a.recast = 2.5; a.cdScales = !FIXED_CD[s.key]; }
+      const tip = TIPS[s.key];
+      if (tip) {
+        const [shape, text] = tip, r = s.radius_y || 0;
+        if (shape === 'self') a.target = false;
+        else if (shape === 'pb') Object.assign(a, { target: false, pbaoe: r });
+        else if (shape === 'melee') a.range = B.MELEE_RANGE;
+        else if ((shape === 'cone' || shape === 'line') && r) a.range = r;
+        if (s.key === 'featherRain') a.range = 30;
+        if (text) {
+          const t = typeof text === 'function' ? text(V) : text;
+          a.desc = `Blue magic spell #${s.number}.\n` + t.replace(/\{p\}/g, (s.potency || 0).toLocaleString('en-US'))
+            .replace(/\{d\}/g, dot ? dot.potency : '').replace(/\{t\}/g, dot ? dot.duration : '');
+        }
+      }
       A[s.key] = a;
     }
     if (A.surpanakha) Object.assign(A.surpanakha, { charges: 4 });
@@ -69,7 +171,7 @@
     if (A.apokalypsis) A.apokalypsis.channel = true;
     if (A.mortalFlame) A.mortalFlame.desc = 'Blue magic spell #121.\nDeals fire damage over time.\nPotency: 40\nThe effect lasts until the target is defeated.\nCannot be cast outside combat.';
     if (A.breathOfMagic) A.breathOfMagic.desc = 'Blue magic spell #109.\nDeals damage over time to all enemies in a cone before you.\nPotency: 120\nDuration: 60s';
-    if (A.wingedReprobation) A.wingedReprobation.desc = 'Blue magic spell #118.\nDeals physical damage with a potency of 300 to all enemies in a straight line before you.\nThe first three uses add a stack of Winged Reprobation and reset this spell\'s recast; the fourth deals 400, starts the recast and grants Winged Redemption (Conviction Marcato 440) for 10s.';
+    if (A.wingedReprobation) A.wingedReprobation.desc = 'Blue magic spell #118.\nDeals physical damage with a potency of 300 to all enemies in a straight line before you.\nAdditional Effect: Grants a stack of Winged Reprobation and resets this spell\'s recast\nAt 3 stacks: potency 400; uses the stacks, starts the recast and grants Winged Redemption\nDuration: 10s';
     A.swiftcast = { name: 'Swiftcast', kind: 'ogcd', recast: 60, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' };
     A.lucidDreaming = { name: 'Lucid Dreaming', kind: 'ogcd', recast: 60, role: true, desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s' };
     Object.assign(A, B.GENERAL_ACTIONS);
@@ -176,8 +278,9 @@
       if (id !== 'surpanakha' && e.has('surpanakhasFury')) { e.removeStatus('surpanakhasFury'); g.surpa = 0; }
       switch (id) {
         case 'moonFlute': e.addStatus('waxingNocturne', 15); g.moonEnd = e.now + 15; return;
-        case 'bristle': e.addStatus('bristle', 30); return;
-        case 'whistle': e.addStatus('whistle', 30); return;
+        // Boost and Harmonized don't stack: each replaces the other.
+        case 'bristle': e.removeStatus('whistle'); e.addStatus('bristle', 30); return;
+        case 'whistle': e.removeStatus('bristle'); e.addStatus('whistle', 30); return;
         case 'offGuard': e.addTStatus('offGuard', 15); return;
         case 'peculiarLight': e.addTStatus('peculiarLight', 15); return;
         case 'phantomFlurry': case 'apokalypsis': {
@@ -213,6 +316,7 @@
       }
       if (!a.potency) { if (a.dot) this.hit(id, 0, e, a); return; }
       let potency = a.potency;
+      if (id === 'goblinPunch' && e.positionalHit({ positional: 'front' })) potency = 220;     // its front bonus
       if (id === 'surpanakha') {
         potency = Math.round(potency * (1 + 0.5 * g.surpa));
         g.surpa = Math.min(3, g.surpa + 1);

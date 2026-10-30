@@ -31,14 +31,15 @@
   const HYPER = { fireInRed: 1, aeroInGreen: 1, waterInBlue: 1, blizzardInCyan: 1, stoneInYellow: 1, thunderInMagenta: 1, holyInWhite: 1, cometInBlack: 1, starPrism: 1 };
 
   function buildActions(V) {
-    const rgb = (name, p, hue, extra) => spell(Object.assign({ name, potency: p, cast: 1.5, mp: 300, hue, desc: `Deals ${name.split(' ')[0].toLowerCase()} damage with a potency of ${p} to target and all enemies nearby it, 70% less for the rest.` }, extra));
-    const cym = (name, p, hue, extra) => spell(Object.assign({ name, potency: p, cast: 2.3, recast: 3.3, mp: 400, hue, sub: true, desc: `Deals ${name.split(' ')[0].toLowerCase()} damage with a potency of ${p} to target and all enemies nearby it, 70% less for the rest.\nCan only be executed under Subtractive Palette.` }, extra));
+    // Single-target, all six (Fire II in Red and the rest of the AoE line aren't in the kit).
+    const rgb = (name, p, hue, extra) => spell(Object.assign({ name, potency: p, cast: 1.5, mp: 300, hue, desc: `Deals damage with a potency of ${p}.` }, extra));
+    const cym = (name, p, hue, extra) => spell(Object.assign({ name, potency: p, cast: 2.3, recast: 3.3, mp: 400, hue, sub: true, desc: `Deals damage with a potency of ${p}.\nCan only be executed under Subtractive Palette.` }, extra));
     return {
       fireInRed: rgb('Fire in Red', V.rgb[0], 0, { desc: `Deals fire damage with a potency of ${V.rgb[0]}.\nAdditional Effect: Grants Aetherhues (30s)\n※Changes to Aero in Green, then Water in Blue.` }),
-      aeroInGreen: rgb('Aero in Green', V.rgb[1], 1),
+      aeroInGreen: rgb('Aero in Green', V.rgb[1], 1, { desc: `Deals wind damage with a potency of ${V.rgb[1]}.\nAdditional Effect: Grants Aetherhues II (30s)\n※Changes to Water in Blue.` }),
       waterInBlue: rgb('Water in Blue', V.rgb[2], 2, { desc: `Deals water damage with a potency of ${V.rgb[2]}.\nAdditional Effect: Increases the Palette Gauge by 25 and White Paint by 1` }),
       blizzardInCyan: cym('Blizzard in Cyan', V.cym[0], 0, { desc: `Deals ice damage with a potency of ${V.cym[0]}.\nCast 2.3s, recast 3.3s\nCan only be executed under Subtractive Palette.\n※Changes to Stone in Yellow, then Thunder in Magenta.` }),
-      stoneInYellow: cym('Stone in Yellow', V.cym[1], 1),
+      stoneInYellow: cym('Stone in Yellow', V.cym[1], 1, { desc: `Deals earth damage with a potency of ${V.cym[1]}.\nCan only be executed under Subtractive Palette.\n※Changes to Thunder in Magenta.` }),
       thunderInMagenta: cym('Thunder in Magenta', V.cym[2], 2, { desc: `Deals lightning damage with a potency of ${V.cym[2]}.\nAdditional Effect: Increases White Paint by 1\nCan only be executed under Subtractive Palette.` }),
       holyInWhite: spell({ name: 'Holy in White', potency: V.holy, mp: 300, aoe: 0.35, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.holy} to target and all enemies nearby it.\nWhite Paint Cost: 1\n※Changes to Comet in Black with Black Paint.` }),
       cometInBlack: spell({ name: 'Comet in Black', potency: V.comet, mp: 400, recast: 3.3, aoe: 0.35, fx: 'gnbDouble', desc: `Deals darkness damage with a potency of ${V.comet} to target and all enemies nearby it.\nBlack Paint Cost: 1\nRecast: 3.3s` }),
@@ -60,7 +61,7 @@
       mogOfTheAges: ab({ name: 'Mog of the Ages', recast: 30, cdGroup: 'portrait', potency: V.mog, target: true, range: 25, aoe: 0.3, delay: 0.9, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.mog} to all enemies in a straight line before you.\nCan only be executed while the Moogle Portrait is ready.\nShares a recast timer with Retribution of the Madeen.` }),
       retributionOfTheMadeen: ab({ name: 'Retribution of the Madeen', recast: 30, cdGroup: 'portrait', potency: V.madeen, target: true, range: 25, aoe: 0.3, delay: 0.9, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.madeen} to all enemies in a straight line before you.\nCan only be executed while the Madeen Portrait is ready.` }),
       strikingMuse: ab({ name: 'Striking Muse', recast: 60, charges: 2, desc: 'Grants 3 stacks of Hammer Time, for Hammer Stamp, Hammer Brush and Polishing Hammer.\nDuration: 30s\nRequires a painted hammer; in combat only.\nMaximum Charges: 2' }),
-      starryMuse: ab({ name: 'Starry Muse', recast: 120, desc: 'Increases damage dealt by self and nearby party members by 5%.\nDuration: 20s\nAdditional Effect: Grants Subtractive Spectrum, Inspiration and 5 stacks of Hyperphantasia (25% faster spells), then Rainbow Bright and Starstruck\nDuration: 30s\nRequires a painted starry sky; in combat only.' }),
+      starryMuse: ab({ name: 'Starry Muse', recast: 120, desc: 'Increases damage dealt by self and nearby party members by 5%.\nDuration: 20s\nAdditional Effect: Grants Subtractive Spectrum and 5 stacks of Hyperphantasia (paint spells cast and recast 25% faster)\nDuration: 30s\nAdditional Effect: Grants Rainbow Bright (30s) and Starstruck (20s) once all 5 stacks are spent\nRequires a painted starry sky; in combat only.' }),
       subtractivePalette: ab({ name: 'Subtractive Palette', recast: 1, desc: 'Grants 3 stacks of Subtractive Palette: Fire / Aero / Water become Blizzard in Cyan / Stone in Yellow / Thunder in Magenta.\nAdditional Effect: Grants Monochrome Tones (a White Paint becomes Black)\nPalette Gauge Cost: 50 (none under Subtractive Spectrum)' }),
       temperaCoat: ab({ name: 'Tempera Coat', recast: 120, desc: 'Creates a barrier around self that absorbs damage totaling 20% of maximum HP.\nDuration: 10s' }),
       smudge: ab({ name: 'Smudge', recast: 20, desc: 'Dashes 15 yalms forward.' }),
