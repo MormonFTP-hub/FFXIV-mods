@@ -48,12 +48,12 @@
     secondLegacy: legacy({ name: 'Second Legacy', tail: true, desc: 'Delivers an attack with a potency of 320.\nCan only be executed after Second Generation.' }),
     thirdLegacy: legacy({ name: 'Third Legacy', tail: true, desc: 'Delivers an attack with a potency of 320.\nCan only be executed after Third Generation.' }),
     fourthLegacy: legacy({ name: 'Fourth Legacy', tail: true, desc: 'Delivers an attack with a potency of 320.\nCan only be executed after Fourth Generation.' }),
-    twinfangBite: og({ name: 'Twinfang Bite', potency: 120, venomPotency: 170, twin: 'fang', kind: 'bite', venom: 'huntersVenom', passes: 'swiftskinsVenom', desc: 'Delivers an attack with a potency of 120.\nHunter\'s Venom Potency: 170\nAdditional Effect: Grants Swiftskin\'s Venom' }),
-    twinbloodBite: og({ name: 'Twinblood Bite', potency: 120, venomPotency: 170, twin: 'blood', kind: 'bite', venom: 'swiftskinsVenom', passes: 'huntersVenom', desc: 'Delivers an attack with a potency of 120.\nSwiftskin\'s Venom Potency: 170\nAdditional Effect: Grants Hunter\'s Venom' }),
-    uncoiledTwinfang: og({ name: 'Uncoiled Twinfang', potency: 120, venomPotency: 170, twin: 'fang', kind: 'uncoiled', venom: 'poisedForTwinfang', passes: 'poisedForTwinblood', range: 20, aoe: FAR, desc: 'Delivers an attack with a potency of 120.\nPoised for Twinfang Potency: 170\nAdditional Effect: Grants Poised for Twinblood' }),
-    uncoiledTwinblood: og({ name: 'Uncoiled Twinblood', potency: 120, venomPotency: 170, twin: 'blood', kind: 'uncoiled', venom: 'poisedForTwinblood', passes: 'poisedForTwinfang', range: 20, aoe: FAR, desc: 'Delivers an attack with a potency of 120.\nPoised for Twinblood Potency: 170\nAdditional Effect: Grants Poised for Twinfang' }),
-    twinfangThresh: og({ name: 'Twinfang Thresh', potency: 50, venomPotency: 80, twin: 'fang', kind: 'thresh', venom: 'fellhuntersVenom', passes: 'fellskinsVenom', target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 50 to all nearby enemies.\nFellhunter\'s Venom Potency: 80' }),
-    twinbloodThresh: og({ name: 'Twinblood Thresh', potency: 50, venomPotency: 80, twin: 'blood', kind: 'thresh', venom: 'fellskinsVenom', passes: 'fellhuntersVenom', target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 50 to all nearby enemies.\nFellskin\'s Venom Potency: 80' }),
+    twinfangBite: og({ name: 'Twinfang Bite', potency: 120, venomPotency: 170, twin: 'fang', twinKind: 'bite', venom: 'huntersVenom', passes: 'swiftskinsVenom', desc: 'Delivers an attack with a potency of 120.\nHunter\'s Venom Potency: 170\nAdditional Effect: Grants Swiftskin\'s Venom' }),
+    twinbloodBite: og({ name: 'Twinblood Bite', potency: 120, venomPotency: 170, twin: 'blood', twinKind: 'bite', venom: 'swiftskinsVenom', passes: 'huntersVenom', desc: 'Delivers an attack with a potency of 120.\nSwiftskin\'s Venom Potency: 170\nAdditional Effect: Grants Hunter\'s Venom' }),
+    uncoiledTwinfang: og({ name: 'Uncoiled Twinfang', potency: 120, venomPotency: 170, twin: 'fang', twinKind: 'uncoiled', venom: 'poisedForTwinfang', passes: 'poisedForTwinblood', range: 20, aoe: FAR, desc: 'Delivers an attack with a potency of 120.\nPoised for Twinfang Potency: 170\nAdditional Effect: Grants Poised for Twinblood' }),
+    uncoiledTwinblood: og({ name: 'Uncoiled Twinblood', potency: 120, venomPotency: 170, twin: 'blood', twinKind: 'uncoiled', venom: 'poisedForTwinblood', passes: 'poisedForTwinfang', range: 20, aoe: FAR, desc: 'Delivers an attack with a potency of 120.\nPoised for Twinblood Potency: 170\nAdditional Effect: Grants Poised for Twinfang' }),
+    twinfangThresh: og({ name: 'Twinfang Thresh', potency: 50, venomPotency: 80, twin: 'fang', twinKind: 'thresh', venom: 'fellhuntersVenom', passes: 'fellskinsVenom', target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 50 to all nearby enemies.\nFellhunter\'s Venom Potency: 80' }),
+    twinbloodThresh: og({ name: 'Twinblood Thresh', potency: 50, venomPotency: 80, twin: 'blood', twinKind: 'thresh', venom: 'fellskinsVenom', passes: 'fellhuntersVenom', target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 50 to all nearby enemies.\nFellskin\'s Venom Potency: 80' }),
     // AoE: Steel and Reaving Maw → Hunter's or Swiftskin's Bite → Jagged or Bloodied Maw; Vicepit → the Dens.
     steelMaw: aoe({ name: 'Steel Maw', potency: 120, honedPotency: 140, honed: 'honedSteel', grants: 'honedReavers', desc: 'Delivers an attack with a potency of 120 to all nearby enemies.\nHoned Steel Potency: 140\nAdditional Effect: Grants Honed Reavers\nSteel Maw changes to Hunter\'s Bite, then Jagged Maw.' }),
     reavingMaw: aoe({ name: 'Reaving Maw', potency: 120, honedPotency: 140, honed: 'honedReavers', grants: 'honedSteel', desc: 'Delivers an attack with a potency of 120 to all nearby enemies.\nHoned Reavers Potency: 140\nAdditional Effect: Grants Honed Steel\nReaving Maw changes to Swiftskin\'s Bite, then Bloodied Maw.' }),
@@ -181,7 +181,7 @@
       if (id === 'reawaken' && (e.has('reawakened') || (g.offerings < 50 && !e.has('readyToReawaken')))) return 'Not enough Serpent Offerings.';
       if ((a.generation || id === 'ouroboros') && !(e.has('reawakened') && g.tribute > 0)) return 'Unable to execute action.';
       if (a.tail && !(this.live(g.tail, e) && g.tail.id === id)) return 'Unable to execute action.';
-      if (a.twin) { const t = this.live(g.twins, e); if (!(t && t.kind === a.kind && t[a.twin])) return 'Unable to execute action.'; }
+      if (a.twin) { const t = this.live(g.twins, e); if (!(t && t.kind === a.twinKind && t[a.twin])) return 'Unable to execute action.'; }
       if (id === 'serpentsIre' && !e.inCombat) return 'Unable to execute action while not in combat.';
       return null;
     }
@@ -246,7 +246,7 @@
         if (e.has(a.venom)) { potency = a.venomPotency; e.removeStatus(a.venom, true); }
         const t = g.twins;
         t[a.twin] = false;
-        if (t.fang || t.blood) e.addStatus(a.passes, a.kind === 'uncoiled' ? 60 : 30);
+        if (t.fang || t.blood) e.addStatus(a.passes, a.twinKind === 'uncoiled' ? 60 : 30);
         else g.twins = null;
       } else if (a.generation) {
         if (g.tribute === a.order) potency = a.seqPotency;

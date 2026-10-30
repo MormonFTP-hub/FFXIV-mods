@@ -20,13 +20,7 @@
   }
   B.keyLabel = keyLabel;
 
-  function kindLabel(a) {
-    if (a.kind === 'item') return 'Item';
-    if (a.kind === 'ogcd') return a.role ? 'Ability (Role Action)' : 'Ability';
-    // A GCD is a spell if it's cast, costs MP or belongs to a caster or healer; otherwise it's a weaponskill.
-    const role = B.job && (B.job.role || (B.job.def && B.job.def.role));
-    return a.cast || a.mp || role === 'caster' || role === 'healer' ? 'Spell' : 'Weaponskill';
-  }
+  const kindLabel = (a) => B.kindLabel(a);     // data.js
 
   class UI {
     constructor(app) {

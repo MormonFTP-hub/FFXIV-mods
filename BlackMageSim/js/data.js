@@ -197,8 +197,17 @@ window.BLM = window.BLM || {};
   B.statName = (stat) => stat.startsWith('int') ? 'Intelligence' : stat.startsWith('mnd') ? 'Mind' : stat.startsWith('dex') ? 'Dexterity' : 'Strength';
   B.tincture = (stat) => ({
     name: B.TINCTURES[stat].name, short: 'Tincture', kind: 'item', recast: 270, lock: 1.1,
-    desc: `This diluted brew temporarily increases ${B.statName(stat).toLowerCase()} for twice the duration of similar potions.\n${B.statName(stat)} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,
+    desc: `${B.medicineFlavor(B.TINCTURES[stat].name)}\n${B.statName(stat)} +10% (Max ${B.TINCTURES[stat].cap})\nDuration: 30s`,
   });
+  // The item's own first line: the old 15s potions each had theirs; infusions, tinctures and gemdraughts are the
+  // "diluted brew" that lasts twice as long.
+  const POTION_FLAVOR = [['X-Potion', 'powerful'], ['Mega-Potion', 'potent'], ['Max-Potion', 'extremely powerful'],
+    ['Supramax-Potion', 'unthinkably powerful'], ['Draconian Potion', 'intoxicating', ' brewed from an ancient dragon recipe']];
+  B.medicineFlavor = function (name) {
+    const stat = name.split(' of ').pop().toLowerCase(), pot = POTION_FLAVOR.find(([k]) => name.startsWith(k));
+    if (pot) return `This ${pot[1]} concoction${pot[2] || ''} temporarily increases ${stat}.`;
+    return `This diluted brew temporarily increases ${stat}${/Infusion/.test(name) ? ', but' : ''} for twice the duration of similar potions.`;
+  };
 
   B.COMMON_STATUSES = {
     sprint: { name: 'Sprint', self: true, icon: 'st_sprint' },
@@ -219,17 +228,17 @@ window.BLM = window.BLM || {};
   B.ROLE_EFFECTS = {
     swiftcast: (e) => e.addStatus('swiftcast', 10),
     lucidDreaming: (e) => e.addStatus('lucidDreaming', 21),
-    addle: (e) => e.addTStatus('addle', 10),
+    addle: (e) => e.addTStatus('addle', e.job.actions.addle.dur || 10),
     surecast: (e) => e.addStatus('surecast', 6),
     trueNorth: (e) => e.addStatus('trueNorth', 10),
-    feint: (e) => e.addTStatus('feint', 10),
+    feint: (e) => e.addTStatus('feint', e.job.actions.feint.dur || 10),
     bloodbath: (e) => e.addStatus('bloodbath', 20),
     secondWind: () => {},
     armsLength: (e) => e.addStatus('armsLength', 6),
     legSweep: () => {},
     rampart: (e) => e.addStatus('rampart', 20),
     invigorate: (e) => { if (e.usesTp) e.tp = Math.min(e.job.tp.max, e.tp + 400); },
-    reprisal: (e) => e.addTStatus('reprisal', 10),
+    reprisal: (e) => e.addTStatus('reprisal', e.job.actions.reprisal.dur || 10),
     lowBlow: () => {}, provoke: () => {}, interject: () => {}, shirk: () => {},
     sprint: (e) => e.addStatus('sprint', 10),
     // Heavensward potions lasted 15s (the tincture's dur).
@@ -283,12 +292,47 @@ window.BLM = window.BLM || {};
     B.JOBS[job.id] = Object.assign({}, job, { versions });
   };
 
+  // ---------- tooltips ----------
+  // The header word: an action's own type wins (Riposte is a weaponskill on a caster); otherwise a GCD is a spell if
+  // it's cast, costs MP, deals holy or dark damage or belongs to a caster or healer, and a weaponskill if not; Iaijutsu
+  // is a weaponskill and Ninjutsu an ability. Role actions came in 4.0: before that they were the class's own skills
+  // or cross-class ones, plain abilities.
+  B.kindLabel = function (a) {
+    if (a.type) return a.type;
+    if (a.kind === 'item') return 'Item';
+    const job = B.job || {}, role = job.role || (job.def && job.def.role);
+    if (a.kind === 'ogcd') return a.role && job.era !== 'ARR' && job.era !== 'HW' ? 'Ability (Role Action)' : 'Ability';
+    if (a.school === 'iai') return 'Weaponskill';
+    if (a.school === 'ninjutsu') return 'Ability';
+    return a.cast || a.mp || a.school === 'holy' || a.school === 'dark' || role === 'caster' || role === 'healer' ? 'Spell' : 'Weaponskill';
+  };
+
+  // What a version's tooltips share: each era's potion text, and level 100's role traits (Feint, Addle and Reprisal
+  // last 15s, Second Wind heals for 800). The job's own table is copied first, since versions share their actions.
+  function tidyTips(job) {
+    const A = job.actions = Object.assign({}, job.actions);
+    const fix = (id, o) => { A[id] = Object.assign({}, A[id], o(A[id])); };
+    for (const id of Object.keys(A)) {
+      const a = A[id];
+      if (a.kind === 'item' && typeof a.desc === 'string' && / of (Strength|Dexterity|Intelligence|Mind)$/.test(a.name || '')) {
+        fix(id, (x) => ({ desc: x.desc.replace(/^This [^\n]*/, B.medicineFlavor(x.name)) }));
+      }
+    }
+    if (job.era !== 'DT' && job.era !== 'EC') return;
+    for (const id of ['feint', 'addle', 'reprisal']) {
+      if (A[id] && A[id].role && /Duration: 10s/.test(A[id].desc || '')) fix(id, (x) => ({ dur: 15, desc: x.desc.replace('Duration: 10s', 'Duration: 15s') }));
+    }
+    if (A.secondWind && A.secondWind.role) fix('secondWind', (x) => ({ desc: String(x.desc).replace(/Cure Potency: \d+/, 'Cure Potency: 800') }));
+  }
+
   // Make a job version current: fill B.ACTIONS / B.STATUSES and return the job object.
   B.setJob = function (jobId, versionId) {
     const def = B.JOBS[jobId] || B.JOBS[B.JOB_ORDER[0]];
     const ver = def.versions.find(v => v.id === versionId) || def.versions[def.versions.length - 1];
     const job = ver.create();
     job.id = def.id; job.version = ver.id; job.versionLabel = ver.label; job.def = def;
+    job.era = String(ver.history || '').split(' ')[0];
+    tidyTips(job);
     for (const k of Object.keys(B.ACTIONS)) delete B.ACTIONS[k];
     Object.assign(B.ACTIONS, job.actions);
     for (const k of Object.keys(B.STATUSES)) delete B.STATUSES[k];
