@@ -45,8 +45,12 @@
       // Draconian Fire instead.
       set(A, 'fangAndClaw', { potency: 260, desc: 'Delivers an attack with a potency of 260.\n300 when executed from a target\'s flank.\nCan only be executed while under the effect of Fang and Claw Bared.\nAdditional Effect: Grants Wheel in Motion\nDuration: 30s\nAfter Wheeling Thrust: Potency +100, and grants Draconian Fire instead\nDuration: 30s' });
       set(A, 'wheelingThrust', { potency: 260, desc: 'Delivers an attack with a potency of 260.\n300 when executed from a target\'s rear.\nCan only be executed while under the effect of Wheel in Motion.\nAdditional Effect: Grants Fang and Claw Bared\nDuration: 30s\nAfter Fang and Claw: Potency +100, and grants Draconian Fire instead\nDuration: 30s' });
-      set(A, 'sonicThrust', { desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Doom Spike\nCombo Potency: 200\nCombo Bonus: Grants Power Surge\nDuration: 30s' });
-      set(A, 'coerthanTorment', { desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Sonic Thrust\nCombo Potency: 230' });
+      // The AoE combo (6.0–6.58 data): Coerthan Torment grants Draconian Fire, which turns Doom Spike into Draconian Fury.
+      set(A, 'doomSpike', { potency: 110, desc: 'Delivers an attack with a potency of 110 to all enemies in a straight line before you.\n※Action changes to Draconian Fury when under the effect of Draconian Fire.' });
+      A.draconianFury = ws({ name: 'Draconian Fury', potency: 130, range: 10, comboStart: true, comboNext: true, comboAs: 'doomSpike', aoe: true, fx: 'gnbBurst',
+        desc: 'Delivers an attack with a potency of 130 to all enemies in a straight line before you.\nAdditional Effect: Sharpens the Firstminds\' Focus by 1\nCan only be executed while under the effect of Draconian Fire.' });
+      set(A, 'sonicThrust', { potency: 100, comboPotency: 120, desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Doom Spike\nCombo Potency: 120\nCombo Bonus: Grants Power Surge\nPower Surge Effect: Increases damage dealt by 10%\nDuration: 30s' });
+      set(A, 'coerthanTorment', { potency: 100, comboPotency: 150, desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Sonic Thrust\nCombo Potency: 150\nCombo Bonus: Grants Draconian Fire\nDuration: 30s' });
       set(A, 'highJump', { potency: 400, desc: 'Delivers a jumping attack with a potency of 400.\nAdditional Effect: Grants Dive Ready\nDuration: 15s' });
       set(A, 'spineshatterDive', { potency: 250, charges: 2, desc: 'Delivers a jumping attack with a potency of 250.\nMaximum Charges: 2' });
       set(A, 'dragonfireDive', { potency: 300 });
@@ -77,7 +81,7 @@
       this.autoAttack = { potency: 90, delay: 2.8, range: B.MELEE_RANGE };
       const swap = { fullThrust: 'heavensThrust', chaosThrust: 'chaoticSpring', bloodOfTheDragon: 'wyrmwindThrust' };
       this.defaultBars = this.defaultBars.map(r => r.map(id => (id && swap[id]) || (id && A[id] ? id : null)));
-      this.actionGroups = this.actionGroups.map(([n, ids]) => [n, ids.map(id => swap[id] || id).filter(id => A[id])]);
+      this.actionGroups = this.actionGroups.map(([n, ids]) => [n, ids.flatMap(id => (id === 'doomSpike' ? [id, 'draconianFury'] : [swap[id] || id])).filter(id => A[id])]);
       this.referenceDps = V.ref;
       this.referenceGcd = 2.5;
     }
@@ -86,10 +90,15 @@
     dragon(e) { return e.g.mode === 'life' && e.g.until > e.now + EPS; }
     extendBlood() {}
 
+    resolveId(id, e) {
+      if (id === 'doomSpike' && e.has('raidenThrustReady')) return 'draconianFury';
+      return super.resolveId(id, e);
+    }
+
     check(id, e) {
       const g = e.g;
       switch (id) {
-        case 'raidenThrust': if (!e.has('raidenThrustReady')) return 'Unable to execute action.'; break;
+        case 'raidenThrust': case 'draconianFury': if (!e.has('raidenThrustReady')) return 'Unable to execute action.'; break;
         case 'fangAndClaw': if (!e.has('sharperFangAndClaw')) return 'Unable to execute action.'; break;
         case 'wheelingThrust': if (!e.has('enhancedWheelingThrust')) return 'Unable to execute action.'; break;
         case 'mirageDive': if (!e.has('diveReady')) return 'Unable to execute action. Dive Ready required.'; break;
@@ -115,7 +124,7 @@
       let potency = a.comboFrom && combo ? a.comboPotency : a.potency;
       const pos = !!a.positional && (e.positionalHit(a) || (this.V.sightNorth && e.has('rightEye')));
       if (pos) potency += a.posBonus;
-      if (id === 'raidenThrust') { e.removeStatus('raidenThrustReady'); g.focus = Math.min(2, (g.focus || 0) + 1); }
+      if (id === 'raidenThrust' || id === 'draconianFury') { e.removeStatus('raidenThrustReady'); g.focus = Math.min(2, (g.focus || 0) + 1); }
       // The fourth hit opens the fifth, which always readies Raiden Thrust.
       if (id === 'fangAndClaw' || id === 'wheelingThrust') {
         const mine = id === 'fangAndClaw' ? 'sharperFangAndClaw' : 'enhancedWheelingThrust';
@@ -131,6 +140,7 @@
       if (crit) e.removeStatus('lifeSurge');
       const snap = this.snapshot(a, e);
       if ((id === 'disembowel' || id === 'sonicThrust') && combo) e.addStatus('powerSurge', 30);
+      if (id === 'coerthanTorment' && combo) e.addStatus('raidenThrustReady', 30);
       const after = id === 'chaoticSpring' && combo ? () => e.addTStatus('chaoticSpring', 24, { snap: Object.assign({}, snap), dot: { potency: 45, id } }) : null;
       e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (pos ? 'hit' : 'miss') : null, crit });
     }
@@ -162,6 +172,7 @@
       if (id === 'chaoticSpring') return e.inCombo('disembowel');
       if (id === 'fangAndClaw') return e.has('sharperFangAndClaw');
       if (id === 'wheelingThrust') return e.has('enhancedWheelingThrust');
+      if (id === 'doomSpike' || id === 'draconianFury') return e.has('raidenThrustReady');
       return super.proc(id, e);
     }
 
@@ -173,7 +184,7 @@
 <p><b>High Jump</b> (400, 30s) readies <b>Mirage Dive</b> (200, +1 Eye). <b>Geirskogul</b> (260, 30s) with two Eyes starts <b>Life of the Dragon</b> for 30s: <b>Nastrond</b> (360, every 10s) and <b>Stardiver</b> (620). <b>Lance Charge</b> (+10%, 60s), <b>Dragon Sight</b> (+10%, 120s${V.sightNorth ? ', positionals always land from 6.4' : ''}), <b>Battle Litany</b> (+10% crit, 15s, 120s) and <b>Life Surge</b> (a critical hit, two charges, ${V.lifeSurge}s) go on Heavens' Thrust and the fifth hits. Spineshatter Dive (250, two charges) and Dragonfire Dive (300) whenever.</p>
 <h3>The opener (The Balance, 2.50)</h3>
 ${seq(['trueThrust', ['tincture'], 'disembowel', ['lanceCharge'], ['dragonSight'], 'chaoticSpring', ['battleLitany'], ['geirskogul'], 'wheelingThrust', ['highJump'], ['lifeSurge'], 'fangAndClaw', ['dragonfireDive'], ['wyrmwindThrust'], 'raidenThrust', ['spineshatterDive'], ['mirageDive'], 'vorpalThrust', ['lifeSurge'], 'heavensThrust', ['spineshatterDive'], 'fangAndClaw', 'wheelingThrust', 'raidenThrust', ['wyrmwindThrust'], 'disembowel', 'chaoticSpring'])}
-<p style="color:#a9a3b4">${V.label} numbers: True Thrust 230, Raiden Thrust 280, Vorpal 280 and Heavens' Thrust 480 in combo, Disembowel 250, Chaotic Spring 260 (300 rear) + 45 × 24s, Fang and Claw / Wheeling Thrust 260 (300 positional, +100 as the fifth hit), High Jump 400, Mirage Dive 200, Spineshatter Dive 250, Dragonfire Dive 300, Geirskogul 260, Nastrond 360, Stardiver 620, Wyrmwind Thrust 420; auto-attacks 90 at 2.80s. Gear: The Balance's set for the tier (Strength ${V.stats.main.toLocaleString()}).</p>`;
+<p style="color:#a9a3b4">${V.label} numbers: True Thrust 230, Raiden Thrust 280, Vorpal 280 and Heavens' Thrust 480 in combo, Disembowel 250, Chaotic Spring 260 (300 rear) + 45 × 24s, Fang and Claw / Wheeling Thrust 260 (300 positional, +100 as the fifth hit), High Jump 400, Mirage Dive 200, Spineshatter Dive 250, Dragonfire Dive 300, Geirskogul 260, Nastrond 360, Stardiver 620, Wyrmwind Thrust 420; AoE: Doom Spike 110, Sonic Thrust 120 and Coerthan Torment 150 in combo, which grants Draconian Fire for Draconian Fury (130); auto-attacks 90 at 2.80s. Gear: The Balance's set for the tier (Strength ${V.stats.main.toLocaleString()}).</p>`;
     }
   }
 

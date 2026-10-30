@@ -19,6 +19,7 @@
       barsByJob: {},
       binds: B.DEFAULT_BINDS.map(r => r.slice()),
       barsSeenV: 2,
+      compV: 1,
     };
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
@@ -27,6 +28,7 @@
       for (const k of Object.keys(B.DEFAULT_SETTINGS)) {
         if (k in s && typeof s[k] === typeof B.DEFAULT_SETTINGS[k]) store.settings[k] = s[k];
       }
+      if (saved.compV !== 1) store.settings.latencyComp = true;   // 2.42: NoClippy on by default, once for saved settings too
       if (typeof s.sps === 'number' && !store.settings.speed.blm) store.settings.speed.blm = s.sps;   // from 1.2.x
       if (saved.barsByJob && typeof saved.barsByJob === 'object') store.barsByJob = saved.barsByJob;
       else if (saved.bars) store.barsByJob['blm:ew65'] = saved.bars;                                  // from 1.x

@@ -4,7 +4,8 @@
 // is Holy in White, Black is Comet in Black. Motifs (3s casts, instant out of combat) paint a creature (Pom → Wing →
 // Claw → Maw), a hammer and a starry sky; Living Muse (three charges) summons the creature and builds Mog of the Ages
 // and Retribution of the Madeen; Striking Muse readies three Hammer strikes (critical direct hits); Starry Muse (+5% for
-// 20s) gives five Hyperphantasia stacks (25% faster spells), then Rainbow Bright (an instant Rainbow Drip) and Star Prism.
+// 20s) grants Starstruck (Star Prism) and five Hyperphantasia stacks (25% faster spells); spending all five grants
+// Rainbow Bright (an instant Rainbow Drip).
 //  - 7.0–7.05: the launch potencies; you paint every motif yourself before the pull.
 //  - 7.1–7.57: a pom, a hammer and a starry sky are already painted when a duty starts (and after a reset); the 7.2
 //    rework and 7.3's partial revert give the 7.57 numbers.
@@ -14,12 +15,12 @@
   const EPS = 1e-6;
   const VERSIONS = {
     dt71: { label: 'Dawntrail 7.1–7.57', history: 'DT 7.1–7.57', rgb: [490, 530, 570], cym: [860, 900, 940], holy: 570, comet: 940, hammer: [560, 580, 600],
-      muse: 800, mog: 1000, madeen: 1100, prism: 1100, painted: true, tincture: 'intdt4', ref: 34110,
+      muse: 800, mog: 1000, madeen: 1100, prism: 1100, prismAoe: 0.3, painted: true, tincture: 'intdt4', ref: 34110,
       stats: { hp: 115000, main: 6513, wd: 158, det: 2287, crit: 3576, dh: 2230, speed: 420 },
       gear: 'The Balance\'s 7.4 xivgear set with the savage brush (Intelligence 6,513, 158 magic damage)',
       note: 'Level 100: motifs already painted when a duty starts, the 7.2 rework with 7.3\'s revert; Heavyweight gear' },
     dt70: { label: 'Dawntrail 7.0–7.05', history: 'DT 7.0–7.05', rgb: [440, 480, 520], cym: [800, 840, 880], holy: 520, comet: 880, hammer: [560, 620, 680],
-      muse: 1100, mog: 1300, madeen: 1400, prism: 1400, painted: false, tincture: 'intdt2', ref: 24720,
+      muse: 1100, mog: 1300, madeen: 1400, prism: 1400, prismAoe: 0.4, painted: false, tincture: 'intdt2', ref: 24720,
       stats: { hp: 95000, main: 4883, wd: 146, det: 2269, crit: 3140, dh: 1993, speed: 420 },
       gear: 'The Balance\'s 7.05 set (Intelligence 4,883, 146 magic damage)',
       note: 'Level 100, the painter\'s debut: every motif painted by hand before the pull, the launch potencies; Light-heavyweight gear' },
@@ -44,7 +45,7 @@
       holyInWhite: spell({ name: 'Holy in White', potency: V.holy, mp: 300, aoe: 0.35, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.holy} to target and all enemies nearby it.\nWhite Paint Cost: 1\n※Changes to Comet in Black with Black Paint.` }),
       cometInBlack: spell({ name: 'Comet in Black', potency: V.comet, mp: 400, recast: 3.3, aoe: 0.35, fx: 'gnbDouble', desc: `Deals darkness damage with a potency of ${V.comet} to target and all enemies nearby it.\nBlack Paint Cost: 1\nRecast: 3.3s` }),
       rainbowDrip: spell({ name: 'Rainbow Drip', potency: 1000, cast: 4, recast: 6, mp: 400, aoe: 0.15, fx: 'gnbZone', desc: 'Deals unaspected damage with a potency of 1,000 to all enemies in a straight line before you, 85% less for the rest.\nAdditional Effect: Increases White Paint by 1\nCast 4s, recast 6s (instant and 2.5s under Rainbow Bright).' }),
-      starPrism: spell({ name: 'Star Prism', potency: V.prism, mp: 0, aoe: 0.3, ready: 'starstruck', fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.prism} to target and all enemies nearby it.\nCan only be executed while under the effect of Starstruck.` }),
+      starPrism: spell({ name: 'Star Prism', potency: V.prism, mp: 0, aoe: V.prismAoe, ready: 'starstruck', fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.prism.toLocaleString('en-US')} for the first enemy, and ${Math.round((1 - V.prismAoe) * 100)}% less for all remaining enemies.\nAdditional Effect: Restores HP of all party members within 30 yalms of target\nCure Potency: 400\nCan only be executed while under the effect of Starstruck.\nConsumes a stack of Hyperphantasia if available upon execution.` }),
       hammerStamp: spell({ name: 'Hammer Stamp', potency: V.hammer[0], mp: 0, hammer: true, aoe: 0.3, fx: 'gnbDouble', desc: `Delivers a critical direct hit with a potency of ${V.hammer[0]}.\nCan only be executed while under the effect of Hammer Time.\n※Changes to Hammer Brush (${V.hammer[1]}), then Polishing Hammer (${V.hammer[2]}).` }),
       hammerBrush: spell({ name: 'Hammer Brush', potency: V.hammer[1], mp: 0, hammer: true, aoe: 0.3, fx: 'gnbDouble', desc: `Delivers a critical direct hit with a potency of ${V.hammer[1]}.` }),
       polishingHammer: spell({ name: 'Polishing Hammer', potency: V.hammer[2], mp: 0, hammer: true, aoe: 0.3, fx: 'gnbDouble', desc: `Delivers a critical direct hit with a potency of ${V.hammer[2]}.` }),
@@ -61,7 +62,7 @@
       mogOfTheAges: ab({ name: 'Mog of the Ages', recast: 30, cdGroup: 'portrait', potency: V.mog, target: true, range: 25, aoe: 0.3, delay: 0.9, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.mog} to all enemies in a straight line before you.\nCan only be executed while the Moogle Portrait is ready.\nShares a recast timer with Retribution of the Madeen.` }),
       retributionOfTheMadeen: ab({ name: 'Retribution of the Madeen', recast: 30, cdGroup: 'portrait', potency: V.madeen, target: true, range: 25, aoe: 0.3, delay: 0.9, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.madeen} to all enemies in a straight line before you.\nCan only be executed while the Madeen Portrait is ready.` }),
       strikingMuse: ab({ name: 'Striking Muse', recast: 60, charges: 2, desc: 'Grants 3 stacks of Hammer Time, for Hammer Stamp, Hammer Brush and Polishing Hammer.\nDuration: 30s\nRequires a painted hammer; in combat only.\nMaximum Charges: 2' }),
-      starryMuse: ab({ name: 'Starry Muse', recast: 120, desc: 'Increases damage dealt by self and nearby party members by 5%.\nDuration: 20s\nAdditional Effect: Grants Subtractive Spectrum and 5 stacks of Hyperphantasia (paint spells cast and recast 25% faster)\nDuration: 30s\nAdditional Effect: Grants Rainbow Bright (30s) and Starstruck (20s) once all 5 stacks are spent\nRequires a painted starry sky; in combat only.' }),
+      starryMuse: ab({ name: 'Starry Muse', recast: 120, desc: 'Increases damage dealt by self and nearby party members by 5%.\nDuration: 20s\nAdditional Effect: Grants Subtractive Spectrum\nDuration: 30s\nAdditional Effect: Grants Inspiration and 5 stacks of Hyperphantasia\nInspiration Effect: Reduces cast time and recast time of Star Prism and aetherhue spells by 25%\nDuration: 30s\nAdditional Effect: Grants Rainbow Bright upon consuming all 5 stacks of Hyperphantasia\nDuration: 30s\nAdditional Effect: Grants Starstruck\nDuration: 20s\nCan only be executed while in combat and when a starry sky is painted on the Landscape Canvas.' }),
       subtractivePalette: ab({ name: 'Subtractive Palette', recast: 1, desc: 'Grants 3 stacks of Subtractive Palette: Fire / Aero / Water become Blizzard in Cyan / Stone in Yellow / Thunder in Magenta.\nAdditional Effect: Grants Monochrome Tones (a White Paint becomes Black)\nPalette Gauge Cost: 50 (none under Subtractive Spectrum)' }),
       temperaCoat: ab({ name: 'Tempera Coat', recast: 120, desc: 'Creates a barrier around self that absorbs damage totaling 20% of maximum HP.\nDuration: 10s' }),
       smudge: ab({ name: 'Smudge', recast: 20, desc: 'Dashes 15 yalms forward.' }),
@@ -216,7 +217,7 @@
       if (HYPER[id] && e.has('hyperphantasia')) {
         const s = e.statuses.hyperphantasia;
         s.stacks = (s.stacks || 1) - 1;
-        if (s.stacks <= 0) { e.removeStatus('hyperphantasia'); e.addStatus('rainbowBright', 30); e.addStatus('starstruck', 20); }
+        if (s.stacks <= 0) { e.removeStatus('hyperphantasia'); e.addStatus('rainbowBright', 30); }
         else e.emit('statusStack', { key: 'hyperphantasia' });
       }
       if (a.hammer) {
@@ -243,6 +244,7 @@
         case 'starryMuse':
           g.landscape = false;
           e.addStatus('starryMuse', 20); e.addStatus('subtractiveSpectrum', 30); e.addStatus('hyperphantasia', 30, { stacks: 5 });
+          e.addStatus('starstruck', 20);
           break;
         case 'subtractivePalette':
           if (e.has('subtractiveSpectrum')) e.removeStatus('subtractiveSpectrum'); else g.palette -= 50;
@@ -313,7 +315,7 @@
       return `
 <h3>How it plays (${V.label})</h3>
 <p>Level 100 Pictomancer. <b>Fire in Red → Aero in Green → Water in Blue</b> (${V.rgb.join(' / ')}; each opens the next for 30s) is the filler; Water adds 25 Palette and a White Paint. At 50 Palette, <b>Subtractive Palette</b> turns the next three into <b>Blizzard in Cyan → Stone in Yellow → Thunder in Magenta</b> (${V.cym.join(' / ')}, 2.3s casts on a 3.3s GCD) and a White Paint into Black. Spend White on <b>Holy in White</b> (${V.holy}, instant: use it to move) and Black on <b>Comet in Black</b> (${V.comet}).</p>
-<p>Motifs (3s casts, instant out of combat) paint the canvases. A creature (Pom → Wing → Claw → Maw) is summoned with <b>Living Muse</b> (${V.muse}, three charges); Wing completes <b>Mog of the Ages</b> (${V.mog}), Maw <b>Retribution of the Madeen</b> (${V.madeen}). A hammer for <b>Striking Muse</b>: three Hammer strikes (${V.hammer.join(' / ')}), each a critical direct hit. A starry sky for <b>Starry Muse</b> (120s): +5% for 20s, a free Subtractive Palette, and five Hyperphantasia stacks (25% faster paint spells); using them all gives <b>Rainbow Bright</b> (an instant <b>Rainbow Drip</b>, 1,000) and <b>Star Prism</b> (${V.prism}). Repaint motifs during downtime or after the burst.${V.painted ? ' From 7.1 a pom, a hammer and a starry sky are already on the canvas when the duty starts.' : ' In 7.0 you paint them yourself before the pull.'}</p>
+<p>Motifs (3s casts, instant out of combat) paint the canvases. A creature (Pom → Wing → Claw → Maw) is summoned with <b>Living Muse</b> (${V.muse}, three charges); Wing completes <b>Mog of the Ages</b> (${V.mog}), Maw <b>Retribution of the Madeen</b> (${V.madeen}). A hammer for <b>Striking Muse</b>: three Hammer strikes (${V.hammer.join(' / ')}), each a critical direct hit. A starry sky for <b>Starry Muse</b> (120s): +5% for 20s, a free Subtractive Palette, five Hyperphantasia stacks (25% faster paint spells) and <b>Star Prism</b> (${V.prism}) right away; using all five stacks gives <b>Rainbow Bright</b> (an instant <b>Rainbow Drip</b>, 1,000). Repaint motifs during downtime or after the burst.${V.painted ? ' From 7.1 a pom, a hammer and a starry sky are already on the canvas when the duty starts.' : ' In 7.0 you paint them yourself before the pull.'}</p>
 <h3>The opener (The Balance)</h3>
 ${seq(['rainbowDrip', 'strikingMuse', 'holyInWhite', ['tincture'], ['livingMuse'], 'creatureMotif', ['starryMuse'], 'hammerStamp', ['subtractivePalette'], 'blizzardInCyan', 'blizzardInCyan', 'blizzardInCyan', 'holyInWhite', ['livingMuse'], ['mogOfTheAges'], 'starPrism', 'hammerStamp', 'hammerStamp', 'rainbowDrip', 'fireInRed', ['swiftcast'], 'creatureMotif', ['livingMuse']])}
 <p>${V.painted ? 'Rainbow Drip hardcast at −4.5s; the motifs are already painted.' : 'Paint the creature, hammer and starry sky motifs before the pull (instant out of combat), then Rainbow Drip at −4.5s.'} The Cyan button plays Blizzard, Stone and Thunder in turn, the Hammer button Stamp, Brush and Polishing, and Holy becomes Comet with Black Paint.</p>

@@ -359,7 +359,7 @@ window.BLM = window.BLM || {};
     versions: {},         // job id -> version id
     speed: {},            // job id -> spell / skill speed
     ping: 70,             // ms; the vanilla client adds it to every lock
-    latencyComp: false,   // NoClippy / XivAlexander
+    latencyComp: true,    // NoClippy / XivAlexander (most players run one); off is the vanilla client
     volume: 0.5,
     pullLength: 0,        // seconds, 0 = until you stop
     countdown: 15,
