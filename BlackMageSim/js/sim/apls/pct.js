@@ -32,7 +32,7 @@ actions+=/holyInWhite,if=time<3
 actions+=/hammerStamp,if=buff.hammerTime.remains<buff.hammerTime.stacks*2.5+1
 actions+=/starPrism
 actions+=/rainbowDrip,if=buff.rainbowBright.up
-actions+=/hammerStamp,if=buff.subtractiveSpectrum.up&!buff.subtractivePalette.up
+actions+=/hammerStamp,if=buff.hyperphantasia.stacks>=5&is.hammerStamp.hammerStamp
 actions+=/cometInBlack,if=buff.hyperphantasia.up|cd.starryMuse.remains>var.hold|gauge.white>=4
 actions+=/call_action_list,name=aoe,if=targets>=3
 actions+=/blizzardInCyan,if=buff.hyperphantasia.up|buff.starryMuse.up
@@ -48,5 +48,5 @@ actions+=/starrySkyMotif,if=!buff.starryMuse.up&cd.starryMuse.remains<var.sky
 actions+=/holyInWhite,if=gauge.white>=5
 actions+=/fireInRed
 
-actions.aoe=/holyInWhite,if=gauge.white>=2
+actions.aoe=/holyInWhite
 `;

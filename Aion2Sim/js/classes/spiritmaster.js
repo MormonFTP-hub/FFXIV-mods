@@ -60,7 +60,7 @@
     coldShock: {anim: 0.6, range: 20},
     combustion: {anim: 0.7, range: 20},
     jointstrikeCurse: {anim: 0.7, range: 20, dot: {name: 'Curse', every: 1, dur: 5, base: 148, atk: 150, scale: true},
-                       onHit(sim, ev, o) { if (!o.hitIndex) joint(sim, ev.s); }, specs: {0: {mod: {dotDur: 2}}}},
+                       onHit(sim, ev, o) { if (!o.hitIndex && !o.proc) joint(sim, ev.s); }, specs: {0: {mod: {dotDur: 2}}}},
     rapidScattershot: {anim: 0.55, range: 20, needs: 'stagger'},
     dimensionalControl: {anim: 0.6, range: 20, procWindow: 4, when: (sim) => sim.procOn('dimensionalControl') || 'Opens for a moment each time a spirit uses its skill', inflicts: {slow: 3}},
     soulsCry: {anim: 0.8, range: 20},
@@ -71,9 +71,9 @@
     },
     cursedCloud: {anim: 0.8, range: 20, dot: {name: 'Cursed Cloud', every: 1, dur: 10, base: 1203, atk: 210, scale: true}, specs: {1: {mod: {dotDur: 10}}}},
     jointstrikeCorrode: {anim: 0.8, range: 20, dot: {name: 'Corrode', every: 1, dur: 20, base: 859, atk: 150, scale: true},
-                         onHit(sim, ev, o) { if (!o.hitIndex) joint(sim, ev.s); }, specs: {2: {mod: {dotDur: 10}}}},
+                         onHit(sim, ev, o) { if (!o.hitIndex && !o.proc) joint(sim, ev.s); }, specs: {2: {mod: {dotDur: 10}}}},
     jointstrikeDestructiveAttack: {anim: 0.9, range: 20, onHit(sim, ev, o) {
-      if (o.hitIndex) return;
+      if (o.hitIndex || o.proc) return;
       joint(sim, ev.s);
       if (on(ev.s, 3)) { sim.p.cds.jointstrikeCurse = sim.t; sim.p.cds.jointstrikeCorrode = sim.t; }
     }, specs: {3: {hook: true}}},
