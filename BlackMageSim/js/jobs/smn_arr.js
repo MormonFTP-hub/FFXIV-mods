@@ -117,6 +117,6 @@ ${seq([['ragingStrikes'], ['tincture'], 'bio2', 'miasma', 'bio', ['fester'], 'th
   B.registerJob({
     id: 'smn', name: 'Summoner', abbr: 'SMN', role: 'caster', classJob: 27,
     versions: [{ id: 'arr21', label: 'A Realm Reborn 2.1–2.57', history: 'ARR 2.1–2.57', note: 'Level 50: three DoTs and Ruin, Aetherflow for Fester and Energy Drain, egis with Rouse and Spur, Contagion; a small MP pool; Final Coil gear', create: () => new SummonerARR() },
-      { id: 'arr20', label: 'A Realm Reborn 2.0–2.05', history: 'ARR 2.0–2.05', note: 'Level 50 at launch: Thunder as a fourth DoT, a 3s Aerial Slash, Enkindle every five minutes, steeper MP; Binding Coil gear', create: () => new SummonerARR20() }],
+      { id: 'arr20', label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', note: 'Level 50 at launch: Thunder as a fourth DoT, a 3s Aerial Slash, Enkindle every five minutes, steeper MP; Binding Coil gear', create: () => new SummonerARR20() }],
   });
 })(window.BLM);

@@ -20,7 +20,7 @@
       stats: { hp: 90000, main: 5526, wd: 134, det: 3113, crit: 4077, dh: 380, speed: 1530, ten: 892 },
       gear: 'The Balance\'s 5.4 Eden\'s Promise set at 2.38 (Strength 5,526, 134 weapon damage), with a Grade 4 Tincture',
       note: 'Level 80: Storm\'s Eye stacks to 60s and Inner Release adds 15s to it, 5.5\'s Maim 320 and Storm\'s Path / Eye 420; Eden\'s Promise gear' },
-    shb51: { label: 'Shadowbringers 5.1–5.21', history: 'ShB 5.1–5.21', vengeance: 15, holmgang: 8, raw: 6, reprisal: 10, tincture: 'str3', gcd: 2.38, ref: 11050,
+    shb51: { label: 'Shadowbringers 5.1–5.25', history: 'ShB 5.1–5.25', vengeance: 15, holmgang: 8, raw: 6, reprisal: 10, tincture: 'str3', gcd: 2.38, ref: 11050,
       stats: { hp: 86000, main: 4789, wd: 128, det: 2633, crit: 3898, dh: 380, speed: 1538, ten: 1109 },
       gear: 'an Eden\'s Verse set at 2.38 (Strength 4,789, 128 weapon damage), with a Grade 3 Tincture',
       note: 'Level 80: Storm\'s Eye refreshed to 30s, Inner Release (10s, 90s) makes every hit a free critical direct hit, Infuriate into Inner Chaos; Eden\'s Verse gear' },

@@ -10,7 +10,7 @@
 //    Fire IV / Blizzard IV 310, Despair 340 (a 3s cast), Paradox 500, High Thunder 200 + 55 × 30s, Enochian ×1.30.
 //  - 7.05: Paradox from Astral Fire III into ice as well, in both elements (in ice: free, +1 Umbral Ice); Fire IV /
 //    Blizzard IV 320, Despair 350, Paradox 520, High Thunder 150 + 60, Enochian ×1.33; Flare 30% less for the rest.
-//  - 7.1–7.1x: Despair instant, Flare a 3s cast, Ley Lines two charges (not while one is down), Enochian ×1.32.
+//  - 7.1–7.18: Despair instant, Flare a 3s cast, Ley Lines two charges (not while one is down), Enochian ×1.32.
 //  - 7.2–7.57: Astral Fire, Umbral Ice, Firestarter and Thunderhead never run out; Fire, Blizzard, Fire IV, Blizzard IV,
 //    Freeze, Flare and Flare Star 2s casts; Fire IV / Blizzard IV 300, Fire III / Blizzard III 290, Xenoglossy 890,
 //    Paradox 540 (no element change), Flare Star 500, Foul 25% less for the rest, Ley Lines 20s, Enochian ×1.27.
@@ -27,12 +27,12 @@
       tincture: 'intdt4', ref: 40200, stats: { hp: 205237, main: 6512, wd: 158, det: 1951, crit: 1227, dh: 1968, speed: 3367 },
       gear: 'The Balance\'s 7.4 2.15 high spell speed set (Intelligence 6,512, 158 weapon damage), with a Grade 4 Gemdraught',
       note: 'Level 100: Astral Fire and Umbral Ice never run out; 2s casts, Flare Star 500, Paradox 540, Ley Lines 20s with two charges; the 7.4 savage set' },
-    dt71: { label: 'Dawntrail 7.1–7.1x', history: 'DT 7.1–7.1x', timers: true, fast: false, f4: 320, f3: 280, despair: 350, despairCast: 0, para: 520,
+    dt71: { label: 'Dawntrail 7.1–7.18', history: 'DT 7.1–7.18', timers: true, fast: false, f4: 320, f3: 280, despair: 350, despairCast: 0, para: 520,
       paraFromAF: true, paraUi: true, xeno: 880, foulAoe: 0.4, flareCast: 3, flareAoe: 0.7, fs: 400, fsCast: 3, ht: [150, 60], eno: 1.32, ley: [2, 30],
       tincture: 'intdt2', ref: 25700, stats: { hp: 135496, main: 4882, wd: 146, det: 2050, crit: 3271, dh: 1508, speed: 1047 },
       gear: 'The Balance\'s 7.15 2.42 set with Chaotic gear and the FRU weapon (Intelligence 4,882, 146 weapon damage), with a Grade 2 Gemdraught',
       note: 'Level 100: an instant Despair, Flare a 3s cast, Ley Lines with two charges, Paradox in both elements; 7.05 savage gear with the FRU weapon' },
-    dt705: { label: 'Dawntrail 7.05', history: 'DT 7.05', timers: true, fast: false, f4: 320, f3: 280, despair: 350, despairCast: 3, para: 520,
+    dt705: { label: 'Dawntrail 7.05–7.05', history: 'DT 7.05–7.05', timers: true, fast: false, f4: 320, f3: 280, despair: 350, despairCast: 3, para: 520,
       paraFromAF: true, paraUi: true, xeno: 880, foulAoe: 0.4, flareCast: 4, flareAoe: 0.7, fs: 400, fsCast: 3, ht: [150, 60], eno: 1.33, ley: [1, 30],
       tincture: 'intdt2', ref: 26500, stats: { hp: 135496, main: 4882, wd: 146, det: 1572, crit: 3321, dh: 1882, speed: 1047 },
       gear: 'The Balance\'s 7.05 2.42 set (Intelligence 4,882, 146 weapon damage), with a Grade 2 Gemdraught',

@@ -24,7 +24,7 @@
       stats: { hp: 7500, main: 578, wd: 77, det: 267, crit: 431, speed: 509, piety: 349, delay: 3.36 },
       gear: 'a Second Coil set with the High Allagan Crook (Mind 578, 77 magic damage)',
       note: 'Level 50: Cleric Stance, Stone II with Aero and Aero II, Presence of Mind 10s every five minutes; Second Coil gear' },
-    arr20: { label: 'A Realm Reborn 2.0', history: 'ARR 2.0', holy: 240, pom: [300, 10], maxMp: 4212, potion: 67, thunder: true, ref: 195,
+    arr20: { label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', holy: 240, pom: [300, 10], maxMp: 4212, potion: 67, thunder: true, ref: 195,
       stats: { hp: 6500, main: 498, wd: 69, det: 287, crit: 396, speed: 415, piety: 360, delay: 3.44 },
       gear: 'the Binding Coil i90 set with Thyrus Zenith (Mind 498, 69 magic damage)',
       note: 'Level 50 at launch: Thunder as a third DoT, Holy 240, Presence of Mind 10s every five minutes; Binding Coil gear' },

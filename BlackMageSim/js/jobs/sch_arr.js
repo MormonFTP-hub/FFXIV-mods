@@ -88,6 +88,6 @@ ${seq([['clericStance'], 'bio2', 'miasma', ['tincture'], 'bio', 'thunder', ['swi
   B.registerJob({
     id: 'sch', name: 'Scholar', abbr: 'SCH', role: 'healer', classJob: 28,
     versions: [{ id: 'arr21', label: 'A Realm Reborn 2.1–2.57', history: 'ARR 2.1–2.57', note: 'Level 50: Cleric Stance, Ruin with Bio, Bio II and Miasma, Energy Drain on Aetherflow, Bane, the faerie; a small MP pool; Final Coil gear', create: () => new ScholarARR() },
-      { id: 'arr20', label: 'A Realm Reborn 2.0', history: 'ARR 2.0', note: 'Level 50 at launch: Thunder as a fourth DoT, steeper Ruin and Bio II costs, Energy Drain on Aetherflow; Binding Coil gear', create: () => new ScholarARR20() }],
+      { id: 'arr20', label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', note: 'Level 50 at launch: Thunder as a fourth DoT, steeper Ruin and Bio II costs, Energy Drain on Aetherflow; Binding Coil gear', create: () => new ScholarARR20() }],
   });
 })(window.BLM);

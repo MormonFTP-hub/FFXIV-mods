@@ -30,7 +30,7 @@
       stats: { hp: 226628, main: 6490, wd: 158, det: 2426, crit: 3605, dh: 1523, speed: 959 },
       gear: 'The Balance\'s 7.4 savage set at 1.94 (Strength 6,490, 158 weapon damage), with a Grade 4 Gemdraught',
       note: 'Level 100: the Fury counters (Leaping Opo, Rising Raptor, Pouncing Coeurl), Elixir Burst and Phantom Rush 1,500, Fire\'s Reply and Wind\'s Reply, a 10-chakra Brotherhood; the 7.4 savage set' },
-    dt70: { label: 'Dawntrail 7.0', history: 'DT 7.0', tincture: 'strdt1', ref: 20400, medLock: false, pbLock: true, dkAnyForm: true,
+    dt70: { label: 'Dawntrail 7.0–7.0', history: 'DT 7.0–7.0', tincture: 'strdt1', ref: 20400, medLock: false, pbLock: true, dkAnyForm: true,
       fury: { opo: [1, 200], raptor: [2, 150], coeurl: [3, 100] }, twin: 380, raptorP: 330, demo: 340, pounce: 340,
       celestial: 450, phantom: 1400, elixir: 900, phoenix: 900, wind: 800, fire: 1100, aoe: [1, 0.5], aoeBlitz: [1, 0.3], enlight: 170, aoeWs: [110, 120, 130],
       stats: { hp: 129800, main: 4346, wd: 141, det: 2308, crit: 2158, dh: 2222, speed: 582 },

@@ -120,6 +120,6 @@ ${seq([['perfectBalance'], 'demolish', ['bloodForBlood'], 'snapPunch', ['interna
   B.registerJob({
     id: 'mnk', name: 'Monk', abbr: 'MNK', role: 'melee', classJob: 20,
     versions: [{ id: 'arr21', label: 'A Realm Reborn 2.1–2.57', history: 'ARR 2.1–2.57', note: 'Level 50 on TP: Greased Lightning 27% for 12s and positionals, Touch of Death and Demolish, Perfect Balance every 240s; no Tornado Kick or chakra; Final Coil gear', create: () => new MonkARR() },
-      { id: 'arr20', label: 'A Realm Reborn 2.0', history: 'ARR 2.0', note: 'Level 50 at launch: Greased Lightning 7/14/21% for 12s, Demolish only a DoT, True Strike\'s rear crit bonus, Shoulder Tackle 90s, Blood for Blood +20%; Binding Coil gear', create: () => new MonkARR20() }],
+      { id: 'arr20', label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', note: 'Level 50 at launch: Greased Lightning 7/14/21% for 12s, Demolish only a DoT, True Strike\'s rear crit bonus, Shoulder Tackle 90s, Blood for Blood +20%; Binding Coil gear', create: () => new MonkARR20() }],
   });
 })(window.BLM);

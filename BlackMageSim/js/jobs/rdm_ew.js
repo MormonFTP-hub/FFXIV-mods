@@ -1,11 +1,11 @@
-// Red Mage, Endwalker 6.0–6.58 (level 90) and Dawntrail 7.0–7.01, 7.05–7.3x and 7.4–7.57 (level 100). Built on the Shadowbringers class
+// Red Mage, Endwalker 6.0–6.58 (level 90) and Dawntrail 7.0–7.01, 7.05–7.38 and 7.4–7.57 (level 100). Built on the Shadowbringers class
 // (rdm_shb.js) for Dualcast, the Balance Gauge and the imbalance rule, with the 6.0 rework: Verthunder III / Veraero III
 // (+6), Verfire / Verstone (+5), Jolt (+2 each); a cheaper melee combo (20 / 15 / 15) whose steps each add a Mana Stack,
 // and three stacks turn Verthunder III / Veraero III into Verflare / Verholy (+11), then Scorch and Resolution; Embolden
 // a flat +5% to your magic; Manafication +5% magic for your next six GCDs; Acceleration two charges, each making the
 // next Verthunder III / Veraero III / Impact instant with a sure proc.
 //  - EW 6.0–6.58: Manafication also gives 50|50 mana. The 6.58 numbers (6.28 raised the melee, 6.5 the rest).
-//  - DT 7.05–7.3x: Jolt III; Manafication gives no mana but three Magicked Swordplay stacks (free enchanted melee, 30s
+//  - DT 7.05–7.38: Jolt III; Manafication gives no mana but three Magicked Swordplay stacks (free enchanted melee, 30s
 //    from 7.05) and, once its six stacks are used, Prefulgence (1,200); Embolden opens Vice of Thorns (900) and
 //    Acceleration Grand Impact (600). The 7.3x numbers.
 //  - DT 7.0–7.01: Magicked Swordplay lasts 15s; Verthunder / Veraero III 420, Verflare / Verholy 620, Scorch 700,
@@ -22,7 +22,7 @@
       stats: { hp: 70000, main: 3379, wd: 132, det: 1601, crit: 2514, dh: 1616, speed: 502 },
       gear: 'The Balance\'s 6.5 set at 2.48 (Intelligence 3,379, 132 magic damage)',
       note: 'Level 90: Mana Stacks into Verflare / Verholy, Scorch and Resolution, Manafication\'s 50|50 and six +5% GCDs, a flat 5% Embolden, two Accelerations; Anabaseios gear' },
-    dt705: { label: 'Dawntrail 7.05–7.3x', history: 'DT 7.05–7.3x', level: 100, dt: true, jolt: ['jolt3', 'Jolt III', 360], ver: 440, proc: 380, fin: 650, scorch: 750, res: 850,
+    dt705: { label: 'Dawntrail 7.05–7.38', history: 'DT 7.05–7.38', level: 100, dt: true, jolt: ['jolt3', 'Jolt III', 360], ver: 440, proc: 380, fin: 650, scorch: 750, res: 850,
       melee: [340, 380, 560], meleeBase: [190, 190], fleche: 480, contre: 420, swift: 40, combo: 30, manaDur: 30, tincture: 'intdt3', ref: 31770, model: 'rdm-dt',
       stats: { hp: 110000, main: 5643, wd: 152, det: 2566, crit: 3399, dh: 1764, speed: 420 },
       gear: 'The Balance\'s 7.2 xivgear "2.5 BiS" (Intelligence 5,643, 152 magic damage)',

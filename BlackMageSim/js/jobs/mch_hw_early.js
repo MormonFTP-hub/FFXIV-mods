@@ -27,7 +27,7 @@
       stats: { hp: 21000, main: 1030, wd: 68, det: 480, crit: 780, speed: 430 },
       gear: 'a rough Alexander: Gordias Savage set (Dexterity 1,030, the Gordian Musketoon: 68 weapon damage)',
       note: 'Level 60: the instant +30% Gauss Barrel, but Quick Reload on a 30s recast for 50 TP; Gauss Round 180, a 15s Hypercharge, rounds lost after 30s; Gordias gear' },
-    hw30: { label: 'Heavensward 3.0', history: 'HW 3.0', early: true, barrelGcd: true, qr: [30, 50], potion: ['Draconian Potion of Dexterity', 105], ref: 1120,
+    hw30: { label: 'Heavensward 3.0–3.0', history: 'HW 3.0–3.0', early: true, barrelGcd: true, qr: [30, 50], potion: ['Draconian Potion of Dexterity', 105], ref: 1120,
       stats: { hp: 15500, main: 870, wd: 65, det: 420, crit: 542, speed: 581 },
       gear: 'launch gear (i170 Yasha law with the Hive Musketoon from Ravana Extreme: Dexterity about 870, 65 weapon damage)',
       note: 'Level 60 at launch: the Gauss Barrel a 3s-cast GCD worth +20%, Gauss Round 200, Ricochet 100 + 300, Quick Reload 30s for 50 TP; launch gear' },

@@ -132,7 +132,7 @@ BLM.JOB_HISTORY = {
 "role": "tank",
 "versions": [
 {
-"label": "ARR 2.0",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -204,7 +204,7 @@ BLM.JOB_HISTORY = {
 "why": "One stance and Inner Chaos; simple but very satisfying."
 },
 {
-"label": "ShB 5.1–5.21",
+"label": "ShB 5.1–5.25",
 "start": "2019-10-29",
 "end": "2020-08-10",
 "minor": false,
@@ -240,7 +240,7 @@ BLM.JOB_HISTORY = {
 "why": "Same kit; Inner Release only on Fell Cleave and Decimate."
 },
 {
-"label": "DT 7.0",
+"label": "DT 7.0–7.0",
 "start": "2024-07-02",
 "end": "2024-07-15",
 "minor": false,
@@ -441,7 +441,7 @@ BLM.JOB_HISTORY = {
 "role": "healer",
 "versions": [
 {
-"label": "ARR 2.0",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -592,7 +592,7 @@ BLM.JOB_HISTORY = {
 "role": "healer",
 "versions": [
 {
-"label": "ARR 2.0",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -725,7 +725,7 @@ BLM.JOB_HISTORY = {
 "why": "Card launch; heavy RNG."
 },
 {
-"label": "HW 3.05",
+"label": "HW 3.05–3.05",
 "start": "2015-07-21",
 "end": "2015-08-24",
 "minor": false,
@@ -797,7 +797,7 @@ BLM.JOB_HISTORY = {
 "why": "Same beloved SB card game."
 },
 {
-"label": "SB 4.3–4.38",
+"label": "SB 4.3–4.36",
 "start": "2018-05-22",
 "end": "2018-09-17",
 "minor": false,
@@ -869,7 +869,7 @@ BLM.JOB_HISTORY = {
 "why": "Crown Play removed; a little cleaner."
 },
 {
-"label": "DT 7.0",
+"label": "DT 7.0–7.0",
 "start": "2024-07-02",
 "end": "2024-07-15",
 "minor": false,
@@ -878,7 +878,7 @@ BLM.JOB_HISTORY = {
 "why": "Card rework to Play I/II/III; Lightspeed down to 1 charge; criticized."
 },
 {
-"label": "DT 7.01",
+"label": "DT 7.01–7.01",
 "start": "2024-07-16",
 "end": "2024-07-29",
 "minor": false,
@@ -964,7 +964,7 @@ BLM.JOB_HISTORY = {
 "role": "melee",
 "versions": [
 {
-"label": "ARR 2.0",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -1081,7 +1081,7 @@ BLM.JOB_HISTORY = {
 "why": "Riddle of Earth rework; liked."
 },
 {
-"label": "DT 7.0",
+"label": "DT 7.0–7.0",
 "start": "2024-07-02",
 "end": "2024-07-15",
 "minor": false,
@@ -1106,7 +1106,7 @@ BLM.JOB_HISTORY = {
 "role": "melee",
 "versions": [
 {
-"label": "ARR 2.0",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -1178,7 +1178,7 @@ BLM.JOB_HISTORY = {
 "why": "Eyes, Life of the Dragon and Mirage Dive; Dragoon's most loved form."
 },
 {
-"label": "ShB 5.0",
+"label": "ShB 5.0–5.0",
 "start": "2019-07-02",
 "end": "2019-07-14",
 "minor": false,
@@ -1483,7 +1483,7 @@ BLM.JOB_HISTORY = {
 "why": "MP-draining song toggles; nostalgic but clunky."
 },
 {
-"label": "HW 3.0",
+"label": "HW 3.0–3.0",
 "start": "2015-06-23",
 "end": "2015-07-06",
 "minor": false,
@@ -1571,7 +1571,7 @@ BLM.JOB_HISTORY = {
 "role": "ranged",
 "versions": [
 {
-"label": "HW 3.0",
+"label": "HW 3.0–3.0",
 "start": "2015-06-23",
 "end": "2015-07-06",
 "minor": false,
@@ -1625,7 +1625,7 @@ BLM.JOB_HISTORY = {
 "why": "Heat gauge debut; rough edges."
 },
 {
-"label": "SB 4.05",
+"label": "SB 4.05–4.05",
 "start": "2017-07-17",
 "end": "2017-08-06",
 "minor": false,
@@ -1792,7 +1792,7 @@ BLM.JOB_HISTORY = {
 "why": "Polyglot and Foul arrive."
 },
 {
-"label": "SB 4.05–4.1x",
+"label": "SB 4.05–4.18",
 "start": "2017-07-17",
 "end": "2018-01-29",
 "minor": false,
@@ -1837,7 +1837,7 @@ BLM.JOB_HISTORY = {
 "why": "Thunderhead and the Manafont rework; mixed to negative."
 },
 {
-"label": "DT 7.05",
+"label": "DT 7.05–7.05",
 "start": "2024-07-30",
 "end": "2024-11-11",
 "minor": false,
@@ -1846,7 +1846,7 @@ BLM.JOB_HISTORY = {
 "why": "Paradox from Ice; still mixed."
 },
 {
-"label": "DT 7.1–7.1x",
+"label": "DT 7.1–7.18",
 "start": "2024-11-12",
 "end": "2025-03-24",
 "minor": false,
@@ -1871,7 +1871,7 @@ BLM.JOB_HISTORY = {
 "role": "caster",
 "versions": [
 {
-"label": "ARR 2.0–2.05",
+"label": "ARR 2.0–2.0",
 "start": "2013-08-27",
 "end": "2013-12-16",
 "minor": false,
@@ -2022,7 +2022,7 @@ BLM.JOB_HISTORY = {
 "why": "Magicked Swordplay arrives; short-lived."
 },
 {
-"label": "DT 7.05–7.3x",
+"label": "DT 7.05–7.38",
 "start": "2024-07-30",
 "end": "2025-12-15",
 "minor": false,

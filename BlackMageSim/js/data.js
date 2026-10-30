@@ -294,6 +294,7 @@ window.BLM = window.BLM || {};
     dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)
     mouseSpeed: 1,        // camera turn speed for mouse drags
+    jobView: 'expanded',  // the Job window: 'expanded' cards, or 'condensed' (every version on one grid)
   };
 
   // Rough dummy colour bands for a single target parse with no raid buffs, relative to the job's benchmark.

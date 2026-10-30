@@ -34,7 +34,7 @@
       stats: { hp: 6000, main: 580, wd: 53, det: 290, crit: 526, speed: 431, delay: 2.96 },
       gear: 'xiv-sim\'s 2014 Second Coil set with the High Allagan Spear (Strength 580, 53 weapon damage, 2.96 delay)',
       note: 'Level 50 on TP: positional Impulse Drive and Heavy Thrust, Full Thrust 330, Jump 40s, Spineshatter Dive 90s and Dragonfire Dive 180s; Second Coil gear' },
-    arr20: { label: 'A Realm Reborn 2.0', history: 'ARR 2.0', ft: 300, chaos: [160, 0, 20], phlebo: 20, anySide: false, heavy: 1.10,
+    arr20: { label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', ft: 300, chaos: [160, 0, 20], phlebo: 20, anySide: false, heavy: 1.10,
       jump: 40, spine: 90, dfd: 180, ls: 60, ps: 90, ir: 0.20, lock: 1.5, potion: ['Mega-Potion of Strength', 61], ref: 330,
       stats: { hp: 5000, main: 501, wd: 47, det: 336, crit: 486, speed: 449, delay: 2.96 },
       gear: 'an end-of-2.0 set with the Allagan Spear (Strength 501, 47 weapon damage, 2.96 delay)',

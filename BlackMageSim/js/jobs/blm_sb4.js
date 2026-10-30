@@ -1,6 +1,6 @@
 // Black Mage, early Stormblood at level 70, in two versions. Built on the 4.2–4.58 class (blm_sb.js) with what played
 // differently before 4.2: Fire IV 260, Firestarter and Thundercloud 12s, Transpose on a 12s recast.
-//  - 4.05–4.1x: as above.
+//  - 4.05–4.18: as above.
 //  - 4.0–4.01: also Fire IV and Blizzard IV 3.0s casts (2.8 from 4.05), Triplecast on 90s (60s from 4.05), Fire 1,440 MP,
 //    Blizzard IV 1,200 MP and Foul costing MP (about 240; the exact figure isn't recorded).
 // Numbers are 2017's job guide (Wayback), wiki and Gamer Escape revisions, the 4.05 / 4.2 / 4.4 patch notes and the 4.11
@@ -9,7 +9,7 @@
 (function (B) {
   const SB = B.BlackMageSB;
   const VERSIONS = {
-    sb405: { label: 'Stormblood 4.05–4.1x', history: 'SB 4.05–4.1x', cast: 2.8, triple: 60, fireMp: 1200, b4Mp: 960, foulMp: 0, ref: 5050,
+    sb405: { label: 'Stormblood 4.05–4.18', history: 'SB 4.05–4.18', cast: 2.8, triple: 60, fireMp: 1200, b4Mp: 960, foulMp: 0, ref: 5050,
       note: 'Level 70: Fire IV 260, 12s Firestarter / Thundercloud, a 12s Transpose, 60s Triplecast; Deltascape gear' },
     sb40: { label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', cast: 3.0, triple: 90, fireMp: 1440, b4Mp: 1200, foulMp: 240, ref: 4800,
       note: 'Level 70, the launch: 3s Fire IV and Blizzard IV, a 90s Triplecast, Foul costing MP, the job gauge and Polyglot debut' },

@@ -14,7 +14,7 @@
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.55, fx: 'gnbSlash' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const VERSIONS = {
-    dt70: { label: 'Dawntrail 7.0', history: 'DT 7.0', heavy: 220, path: [200, 480], chaos: 660, rend: 700, ruin: 740, ruinReady: 30, upheaval: 400, cyclone: 300, fall: 0.3,
+    dt70: { label: 'Dawntrail 7.0–7.0', history: 'DT 7.0–7.0', heavy: 220, path: [200, 480], chaos: 660, rend: 700, ruin: 740, ruinReady: 30, upheaval: 400, cyclone: 300, fall: 0.3,
       tincture: 'strdt1', ref: 14590,
       stats: { hp: 183476, main: 4263, wd: 141, det: 2048, crit: 2292, dh: 1351, speed: 751, ten: 1217 },
       gear: 'The Balance\'s 7.0 pre-raid set (Strength 4,263, 141 weapon damage, a 2.46 GCD), with a Grade 1 Gemdraught',

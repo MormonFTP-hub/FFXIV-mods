@@ -71,7 +71,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 13. DT 7.0–7.57 (2024-07-02 → present): Goring Blade Ready from Fight or Flight; Atonement → Supplication → Sepulchre; Imperator; Blade of Honor; Guardian. ← built **Rating 4/5:** Supplication, Sepulchre and Blade of Honor; one of Dawntrail's better-received tanks.
 
 ### Warrior / Marauder
-1. ARR 2.0 (2013-08-27 → 2013-12-16): Defiance + Wrath (5 stacks → Inner Beast, Steel Cyclone, Unchained); Inner Beast heals 300% of damage; Unchained 180s. ← built **Rating 3/5:** Wrath stacks and Unchained; brief and nostalgic.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): Defiance + Wrath (5 stacks → Inner Beast, Steel Cyclone, Unchained); Inner Beast heals 300% of damage; Unchained 180s. ← built **Rating 3/5:** Wrath stacks and Unchained; brief and nostalgic.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Inner Beast heal 100% + 20% reduction; Unchained 120s; Vengeance 30% mitigation; Holmgang pull. ← built **Rating 4/5:** Defiance tanking with Inner Beast heals; the original Warrior feel.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Deliverance + Abandon → Fell Cleave, Decimate; Raw Intuition; Equilibrium. ← built **Rating 5/5:** Deliverance/Defiance stance dancing for Fell Cleave; often called Warrior's best.
 4. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Beast Gauge; Inner Release (120s, halves costs); Berserk 60s +30%; Storm's Eye +20%; Upheaval, Onslaught, Shake It Off. ← built **Rating 3/5:** Beast Gauge launch, but swapping stance halved it.
@@ -79,11 +79,11 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 6. SB 4.1–4.18 (2017-10-10 → 2018-01-29): Deliverance turns Inner Beast etc. into Fell Cleave etc.; Shake It Off a party barrier. ← built **Rating 4/5:** Deliverance turns your buttons into Fell Cleave; still a stance-dance job.
 7. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Inner Release 90s, free gauge actions + guaranteed crit/DH; Berserk upgrades into it; Storm's Eye 10%. ← built **Rating 4/5:** Inner Release with guaranteed crit Fell Cleaves; iconic SB Warrior.
 8. ShB 5.0–5.08 (2019-07-02 → 2019-10-28): single stance; Infuriate 2 charges → Nascent Chaos → Chaotic Cyclone / Inner Chaos; Mythril Tempest; Nascent Flash. ← built **Rating 4/5:** One stance and Inner Chaos; simple but very satisfying.
-9. ShB 5.1–5.21 (2019-10-29 → 2020-08-10): Vengeance 15s; Holmgang 8s; Raw Intuition 6s. ← built **Rating 4/5:** The same kit with longer defensives.
+9. ShB 5.1–5.25 (2019-10-29 → 2020-08-10): Vengeance 15s; Holmgang 8s; Raw Intuition 6s. ← built **Rating 4/5:** The same kit with longer defensives.
 10. ShB 5.3–5.58 (2020-08-11 → 2021-12-06): Storm's Eye stacks to 60s. ← built **Rating 3/5:** Storm's Eye stacking added bookkeeping; mixed.
 11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Surging Tempest; Inner Release / Berserk 60s, 3 stacks; Primal Rend; Onslaught 3 charges; Orogeny; Bloodwhetting. ← built **Rating 4/5:** Primal Rend and 60s Inner Release; fun burst, famously self-sufficient.
 12. EW 6.1–6.58 (2022-04-12 → 2024-07-01): Inner Release stacks only on Fell Cleave / Decimate. ← built **Rating 4/5:** Same kit; Inner Release only on Fell Cleave and Decimate.
-13. DT 7.0 (2024-07-02 → 2024-07-15): Primal Wrath, Primal Ruination; Inner Chaos needs 50 gauge; Damnation. ← built **Rating 3/5:** Primal Wrath and Ruination added buttons to an already simple loop.
+13. DT 7.0–7.0 (2024-07-02 → 2024-07-15): Primal Wrath, Primal Ruination; Inner Chaos needs 50 gauge; Damnation. ← built **Rating 3/5:** Primal Wrath and Ruination added buttons to an already simple loop.
 14. DT 7.01–7.57 (2024-07-16 → present): Primal Ruination Ready 20s. ← built **Rating 3/5:** Fine, but seen as part of Dawntrail's homogenization.
 
 ### Dark Knight (from 3.0)
@@ -112,7 +112,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 
 ### White Mage / Conjurer
-1. ARR 2.0 (2013-08-27 → 2013-12-16): Conjurer kit (Stone, Cure, Aero, Medica, Raise, Stone II, Cure II, Aero II, Medica II, Fluid Aura 30s bind+knockback, Stoneskin, Shroud of Saints 120s, Cure III 2.5s cast 4y, Protect + Proshell, Esuna, Repose); Cleric Stance (INT/MND swap, +10% attack, -20% healing; ARR level uncertain); WHM: Presence of Mind 30 (300s, 10s), Regen 35, Divine Seal 40 (60s, +30% healing 15s), Holy 45 (AoE+stun, 240), Benediction 50 (300s). ← built **Rating 3/5:** Cleric Stance and Holy stuns; the classic healer.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): Conjurer kit (Stone, Cure, Aero, Medica, Raise, Stone II, Cure II, Aero II, Medica II, Fluid Aura 30s bind+knockback, Stoneskin, Shroud of Saints 120s, Cure III 2.5s cast 4y, Protect + Proshell, Esuna, Repose); Cleric Stance (INT/MND swap, +10% attack, -20% healing; ARR level uncertain); WHM: Presence of Mind 30 (300s, 10s), Regen 35, Divine Seal 40 (60s, +30% healing 15s), Holy 45 (AoE+stun, 240), Benediction 50 (300s). ← built **Rating 3/5:** Cleric Stance and Holy stuns; the classic healer.
 2. ARR 2.1–2.28 (2013-12-17 → 2014-07-07): Cure III 2.0s cast, 6y; Cure II 15% chance to halve next Cure III; Medica II regen 50 for 30s; Holy 200. ← built **Rating 3/5:** Cure III and Medica II tuning; much the same.
 3. ARR 2.3–2.57 (2014-07-08 → 2015-06-22): Presence of Mind 150s recast, 15s; 2.45 Stoneskin II (party barrier, out of combat; size uncertain 10/18%). ← built **Rating 3/5:** Faster Presence of Mind; Stoneskin II.
 4. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Asylum 52, Stone III 54, Assize 56 (90s, 300 dmg/300 heal, +10% MP), Aero III 58, Tetragrammaton 60 (60s, 700); Proshell trait removed. ← built **Rating 4/5:** Cleric Stance dancing and Aero III upkeep; demanding and fondly remembered.
@@ -130,7 +130,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 16. DT 7.4–7.57 (2025-12-16 → present): Confession −10% damage taken; start duties with full Lilies and Blood Lily; Glare III 350, Misery 1400. ← built **Rating 4/5:** Start with full Lilies; liked.
 
 ### Scholar / Arcanist
-1. ARR 2.0 (2013-08-27 → 2013-12-16): Aetherflow 60s (+20% MP), Energy Drain, Virus, Bane, Eye for an Eye, Rouse, Shadow Flare, Sustain (HP cost); Adloquium 30, Succor 35, Leeches 40, Sacred Soil 45, Lustrate 50 (20% max HP); Eos and Selene. ← built **Rating 3/5:** Virus, Bane and Shadow Flare; a DoT-heavy launch.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): Aetherflow 60s (+20% MP), Energy Drain, Virus, Bane, Eye for an Eye, Rouse, Shadow Flare, Sustain (HP cost); Adloquium 30, Succor 35, Leeches 40, Sacred Soil 45, Lustrate 50 (20% max HP); Eos and Selene. ← built **Rating 3/5:** Virus, Bane and Shadow Flare; a DoT-heavy launch.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Lustrate 25%, Bane 8y, Virus Antibody, Sustain costs MP. ← built **Rating 4/5:** Classic ARR Scholar: DoT spreading and fairy management.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Indomitability 52, Broil 54, Deployment Tactics 56 (120s), Emergency Tactics 58, Dissipation 60 (180s); Lustrate 600 potency. ← built **Rating 5/5:** Bane, Energy Drain and Dissipation; widely called Scholar's golden age.
 4. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Faerie Gauge + Aetherpact/Fey Union; Excogitation 62, Broil II 64, Chain Stratagem 66; Quickened Aetherflow (20% chance −10s); Aetherflow 10% MP; Virus, Sustain, Miasma II removed. ← built **Rating 4/5:** Fae Gauge, Excogitation and Chain Stratagem; complex and loved.
@@ -146,7 +146,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Astrologian (from 3.0)
 1. HW 3.0–3.01 (2015-06-23 → 2015-07-20): Draw, sects, Royal Road, Spread, Shuffle, Time Dilation, Celestial Opposition (150s), Lightspeed (15s, potency penalty), Synastry (120s); cards Balance/Bole/Arrow/Spear/Ewer/Spire. ← built **Rating 3/5:** Card launch; heavy RNG.
-2. HW 3.05 (2015-07-21 → 2015-08-24): Lightspeed 10s −25% MP; Ewer/Spire refresh; Shuffle 60s. ← built **Rating 3/5:** Lightspeed and card tweaks; settling in.
+2. HW 3.05–3.05 (2015-07-21 → 2015-08-24): Lightspeed 10s −25% MP; Ewer/Spire refresh; Shuffle 60s. ← built **Rating 3/5:** Lightspeed and card tweaks; settling in.
 3. HW 3.07–3.15 (2015-08-25 → 2016-02-22): Synastry 90s; Celestial Opposition 120s; Balance/Bole/Arrow 30s. ← built **Rating 4/5:** Longer card buffs; the card game starts to click.
 4. HW 3.2–3.26 (2016-02-23 → 2016-06-06): Shuffle → Redraw (no repeat); Luminiferous Aether 24s. ← built **Rating 4/5:** Redraw replaces Shuffle; liked.
 5. HW 3.3–3.38 (2016-06-07 → 2016-09-26): Spread 30s; Nocturnal Aspected Helios barrier 120%. ← built **Rating 4/5:** Faster Spread; liked.
@@ -154,7 +154,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 7. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Undraw, Earthly Star 62, Malefic III 64, Minor Arcana 66 (Lord/Lady of Crowns), Hyper Lightspeed, Sleeve Draw 70. ← built **Rating 4/5:** Minor Arcana and Sleeve Draw arrive.
 8. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Balance 10%; Spear +10% crit; Undraw 3s; Hyper Lightspeed on Essential Dignity. ← built **Rating 5/5:** Royal Road and Minor Arcana manipulation; Astrologian's most loved era.
 9. SB 4.2–4.25 (2018-01-30 → 2018-05-21) (minor): Spear 30s. ← built **Rating 5/5:** Same beloved SB card game.
-10. SB 4.3–4.38 (2018-05-22 → 2018-09-17): Malefic 1.5s casts; Lightspeed −50% MP, 120s; Aspected Helios 2.5s. ← built **Rating 5/5:** Faster Malefic and Lightspeed; still the beloved SB card game.
+10. SB 4.3–4.36 (2018-05-22 → 2018-09-17): Malefic 1.5s casts; Lightspeed −50% MP, 120s; Aspected Helios 2.5s. ← built **Rating 5/5:** Faster Malefic and Lightspeed; still the beloved SB card game.
 11. SB 4.4–4.58 (2018-09-18 → 2019-07-01) (minor): Minor Arcana / Lord / Lady 1s recast. ← built **Rating 5/5:** Same beloved SB card game.
 12. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): seal system, Divination (180s, 2/4/6%), Balance 6%/3%; Royal Road, Spread, Time Dilation removed; Horoscope, Neutral Sect, Malefic IV, Combust III, Gravity. ← built **Rating 2/5:** Seals replaced Royal Road and Spread; unpopular.
 13. ShB 5.05–5.08 (2019-07-29 → 2019-10-28): Divination 120s 4/5/6%; Lightspeed 90s; Celestial Opposition 60s; Gravity 1.5s. ← built **Rating 2/5:** Seal tuning; still unpopular.
@@ -162,8 +162,8 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 15. ShB 5.3–5.58 (2020-08-11 → 2021-12-06): Draw/Sleeve Draw restore 8% MP; Sleeve Draw single draw; Horoscope heals on expiry. ← built **Rating 3/5:** Draw restores MP; fine.
 16. EW 6.0–6.18 (2021-12-07 → 2022-08-22): sects removed; Draw 2 charges; Astrosigns + Astrodyne; Divination flat 6%; Sleeve Draw removed; Crown Play; Exaltation (86), Macrocosmos (90). ← built **Rating 2/5:** Astrodyne and Redraw spam; 'card button bloat' complaints.
 17. EW 6.2–6.58 (2022-08-23 → 2024-07-01): Crown Play removed; Redraw never repeats your sign. ← built **Rating 3/5:** Crown Play removed; a little cleaner.
-18. DT 7.0 (2024-07-02 → 2024-07-15): Astral/Umbral Draw, Play I/II/III, Oracle (92), Essential Dignity 3 charges, Helios Conjunction, Sun Sign; Lightspeed 1 charge 90s. ← built **Rating 2/5:** Card rework to Play I/II/III; Lightspeed down to 1 charge; criticized.
-19. DT 7.01 (2024-07-16 → 2024-07-29): Lightspeed 2 charges 60s; draws 55s. ← built **Rating 3/5:** Lightspeed charges back; better.
+18. DT 7.0–7.0 (2024-07-02 → 2024-07-15): Astral/Umbral Draw, Play I/II/III, Oracle (92), Essential Dignity 3 charges, Helios Conjunction, Sun Sign; Lightspeed 1 charge 90s. ← built **Rating 2/5:** Card rework to Play I/II/III; Lightspeed down to 1 charge; criticized.
+19. DT 7.01–7.01 (2024-07-16 → 2024-07-29): Lightspeed 2 charges 60s; draws 55s. ← built **Rating 3/5:** Lightspeed charges back; better.
 20. DT 7.05–7.38 (2024-07-30 → 2025-12-15) (minor): Plays no longer share a recast; 7.2 Oracle falloff 50%. ← built **Rating 3/5:** Plays no longer share a recast; fine.
 21. DT 7.4–7.57 (2025-12-16 → present) (borderline): Collective Unconscious mitigation 10s. ← built **Rating 3/5:** Longer Collective Unconscious; fine.
 
@@ -177,7 +177,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 ## Melee DPS (52 versions: MNK 15, DRG 14, NIN 10, SAM 8, RPR 3, VPR 2)
 
 ### Monk / Pugilist
-1. ARR 2.0 (2013-08-27 → 2013-12-16): 3 Greased Lightning stacks (7/14/21%, 12s); True Strike rear crit; Shoulder Tackle 90s; Twin Snakes 12s; Demolish DoT only. ← built **Rating 3/5:** Greased Lightning at three stacks; early days.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): 3 Greased Lightning stacks (7/14/21%, 12s); True Strike rear crit; Shoulder Tackle 90s; Twin Snakes 12s; Demolish DoT only. ← built **Rating 3/5:** Greased Lightning at three stacks; early days.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Shoulder Tackle 30s; True Strike flat 190; Demolish initial hit; Twin Snakes 15s; GL 9/18/27%; Internal Release 10%. ← built **Rating 4/5:** Greased Lightning upkeep and positionals; Monk's identity set.
 3. HW 3.0–3.05 (2015-06-23 → 2015-08-24): Form Shift, Meditation / The Forbidden Chakra, Elixir Field, Purification, Tornado Kick (60s, needs GL III). ← built **Rating 4/5:** Tornado Kick and the Forbidden Chakra arrive.
 4. HW 3.07–3.57 (2015-08-25 → 2017-06-19): Tornado Kick 40s; GL 14s, 10/20/30%. ← built **Rating 5/5:** GL III upkeep, Tornado Kick and Chakra; a hardcore Monk favourite.
@@ -190,11 +190,11 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 11. EW 6.0–6.08 (2021-12-07 → 2022-04-11): Masterful Blitz with Beast Chakra / Nadi; Perfect Balance 3 stacks, 2 charges; Riddle of Fire 60s 15%; Riddle of Wind back (auto delay −50%); Brotherhood 120s; Thunderclap; Disciplined Fist. ← built **Rating 4/5:** Masterful Blitz and Nadi; well received.
 12. EW 6.1–6.28 (2022-04-12 → 2023-01-09): Perfect Balance can't be used while holding Beast Chakra. ← built **Rating 4/5:** Perfect Balance fix; liked.
 13. EW 6.3–6.58 (2023-01-10 → 2024-07-01) (minor, defensive): Riddle of Earth 120s, 20% reduction + Earth's Reply. ← built **Rating 4/5:** Riddle of Earth rework; liked.
-14. DT 7.0 (2024-07-02 → 2024-07-15): Fury stacks replace Disciplined Fist and the Demolish DoT; Anatman removed; Fire's Reply, Wind's Reply; Brotherhood 20s. ← built **Rating 2/5:** Fury stacks replaced Disciplined Fist and Demolish's DoT; seen as gutted.
+14. DT 7.0–7.0 (2024-07-02 → 2024-07-15): Fury stacks replace Disciplined Fist and the Demolish DoT; Anatman removed; Fire's Reply, Wind's Reply; Brotherhood 20s. ← built **Rating 2/5:** Fury stacks replaced Disciplined Fist and Demolish's DoT; seen as gutted.
 15. DT 7.01–7.57 (2024-07-16 → present): Raptor's Fury max 1, Coeurl's Fury max 2; Dragon Kick grants Opo-opo's Fury only in Opo-opo form; potency pass. ← built **Rating 2/5:** Smaller Fury caps; still seen as simplified.
 
 ### Dragoon
-1. ARR 2.0 (2013-08-27 → 2013-12-16): Power Surge 90s, Spineshatter Dive 90s, Dragonfire Dive 180s, Jump 40s. ← built **Rating 3/5:** Jumps and Heavy Thrust; early days.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): Power Surge 90s, Spineshatter Dive 90s, Dragonfire Dive 180s, Jump 40s. ← built **Rating 3/5:** Jumps and Heavy Thrust; early days.
 2. ARR 2.1–2.38 (2013-12-17 → 2014-10-27): Power Surge 60s; shorter jump locks; Heavy Thrust 15%. ← built **Rating 3/5:** Shorter Power Surge and jump locks.
 3. ARR 2.4–2.41 (2014-10-28 → 2014-12-07): Spineshatter Dive 60s; Dragonfire Dive 120s. ← built **Rating 3/5:** Shorter dives.
 4. ARR 2.45–2.57 (2014-12-08 → 2015-06-22): Jump 30s; Impulse Drive / Heavy Thrust need no positional. ← built **Rating 3/5:** Heavy Thrust and Impulse Drive lose positionals; 'floor tank' memes.
@@ -202,7 +202,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Dragon Gauge with 4 Eyes → Life of the Dragon; Mirage Dive, Nastrond, Dragon Sight, Sonic Thrust; Blood of the Dragon 15s. ← built **Rating 4/5:** Eyes and Life of the Dragon debut.
 7. SB 4.05–4.06 (2017-07-17 → 2017-10-09): Blood of the Dragon 20s (+10s from Sonic Thrust, max 30s); Elusive Jump 30s; Dragon Sight 12y. ← built **Rating 4/5:** Blood extended by Sonic Thrust; liked.
 8. SB 4.1–4.58 (2017-10-10 → 2019-07-01): 3 Eyes max; Geirskogul 30s; Blood can't be used during Life. ← built **Rating 5/5:** Eyes, Life of the Dragon and Mirage Dive; Dragoon's most loved form.
-9. ShB 5.0 (2019-07-02 → 2019-07-14): Heavy Thrust removed, Disembowel grants Power Surge; Geirskogul needs 2 eyes; Blood 30s; Stardiver. ← built **Rating 4/5:** Stardiver; Blood upkeep remains.
+9. ShB 5.0–5.0 (2019-07-02 → 2019-07-14): Heavy Thrust removed, Disembowel grants Power Surge; Geirskogul needs 2 eyes; Blood 30s; Stardiver. ← built **Rating 4/5:** Stardiver; Blood upkeep remains.
 10. ShB 5.01–5.58 (2019-07-15 → 2021-12-06): Power Surge 30s; 5.1 Blood recast 25s. ← built **Rating 4/5:** Same kit; well liked.
 11. EW 6.0–6.28 (2021-12-07 → 2023-01-09): Blood of the Dragon becomes a trait; Life of the Dragon fixed 20s; Wyrmwind Thrust; Spineshatter Dive 2 charges. ← built **Rating 3/5:** Blood of the Dragon becomes a trait; simpler, mixed.
 12. EW 6.3–6.58 (2023-01-10 → 2024-07-01): Life Surge 40s. ← built **Rating 3/5:** Faster Life Surge; mixed.
@@ -244,7 +244,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 
 ### Bard / Archer
 1. ARR 2.0–2.57 (2013-08-27 → 2015-06-22): Straight Shot +10% crit, Heavier Shot, River of Blood (DoT ticks reset Bloodletter), Raging Strikes 20%/180s, Barrage, Misery's End, Hawk's Eye, Quelling Strikes, Blunt Arrow, Flaming Arrow, Wide Volley; songs are MP-draining toggles that lower your own damage; Battle Voice 300s. (2.1 changed Hawk's Eye and Blood for Blood; 2.0 Hawk's Eye uncertain.) ← built **Rating 3/5:** MP-draining song toggles; nostalgic but clunky.
-2. HW 3.0 (2015-06-23 → 2015-07-06): Wanderer's Minuet is a 3s-cast stance (+20%, no autos, weaponskills get cast times); Empyreal Arrow, Sidewinder, Iron Jaws only under it. ← built **Rating 2/5:** Wanderer's Minuet as a cast-time stance; widely disliked.
+2. HW 3.0–3.0 (2015-06-23 → 2015-07-06): Wanderer's Minuet is a 3s-cast stance (+20%, no autos, weaponskills get cast times); Empyreal Arrow, Sidewinder, Iron Jaws only under it. ← built **Rating 2/5:** Wanderer's Minuet as a cast-time stance; widely disliked.
 3. HW 3.01–3.26 (2015-07-07 → 2016-06-06): Wanderer's Minuet an instant toggle, +30%; Empyreal Arrow 220; Sidewinder 100/175/250. (3.2: Warden's Paean oGCD.) ← built **Rating 3/5:** Instant Minuet toggle; better.
 4. HW 3.3–3.57 (2016-06-07 → 2017-06-19): song casts 1.5s, singing penalty 10%; Battle Voice 180s; DoT and Blunt Arrow buffs. ← built **Rating 3/5:** Faster songs; better.
 5. SB 4.0–4.05 (2017-06-20 → 2017-08-06): Repertoire; songs instant 80s recast 30s (Mage's Ballad resets Bloodletter on DoT crits, Army's Paeon speed stacks, Wanderer's Minuet Pitch Perfect); Refulgent Arrow, Caustic Bite, Stormbite, Troubadour, Nature's Minne; Raging Strikes 80s 10%; Battle Voice +15% DH; many ARR actions removed. ← built **Rating 4/5:** Repertoire and the song rotation arrive.
@@ -255,13 +255,13 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 10. DT 7.0–7.57 (2024-07-02 → present): songs deal no damage; Hawk's Eye proc; Heartbreak Shot; Barrage rework + Resonant Arrow; Radiant Encore; buffs 20s; Wide Volley back. ← built **Rating 3/5:** Hawk's Eye merges the procs; seen as simplified.
 
 ### Machinist (from 3.0)
-1. HW 3.0 (2015-06-23 → 2015-07-06): Gauss Barrel toggle spell (+20%, no autos, weaponskill casts); Reload ammo; Quick Reload; Hypercharge (turret); Wildfire 25%; Rapid Fire; turrets. ← built **Rating 2/5:** Gauss Barrel as a cast-time stance; awkward.
+1. HW 3.0–3.0 (2015-06-23 → 2015-07-06): Gauss Barrel toggle spell (+20%, no autos, weaponskill casts); Reload ammo; Quick Reload; Hypercharge (turret); Wildfire 25%; Rapid Fire; turrets. ← built **Rating 2/5:** Gauss Barrel as a cast-time stance; awkward.
 2. HW 3.01–3.05 (2015-07-07 → 2015-08-24): Gauss Barrel instant +30%. ← built **Rating 3/5:** Instant Gauss Barrel; better.
 3. HW 3.07–3.15 (2015-08-25 → 2016-02-22): Quick Reload 30s (15s with trait), 30 TP. ← built **Rating 4/5:** Quick Reload loop; liked.
 4. HW 3.2–3.38 (2016-02-23 → 2016-09-26): Hypercharge 20s; turret vulnerability 10%. ← built **Rating 4/5:** Longer Hypercharge; liked.
 5. HW 3.4–3.57 (2016-09-27 → 2017-06-19): Reload ammo no longer expires. ← built **Rating 5/5:** Ammo, Reload, Hypercharge and Wildfire bursts; a cult favourite.
 6. SB 4.0–4.01 (2017-06-20 → 2017-07-16): Heat Gauge and Overheat, heated shots, Cooldown, Flamethrower, Barrel Stabilizer 120s, Overdrive; Reload 30s 3 rounds; Wildfire 60s 10s. ← built **Rating 3/5:** Heat gauge debut; rough edges.
-7. SB 4.05 (2017-07-17 → 2017-08-06): Barrel Stabilizer 60s; Quick Reload no heat drop; heat per shot 5; Overloads doubled. ← built **Rating 4/5:** Barrel Stabilizer at 60s; liked.
+7. SB 4.05–4.05 (2017-07-17 → 2017-08-06): Barrel Stabilizer 60s; Quick Reload no heat drop; heat per shot 5; Overloads doubled. ← built **Rating 4/5:** Barrel Stabilizer at 60s; liked.
 8. SB 4.06–4.58 (2017-08-07 → 2019-07-01): Overheat +20%; Gauss Barrel 2s; Hot Shot 60s. ← built **Rating 5/5:** Heat and Overheat juggling; Stormblood Machinist is widely missed.
 9. ShB 5.0–5.01 (2019-07-02 → 2019-07-28): full rework — Hypercharge (50 Heat, Heat Blast), Battery and Queen, Gauss Round / Ricochet charges, Wildfire 120s, Reassemble, Drill, Air Anchor, Tactician. ← built **Rating 4/5:** The modern rework: Hypercharge and Queen; clean.
 10. ShB 5.05–5.58 (2019-07-29 → 2021-12-06): Reassemble 55s; 5.1 Tactician 120s, Flamethrower skill speed. ← built **Rating 4/5:** Same kit; liked.
@@ -285,17 +285,17 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. HW 3.05–3.15 (2015-07-21 → 2016-02-22): recasting Enochian refreshes it; Thundercloud 10%. ← built **Rating 4/5:** Enochian refreshing; liked.
 4. HW 3.2–3.57 (2016-02-23 → 2017-06-19): AF/UI timer 12s. ← built **Rating 4/5:** Enochian refresh juggling; a hardcore favourite.
 5. SB 4.0–4.01 (2017-06-20 → 2017-07-16): job gauge; Enochian has no duration; Polyglot (1) and Foul; Blizzard IV hearts; Thunder IV; Triplecast 90s; Sharpcast 15s; AF/UI 13s. ← built **Rating 4/5:** Polyglot and Foul arrive.
-6. SB 4.05–4.1x (2017-07-17 → 2018-01-29): Triplecast 60s; Fire IV / Blizzard IV 2.8s; Foul no MP. ← built **Rating 4/5:** Faster Triplecast and casts; liked.
+6. SB 4.05–4.18 (2017-07-17 → 2018-01-29): Triplecast 60s; Fire IV / Blizzard IV 2.8s; Foul no MP. ← built **Rating 4/5:** Faster Triplecast and casts; liked.
 7. SB 4.2–4.58 (2018-01-30 → 2019-07-01): Transpose 8s; procs 18s; Aetherial Manipulation 10s; Fire IV 280 (300 in 4.4). ← built **Rating 5/5:** Polyglot, Foul and Thunder optimization; peak for many.
 8. ShB 5.0–5.58 (2019-07-02 → 2021-12-06): Manafont replaces Convert; Despair, Umbral Soul, Xenoglossy; 2 Polyglot; Enochian 15%; AF/UI 15s; Transpose 5s; Sharpcast 30s; Freeze rework. ← built **Rating 5/5:** Despair, Xenoglossy and two Polyglots; widely cited as Black Mage's best.
 9. EW 6.0–6.58 (2021-12-07 → 2024-07-01): Enochian a trait; Amplifier; Paradox; Sharpcast and Triplecast 2 charges; Manafont 120s; Ley Lines 120s; Thundercloud 40s. Potency tiers 6.08 / 6.28 / 6.4 (Xenoglossy 880, Enochian 23% from 6.4). ← built (6.4–6.58 numbers) **Rating 4/5:** Paradox and two-charge Sharpcast and Triplecast; strong and liked.
 10. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Sharpcast removed; Thunderhead; High Thunder; Retrace; Astral Soul + Flare Star; 3 Polyglot; Manafont 100s rework; Umbral Ice MP refunds; instant Paradox. ← built **Rating 2/5:** Thunderhead and the Manafont rework; mixed to negative.
-11. DT 7.05 (2024-07-30 → 2024-11-11): Paradox from Ice is free and grants Umbral Ice; Umbral Soul halts the timer. ← built **Rating 2/5:** Paradox from Ice; still mixed.
-12. DT 7.1–7.1x (2024-11-12 → 2025-03-24): Ley Lines 2 charges; Flare 3s; instant Despair at 100. ← built **Rating 2/5:** Ley Lines charges; still mixed.
+11. DT 7.05–7.05 (2024-07-30 → 2024-11-11): Paradox from Ice is free and grants Umbral Ice; Umbral Soul halts the timer. ← built **Rating 2/5:** Paradox from Ice; still mixed.
+12. DT 7.1–7.18 (2024-11-12 → 2025-03-24): Ley Lines 2 charges; Flare 3s; instant Despair at 100. ← built **Rating 2/5:** Ley Lines charges; still mixed.
 13. DT 7.2–7.57 (2025-03-25 → present): Astral Fire / Umbral Ice no longer expire; Ley Lines 20s; 2s casts. ← built **Rating 1/5:** Astral Fire and Umbral Ice stop expiring; many mains felt the job lost its identity.
 
 ### Summoner / Arcanist
-1. ARR 2.0–2.05 (2013-08-27 → 2013-12-16): Aetherflow, Energy Drain, Fester; Bio, Bio II, Miasma, Miasma II, Shadow Flare; Bane; Contagion; Spur, Rouse, Enkindle; 6s summon casts. ← built **Rating 3/5:** DoT summoner with Egis; early days.
+1. ARR 2.0–2.0 (2013-08-27 → 2013-12-16): Aetherflow, Energy Drain, Fester; Bio, Bio II, Miasma, Miasma II, Shadow Flare; Bane; Contagion; Spur, Rouse, Enkindle; 6s summon casts. ← built **Rating 3/5:** DoT summoner with Egis; early days.
 2. ARR 2.1–2.57 (2013-12-17 → 2015-06-22): Bane 8y, no overwrite of longer DoTs; Sustain costs MP. ← built **Rating 4/5:** Bane DoT spreading; liked.
 3. HW 3.0–3.57 (2015-06-23 → 2017-06-19): Painflare, Ruin III, Tri-disaster, Dreadwyrm Trance (3 Aethertrail), Deathflare. ← built **Rating 5/5:** Tri-disaster, Bane and Dreadwyrm Trance; widely missed.
 4. SB 4.0–4.06 (2017-06-20 → 2017-10-09): Summon Bahamut; Trance 20s; Fester 5s; Ruin IV procs; Aetherpact / Devotion; Spur removed. ← built **Rating 5/5:** Summon Bahamut's debut; iconic.
@@ -313,7 +313,7 @@ Role actions: cross-class skills in 2.x–3.x; a role-action pool in 4.x; the fi
 3. ShB 5.1–5.58 (2019-10-29 → 2021-12-06): Acceleration 3 casts, 20s, 55s. ← built **Rating 4/5:** Better Acceleration; liked.
 4. EW 6.0–6.58 (2021-12-07 → 2024-07-01): Mana Stacks; Verthunder III / Veraero III, Magick Barrier, Resolution; cheaper melee; Acceleration, Corps-a-corps, Displacement 2 charges; Manafication +50|50 and 6 stacks; Embolden flat 5%. ← built **Rating 4/5:** Mana stacks and Resolution; liked.
 5. DT 7.0–7.01 (2024-07-02 → 2024-07-29): Manafication → Magicked Swordplay + Prefulgence; Vice of Thorns; Grand Impact; Jolt III; Moulinet Deux/Trois. ← built **Rating 3/5:** Magicked Swordplay arrives; short-lived.
-6. DT 7.05–7.3x (2024-07-30 → 2025-12-15): Magicked Swordplay 30s. ← built **Rating 4/5:** Longer Swordplay; liked.
+6. DT 7.05–7.38 (2024-07-30 → 2025-12-15): Magicked Swordplay 30s. ← built **Rating 4/5:** Longer Swordplay; liked.
 7. DT 7.4–7.57 (2025-12-16 → present): Manafication grants Prefulgence directly, no stacks; Embolden self 10%. ← built **Rating 3/5:** Manafication stacks removed; mixed.
 
 ### Pictomancer (from 7.0)

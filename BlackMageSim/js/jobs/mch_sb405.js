@@ -61,7 +61,7 @@
 
   B.registerJob({
     id: 'mch', name: 'Machinist', abbr: 'MCH', role: 'ranged', classJob: 31,
-    versions: [{ id: 'sb405', label: 'Stormblood 4.05', history: 'SB 4.05', note: 'Level 70: Barrel Stabilizer at 60s, Hot Shot +8%, Overheat +10%, a 10s Gauss Barrel; Deltascape gear', create: () => new MachinistSB405() },
+    versions: [{ id: 'sb405', label: 'Stormblood 4.05–4.05', history: 'SB 4.05–4.05', note: 'Level 70: Barrel Stabilizer at 60s, Hot Shot +8%, Overheat +10%, a 10s Gauss Barrel; Deltascape gear', create: () => new MachinistSB405() },
       { id: 'sb40', label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', note: 'Level 70, the launch: Barrel Stabilizer on 120s, Hot Shot +5%, 10-Heat Heated shots, Quick Reload cools 10 Heat, Rook Overload 400; i320 gear', create: () => new MachinistSB40() }],
   });
 })(window.BLM);

@@ -35,7 +35,7 @@
       stats: { hp: 24000, main: 1310, wd: 73, det: 742, crit: 1010, speed: 713 },
       gear: 'an Alexander: Midas Savage set with the Midan Metal Bow (Dexterity 1,310, 73 weapon damage)',
       note: 'Level 60 on TP: the Wanderer\'s Minuet toggle, Empyreal Arrow 220 and Iron Jaws only inside it, River of Blood resets, Barrage into Empyreal Arrow; Midas gear' },
-    hw30: { label: 'Heavensward 3.0', history: 'HW 3.0', minuetGcd: true, minuetMult: 1.20, ea: 240, side: [150, 250, 350], vb: 35, wb: 45, blunt: 50, flame: 35, songCast: 3,
+    hw30: { label: 'Heavensward 3.0–3.0', history: 'HW 3.0–3.0', minuetGcd: true, minuetMult: 1.20, ea: 240, side: [150, 250, 350], vb: 35, wb: 45, blunt: 50, flame: 35, songCast: 3,
       songMult: 0.85, bvRecast: 300, potion: ['Draconian Potion of Dexterity', 105], ref: 1060,
       stats: { hp: 15500, main: 870, wd: 65, det: 420, crit: 625, speed: 498 },
       gear: 'launch gear (i170 Yasha law with the Hive Bow from Ravana Extreme: Dexterity about 870, 65 weapon damage)',

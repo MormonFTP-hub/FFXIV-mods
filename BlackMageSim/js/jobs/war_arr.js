@@ -118,6 +118,6 @@ ${seq(['tomahawk', ['unchained'], ['berserk'], 'heavySwing', ['internalRelease']
   B.registerJob({
     id: 'war', name: 'Warrior', abbr: 'WAR', role: 'tank', classJob: 21,
     versions: [{ id: 'arr21', label: 'A Realm Reborn 2.1–2.57', history: 'ARR 2.1–2.57', note: 'Level 50 on TP: Defiance with Wrath +2% crit a stack, Inner Beast and Unchained from Infuriated, Berserk, Maim and Storm\'s Eye; Final Coil gear', create: () => new WarriorARR() },
-      { id: 'arr20', label: 'A Realm Reborn 2.0', history: 'ARR 2.0', note: 'Level 50 at launch: Defiance and Wrath, Unchained every 180s, Inner Beast heals 300%, Internal Release +20%, Storm\'s Eye 15s; Binding Coil gear', create: () => new WarriorARR20() }],
+      { id: 'arr20', label: 'A Realm Reborn 2.0–2.0', history: 'ARR 2.0–2.0', note: 'Level 50 at launch: Defiance and Wrath, Unchained every 180s, Inner Beast heals 300%, Internal Release +20%, Storm\'s Eye 15s; Binding Coil gear', create: () => new WarriorARR20() }],
   });
 })(window.BLM);

@@ -622,6 +622,6 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
 
   B.registerJob({
     id: 'blm', name: 'Black Mage', abbr: 'BLM', role: 'caster', classJob: 25,
-    versions: [{ id: 'ew65', label: 'Endwalker 6.5', history: 'EW 6.0–6.58', note: 'Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23%', create: () => new BlackMageEW() }],
+    versions: [{ id: 'ew65', label: 'Endwalker 6.0–6.58', history: 'EW 6.0–6.58', note: 'Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23%', create: () => new BlackMageEW() }],
   });
 })(window.BLM);

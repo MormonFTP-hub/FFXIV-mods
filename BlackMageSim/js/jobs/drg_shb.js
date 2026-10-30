@@ -19,7 +19,7 @@
       stats: { hp: 72000, main: 5560, wd: 134, det: 2041, crit: 4060, dh: 3290, speed: 380 },
       gear: 'The Balance\'s 5.58 "2.50 Raid Chest" relic set (Strength 5,560, 134 weapon damage)',
       note: 'Level 80: Raiden Thrust, Disembowel 30s, two Eyes for Life of the Dragon, Nastrond and Stardiver, Lance Charge and Dragon Sight; the 5.58 numbers and Eden\'s Promise gear' },
-    shb50: { label: 'Shadowbringers 5.0', history: 'ShB 5.0', fc: 320, fifth: 100, ctDot: 45, geir: 270, mirage: 250, star: 550,
+    shb50: { label: 'Shadowbringers 5.0–5.0', history: 'ShB 5.0–5.0', fc: 320, fifth: 100, ctDot: 45, geir: 270, mirage: 250, star: 550,
       bloodRecast: 30, disembowel: 24, tincture: 'str1', ref: 14570,
       stats: { hp: 62000, main: 4193, wd: 122, det: 2030, crit: 3605, dh: 2772, speed: 380 },
       gear: 'an Eden\'s Gate set at 2.50 (Strength 4,193, 122 weapon damage), with the Grade 1 Tincture, the only one in 5.0',

@@ -28,7 +28,7 @@
       stats: { main: 1030, wd: 105, det: 480, crit: 600, speed: 470, piety: 470 }, maxMp: 12240,
       gear: 'a rough Alexander: Gordias Savage set (Mind 1,030, the Gordian Astrometer: 105 magic damage)',
       note: 'Level 60: Shuffle (it can give back the same card), the Balance 10%, cards held 15s, Luminiferous Aether 15s; Gordias gear' },
-    hw305: { label: 'Heavensward 3.05', history: 'HW 3.05', spread: 60, shuffle: true, la: 15, ewer: 265, potion: ['Draconian Potion of Mind', 105], ref: 970,
+    hw305: { label: 'Heavensward 3.05–3.05', history: 'HW 3.05–3.05', spread: 60, shuffle: true, la: 15, ewer: 265, potion: ['Draconian Potion of Mind', 105], ref: 970,
       cardDur: { balance: 15, bole: 15, arrow: 15 }, coRecast: 150,
       stats: { main: 1030, wd: 105, det: 480, crit: 600, speed: 470, piety: 470 }, maxMp: 12240,
       gear: 'a rough Alexander: Gordias Savage set (Mind 1,030, the Gordian Astrometer: 105 magic damage)',

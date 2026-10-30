@@ -8,7 +8,7 @@
 //    2017's job guide (Wayback) and the 4.05 patch notes. ref: scaled from the 4.05 bot by the bigger Balance.
 //  - 4.05–4.18: the Spear lasts 20s, Malefic has a 2.5s cast, Lightspeed costs 25% potency (150s).
 //  - 4.2–4.25: the Spear lasts 30s.
-//  - 4.3–4.38: Malefic 1.5s casts, Aspected Helios 2.5s, Lightspeed −50% MP with no potency cost (120s).
+//  - 4.3–4.36: Malefic 1.5s casts, Aspected Helios 2.5s, Lightspeed −50% MP with no potency cost (120s).
 //  - 4.4–4.58: Minor Arcana and Lord / Lady of Crowns recast 1s (was 5s).
 // Numbers are the game data at 4.11, 4.2, 4.25, 4.38 and 4.58 (xivapi's datamining; there's none before 4.11), and
 // the wiki's patch histories. The tincture is the one of the time: the ungraded Infusion (max 137) to 4.18, Grade 2
@@ -48,7 +48,7 @@
       note: 'Level 70. The Stormblood card game: Balance 10%, the Spear 20s, Royal Road, Spread, Minor Arcana and Sleeve Draw. 2.5s Malefic, Lightspeed costs 25% potency' },
     sb42: { label: 'Stormblood 4.2–4.25', history: 'SB 4.2–4.25', spear: 30, malefic: 2.5, aspHelios: 3, ls: { mp: 0.75, potency: 0.75, recast: 150 }, arcana: 5, gear: 'i370', ref: 3460, tincture: 'mnd2sb',
       note: 'Level 70. As 4.05 with the Spear lasting 30s; Sigmascape gear' },
-    sb43: { label: 'Stormblood 4.3–4.38', history: 'SB 4.3–4.38', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 4020, tincture: 'mnd2sb',
+    sb43: { label: 'Stormblood 4.3–4.36', history: 'SB 4.3–4.36', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 5, gear: 'i370', ref: 4020, tincture: 'mnd2sb',
       note: 'Level 70. 1.5s Malefic casts, Lightspeed −50% MP with no damage cost (120s)' },
     sb44: { label: 'Stormblood 4.4–4.58', history: 'SB 4.4–4.58', spear: 30, malefic: 1.5, aspHelios: 2.5, ls: { mp: 0.5, potency: 1, recast: 120 }, arcana: 1, gear: 'i400', ref: 4900, tincture: 'mnd3sb',
       note: 'Level 70. Minor Arcana and Lord of Crowns on 1s recasts; Alphascape gear' },
