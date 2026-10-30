@@ -5,7 +5,7 @@ A browser game: play a job the way it was in an older patch, on a striking dummy
 ## Play it
 
 - **In your browser:** https://claude.ai/artifact/L442ej3EBeukr669nEVkzi. Nothing to install, and it has the game's own icons and 3D models.
-- **From your own copy:** download this repo (the green **Code** button, then **Download ZIP**, or `git clone`), unzip it and open `BlackMageSim/index.html` in Chrome, Edge or Firefox. Square Enix's files aren't kept on GitHub, so this copy uses the sim's own drawn icons and has no 3D characters. To add the game's, you need FFXIV installed: see [Game icons and models](#game-icons-and-models).
+- **From your own copy:** download this repo (the green **Code** button, then **Download ZIP**, or `git clone`), unzip it and open `BlackMageSim/index.html` in Chrome, Edge or Firefox. The game's icons and models aren't in the repo (about 90 MB, made from your own install), so this copy uses the sim's own drawn icons and has no 3D characters. To add the game's, you need FFXIV installed: see [Game icons and models](#game-icons-and-models).
 
 Then press `J` to pick a job and a patch, `Tab` to target the dummy, and `F1` for the job's opener. The controls are under [Playing](#playing).
 
@@ -181,7 +181,7 @@ python -P -E BlackMageSim/tools/export_models.py
   - **Dummies:** the Thavnairian, Glade, Oasis and Crystarium housing striking dummies. Pick one in Settings.
   - **Animations:** the game's own: each job's battle stance and run (`bt_rod_emp`, `bt_2kt_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`. Iaijutsu plays `cbbm_mgc_sam_1` → `_2lp` → `_3` for Midare, `_3c` for Higanbana and `_3g` for Tenka Goken. Textures shared between the characters are stored once.
 
-`work/` is git-ignored, so Square Enix's files never go into the repo. Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
+`work/` is git-ignored for its size (about 90 MB, rebuilt from your install). Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
 
 To share it, send the link under [Play it](#play-it). The build script also bundles everything into one file, `build/BlackMageSim.html`, that plays when double-clicked; with the game's models and icons it's about 90 MB, too big for Discord or most email:
 
@@ -198,7 +198,7 @@ The build script also writes `build/site/`: the page as `index.html` with its ic
 3. Name the project (the site becomes `name.pages.dev`) and drag in the `build/site` folder.
 4. To update it, run the build script again and upload the folder again to the same project.
 
-The folder holds Square Enix's icons and models, so keep the site free: no ads or paywalls. `build/` is git-ignored, so none of it goes into the repo.
+The folder holds Square Enix's icons and models, so keep the site free: no ads or paywalls. `build/` is git-ignored, like `work/`.
 
 ## What's in it
 
