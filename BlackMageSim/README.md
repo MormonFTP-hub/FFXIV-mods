@@ -20,7 +20,7 @@ The same engine and job modules, with no one at the keyboard: a SimulationCraft-
 
 Fights are Patchwerk or Movement (no casting for a few seconds every so often), with a length and its variance, 1–5 targets, ping or latency compensation, and positional accuracy for melee. The party adds other jobs' raid buffs (Battle Litany, Brotherhood, Dokumori, Battle Voice, Radiant Finale, Technical Finish, Searing Light, Embolden, Starry Muse, Divination, Chain Stratagem, Arcane Circle) where their openers put them and every two minutes after; a job never gets its own buff from the party. Optional: an Astrologian's card and a Dancer's partner buffs.
 
-- **In your browser:** https://striking-dummy.lack-age-im.workers.dev/sim.html. It spreads the iterations over Web Workers, so 1,000 iterations take about a second.
+- **In your browser:** https://striking-dummy.lack-age-im.workers.dev/sim.html (also at https://claude.ai/artifact/TWfwyvDp2z9ZPzXmSg74iE). It spreads the iterations over Web Workers, so 1,000 iterations take about a second.
 - **From the command line**, like `simc` (Node.js):
 
   ```bash
