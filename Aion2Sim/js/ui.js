@@ -227,9 +227,9 @@
   UI.parseText = function (sim) {
     const rows = Object.values(sim.bySkill).sort((a, b) => b.dmg - a.dmg);
     const st = sim.stats;
-    const lines = [`AION 2 dummy parse — ${sim.cls.name}, ${A2.clock(sim.elapsed())}`,
+    const lines = [`AION 2 dummy parse (fan sim, not the game) — ${sim.cls.name}, ${A2.clock(sim.elapsed())}`,
       `${A2.int(sim.dps())} DPS · ${A2.int(sim.total)} damage`,
-      `Attack ${st.attack}, Crit ${st.critHit} (${Math.round(sim.critChance() * 100)}%), skills Lv ${sim.cfg.lvActive} / stigmas Lv ${sim.cfg.lvStigma}`,
+      `Attack ${st.attack}, Critical Hit ${st.critHit} (${Math.round(sim.critChance() * 100)}%), skills Lv ${sim.cfg.lvActive} / passives Lv ${sim.lvP} / stigmas Lv ${sim.cfg.lvStigma}`,
       `Stigmas: ${(sim.cfg.stigmas || []).map((id) => sim.skills[id] && sim.skills[id].name).filter(Boolean).join(', ') || 'none'}`, ''];
     for (const r of rows) lines.push(`${r.name}: ${A2.int(r.dmg)} (${(r.dmg / sim.total * 100).toFixed(1)}%), ${r.hits} hits, ${Math.round(r.crits / r.hits * 100)}% crit`);
     return lines.join('\n');
@@ -269,6 +269,8 @@
     $('lv-active-n').textContent = cfg.lvActive;
     $('lv-stigma').value = cfg.lvStigma;
     $('lv-stigma-n').textContent = cfg.lvStigma;
+    $('lv-passive').value = cfg.lvPassive || cfg.lvActive;
+    $('lv-passive-n').textContent = cfg.lvPassive || cfg.lvActive;
     const max = cls.stigmaSlots || 4;
     const chosen = cfg.stigmas || [];
     $('stig-count').textContent = `${chosen.length} of ${max}`;
@@ -297,23 +299,27 @@
     const ids = cls.bar.concat(chosen).filter((id, i, a) => a.indexOf(id) === i && cls.skills[id] && (cls.skills[id].specs || []).length);
     for (const id of ids) {
       const s = sim.skills[id];
-      const th = s.kind === 'stigma' ? [5, 10, 20] : [8, 12, 20];
+      const stig = s.kind === 'stigma';
+      const th = [8, 12, 20];
       const slots = th.filter((x) => s.level >= x).length;
       const on = (cfg.specs && cfg.specs[id]) || [];
       const div = document.createElement('div');
       div.className = 'spec';
-      div.innerHTML = `<h4><canvas></canvas>${esc(s.name)}<small>${on.filter((i) => s.specs[i] && s.level >= s.specs[i].lv).length} of ${slots} slots</small></h4><div class="opts"></div>`;
+      div.innerHTML = `<h4><canvas></canvas>${esc(s.name)}<small>${stig ? 'on by themselves as it levels' : `${on.filter((i) => s.specs[i] && s.level >= s.specs[i].lv).length} of ${slots} slots`}</small></h4><div class="opts"></div>`;
       const opts = div.querySelector('.opts');
       s.specs.forEach((sp, i) => {
         const can = s.level >= sp.lv;
         const lab = document.createElement('label');
         const inert = !sp.mod && !sp.hook;
+        const rare = /rare stigma/.test(sp.text);
+        const auto = stig && !rare;
         lab.className = (!can || inert) ? 'off' : '';
-        lab.innerHTML = `<input type="checkbox" ${on.indexOf(i) >= 0 ? 'checked' : ''} ${can && !inert ? '' : 'disabled'}><i>Lv ${sp.lv}</i><span>${esc(sp.text)}${inert ? ' (does nothing on a dummy)' : ''}</span>`;
+        const checked = auto ? can : on.indexOf(i) >= 0;
+        lab.innerHTML = `<input type="checkbox" ${checked ? 'checked' : ''} ${can && !inert && !auto ? '' : 'disabled'}><i>${rare ? 'Item' : `Lv ${sp.lv}`}</i><span>${esc(sp.text)}${inert ? ' (does nothing on a dummy)' : ''}</span>`;
         lab.querySelector('input').addEventListener('change', (e) => {
           let list = on.slice();
           if (e.target.checked) {
-            if (list.filter((k) => s.specs[k] && s.level >= s.specs[k].lv).length >= slots) {
+            if (!stig && list.filter((k) => s.specs[k] && s.level >= s.specs[k].lv).length >= slots) {
               e.target.checked = false;
               A2.toast(slots ? `${s.name} has ${slots} specialization ${slots === 1 ? 'slot' : 'slots'} at Lv ${s.level}.` : `${s.name} opens its first specialization slot at Lv ${th[0]}.`);
               return;
@@ -331,14 +337,16 @@
 
   const STAT_FIELDS = [
     ['attack', 'Attack', ''],
-    ['critHit', 'Critical Hit', 'rating'],
+    ['critHit', 'Critical Hit', ''],
+    ['critCap', 'Critical Hit rate cap', '% (50 Global, 80 Korea)'],
     ['critDmg', 'Critical Damage Boost', '%'],
     ['dmgBoost', 'Damage Boost', '%'],
     ['pveBoost', 'PvE Damage Boost', '%'],
     ['backBoost', 'Back Attack Damage Boost', '%'],
-    ['multiHit', 'Multi-Hit chance', '%'],
+    ['frontBoost', 'Front Attack Damage Boost', '%'],
+    ['double', 'Double Chance', '% (a Double hits ×2)'],
+    ['multiHit', 'Multi-Hit Chance', '% (extra 10% strikes)'],
     ['combatSpeed', 'Combat Speed', '%'],
-    ['castSpeed', 'Casting Speed', '%'],
     ['cdr', 'Cooldown Reduction', '%'],
     ['mpMax', 'Max MP', ''],
   ];
@@ -355,18 +363,24 @@
     const f = $('stats-form');
     f.innerHTML = STAT_FIELDS.map(([k, label, unit]) => `<label for="st-${k}">${esc(label)}${unit ? ` <small>${esc(unit)}</small>` : ''}` +
       `<input id="st-${k}" type="number" inputmode="decimal" step="any" value="${cfg.stats[k] == null ? 0 : cfg.stats[k]}" data-k="${k}">` +
-      (k === 'critHit' ? `<small id="st-critpct">${Math.round(sim.critChance() * 100)}% with your passives</small>` : '') + `</label>`).join('');
+      (k === 'critHit' ? `<small id="st-critpct">${Math.round(sim.critChance() * 100)}% critical rate with your passives</small>` : '') + `</label>`).join('');
     f.querySelectorAll('input').forEach((inp) => inp.addEventListener('change', () => {
       const v = parseFloat(inp.value);
       onChange({stats: Object.assign({}, cfg.stats, {[inp.dataset.k]: isFinite(v) ? v : 0})});
     }));
     const d = $('dummy-form');
     d.innerHTML = `<label for="dm-kind">Dummy<select id="dm-kind"><option value="boss">Boss (status immune)</option><option value="field">Field monster (can be stunned)</option></select></label>` +
-      `<label for="dm-red">Boss damage reduction <small>%</small><input id="dm-red" type="number" step="any" value="${cfg.dummy.reduction || 0}"></label>` +
-      `<label for="dm-hp">Dummy HP<select id="dm-hp"><option value="fight">Drains over the parse</option><option value="fixed">Stays at 100%</option></select></label>`;
+      `<label for="dm-red">Boss damage resistance <small>% (scarecrow about 10, bosses 30-65)</small><input id="dm-red" type="number" step="any" value="${cfg.dummy.reduction || 0}"></label>` +
+      `<label for="dm-hp">Dummy HP<select id="dm-hp"><option value="fight">Drains over the parse</option><option value="fixed">Stays at 100%</option></select></label>` +
+      `<label for="dm-stg">Stagger gauge<select id="dm-stg"><option value="solo">Solo (breaks about once a minute)</option><option value="party">A party's worth (breaks often)</option><option value="off">Never breaks (like a scarecrow)</option></select></label>` +
+      `<label for="dm-dot">Damage-over-time tooltips<select id="dm-dot"><option value="total">The number is the whole effect</option><option value="tick">The number is every tick</option></select>` +
+      `<small>The tooltips say "every 1s"; read per tick, the Cleric's DoT stigmas would out-damage every class, so the sim splits the number across the ticks.</small></label>`;
     $('dm-kind').value = cfg.dummy.kind;
     $('dm-hp').value = cfg.dummy.hpMode;
-    const upd = () => onChange({dummy: {kind: $('dm-kind').value, reduction: parseFloat($('dm-red').value) || 0, hpMode: $('dm-hp').value}});
-    ['dm-kind', 'dm-red', 'dm-hp'].forEach((id) => $(id).addEventListener('change', upd));
+    $('dm-stg').value = cfg.dummy.stagger || 'solo';
+    $('dm-dot').value = cfg.dummy.dotMode || 'total';
+    const upd = () => onChange({dummy: {kind: $('dm-kind').value, reduction: parseFloat($('dm-red').value) || 0, hpMode: $('dm-hp').value,
+                                        stagger: $('dm-stg').value, dotMode: $('dm-dot').value}});
+    ['dm-kind', 'dm-red', 'dm-hp', 'dm-stg', 'dm-dot'].forEach((id) => $(id).addEventListener('change', upd));
   };
 })();

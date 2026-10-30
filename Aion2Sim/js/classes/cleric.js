@@ -27,8 +27,8 @@
                          sim.debuff('chain', dur, {name: 'Chain of Torment: damage tolerance -5%', short: 'Tolerance -5%', icon: 'chain', hue: 52, vuln: 5});
                        }},
       condemnation: {anim: 0.7, range: 20, needs: 'chain', onUse(sim, s) { s.mods.crit = !!sim.debuffOn('epCrit'); }},
-      divineAura: {anim: 0.6, range: 20, noHit: true, keep: true, orb: {name: 'Divine Aura', every: 1.25, chance: 1, dur: 5, base: 394, atk: 431.1},
-                   desc: 'An aura beside you that hits the target every so often for 5s (the interval isn\'t published; the sim uses 1.25s).',
+      divineAura: {anim: 0.6, range: 20, noHit: true, keep: true, orb: {name: 'Divine Aura', every: 2, chance: 1, dur: 5, base: 394, atk: 431.1},
+                   desc: 'An aura beside you that hits the target every so often for 5s (the interval isn\'t published; the sim uses the 2s Noble Aura publishes).',
                    specs: {2: {mod: {orbSpeed: 1.5}}, 3: {mod: {orbDur: 3}}}},
       lightningStrikeScattershot: {anim: 0.55, range: 20, needs: 'stagger'},
       bolt: {anim: 0.6, range: 20, chargeTime: 1.6},

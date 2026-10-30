@@ -39,14 +39,15 @@
   // --- reading the log ------------------------------------------------------------------
 
   function allEntries() {
-    if (st.mode === 'local') return st.local.map((e) => Object.assign({by: 'me'}, e));
     const out = [];
-    for (const by in st.docs) for (const e of st.docs[by]) out.push(Object.assign({by}, e));
+    if (st.mode !== 'local') for (const by in st.docs) for (const e of st.docs[by]) out.push(Object.assign({by}, e));
+    // a read-only visitor's own entries stay in their browser and join the shared list on their screen
+    if (st.mode !== 'shared') for (const e of st.local) out.push(Object.assign({by: 'me'}, e));
     return out;
   }
 
   function mine() {
-    return st.mode === 'local' ? st.local : (st.docs[st.uid] || []);
+    return st.mode === 'shared' ? (st.docs[st.uid] || []) : st.local;
   }
 
   function resultKind(s) {
@@ -194,7 +195,7 @@
     if (st.mode === 'shared') {
       m.innerHTML = `<b>Shared log.</b> Everyone who opens this page's link sees these leaders, and your entries go to the same list.`;
     } else if (st.mode === 'readonly') {
-      m.innerHTML = `<b>Shared log, read only.</b> You can see everyone's leaders, but only the page's owner and people they let edit can log parties here.`;
+      m.innerHTML = `<b>Shared list, yours in this browser.</b> You see everyone's leaders. Only the page's owner and people they let edit add to the shared list, so the parties you log stay in this browser (Copy CSV sends them to the owner).`;
     } else {
       m.innerHTML = `<b>Saved in this browser.</b> Open the shared page to log to the same list as everyone else, or move your log with Copy CSV and Import.`;
     }
@@ -206,7 +207,7 @@
   }
 
   function canWrite() {
-    return st.mode === 'shared' || st.mode === 'local';
+    return true;   // shared, or kept in this browser
   }
 
   // --- writing ----------------------------------------------------------------------------
@@ -216,7 +217,7 @@
   }
 
   function saveMine(list, by) {
-    if (st.mode === 'local') {
+    if (st.mode !== 'shared') {
       st.local = list;
       store.set(LOCAL_KEY, list);
       render();
@@ -262,6 +263,7 @@
     store.set(PREF_KEY, Object.assign(store.get(PREF_KEY, {}), {server: f.server.value, cls: f.cls.value, content: f.content.value}));
     f.leader.value = '';
     f.note.value = '';
+    f.querySelector('input[name="result"][value="yes"]').checked = true;
     toast(`Logged ${e.leader}: ${{yes: 'took you', no: 'turned you down', kick: 'kicked you'}[e.result]}.`);
     f.leader.focus();
   }

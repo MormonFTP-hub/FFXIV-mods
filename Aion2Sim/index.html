@@ -71,13 +71,16 @@
     <div class="field-row">
       <label for="lv-active">Active skill level <output id="lv-active-n">20</output></label>
       <input id="lv-active" type="range" min="1" max="40" value="20">
-      <label for="lv-stigma">Stigma skill level <output id="lv-stigma-n">10</output></label>
-      <input id="lv-stigma" type="range" min="1" max="40" value="10">
+      <label for="lv-passive">Passive skill level <output id="lv-passive-n">11</output></label>
+      <input id="lv-passive" type="range" min="1" max="40" value="11">
+      <label for="lv-stigma">Stigma skill level <output id="lv-stigma-n">7</output></label>
+      <input id="lv-stigma" type="range" min="1" max="40" value="7">
     </div>
+    <p class="fine">Top players on the global servers sit around Lv 12-13 on actives, 11 on passives and 6-7 on stigmas: points stop at 10, and Daevanion boards and gear add the rest.</p>
     <h3>Stigmas <small id="stig-count"></small></h3>
     <div id="stigma-list" class="pick-list"></div>
     <h3>Specializations</h3>
-    <p class="fine">Each skill opens a specialization slot at skill level 8, 12 and 20. Ones that do nothing on a dummy are greyed out.</p>
+    <p class="fine">Actives open a specialization slot at skill level 8, 12 and 20. A stigma's specializations switch on by themselves at Lv 5, 10, 15 and 20; the fifth comes from a rare stigma item, so tick it if you have one. Ones that do nothing on a dummy are greyed out.</p>
     <div id="spec-list" class="spec-list"></div>
   </section>
 
@@ -137,7 +140,8 @@
         <dt>Menu</dt><dd><kbd>C</kbd> class, <kbd>B</kbd> build, <kbd>V</kbd> stats, <kbd>L</kbd> leaders, <kbd>R</kbd> reset, <kbd>P</kbd> auto-play, <kbd>Esc</kbd> closes a panel.</dd>
       </dl>
       <p><b>Leaders</b> keeps a list of the party leaders who took you, per server, with how often they said yes, no, or kicked you. Log every application, not just the good ones, so the numbers mean something. Leaders who only ever said no stay off the list.</p>
-      <p class="fine">This is a fan-made practice tool. It doesn't read the game, its traffic or its memory. Skill numbers are from the global client via MetaBot; the timing and the damage formula are estimates, so treat a parse here as practice, not proof.</p>
+      <p><b>The game's own meter.</b> AION 2 has a built-in personal meter, Combat Analysis (<kbd>Ctrl</kbd>+<kbd>X</kbd>). It starts by itself on a Training Scarecrow or a boss and shows your DPS, damage per skill and your critical, Double and back-attack rates. Scarecrows stand at the Dawn Legion Base in Verteron (Elyos) and Safe Haven in Altgard (Asmodian). Meters that read other players' damage are third-party programs that NCSOFT's rules on unauthorized programs can cover, so the built-in one is the safe way to show a leader your numbers.</p>
+      <p class="fine">This is a fan-made practice tool. It doesn't read the game, its traffic or its memory. Skill numbers are from the global client (build 0.0.4387.0) via MetaBot. NCSOFT publishes no damage formula, so the sim uses the community's tested one (crit about 6.66% per 100 Critical Hit up to the 50% cap, ×1.5 crits, ×2 Doubles, damage-over-time that never crits), and animation times are estimates. Treat a parse here as practice, not proof.</p>
     </div>
   </section>
 </div>

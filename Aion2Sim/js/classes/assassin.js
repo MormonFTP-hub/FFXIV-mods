@@ -23,7 +23,7 @@
   function blind(sim, dur) {
     sim.debuff('blind', dur, {name: 'Blind', short: 'Blind', icon: 'eye', hue: 220});
   }
-  function spec(s, i) { return s.specOn.indexOf(i) >= 0 && s.level >= s.specs[i].lv; }
+  function spec(s, i) { return !!(s.specLive && s.specLive[i]); }
   function cut(sim, id, sec) { if (sim.p.cds[id]) sim.p.cds[id] -= sec; }
 
   const skills = {

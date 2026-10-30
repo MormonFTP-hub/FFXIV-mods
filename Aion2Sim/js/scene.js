@@ -42,9 +42,13 @@
   // --- effects the sim asks for -----------------------------------------------------------
 
   S.onDamage = function (ev, sim) {
-    const [x, y] = S.toScreen(sim.tg.x + (Math.random() - 0.5) * 1.2, sim.tg.y, 2.3 + Math.random() * 0.4);
+    // fan fresh numbers out so a burst of hits stays readable
+    const fresh = S.floats.filter((f) => !f.label && f.t < 0.3).length;
+    const lane = fresh % 5;
+    const side = (lane % 2 ? 1 : -1) * Math.ceil(lane / 2);
+    const [x, y] = S.toScreen(sim.tg.x + side * 0.9 + (Math.random() - 0.5) * 0.3, sim.tg.y, 2.3 + (fresh % 3) * 0.45);
     S.floats.push({x, y, t: 0, life: ev.crit ? 1.25 : 1.0, txt: A2.int(ev.amt), crit: ev.crit, back: ev.back,
-                   multi: ev.multi, dot: ev.dot, proc: ev.proc, hue: ev.hue});
+                   multi: ev.multi, dbl: ev.dbl, dot: ev.dot, proc: ev.proc, hue: ev.hue});
     if (S.floats.length > 60) S.floats.shift();
     if (!ev.dot && !ev.proc) S.slashes.push({t: 0, a: Math.random() * Math.PI, hue: ev.hue == null ? S.hue : ev.hue, big: ev.crit});
   };
@@ -311,11 +315,11 @@
       c.strokeText(txt, 0, 0);
       c.fillStyle = color;
       c.fillText(txt, 0, 0);
-      if (f.back || f.multi) {
+      if (f.multi || f.dbl) {
         c.font = `600 11px 'Barlow Semi Condensed', sans-serif`;
-        const tag = [f.back ? 'BACK' : '', f.multi ? `×${f.multi}` : ''].filter(Boolean).join(' ');
+        const tag = [f.dbl ? 'DOUBLE' : '', f.multi ? `+${f.multi}` : ''].filter(Boolean).join(' ');
         c.strokeText(tag, 0, 13);
-        c.fillStyle = f.back ? '#e6bb6a' : '#6cd2ff';
+        c.fillStyle = f.dbl ? '#e6bb6a' : '#6cd2ff';
         c.fillText(tag, 0, 13);
       }
       c.restore();
@@ -334,7 +338,17 @@
     S.hue = sim.cls.hue == null ? 270 : sim.cls.hue;
     sim.tg.flash = Math.max(0, (sim.tg.flash || 0) - dt * 5);
     // draw whichever of the two is further from the camera first
-    if (sim.p.y < sim.tg.y) { drawPlayer(c, sim); drawDummy(c, sim); } else { drawDummy(c, sim); drawPlayer(c, sim); }
+    if (sim.p.y < sim.tg.y) {
+      drawPlayer(c, sim);
+      drawDummy(c, sim);
+      // behind the dummy: show where you are through it
+      const [px, py] = S.toScreen(sim.p.x, sim.p.y, 2.0);
+      const hue = sim.cls.hue == null ? 270 : sim.cls.hue;
+      c.fillStyle = `hsla(${hue} 90% 75% / 0.9)`;
+      c.strokeStyle = 'rgba(0,0,0,0.6)';
+      c.lineWidth = 1.5;
+      c.beginPath(); c.moveTo(px, py + 6); c.lineTo(px - 6, py - 4); c.lineTo(px + 6, py - 4); c.closePath(); c.fill(); c.stroke();
+    } else { drawDummy(c, sim); drawPlayer(c, sim); }
     drawFx(c, sim, dt);
   };
 })();

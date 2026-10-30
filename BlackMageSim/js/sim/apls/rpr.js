@@ -24,7 +24,7 @@ actions+=/communio,if=gauge.lemure=1
 actions+=/grimReaping,if=targets>=3
 actions+=/voidReaping,if=!buff.enhancedCrossReaping.up
 actions+=/crossReaping
-actions+=/shadowOfDeath,if=debuff.deathsDesign.remains<gcd&!buff.enshrouded.up
+actions+=/shadowOfDeath,if=debuff.deathsDesign.remains<gcd&!buff.enshrouded.up&fight.remains>gcd*2
 actions+=/executionersGuillotine,if=targets>=3
 actions+=/executionersGallows,if=buff.enhancedGallows.up
 actions+=/executionersGibbet

@@ -38,5 +38,5 @@
     return sim.hit({id, name, hue, icon: 'star', mods: {}}, Object.assign({base, atk, proc: true, as: id, asName: name}, extra));
   };
 
-  A2.specOn = function (s, i) { return !!(s && s.specOn.indexOf(i) >= 0 && s.level >= s.specs[i].lv); };
+  A2.specOn = function (s, i) { return !!(s && s.specLive && s.specLive[i]); };
 })();

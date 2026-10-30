@@ -19,7 +19,7 @@
     doubleMult: 2,          // a Double hit deals x2 in PvE
     multiHitDmg: 0.1,       // each extra Multi-Hit strike deals 10% of the hit, up to 4 of them
     breakTime: 5,           // "about 5 seconds on most bosses"
-    staggerMax: 300,        // gauge size isn't published; 300 gives a solo player a break every half minute or so
+    staggerMax: 450,        // gauge size isn't published; 450 gives a solo player a break a little over once a minute
     backArc: Math.PI,       // the rear half counts as behind
     variance: 0.04,         // the weapon's min-max roll, roughly
   };
@@ -78,8 +78,11 @@
       s.equipped = s.kind !== 'stigma' || stigmas.has(id);
       s.specOn = (cfg.specs && cfg.specs[id]) || [];
       s.mods = {};
+      // Actives slot their specializations; a stigma's switch on by themselves as it levels (the rare-item ones are picked)
+      s.specLive = (s.specs || []).map((sp, i) => s.level >= sp.lv &&
+        (s.specOn.indexOf(i) >= 0 || (s.kind === 'stigma' && !/rare stigma/.test(sp.text))));
       (s.specs || []).forEach((sp, i) => {
-        if (s.specOn.indexOf(i) >= 0 && s.level >= sp.lv && sp.mod) {
+        if (s.specLive[i] && sp.mod) {
           for (const k in sp.mod) s.mods[k] = typeof sp.mod[k] === 'number' ? (s.mods[k] || 0) + sp.mod[k] : sp.mod[k];
         }
       });

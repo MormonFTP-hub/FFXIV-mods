@@ -8,12 +8,13 @@ BLM.SIM_APLS.vpr = `
 # Viper — Dawntrail 7.05–7.57
 
 # Abilities, woven between GCDs.
-actions=/serpentsTail
+actions=/serpentsIre,if=combat&!buff.reawakened.up
+actions+=/serpentsTail
 actions+=/twinfang,if=buff.huntersVenom.up|buff.poisedForTwinfang.up|buff.fellhuntersVenom.up
 actions+=/twinblood,if=buff.swiftskinsVenom.up|buff.poisedForTwinblood.up|buff.fellskinsVenom.up
 actions+=/twinfang
 actions+=/twinblood
-actions+=/serpentsIre,if=combat
+actions+=/serpentsIre,if=combat                       # while Reawakened, only once the Legacy is out
 actions+=/tincture,if=(time<15&prev_gcd.vicewinder)|(time>15&(cd.serpentsIre.remains<5|cd.serpentsIre.remains>110))
 
 # The opener's first two GCDs: Reaving Fangs, Swiftskin's Sting.

@@ -270,16 +270,18 @@ label.inline { display: inline-flex; gap: 6px; align-items: center; color: var(-
 @media (max-width: 760px) {
   #menu button kbd { display: none; }
   #meter { top: auto; right: auto; left: max(16px, env(safe-area-inset-left, 0px)); width: auto; max-width: 46%; padding: 6px 8px;
-           bottom: calc(196px + env(safe-area-inset-bottom, 0px)); }
+           bottom: calc(166px + env(safe-area-inset-bottom, 0px)); }
   #meter .mbars, #meter .msub { display: none; }
   #meter .mhead b { font-size: 20px; }
   #meter .mfoot { margin-top: 4px; }
   #meter .mfoot button kbd { display: none; }
   #meter .mfoot select, #meter #b-copy, #meter #b-run { display: none; }
   #target { margin-top: 92px; }
-  #player { bottom: calc(132px + env(safe-area-inset-bottom, 0px)); left: auto; right: max(16px, env(safe-area-inset-right, 0px)); transform: none; width: 46%; }
+  #player { bottom: calc(166px + env(safe-area-inset-bottom, 0px)); left: auto; right: max(16px, env(safe-area-inset-right, 0px)); transform: none; width: 46%; }
+  .chips { min-height: 0; }
   #player .pbars { grid-template-columns: 1fr; gap: 4px; }
-  .slot { width: 42px; height: 42px; }
+  .slot { width: 40px; height: 40px; }
+  .hrow { gap: 4px; }
   .slot .t { font-size: 14px; }
   .slot .k { font-size: 10px; }
   #toast { bottom: calc(260px + env(safe-area-inset-bottom, 0px)); }

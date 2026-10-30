@@ -4,11 +4,13 @@
   const A2 = window.A2;
   const $ = (id) => document.getElementById(id);
 
-  // Character sheets to start from. A fresh level 45, a geared one, and a well-geared endgame one.
+  // Character sheets to start from, from the community's reads of global characters (NCSOFT publishes no averages):
+  // a fresh level 45, a mid character (Attack ~900, Critical Hit ~500) and an endgame one (Attack ~1,650, crit at the cap).
+  const BASE = {critCap: 50, frontBoost: 0, castSpeed: 0, cdr: 0, mpMax: 1000};
   A2.PRESETS = {
-    'Fresh 45': {attack: 1400, critHit: 500, critDmg: 0, dmgBoost: 0, pveBoost: 0, backBoost: 0, multiHit: 0, combatSpeed: 0, castSpeed: 0, cdr: 0, mpMax: 1000},
-    'Geared': {attack: 2400, critHit: 900, critDmg: 15, dmgBoost: 8, pveBoost: 8, backBoost: 5, multiHit: 5, combatSpeed: 8, castSpeed: 8, cdr: 0, mpMax: 1000},
-    'Endgame': {attack: 3600, critHit: 1400, critDmg: 35, dmgBoost: 15, pveBoost: 15, backBoost: 10, multiHit: 10, combatSpeed: 15, castSpeed: 15, cdr: 5, mpMax: 1000},
+    'Fresh 45': Object.assign({}, BASE, {attack: 650, critHit: 320, critDmg: 0, dmgBoost: 10, pveBoost: 0, backBoost: 0, double: 5, multiHit: 5, combatSpeed: 10}),
+    'Mid': Object.assign({}, BASE, {attack: 900, critHit: 500, critDmg: 10, dmgBoost: 20, pveBoost: 10, backBoost: 2, double: 12, multiHit: 15, combatSpeed: 20}),
+    'Endgame': Object.assign({}, BASE, {attack: 1650, critHit: 1200, critDmg: 30, dmgBoost: 40, pveBoost: 35, backBoost: 6, double: 28, multiHit: 32, combatSpeed: 55}),
   };
 
   const app = {sim: null, cls: null, cfg: null, auto: false, keys: {}, last: 0};
@@ -16,16 +18,16 @@
 
   function defaults(cls) {
     return {
-      lvActive: 20, lvStigma: 10, stigmas: (cls.defaultStigmas || []).slice(0, cls.stigmaSlots || 4),
+      lvActive: 13, lvPassive: 11, lvStigma: 7, stigmas: (cls.defaultStigmas || []).slice(0, cls.stigmaSlots || 4),
       specs: JSON.parse(JSON.stringify(cls.defaultSpecs || {})),
-      stats: Object.assign({}, A2.PRESETS.Geared),
-      dummy: {kind: 'boss', reduction: 0, hpMode: 'fight'},
+      stats: Object.assign({}, A2.PRESETS.Mid),
+      dummy: {kind: 'boss', reduction: 10, hpMode: 'fight', stagger: 'solo', dotMode: 'total'},
       parseLen: 180,
     };
   }
 
   function loadCfg(cls) {
-    const saved = A2.save.get('cfg.' + cls.id, null);
+    const saved = A2.save.get('cfg2.' + cls.id, null);
     const d = defaults(cls);
     if (!saved) return d;
     const cfg = Object.assign(d, saved);
@@ -36,7 +38,7 @@
   }
 
   function saveCfg() {
-    A2.save.set('cfg.' + app.cls.id, app.cfg);
+    A2.save.set('cfg2.' + app.cls.id, app.cfg);
   }
 
   function makeSim() {
@@ -183,11 +185,13 @@
     $('b-run').addEventListener('click', runParse);
     $('b-copy').addEventListener('click', copyParse);
     $('pull').addEventListener('change', () => { app.cfg.parseLen = +$('pull').value; saveCfg(); reset(); });
-    const lvA = $('lv-active'), lvS = $('lv-stigma');
+    const lvA = $('lv-active'), lvS = $('lv-stigma'), lvP = $('lv-passive');
     lvA.addEventListener('input', () => { $('lv-active-n').textContent = lvA.value; });
     lvS.addEventListener('input', () => { $('lv-stigma-n').textContent = lvS.value; });
+    lvP.addEventListener('input', () => { $('lv-passive-n').textContent = lvP.value; });
     lvA.addEventListener('change', () => change({lvActive: +lvA.value}));
     lvS.addEventListener('change', () => change({lvStigma: +lvS.value}));
+    lvP.addEventListener('change', () => change({lvPassive: +lvP.value}));
   }
 
   function frame(now) {
@@ -207,7 +211,7 @@
     A2.Scene.init($('arena'));
     wire();
     const saved = A2.save.get('class', 'assassin');
-    $('pull').value = String((A2.save.get('cfg.' + saved, {}) || {}).parseLen || 180);
+    $('pull').value = String((A2.save.get('cfg2.' + saved, {}) || {}).parseLen || 180);
     setClass(saved);
     A2.Board.init();
     if (location.hash === '#leaders') A2.UI.open('board-panel');

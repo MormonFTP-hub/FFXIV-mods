@@ -21,7 +21,9 @@
   function spiritSkill(sim, id) {
     const s = sim.skills[id];
     if (!s) return;
-    sim.hit(s, {proc: true, as: 'spirit:' + id, asName: SPIRITS[id].type + ' Spirit skill', pct: sim.debuffOn('dot:jointstrikeCorrode') ? 10 : 0});
+    for (let i = 0; i < (s.hits || 1); i++) {
+      sim.hit(s, {proc: true, as: 'spirit:' + id, asName: SPIRITS[id].type + ' Spirit skill', pct: sim.debuffOn('dot:jointstrikeCorrode') ? 10 : 0});
+    }
     const sp = sim.spirit;
     if (sp) sp.skillReady = sim.t + 3;
     if (sim.has('dimensionalControl')) sim.proc('dimensionalControl', 4);
