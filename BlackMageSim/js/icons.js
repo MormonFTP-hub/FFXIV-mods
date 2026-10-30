@@ -117,10 +117,13 @@
     return (cache[id] = build(art, 64, 64, 7));
   };
 
-  // A status with no game icon of its own borrows the one its `icon` names (Evolved Sky High Ready wears Dragon's Flight's).
+  // A status with no game icon of its own borrows the one its `icon` names (Evolved Sky High Ready wears Dragon's Flight's);
+  // a job with no icons at all names another job's ('st_gnb:heartOfCorundum' for Bastion's Crystal Sphere).
   const borrowed = (key) => {
     const st = B.STATUSES && B.STATUSES[key];
-    return st && st.icon ? gameIcon(`st:${B.jobId}:${st.icon.replace(/^st_/, '')}`) : null;
+    if (!st || !st.icon) return null;
+    const base = st.icon.replace(/^st_/, '');
+    return gameIcon(base.includes(':') ? 'st:' + base : `st:${B.jobId}:${base}`);
   };
 
   // Stacking statuses (Triplecast) have one game icon per stack count, with the number drawn in.
@@ -144,6 +147,7 @@
     const g = gameIcon('job:' + jobId) || (jobId === 'blm' && gameIcon('job'));
     if (g) return g;
     if (jobId === 'sam') return samCrest();
+    if (jobId === 'bas') return basCrest();
     if (cache.job) return cache.job;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
       `<defs><radialGradient id="j" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#7b5cc4"/><stop offset="1" stop-color="#1c1035"/></radialGradient></defs>` +
@@ -163,5 +167,16 @@
       `<path d="M14 50 C26 36 38 24 52 12 L54 14 C42 28 30 40 17 53 Z" fill="#eef2f6" stroke="#2a1a14" stroke-width="1"/>` +
       `<path d="M14 50 L20 44 L23 47 L17 53 Z" fill="#2a1a14"/><rect x="19" y="41" width="9" height="3" transform="rotate(-45 23 42)" fill="#d9b24a"/></svg>`;
     return (cache.samJob = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+  }
+
+  // Bastion (Evercold) has no game crest yet: two greatshields, crossed.
+  function basCrest() {
+    if (cache.basJob) return cache.basJob;
+    const shield = (rot) => `<path transform="rotate(${rot} 32 34)" d="M32 10 L46 15 C46 30 41 44 32 54 C23 44 18 30 18 15 Z" fill="#c9d6e4" stroke="#14202c" stroke-width="1.5"/>` +
+      `<path transform="rotate(${rot} 32 34)" d="M32 15 L32 48" stroke="#5f86b0" stroke-width="2.5"/>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
+      `<defs><radialGradient id="j" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#4f7fae"/><stop offset="1" stop-color="#0c1a2b"/></radialGradient></defs>` +
+      `<circle cx="32" cy="32" r="30" fill="url(#j)" stroke="#d6e6f6" stroke-width="2"/>` + shield(-22) + shield(22) + `</svg>`;
+    return (cache.basJob = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
   }
 })(window.BLM);
