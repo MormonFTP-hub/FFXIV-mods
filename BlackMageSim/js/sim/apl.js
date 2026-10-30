@@ -65,6 +65,7 @@
       const head = p[0];
       switch (head) {
         case 'time': return (c) => c.e.now - c.t0;
+        case 'now': return (c) => c.e.now;     // the engine's own clock, for gauge timers kept in it (gauge.lilyAt-now)
         case 'remains': return (c) => Math.max(0, c.end - c.e.now);
         case 'fight':
           if (p[1] === 'remains') return (c) => Math.max(0, c.end - c.e.now);
@@ -269,6 +270,7 @@
 
   const HELP = [
     ['time', 'seconds since the pull'],
+    ['now', 'the engine clock, for a gauge timer stored as a time (gauge.lilyAt-now)'],
     ['remains / fight.remains', 'seconds left in this iteration\'s fight'],
     ['targets', 'enemies in reach (Fight → Targets)'],
     ['gcd, gcd.remains, gcd.ready', 'the GCD\'s length, time until it\'s ready'],

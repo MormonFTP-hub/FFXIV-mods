@@ -297,7 +297,8 @@
     const ids = cls.bar.concat(chosen).filter((id, i, a) => a.indexOf(id) === i && cls.skills[id] && (cls.skills[id].specs || []).length);
     for (const id of ids) {
       const s = sim.skills[id];
-      const slots = (s.level >= 8) + (s.level >= 12) + (s.level >= 20);
+      const th = s.kind === 'stigma' ? [5, 10, 20] : [8, 12, 20];
+      const slots = th.filter((x) => s.level >= x).length;
       const on = (cfg.specs && cfg.specs[id]) || [];
       const div = document.createElement('div');
       div.className = 'spec';
@@ -314,7 +315,7 @@
           if (e.target.checked) {
             if (list.filter((k) => s.specs[k] && s.level >= s.specs[k].lv).length >= slots) {
               e.target.checked = false;
-              A2.toast(slots ? `${s.name} has ${slots} specialization ${slots === 1 ? 'slot' : 'slots'} at Lv ${s.level}.` : `${s.name} opens its first specialization slot at Lv 8.`);
+              A2.toast(slots ? `${s.name} has ${slots} specialization ${slots === 1 ? 'slot' : 'slots'} at Lv ${s.level}.` : `${s.name} opens its first specialization slot at Lv ${th[0]}.`);
               return;
             }
             list.push(i);

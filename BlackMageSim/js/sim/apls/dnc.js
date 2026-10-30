@@ -35,20 +35,22 @@ actions+=/fanDance2,if=targets>=3&(gauge.feathers>=4|buff.technicalFinish.up|(ga
 actions+=/fanDance,if=gauge.feathers>=4|buff.technicalFinish.up|(gauge.feathers>=3&cd.technicalStep.remains>15)|fight.remains<10
 
 # Weaponskills: the dances first, on their recasts.
-actions+=/technicalStep,if=cd.standardStep.remains>2|buff.standardFinish.remains>20
+actions+=/technicalStep
+actions+=/tillana,if=buff.technicalFinish.up&gauge.esprit<50
+actions+=/danceOfTheDawn
+actions+=/lastDance,if=cd.standardStep.remains<gcd&(buff.finishingMoveReady.up|cd.technicalStep.remains>5)
 actions+=/finishingMove,if=cd.technicalStep.remains>2|buff.technicalFinish.up
-actions+=/standardStep,if=!buff.finishingMoveReady.up&(cd.technicalStep.remains>5|buff.standardFinish.remains<6)
+actions+=/standardStep,if=!buff.finishingMoveReady.up&cd.technicalStep.remains>5
 
 # The window's GCDs.
-actions+=/starfallDance,if=buff.flourishingStarfall.remains<gcd*2|buff.technicalFinish.up&!usable.danceOfTheDawn
-actions+=/danceOfTheDawn
+actions+=/starfallDance,if=buff.flourishingStarfall.remains<gcd*2|buff.technicalFinish.up
 actions+=/tillana,if=gauge.esprit<=50
-actions+=/lastDance,if=buff.lastDanceReady.remains<gcd*2|cd.standardStep.remains<gcd|buff.technicalFinish.up
+actions+=/lastDance,if=buff.lastDanceReady.remains<gcd*2|buff.technicalFinish.up
 actions+=/saberDance,if=gauge.esprit>=85|(buff.technicalFinish.up&gauge.esprit>=50)|(buff.danceOfTheDawnReady.up&gauge.esprit>=100)
 actions+=/starfallDance
 actions+=/tillana
 actions+=/lastDance
-actions+=/saberDance,if=gauge.esprit>=50&(cd.technicalStep.remains>20|gauge.esprit>=70)&!buff.danceOfTheDawnReady.up
+actions+=/saberDance,if=gauge.esprit>=50&(cd.technicalStep.remains>20|gauge.esprit>=80)&!buff.danceOfTheDawnReady.up
 
 # Procs (oldest first) and the combo; AoE versions on three or more targets.
 actions+=/bloodshower,if=targets>=3

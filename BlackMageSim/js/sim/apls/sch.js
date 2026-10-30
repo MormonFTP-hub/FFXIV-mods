@@ -21,8 +21,7 @@ actions+=/lucidDreaming,if=mp<8000
 
 # AoE.
 actions+=/biolysis,if=targets>=3&debuff.biolysis.remains<3&fight.remains>15
-# Art of War II (5y around you) can't reach: the simulator stands healers 8y away and Scholar has no gap closer.
-# actions+=/artOfWar2,if=targets>=3
+actions+=/artOfWar2,if=targets>=3
 
 # Single target.
 actions+=/biolysis,if=debuff.biolysis.remains<2.5&fight.remains>12

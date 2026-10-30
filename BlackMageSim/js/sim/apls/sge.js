@@ -4,11 +4,9 @@
 // two-minute windows (time%120) and never left to overcap, Dosis III as filler; Addersgall spent on Druochole for
 // its MP rather than lost, Lucid Dreaming when short. A Phlegma or Toxikon opens a weave for the tincture (Dosis
 // III's hardcast leaves room for one quick ability only).
-// The simulator stands healers 8y from the dummy, outside Phlegma's 6y: Icarus first thing before the pull closes in.
 BLM.SIM_APLS.sge = `
 # Sage — Dawntrail 7.0–7.57
-actions.precombat=icarus
-actions.precombat+=/eukrasia,at=-4
+actions.precombat=eukrasia,at=-4
 actions.precombat+=/toxikon2,at=-0.7
 actions.precombat+=/tincture
 
@@ -37,8 +35,4 @@ actions+=/phlegma3,if=var.window|buff.medicated.up&time>30|cd.phlegma3.charges>=
 actions+=/phlegma3,if=var.want_pot&gcd.ready
 actions+=/toxikon2,if=var.want_pot|mp<800|fight.remains<gauge.sting*gcd+1
 actions+=/dosis3
-# Moving: the instants.
-actions+=/toxikon2,if=moving
-actions+=/phlegma3,if=moving
-actions+=/eukrasia,if=moving&!buff.eukrasia.up&debuff.eukrasianDosis3.remains<15
 `;

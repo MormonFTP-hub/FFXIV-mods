@@ -334,7 +334,7 @@
     pips(sim) { return {n: sim.stacks('insignia'), max: 5, color: 'hsl(300 90% 70%)'}; },
 
     onUse(sim, s) {
-      if (MOVERS.indexOf(s.id) >= 0 && sim.cfg.lvActive >= 17) {
+      if (MOVERS.indexOf(s.id) >= 0) {
         sim.buff('ambushStance', 10, {name: 'Ambush Stance', short: 'Stance', icon: 'eye', hue: 40});
       }
     },
@@ -344,7 +344,7 @@
       const s = ev.s;
       const lv = sim.cfg.lvActive;
       // Heart Gore lights on a critical
-      if (ev.crit && !o.proc && sim.has('heartGore') && lv >= 4) sim.proc('heartGore', 6);
+      if (ev.crit && !o.proc && sim.has('heartGore')) sim.proc('heartGore', 6);
       const ic = sim.buffOn('illusiveClone');
       if (ic && !o.proc) {
         sim.record({id: 'illusiveClone', name: 'Illusive Clone', hue: 300, icon: 'clone'}, Math.round(ev.amt * 0.2), false, false, 0, {});
@@ -354,7 +354,7 @@
       if (o.proc) return;
       // Exploit Weakness: 25% Attack buff, 7% clones on a critical
       const ew = ic ? ic.ew : 1;
-      if (lv >= 6) {
+      {
         if (sim.rand() < 0.25 && sim.icdReady('ewAtk', 1)) sim.buff('ewAtk', 10, {name: 'Exploit Weakness: Attack', short: 'Atk', icon: 'eye', hue: 0, atkPct: sim.pas.ewAtk * ew});
         if (ev.crit && sim.rand() < 0.07 * ew && sim.icdReady('ewClone', 1)) {
           for (let i = 0; i < 5; i++) {
@@ -366,7 +366,7 @@
         }
       }
       // Apply Poison
-      if (lv >= 9 && sim.rand() < 0.15 && sim.icdReady('poison', 1)) {
+      if (sim.rand() < 0.15 && sim.icdReady('poison', 1)) {
         const base = A2.lv(sim.pas.poison, lv);
         const d = sim.debuff('poison', 10, {name: 'Poison', short: 'Poison', icon: 'poison', hue: 120});
         if (d.nextTick == null || d.nextTick > sim.t + 1) d.nextTick = sim.t + 1;
@@ -374,20 +374,20 @@
       }
       // Ambush Stance
       const stance = sim.buffOn('ambushStance');
-      if (stance && lv >= 17 && sim.rand() < 0.5 && sim.icdReady('stance', 1)) {
+      if (stance && sim.rand() < 0.5 && sim.icdReady('stance', 1)) {
         const k = sim.buffOn('abStance') ? 1.5 : 1;
         sim.hit({id: 'ambushStanceHit', name: 'Ambush Stance', hue: 40, icon: 'eye', mods: {}}, {base: A2.lv(sim.pas.stance, lv) * k, atk: 39 * k, proc: true});
       }
       // Determination
-      if (lv >= 25 && sim.tg.hp * 100 <= sim.pas.detHp && sim.icdReady('det', 1)) {
+      if (sim.tg.hp * 100 <= sim.pas.detHp && sim.icdReady('det', 1)) {
         sim.hit({id: 'determination', name: 'Determination', hue: 0, icon: 'target', mods: {}}, {base: A2.lv(sim.pas.det, lv), atk: 37.5, proc: true});
       }
       // Defense Break on a staggered or impact-stunned target
-      if (lv >= 21 && (sim.t < sim.tg.brokenUntil || sim.debuffOn('stun') || sim.debuffOn('knockdown')) && sim.icdReady('defBreak', 20)) {
+      if ((sim.t < sim.tg.brokenUntil || sim.debuffOn('stun') || sim.debuffOn('knockdown')) && sim.icdReady('defBreak', 20)) {
         sim.debuff('defBreak', 10, {name: 'Defense Break', short: 'Def −' + Math.round(sim.pas.defBreak) + '%', icon: 'break', hue: 10, pct: sim.pas.defBreak});
       }
       // Shadow Fall's 5% chance against a target with Incapacitated Immunity
-      if (immune(sim) && sim.has('shadowFall') && lv >= 12 && s.id !== 'shadowFall' && sim.rand() < 0.05) sim.proc('shadowFall', 6);
+      if (immune(sim) && sim.has('shadowFall') && s.id !== 'shadowFall' && sim.rand() < 0.05) sim.proc('shadowFall', 6);
     },
 
     onStep(sim) {

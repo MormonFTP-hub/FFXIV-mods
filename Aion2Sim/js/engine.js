@@ -213,7 +213,7 @@
   };
 
   const STATUS = {knockdown: 'Knocked down', stun: 'Stunned', airborne: 'Airborne', stagger: 'Staggered', frost: 'Frozen',
-                  root: 'Rooted', slow: 'Slowed', blind: 'Blinded'};
+                  root: 'Rooted', slow: 'Slowed', blind: 'Blinded', fireMark: 'under Fire Mark', chain: 'bound by Chain of Torment'};
   /** `needs: 'knockdown'`: usable on a target with that status; against a status-immune boss only when
    * `immuneProc` (the skill's "N% chance to trigger when attacking a target with Incapacitated Immunity") lit it. */
   function gate(sim, s) {
@@ -573,7 +573,8 @@
     const behind = cls.botBehind;
     const tg = sim.tg;
     const a = behind ? tg.face + Math.PI : tg.face;
-    const gx = tg.x + Math.cos(a) * (tg.r + Math.min(want, 2.2)), gy = tg.y + Math.sin(a) * (tg.r + Math.min(want, 2.2));
+    const stand = cls.botStand || Math.min(want, 2.2);
+    const gx = tg.x + Math.cos(a) * (tg.r + stand), gy = tg.y + Math.sin(a) * (tg.r + stand);
     const needMove = (behind && !sim.isBack()) || sim.dist() > want;
     if (needMove && sim.t >= p.lockUntil) p.goal = [gx, gy]; else if (!needMove) p.goal = null;
     if (p.queue || sim.done) return;

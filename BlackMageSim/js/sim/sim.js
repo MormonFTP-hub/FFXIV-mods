@@ -184,7 +184,8 @@
       const e = new SimEngine(settings, job);
       e.raidSnap = raidSnap;
       e.simPositionals = cfg.positionals !== undefined ? +cfg.positionals : 1;
-      e.pos.x = 0; e.pos.z = -(B.isCaster(job) || job.role === 'ranged' ? 8 : 2.4);
+      // Everyone stands at the dummy's edge, as a raid stacks: point-blank AoE (Art of War) and Phlegma reach.
+      e.pos.x = 0; e.pos.z = -2.4;
       e.now = 0;
       e.reset();
       e.gcdEnd = e.lockUntil = 0;

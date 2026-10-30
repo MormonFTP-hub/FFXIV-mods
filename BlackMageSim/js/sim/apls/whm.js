@@ -4,13 +4,12 @@
 // for MP. Lilies are spent one at a time as they would overcap; the Misery they bloom waits for the next Presence of
 // Mind when that is close, and goes before the next Lily would be lost. The tincture goes with Presence of Mind, or
 // earlier when waiting for it would cost a use before the fight ends; an instant GCD (a Lily, Misery) opens the weave.
-// var.lily_in: seconds to the next Lily. gauge.lilyAt is engine time, which is fight time + 6 while nothing in the
-// precombat list is earlier than -5s (the runner's T0).
+// var.lily_in: seconds to the next Lily (gauge.lilyAt is on the engine's clock, `now`).
 BLM.SIM_APLS.whm = `
 # White Mage — Dawntrail 7.4–7.57
 actions.precombat=glare3,at=-1.5
 
-actions=/variable,name=lily_in,value=gauge.lilyAt-time-6
+actions=/variable,name=lily_in,value=gauge.lilyAt-now
 actions+=/variable,name=burst_in,value=cd.presenceOfMind.remains
 actions+=/variable,name=want_pot,value=cd.tincture.ready&(time<10|var.burst_in<3|(fight.remains>285&fight.remains-var.burst_in<285)|fight.remains<var.burst_in+15)
 

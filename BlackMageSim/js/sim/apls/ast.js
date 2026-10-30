@@ -19,7 +19,6 @@ actions+=/variable,name=want_pot,value=cd.tincture.ready&(time<10|var.burst_in<3
 # Abilities, woven between GCDs.
 actions+=/tincture,if=var.want_pot
 actions+=/lightspeed,if=!buff.lightspeed.up&(cd.divination.remains<3|cd.lightspeed.charges>=2|cd.lightspeed.fullin<10|var.want_pot)&time>2
-actions+=/lightspeed,if=!buff.lightspeed.up&movement.in<1.5&movement.in>0
 actions+=/divination,if=time>4&!buff.divining.up
 actions+=/play1,if=var.burst|is.play1.spearDt&cd.divination.remains>17
 actions+=/oracle,if=buff.divining.up
@@ -37,5 +36,4 @@ actions+=/gravity2,if=targets>=3
 # Single target.
 actions+=/combust3,if=debuff.combust3.remains<2.5&fight.remains>12
 actions+=/fallMalefic
-actions+=/combust3,if=moving&debuff.combust3.remains<12
 `;
