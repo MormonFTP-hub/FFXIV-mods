@@ -77,8 +77,10 @@
       this.scene3 = new T.Scene();
       this.camera = new T.PerspectiveCamera(55, 1, 0.1, 300);
 
-      // Dusk: cool moonlight from behind the camera, violet sky fill, a warm bounce from the lanterns.
-      this.scene3.add(new T.HemisphereLight(0x9c8fd0, 0x2e3a26, 0.85));
+      // Dusk: cool moonlight from behind the camera, violet sky fill, a warm bounce from the lanterns. On the game's
+      // map, its daylight instead (see daylight()).
+      this.hemi = new T.HemisphereLight(0x9c8fd0, 0x2e3a26, 0.85);
+      this.scene3.add(this.hemi);
       this.key = new T.DirectionalLight(0xdfe4ff, 1.15);
       this.scene3.add(this.key, this.key.target);
       this.warm = new T.DirectionalLight(0xffb27a, 0.45);
@@ -417,11 +419,27 @@
       this.camera.fov = 2 * Math.atan(sc.H / 2 / sc.F) * 180 / Math.PI;
       this.camera.aspect = sc.W / sc.H;
       this.camera.updateProjectionMatrix();
-      this.key.position.set(c.pos.x - c.r.x * 4, c.pos.y + 6, c.pos.z - c.r.z * 4);
+      const day = this.daylight(sc.mapOn());
+      if (day) this.key.position.set(e.pos.x + B.MAP_SUN.x * 20, B.MAP_SUN.y * 20, e.pos.z + B.MAP_SUN.z * 20);
+      else this.key.position.set(c.pos.x - c.r.x * 4, c.pos.y + 6, c.pos.z - c.r.z * 4);
       this.key.target.position.set(e.pos.x, 1, e.pos.z);
       this.warm.position.set(c.pos.x + c.r.x * 6 + c.f.x * 20, 3, c.pos.z + c.r.z * 6 + c.f.z * 20);
       this.warm.target.position.set(e.pos.x, 1, e.pos.z);
       this.renderer.render(this.scene3, this.camera);
+    }
+
+    // The map's sun and sky on the figures, or the dusk lights.
+    daylight(on) {
+      if (on !== this.day) {
+        this.day = on;
+        this.hemi.color.setHex(on ? 0xd2e6ff : 0x9c8fd0);
+        this.hemi.groundColor.setHex(on ? 0x8a7656 : 0x2e3a26);
+        this.hemi.intensity = on ? 0.95 : 0.85;
+        this.key.color.setHex(on ? 0xfff0d6 : 0xdfe4ff);
+        this.key.intensity = on ? 1.75 : 1.15;
+        this.warm.intensity = on ? 0.2 : 0.45;
+      }
+      return on;
     }
 
     staffTip() { return { x: this.tipWorld.x, y: this.tipWorld.y, z: this.tipWorld.z }; }

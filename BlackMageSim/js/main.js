@@ -168,6 +168,8 @@
       this.scene = new B.Scene(document.getElementById('scene'), this.engine, document.getElementById('fx'));
       this.models = new B.ModelLayer(document.getElementById('models'), this.engine, this.scene, this.store.settings);
       this.scene.models = this.models;
+      this.map = new B.MapLayer(document.getElementById('map'), this.engine, this.scene, this.store.settings);
+      this.scene.map = this.map;
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
       this.ui.setJob();
@@ -189,6 +191,7 @@
     applySettings() {
       this.sfx.setVolume(this.store.settings.volume);
       this.models.setEnabled();
+      this.map.setEnabled();
       this.ui.updateMeter(true);
     },
 
@@ -641,6 +644,7 @@
       }
 
       this.scene.update(dt, dx !== 0 || dz !== 0);
+      this.map.render(dt);
       this.scene.draw();
       this.models.update(dt);
       const hpK = this.enc ? Math.max(1, DUMMY_HP - this.enc.total) / DUMMY_HP : 1;

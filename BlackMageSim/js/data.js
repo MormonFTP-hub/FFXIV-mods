@@ -367,6 +367,7 @@ window.BLM = window.BLM || {};
     slidecastMarker: true,
     showTimeline: true,
     gameModels: true,     // use work/game-models.js when it's there
+    gameMap: true,        // and work/game-map.js (Wolves' Den Pier)
     dummy: 'thavnair',
     dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)

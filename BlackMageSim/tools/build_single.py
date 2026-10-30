@@ -8,7 +8,9 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      model JSON cut into 10 MB string chunks that the last one joins
                      and parses, so every published file stays under the 16 MB limit.
                      The icons (work/game-icons.js, ~18 MB) go next to it as game-icons-0.js,
-                     -1.js, ...: whole icons per file, each file under 10 MB.
+                     -1.js, ...: whole icons per file, each file under 10 MB. The map
+                     (work/game-map.js, from tools/export_map.py) goes next to it the
+                     same way as the models, as game-map-0.js, ...
   DummySimLab.html   the simulator (sim.html) in one file; sim-artifact.html its artifact fragment.
 And a folder:
   site/              a website to upload to a free static host (Cloudflare Pages, GitHub
@@ -51,19 +53,24 @@ def inline(html: str, keep=()) -> str:
 CHUNK = 10 * 1024 * 1024
 
 
-def model_chunks():
-    """Write work/game-models.js to build/ as game-models-N.js chunk files; return their names."""
-    src = (ROOT / "work" / "game-models.js").read_text(encoding="utf-8")
-    text = re.search(r"BLM\.GAME_MODELS = (\{.*\});\s*$", src, re.S).group(1)
-    for old in OUT.glob("game-models-*.js"):
+def model_chunks(stem="game-models", var="GAME_MODELS"):
+    """Write work/<stem>.js to build/ as <stem>-N.js chunk files; return their names (none without the file)."""
+    path = ROOT / "work" / f"{stem}.js"
+    for old in OUT.glob(f"{stem}-*.js"):
         old.unlink()
+    if not path.exists():
+        print(f"skipping {path.name} (not found)")
+        return []
+    src = path.read_text(encoding="utf-8")
+    text = re.search(r"BLM\." + var + r" = (\{.*\});\s*$", src, re.S).group(1)
+    acc = "window.__" + stem.replace("-", "_")
     names = []
     parts = [text[i:i + CHUNK] for i in range(0, len(text), CHUNK)]
     for k, part in enumerate(parts):
-        js = "(window.__gm = window.__gm || []).push(" + json.dumps(part) + ");\n"
+        js = f"({acc} = {acc} || []).push(" + json.dumps(part) + ");\n"
         if k == len(parts) - 1:
-            js += "window.BLM = window.BLM || {};\nBLM.GAME_MODELS = JSON.parse(window.__gm.join(''));\ndelete window.__gm;\n"
-        name = f"game-models-{k}.js"
+            js += f"window.BLM = window.BLM || {{}};\nBLM.{var} = JSON.parse({acc}.join(''));\ndelete {acc};\n"
+        name = f"{stem}-{k}.js"
         (OUT / name).write_text(js, encoding="utf-8")
         names.append(name)
     return names
@@ -130,13 +137,14 @@ def main():
     OUT.mkdir(exist_ok=True)
     (OUT / "BlackMageSim.html").write_text(inline(src), encoding="utf-8")
     chunks = model_chunks()
+    maps = model_chunks("game-map", "GAME_MAP")
     icons = icon_chunks()
-    keep = {"work/game-models.js": chunks, "work/game-icons.js": icons}
+    keep = {"work/game-models.js": chunks, "work/game-map.js": maps, "work/game-icons.js": icons}
     page = inline(src, keep=keep)
     (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
-    site(page, [*icons, *chunks])
+    site(page, [*icons, *chunks, *maps])
     sim_lab()
-    for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks):
+    for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks, *maps):
         print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
     files = sorted(SITE.iterdir())
     print(f"{SITE}  {len(files)} files, {sum(f.stat().st_size for f in files) / 1024 / 1024:.0f} MB, "

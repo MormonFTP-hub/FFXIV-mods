@@ -75,6 +75,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
       if (this.models) this.models.resize(this.W, this.H, dpr);
+      if (this.map) this.map.resize(this.W, this.H, dpr);
       if (this.cam) this.updateCamera(0);
     }
 
@@ -158,6 +159,7 @@
     }
 
     modelsOn() { return !!(this.models && this.models.active()); }
+    mapOn() { return !!(this.map && this.map.active()); }
 
     toCam(x, y, z) {
       const d = { x: x - this.cam.pos.x, y: y - this.cam.pos.y, z: z - this.cam.pos.z };
@@ -695,15 +697,22 @@
       this.ctx = this.bgCtx;
       const far = this.toCam(this.cam.pos.x + Math.sin(this.camYaw) * 1e4, 0, this.cam.pos.z + Math.cos(this.camYaw) * 1e4);
       const horizon = this.fromCam(far).y;
-      this.drawSky(horizon);
-      this.drawGround(horizon);
+      // With the game's map drawn below, this canvas keeps only what lies on the ground.
+      const mapOn = this.mapOn();
+      if (mapOn) {
+        this.ctx.clearRect(0, 0, W, H);
+        this.drawGroundMarks();
+      } else {
+        this.drawSky(horizon);
+        this.drawGround(horizon);
+      }
 
       // Billboards sorted far to near. With the game's models drawn in 3D between the two canvases, decor nearer
       // than the mage goes on the effects canvas so it still covers him.
       const p = this.e.pos;
       const pc = this.toCam(p.x, this.jumpY(), p.z);
       const back = [], front = [];
-      for (const d of this.decor) {
+      for (const d of mapOn ? [] : this.decor) {
         const c = this.toCam(d.x, 0, d.z);
         if (c.z > 0.5 && c.z < 70) (models && c.z < pc.z - 0.6 ? front : back).push({ z: c.z, draw: () => this.drawDecor(d, this.fromCam(c)) });
       }
@@ -828,6 +837,10 @@
       if (this.groundPath(0, 0, 7.5, 72)) { ctx.strokeStyle = 'rgba(170,140,255,0.18)'; ctx.stroke(); }
       ctx.restore();
 
+      this.drawGroundMarks();
+    }
+
+    drawGroundMarks() {
       this.drawLeyLines();
       this.drawCastCircle();
       this.drawTargetRing();

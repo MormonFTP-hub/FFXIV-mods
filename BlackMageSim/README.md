@@ -197,12 +197,17 @@ python -P -E BlackMageSim/tools/extract_icons.py
 python -P -E BlackMageSim/tools/export_models.py
 ```
 
+```
+python -P -E BlackMageSim/tools/export_map.py
+```
+
 - **Icons** (`work/game-icons.js`): read from the Action, Status and Item sheets for each job, with each `_hr1` icon decoded. Dawntrail points the rows of actions it removed at the generic removed-action icon, so their Endwalker icons are pinned by number: Sharpcast (002657), Hissatsu: Kaiten (003168), Kaeshi: Higanbana (003181) and Rough Divide (003418).
 - **Models** (`work/game-models.js`, about 70 MB; the binary part is gzipped and the page inflates it as it loads). One Hyur Midlander man per job, resolved and baked by PMP Viewer and skinned to the game's skeleton:
   - **Black Mage:** the Endwalker artifact gear (Archmage's, set 778) and a Moonward Rod.
   - **Samurai:** the Endwalker artifact gear (Sakonji, set 785), a katana in the right hand and its scabbard at the left hip.
   - **Gunbreaker:** the Endwalker artifact gear (Bastion's, set 787) and the Diadochos Gunblade from 6.4, in the gunblade stance (`bt_2gb_emp`).
   - **Dummies:** the Thavnairian, Glade, Oasis and Crystarium housing striking dummies. Pick one in Settings.
+- **Map** (`work/game-map.js`, about 10 MB): Wolves' Den Pier, the whole zone. Every model its layout (`level/bg.lgb`) places, opening its shared groups (`.sgb`) to the bottom, plus the terrain plates (`bgplate/terrain.tera`) and the striking dummies and aetheryte from `level/planmap.lgb`: 2,410 placements of 331 models, each stored once with its placements as matrices. Materials are bg.shpk's colour and normal maps, with the second layer blended in by the vertices' alpha where a material has one. The sea is a water-only model the model reader leaves out, so the page draws it as one plane at its height with its colour and the game's wave normals. The map is turned so one of the pier's dummies (the sim draws its own there) faces where you start, looking out past the ships to the open sea. The page adds a daytime sky, sun shadows and haze. Turn it off in Settings for the dusk training ground.
   - **Animations:** the game's own: each job's battle stance and run (`bt_rod_emp`, `bt_2kt_emp`), plus, for every action, the cast start, loop and release or ability motion its ActionTimeline names. Fire IV plays `cbbm_mgc_blk_1` → `_2lp` → `_3b`. Iaijutsu plays `cbbm_mgc_sam_1` → `_2lp` → `_3` for Midare, `_3c` for Higanbana and `_3g` for Tenka Goken. Textures shared between the characters are stored once.
 
 `work/` is git-ignored for its size (about 90 MB, rebuilt from your install). Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
@@ -507,8 +512,10 @@ Some things are reconstructed rather than read off a 6.x source:
 | `js/main.js` | Input, keybinds, drag and drop, countdown, parse tracking, frame loop |
 | `js/icons.js` | Game icons when extracted, SVG icon art otherwise |
 | `js/models.js` | Draws the game's models with three.js and plays their animations |
+| `js/map.js` | Draws the game's map (Wolves' Den Pier) under everything, with its sky, sea and sun |
 | `tools/extract_icons.py` | Pulls the game's icons from your install into `work/game-icons.js` |
 | `tools/export_models.py` | Pulls each job's character, weapons and animations, and the dummies, into `work/game-models.js` |
+| `tools/export_map.py` | Pulls a zone (Wolves' Den Pier) from your install into `work/game-map.js`: its layout, shared groups, terrain and materials |
 | `tools/build_versions.py` | Turns `docs/job-versions.md` into `js/versions.js` |
 | `tools/build_single.py` | Bundles everything for sharing: one HTML file, the claude.ai page with its icon and model files, and `build/site/`, a folder ready to upload to a static host |
 | `tools/wrangler.jsonc` | Cloudflare settings for the sim's website: `npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc` uploads `build/site` |
@@ -517,6 +524,7 @@ Some things are reconstructed rather than read off a 6.x source:
 
 ## Changelog
 
+- **2.43.0**: The game's own map. You now stand on Wolves' Den Pier, exported whole from your install (`tools/export_map.py`): the deck with its rails and rope walkways, the moored ships, Limsa's cliffs and the open sea, with three of the pier's own striking dummies around yours. A daytime sky, the sun with its shadows, haze toward the horizon and a moving sea; your character is lit by the same sun. Ground markers (the target ring, Ley Lines, cast circles) draw on the deck as before. Settings → Map turns it off for the old dusk training ground.
 - **2.42.0**: NoClippy / XivAlexander is on by default (also for anyone with saved settings, once); untick it in Settings for the vanilla client's ping. Pictomancer: Starry Muse grants Starstruck right away, as in the game, so Star Prism goes in the burst (it used to wait for all five Hyperphantasia); Star Prism is 60% less for other targets in 7.0–7.05 (70% from 7.4). Endwalker Dragoon's AoE uses the 6.x numbers (Doom Spike 110, Sonic Thrust 120 and Coerthan Torment 150 in combo, not Shadowbringers' 170 / 200 / 230), and Coerthan Torment grants Draconian Fire for Draconian Fury (130, a Firstminds' Focus).
 - **2.41.0**: Every job's hover tooltips read through and fixed, version by version: hundreds of the 7,478 changed. The header says what the action is in the game: Red Mage's melee combo, Samurai's Iaijutsu and Kaeshi and Heavensward Machinist's shots are weaponskills; Dark Knight's Unmend, Unleash and Stalwart Soul, Paladin's Blades and Reaper's Harpe, Communio and Harvest Moon are spells; Ninjutsu are abilities; role actions before 4.0 are plain abilities. The header shows the action's real range, and the Recast box its real recast. A version's potency change now updates its description's numbers too. Descriptions follow each version: Black Mage's Astral Fire, Umbral Ice, Firestarter and Thundercloud timers match the version (10s in ARR, 13s in Stormblood, none in 7.2); each era's potion has its own item text (X-Potion to Gemdraught); Dawntrail's level-100 role traits are in (Feint, Addle and Reprisal 15s, Second Wind 800). Names: Concitation, Eukrasian Prognosis II, Tengentsu, and Viper's launch names (Dread Fangs, Dreadwinder). Every Blue Mage spell has a proper tooltip at each cap, and its point-blank spells, self buffs and melee spells reach as in the game. Leftover sim notes are gone from descriptions, and later patches' actions no longer appear in earlier versions' text. Fixes: Viper's Twinfang and Twinblood bites counted as GCDs (they're oGCDs again); Endwalker Dragoon's Sonic Thrust grants Power Surge; Kassatsu has one charge in 5.0; Monk's Elixir Field, Rising Phoenix and Elixir Burst hit around you; Shadowbringers Monk's Feint recasts in 90s; Surecast, Feint, Addle and Reprisal last as long as their tooltips say.
 - **2.40.0**: The hotbar setup does the abilities too, in the same pass: every GCD, then every ability, role action and tincture, with a row for each in the window. **Finish here** puts everything not asked yet in its usual slot.

@@ -802,6 +802,7 @@ ${job.helpHtml(seq, ic)}
       bind('#s-slide', 'slidecastMarker', el => el.checked);
       bind('#s-timeline', 'showTimeline', el => el.checked);
       bind('#s-models', 'gameModels', el => el.checked);
+      bind('#s-map', 'gameMap', el => el.checked);
       bind('#s-follow', 'cameraFollow', el => el.checked);
       bind('#s-mouse', 'mouseSpeed', el => parseFloat(el.value), 'input');
       const dummies = (B.GAME_MODELS && B.GAME_MODELS.dummies) || {};
@@ -828,6 +829,8 @@ ${job.helpHtml(seq, ic)}
       $('#s-slide').checked = s.slidecastMarker;
       $('#s-timeline').checked = s.showTimeline;
       $('#s-models').checked = s.gameModels;
+      $('#s-map').checked = s.gameMap;
+      $('#s-map').disabled = !(window.THREE && B.GAME_MAP);
       $('#s-follow').checked = s.cameraFollow;
       $('#s-mouse').value = String(s.mouseSpeed);
       $('#s-models').disabled = !(B.GAME_MODELS && window.THREE);
