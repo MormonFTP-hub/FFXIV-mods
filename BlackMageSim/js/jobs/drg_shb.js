@@ -32,9 +32,9 @@
     return {
       trueThrust: ws({ name: 'True Thrust', potency: 290, comboStart: true, comboNext: true, desc: 'Delivers an attack with a potency of 290.\n※Action changes to Raiden Thrust when Raiden Thrust Ready.' }),
       raidenThrust: ws({ name: 'Raiden Thrust', potency: 330, comboStart: true, comboNext: true, comboAs: 'trueThrust', fx: 'gnbBurst', desc: 'Delivers an attack with a potency of 330.\nCan only be executed when Raiden Thrust Ready.\nCombos into Vorpal Thrust and Disembowel like True Thrust.' }),
-      vorpalThrust: ws({ name: 'Vorpal Thrust', potency: 140, comboPotency: 350, comboFrom: 'trueThrust', comboNext: true, desc: 'Delivers an attack with a potency of 140.\nCombo Action: True Thrust\nCombo Potency: 350' }),
+      vorpalThrust: ws({ name: 'Vorpal Thrust', potency: 140, comboPotency: 350, comboFrom: 'trueThrust', comboNext: true, desc: 'Delivers an attack with a potency of 140.\nCombo Action: True Thrust or Raiden Thrust\nCombo Potency: 350' }),
       fullThrust: ws({ name: 'Full Thrust', potency: 100, comboPotency: 530, comboFrom: 'vorpalThrust', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Vorpal Thrust\nCombo Potency: 530\nCombo Bonus: Grants Sharper Fang and Claw if under the effect of Blood of the Dragon or Life of the Dragon\nDuration: 10s' }),
-      disembowel: ws({ name: 'Disembowel', potency: 150, comboPotency: 320, comboFrom: 'trueThrust', comboNext: true, desc: `Delivers an attack with a potency of 150.\nCombo Action: True Thrust\nCombo Potency: 320\nCombo Bonus: Increases damage dealt by 10%\nDuration: ${V.disembowel}s` }),
+      disembowel: ws({ name: 'Disembowel', potency: 150, comboPotency: 320, comboFrom: 'trueThrust', comboNext: true, desc: `Delivers an attack with a potency of 150.\nCombo Action: True Thrust or Raiden Thrust\nCombo Potency: 320\nCombo Bonus: Increases damage dealt by 10%\nDuration: ${V.disembowel}s` }),
       chaosThrust: ws({ name: 'Chaos Thrust', potency: 100, comboPotency: 290, comboFrom: 'disembowel', positional: 'rear', posBonus: 40, dot: { potency: V.ctDot, duration: 24 }, fx: 'slashFire',
         desc: `Delivers an attack with a potency of 100.\n140 when executed from a target's rear.\nCombo Action: Disembowel\nCombo Potency: 290\nRear Combo Potency: 330\nCombo Bonus: Damage over time\nPotency: ${V.ctDot}\nDuration: 24s\nCombo Bonus: Grants Enhanced Wheeling Thrust if under the effect of Blood of the Dragon or Life of the Dragon\nDuration: 10s` }),
       fangAndClaw: ws({ name: 'Fang and Claw', potency: V.fc, positional: 'flank', posBonus: 40, fx: 'gnbBurst', desc: `Delivers an attack with a potency of ${V.fc}.\n${V.fc + 40} when executed from a target's flank.\nCan only be executed while under the effects of Sharper Fang and Claw and either Blood of the Dragon or Life of the Dragon.\nAdditional Effect: Extends Blood of the Dragon duration by 10s to a maximum of 30s\nAs the fifth hit (after Wheeling Thrust): +${V.fifth} potency, and from the flank it grants Raiden Thrust Ready.` }),
@@ -54,7 +54,8 @@
       lifeSurge: ab({ name: 'Life Surge', recast: 45, desc: 'Ensures critical damage for first weaponskill used while Life Surge is active.\nDuration: 5s\nEffect cannot be applied to damage over time.' }),
       lanceCharge: ab({ name: 'Lance Charge', recast: 90, desc: 'Increases damage dealt by 15%.\nDuration: 20s' }),
       battleLitany: ab({ name: 'Battle Litany', recast: 180, desc: 'Increases critical hit rate of self and nearby party members by 10%.\nDuration: 20s' }),
-      dragonSight: ab({ name: 'Dragon Sight', recast: 120, desc: 'Grants Right Eye to self, increasing damage dealt by 10%. Also grants target party member Left Eye (+5%).\nDuration: 20s\nHere, with no party, only Right Eye.' }),
+      // Alone on the dummy only Right Eye matters.
+      dragonSight: ab({ name: 'Dragon Sight', recast: 120, desc: 'Grants Right Eye to self, increasing damage dealt by 10%. Also grants target party member Left Eye (+5%).\nDuration: 20s' }),
       elusiveJump: ab({ name: 'Elusive Jump', recast: 30, lock: 0.8, desc: 'Executes a jump to a location 15 yalms behind you.\nCannot be executed while bound.' }),
       ...B.ROLE_ACTIONS.melee,
       ...B.GENERAL_ACTIONS,
