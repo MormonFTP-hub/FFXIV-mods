@@ -193,11 +193,13 @@ python BlackMageSim/tools/build_single.py
 
 The build script also writes `build/site/`: the page as `index.html` with its icon and model files beside it (11 files, about 92 MB, none over 12 MB). Any free static host can serve that folder as it is.
 
-The sim's own site, https://striking-dummy.lack-age-im.workers.dev, is that folder on Cloudflare (free, files up to 25 MB). To update it after a build, from the repo root, with Node.js installed and `npx wrangler login` done once:
+The sim's own site, https://striking-dummy.lack-age-im.workers.dev, is that folder on Cloudflare (free, files up to 25 MB). After any change to the sim, one command rebuilds it, uploads the site, checks the live page matches the build, and pushes the repo to GitHub (Node.js installed and `npx wrangler login` done once):
 
 ```
-npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc
+powershell -ExecutionPolicy Bypass -File BlackMageSim/tools/publish.ps1
 ```
+
+`-NoBuild` uploads `build/site` as it is; `-NoGitHub` leaves the push to the automatic backup. It's a PowerShell script because Wrangler started from the Microsoft Store Python can't see the saved sign-in. The upload on its own is `npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc`, from the repo root.
 
 `tools/wrangler.jsonc` names the site, points it at `build/site` and turns off Cloudflare's per-version preview addresses, so only the current upload is reachable. Wrangler keeps a cache (with your account name) in a `.wrangler` folder where it runs; it's git-ignored, and the build writes a `.assetsignore` into `build/site` so it's never uploaded.
 
@@ -479,6 +481,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | `tools/build_versions.py` | Turns `docs/job-versions.md` into `js/versions.js` |
 | `tools/build_single.py` | Bundles everything for sharing: one HTML file, the claude.ai page with its icon and model files, and `build/site/`, a folder ready to upload to a static host |
 | `tools/wrangler.jsonc` | Cloudflare settings for the sim's website: `npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc` uploads `build/site` |
+| `tools/publish.ps1` | After any change: rebuilds the sim, uploads `build/site` to the website, checks the live page, and pushes the repo to GitHub |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog
