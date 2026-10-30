@@ -10,14 +10,15 @@
 (function (B) {
   const EPS = 1e-6;
   const BARREL_CAST = 1.5;      // nothing says how long; an estimate
-  const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.5, fx: 'gnbShot', shot: true, cast: BARREL_CAST }, o);
+  // Weaponskills, though the Gauss Barrel gives them a cast (type only sets the tooltip's header).
+  const ws = (o) => Object.assign({ kind: 'gcd', type: 'Weaponskill', target: true, range: 25, delay: 0.5, fx: 'gnbShot', shot: true, cast: BARREL_CAST }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const ACTIONS = {
     splitShot: ws({ name: 'Split Shot', potency: 140, tp: 60, comboStart: true, comboNext: true, slugProc: true, desc: 'Delivers an attack with a potency of 140.\nAdditional Effect: 50% chance of increasing next Slug Shot potency by 80\nGauss Barrel Effect: Next Slug Shot will have no cast time\nDuration: 10s\nAmmunition Effect: 100% chance of increasing next Slug Shot potency' }),
     slugShot: ws({ name: 'Slug Shot', potency: 100, comboPotency: 180, comboFrom: 'splitShot', comboNext: true, tp: 60, cleanProc: true, desc: 'Delivers an attack with a potency of 100.\nSplit Shot Combo Potency: 180\nAdditional Effect: 50% chance of increasing next Clean Shot potency by 100\nGauss Barrel Effect: Next Clean Shot will have no cast time\nDuration: 10s\nAmmunition Effect: 100% chance of increasing next Clean Shot potency' }),
     cleanShot: ws({ name: 'Clean Shot', potency: 100, comboPotency: 200, comboFrom: 'slugShot', tp: 60, desc: 'Delivers an attack with a potency of 100.\nSlug Shot Combo Potency: 200' }),
     hotShot: ws({ name: 'Hot Shot', potency: 120, tp: 70, breaksCombo: true, desc: 'Delivers an attack with a potency of 120.\nAdditional Effect: Increases physical damage dealt by 5%\nDuration: 30s' }),
-    leadShot: ws({ name: 'Lead Shot', potency: 40, tp: 70, breaksCombo: true, dot: { potency: 45, duration: 30 }, desc: 'Delivers an attack with a potency of 40.\nAdditional Effect: Damage over time\nPotency: 45\nDuration: 30s (Lodged Lead)' }),
+    leadShot: ws({ name: 'Lead Shot', potency: 40, tp: 70, breaksCombo: true, dot: { potency: 45, duration: 30 }, desc: 'Delivers an attack with a potency of 40.\nAdditional Effect: Damage over time\nPotency: 45\nDuration: 30s' }),
     spreadShot: ws({ name: 'Spread Shot', potency: 100, tp: 130, range: 12, aoe: true, breaksCombo: true, desc: 'Delivers an attack with a potency of 100 to all enemies in a cone before you.' }),
     grenadoShot: ws({ name: 'Grenado Shot', potency: 120, tp: 160, aoe: true, breaksCombo: true, fx: 'gnbBurst', desc: 'Delivers an attack with a potency of 120 to target and all enemies nearby it.' }),
     reload: ab({ name: 'Reload', recast: 60, desc: 'Loads firearm with five rounds of special ammunition. One round is used each time a weaponskill is executed, increasing its potency by 20. Ammunition also makes Split Shot\'s and Slug Shot\'s additional effects certain.\nNo more than five rounds can be loaded.' }),
@@ -29,7 +30,7 @@
     suppressiveFire: ab({ name: 'Suppressive Fire', recast: 25, cdGroup: 'graze', potency: 100, target: true, range: 5, delay: 0.4, desc: 'Delivers an attack with a potency of 100.\nAdditional Effect: Stun\nDuration: 2s\nShares a recast timer with Head Graze.' }),
     legGraze: ab({ name: 'Leg Graze', recast: 20, cdGroup: 'legs', target: true, range: 25, desc: 'Inflicts Heavy +40% on target.\nDuration: 12s\nShares a recast timer with Foot Graze.' }),
     footGraze: ab({ name: 'Foot Graze', recast: 20, cdGroup: 'legs', target: true, range: 25, desc: 'Binds target.\nDuration: 12s\nShares a recast timer with Leg Graze.' }),
-    wildfire: ab({ name: 'Wildfire', recast: 90, target: true, range: 25, desc: 'Covers target\'s body in a slow-burning pitch. For the next 15s, 25% of the damage you deal is stored, then dealt to the target when the effect ends (Enhanced Wildfire).\nTurret damage doesn\'t count.' }),
+    wildfire: ab({ name: 'Wildfire', recast: 90, target: true, range: 25, desc: 'Covers target\'s body in a slow-burning pitch. For the next 15s, 25% of the damage you deal is stored, then dealt to the target when the effect ends.\nTurret damage doesn\'t count.' }),
     rapidFire: ab({ name: 'Rapid Fire', recast: 90, desc: 'Reduces weaponskill recast to 1.5s.\nGauss Barrel Effect: Weaponskills have no cast time.\nEffect ends upon using 3 weaponskills.\nDuration: 15s' }),
     gaussBarrel: ab({ name: 'Gauss Barrel', recast: 15, desc: 'Equips your firearm with a gauss barrel, increasing damage dealt by 30%. While it\'s equipped, auto-attacks stop and all weaponskills require a cast.\nEffect ends upon reuse.' }),
     gaussRound: ab({ name: 'Gauss Round', recast: 20, potency: 200, target: true, range: 25, delay: 0.5, desc: 'Delivers an attack with a potency of 200.\nCan only be executed with the Gauss Barrel equipped.' }),

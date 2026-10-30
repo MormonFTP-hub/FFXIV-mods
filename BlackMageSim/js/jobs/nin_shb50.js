@@ -69,7 +69,7 @@
       set(A, 'tenChiJin', { recast: 100, ninki: undefined, desc: 'Resets the Ninjutsu recast timer. The next three mudra each execute a Ninjutsu with potency increased by 150%: the first Fuma Shuriken, then the Ninjutsu the signs so far make.\nDuration: 10s\nOnly mudra can be used while it lasts, and the same Ninjutsu can\'t be executed twice.' });
       // One charge (it was Shukuchi that got a second in 5.0).
       set(A, 'kassatsu', { recast: 60, desc: 'Resets the Ninjutsu recast timer while increasing damage for the next Ninjutsu by 30%.\nKaton and Hyoton become Goka Mekkyaku and Hyosho Ranryu.\nDuration: 15s' });
-      A.feint = Object.assign({}, A.feint, { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.x's wording
+      A.feint = Object.assign({}, A.feint, { desc: 'Lowers target\'s strength and dexterity by 10%.\nDuration: 10s' });     // 5.x's wording
       A.bunshin = ab({ name: 'Bunshin', recast: 110, ninki: 80, desc: 'Your shadow becomes animate, attacking enemies each time you execute a weaponskill. Shadow attack potency varies based on the attack executed, but is not affected by combo bonuses.\nMelee Attack Potency: 200\nRanged Attack Potency: 100\nArea Attack Potency: 100\nNinki Gauge increases by 4 each time your shadow lands an attack.\nDuration: 15s\nNinki Gauge Cost: 80' });
       A.meisui = ab({ name: 'Meisui', recast: 60, desc: 'Dispel Suiton, increasing the Ninki Gauge by 40.\nCan only be executed while in combat.' });
       set(A, 'shukuchi', { charges: 2 });

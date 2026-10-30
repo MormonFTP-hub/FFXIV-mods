@@ -77,7 +77,7 @@ ${seq([['ragingStrikes'], ['tincture'], 'bio2', 'miasma', 'bio', ['fester'], ['s
       const A = Object.assign({}, this.actions);
       for (const [k, mp] of Object.entries({ ruin: 80, ruin2: 133, bio2: 186 })) if (A[k]) set(A, k, { mp });
       A.thunder = { name: 'Thunder', kind: 'gcd', school: 'thunder', sound: 'thunder', potency: 30, cast: 2.5, mp: 213, delay: 0.8, target: true, range: 25,
-        dot: { potency: 35, duration: 18 }, desc: 'Deals lightning damage with a potency of 30.\nAdditional Effect: Lightning damage over time\nPotency: 35\nDuration: 18s\n(Thaumaturge cross-class skill)' };
+        dot: { potency: 35, duration: 18 }, desc: 'Deals lightning damage with a potency of 30.\nAdditional Effect: Lightning damage over time\nPotency: 35\nDuration: 18s' };
       if (A.aerialSlash) set(A, 'aerialSlash', { delay: 3.6 });
       if (A.crimsonCyclone) set(A, 'crimsonCyclone', { potency: 105 });
       if (A.flamingCrush) set(A, 'flamingCrush', { potency: 105 });

@@ -20,21 +20,29 @@
       this.levelKey = 100;
       this.model = 'brd-dt';
       const A = Object.assign({}, this.actions);
+      // No damage now; each song's Repertoire effect and the Coda it leaves for Radiant Finale.
+      const REP = {
+        wanderersMinuet: ['Repertoire Effect: Grants a stack for Pitch Perfect (up to 3)', 'Wanderer\'s Coda'],
+        magesBallad: ['Repertoire Effect: Reduces the recast time of Heartbreak Shot and Rain of Death by 7.5s', 'Mage\'s Coda'],
+        armysPaeon: ['Repertoire Effect: Reduces weaponskill cast and recast time and auto-attack delay by 4% per stack (up to 4)', 'Army\'s Coda'],
+      };
       for (const k of ['wanderersMinuet', 'magesBallad', 'armysPaeon']) {
-        set(A, k, { potency: 0, target: false, desc: A[k].desc.replace('Deals unaspected damage with a potency of 100.\nAdditional Effect: Grants', 'Grants').replace(/\nAdditional Effect: Gr.*$/, '') + '\nCan only be executed while in combat.' });
+        set(A, k, { potency: 0, target: false, desc: A[k].desc.replace('Deals unaspected damage with a potency of 100.\nAdditional Effect: Grants', 'Grants').replace(/\nAdditional Effect: Gr.*$/, '')
+          + `\n${REP[k][0]}\nAdditional Effect: Grants ${REP[k][1]}\nCan only be executed while in combat.` });
       }
-      set(A, 'magesBallad', { desc: A.magesBallad.desc + '\nRepertoire Effect: Reduces the recast time of Heartbreak Shot and Rain of Death by 7.5s' });
       set(A, 'refulgentArrow', { ready: undefined, desc: 'Delivers an attack with a potency of 280.\nCan only be executed while under the effect of Hawk\'s Eye or Barrage.\nBarrage: strikes three times.' });
       set(A, 'burstShot', { hawk: true, ssr: undefined, desc: 'Delivers an attack with a potency of 220.\nAdditional Effect: 35% chance of granting Hawk\'s Eye\nDuration: 30s' });
-      set(A, 'causticBite', { hawk: true, ssr: undefined });
-      set(A, 'stormbite', { hawk: true, ssr: undefined });
-      set(A, 'ironJaws', { hawk: true, ssr: undefined });
+      const hawk = (d) => d.replace('35% chance of becoming Straight Shot Ready', '35% chance of granting Hawk\'s Eye');
+      set(A, 'causticBite', { hawk: true, ssr: undefined, desc: hawk(A.causticBite.desc) });
+      set(A, 'stormbite', { hawk: true, ssr: undefined, desc: hawk(A.stormbite.desc) });
+      set(A, 'ironJaws', { hawk: true, ssr: undefined, desc: hawk(A.ironJaws.desc) });
       set(A, 'ladonsbite', { potency: 140, hawk: true, shadow: undefined, desc: 'Delivers an attack with a potency of 140 to all enemies in a cone before you.\nAdditional Effect: 35% chance of granting Hawk\'s Eye\nDuration: 30s' });
       set(A, 'shadowbite', { potency: 200, ready: undefined, desc: 'Delivers an attack with a potency of 200 to target and all enemies nearby it.\nBarrage Potency: 300\nCan only be executed while under the effect of Hawk\'s Eye or Barrage.' });
       set(A, 'apexArrow', { desc: 'Delivers an attack with a potency of 140 to all enemies in a straight line before you.\nSoul Voice Gauge Cost: 20\nPotency increases up to 700 as Soul Voice Gauge exceeds minimum cost.\nAdditional Effect: Grants Blast Arrow Ready at 80 Soul Voice or more\nDuration: 10s' });
       set(A, 'blastArrow', { potency: 700, aoe: 0.5, desc: 'Delivers an attack to all enemies in a straight line before you with a potency of 700 for the first enemy, and 50% less for all remaining enemies.\nCan only be executed while under the effect of Blast Arrow Ready.' });
       A.heartbreakShot = Object.assign({}, A.bloodletter, { name: 'Heartbreak Shot', potency: 180, desc: 'Delivers an attack with a potency of 180.\nMaximum Charges: 3\nShares a recast timer with Rain of Death.' });
       delete A.bloodletter;
+      set(A, 'rainOfDeath', { desc: A.rainOfDeath.desc.replace('Shares a recast timer with Bloodletter.', 'Shares a recast timer with Heartbreak Shot.') });
       set(A, 'pitchPerfect', { aoe: 0.5, desc: 'Delivers an attack to the target and all enemies nearby it. Potency varies with number of Repertoire stacks, 50% less for all remaining enemies.\n1 Repertoire: 100\n2 Repertoire: 220\n3 Repertoire: 360\nCan only be executed while singing the Wanderer\'s Minuet.' });
       set(A, 'empyrealArrow', { potency: 260, desc: 'Delivers an attack with a potency of 260.\nAdditional Effect: Grants a Repertoire proc of the song being sung' });
       set(A, 'sidewinder', { potency: 400, desc: 'Delivers an attack with a potency of 400.' });

@@ -229,7 +229,7 @@ window.BLM = window.BLM || {};
     swiftcast: (e) => e.addStatus('swiftcast', 10),
     lucidDreaming: (e) => e.addStatus('lucidDreaming', 21),
     addle: (e) => e.addTStatus('addle', e.job.actions.addle.dur || 10),
-    surecast: (e) => e.addStatus('surecast', 6),
+    surecast: (e) => e.addStatus('surecast', e.job.actions.surecast.dur || 6),
     trueNorth: (e) => e.addStatus('trueNorth', 10),
     feint: (e) => e.addTStatus('feint', e.job.actions.feint.dur || 10),
     bloodbath: (e) => e.addStatus('bloodbath', 20),
@@ -308,16 +308,19 @@ window.BLM = window.BLM || {};
   };
 
   // What a version's tooltips share: each era's potion text, and level 100's role traits (Feint, Addle and Reprisal
-  // last 15s, Second Wind heals for 800). The job's own table is copied first, since versions share their actions.
+  // last 15s, Second Wind heals for 800). Statuses follow the text (Surecast was 10s before 4.0, 5s in early 4.x).
+  // The job's own table is copied first, since versions share their actions.
   function tidyTips(job) {
     const A = job.actions = Object.assign({}, job.actions);
     const fix = (id, o) => { A[id] = Object.assign({}, A[id], o(A[id])); };
     for (const id of Object.keys(A)) {
       const a = A[id];
       if (a.kind === 'item' && typeof a.desc === 'string' && / of (Strength|Dexterity|Intelligence|Mind)$/.test(a.name || '')) {
-        fix(id, (x) => ({ desc: x.desc.replace(/^This [^\n]*/, B.medicineFlavor(x.name)) }));
+        fix(id, (x) => ({ desc: x.desc.replace(/^(?:This|Temporarily) [^\n]*/, B.medicineFlavor(x.name)) }));
       }
     }
+    const sure = A.surecast && /Duration: (\d+)s/.exec(A.surecast.desc || '');
+    if (sure) fix('surecast', () => ({ dur: +sure[1] }));
     if (job.era !== 'DT' && job.era !== 'EC') return;
     for (const id of ['feint', 'addle', 'reprisal']) {
       if (A[id] && A[id].role && /Duration: 10s/.test(A[id].desc || '')) fix(id, (x) => ({ dur: 15, desc: x.desc.replace('Duration: 10s', 'Duration: 15s') }));

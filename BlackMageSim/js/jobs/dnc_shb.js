@@ -41,7 +41,7 @@
     devilment: ab({ name: 'Devilment', recast: 120, desc: 'Increases critical hit rate and direct hit rate by 20%.\nDuration: 20s\nAdditional Effect: Party member designated as your Dance Partner will also receive the effect of Devilment' }),
     flourish: ab({ name: 'Flourish', recast: 60, desc: 'Grants you the effects of Flourishing Cascade, Flourishing Fountain, Flourishing Windmill, Flourishing Shower, and Flourishing Fan Dance.\nDuration: 20s' }),
     improvisation: ab({ name: 'Improvisation', recast: 120, desc: 'Dance to the beat of your own drum, granting Improvisation to self.\nImprovisation Effect: Continuously increases Esprit Gauge while in combat\nDuration: 15s\nEffect ends upon using another action or moving.' }),
-    closedPosition: ab({ name: 'Closed Position', recast: 30, desc: 'Grants you Closed Position and designates a party member as your Dance Partner, allowing you to share the effects of Standard Finish, Devilment, and Curing Waltz with said party member.\nAlone on a dummy there\'s no one to choose.' }),
+    closedPosition: ab({ name: 'Closed Position', recast: 30, desc: 'Grants you Closed Position and designates a party member as your Dance Partner, allowing you to share the effects of Standard Finish, Devilment, and Curing Waltz with said party member.' }),
     shieldSamba: ab({ name: 'Shield Samba', recast: 120, desc: 'Reduces damage taken by self and nearby party members by 10%.\nDuration: 15s' }),
     curingWaltz: ab({ name: 'Curing Waltz', recast: 60, desc: 'Restores own HP and the HP of all nearby party members.\nCure Potency: 300' }),
     enAvant: ab({ name: 'En Avant', recast: 30, charges: 3, desc: 'Quickly dash 10 yalms forward.\nMaximum Charges: 3' }),

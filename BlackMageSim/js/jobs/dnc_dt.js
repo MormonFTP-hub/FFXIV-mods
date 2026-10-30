@@ -22,7 +22,7 @@
       this.STD = [360, 540, 850];
       this.TECH = [350, 540, 720, 900, 1300];
       const A = Object.assign({}, this.actions);
-      set(A, 'fountain', { potency: 120, desc: 'Delivers an attack with a potency of 120.\nCombo Action: Cascade\nCombo Potency: 280\nCombo Bonus: 50% chance of granting Silken Flow\nDuration: 30s' });
+      set(A, 'fountain', { potency: 120, desc: 'Delivers an attack with a potency of 120.\nCombo Action: Cascade\nCombo Potency: 280\nCombo Bonus: 50% chance of granting Silken Flow\nDuration: 30s\n※Action changes to Entrechat while dancing.' });
       set(A, 'saberDance', { potency: 540, aoe: 0.4, desc: 'Delivers an attack to target and all enemies nearby it with a potency of 540 for the first enemy, and 60% less for all remaining enemies.\nEsprit Gauge Cost: 50\n※Changes to Dance of the Dawn while under the effect of Dance of the Dawn Ready.' });
       set(A, 'standardFinish', { aoe: 0.4, desc: 'Delivers an attack to all nearby enemies. Potency varies with number of successful steps, dealing full potency for the first enemy, and 60% less for all remaining enemies.\n0 Steps: 360\n1 Step: 540\n2 Steps: 850\nAdditional Effect: Grants Standard Finish (+2% / +5% damage), Esprit and Last Dance Ready\nDuration: 60s (Last Dance Ready 30s)' });
       set(A, 'technicalFinish', { aoe: 0.4, desc: 'Delivers an attack to all nearby enemies. Potency varies with number of successful steps, dealing full potency for the first enemy, and 60% less for all remaining enemies.\n0 Steps: 350\n1 Step: 540\n2 Steps: 720\n3 Steps: 900\n4 Steps: 1,300\nAdditional Effect: Grants Technical Finish (+1% to +5% damage) to self and party\nDuration: 20s\nAdditional Effect: Grants Flourishing Finish and Dance of the Dawn Ready\nDuration: 30s' });

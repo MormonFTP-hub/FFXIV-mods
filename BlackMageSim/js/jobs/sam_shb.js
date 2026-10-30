@@ -88,7 +88,7 @@
         set(A, 'shoha', { potency: 400, desc: 'Delivers an attack with a potency of 400.\nCan only be executed after accumulating three stacks of Meditation by executing Iaijutsu, Tsubame-gaeshi, or Meditate while in combat.\nMeditation effect fades upon execution.' });
       }
       set(A, 'trueNorth', { desc: 'Nullifies all action direction requirements.\nDuration: 10s\nMaximum Charges: 2' });
-      set(A, 'feint', { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.x's wording
+      set(A, 'feint', { desc: 'Lowers target\'s strength and dexterity by 10%.\nDuration: 10s' });     // 5.x's wording
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

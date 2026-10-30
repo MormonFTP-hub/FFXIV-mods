@@ -92,7 +92,7 @@
       set(A, 'fistsOfWind', { desc: `Increases movement speed.${V.gl ? '\nAllows Greased Lightning IV.' : ''}\nCannot be used with Fists of Fire or Fists of Earth.` });
       A.anatman = ab({ name: 'Anatman', recast: 60, desc: V.gl ? 'While channeling, extends Greased Lightning to its full duration and raises it to its maximum stacks.' : 'Extends Twin Snakes and your form to their full durations.' });
       set(A, 'trueNorth', { recast: 45, charges: 2, desc: 'Nullifies all action direction requirements.\nDuration: 10s\nMaximum Charges: 2' });
-      set(A, 'feint', { recast: 90, desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.0's Feint
+      set(A, 'feint', { recast: 90, desc: 'Lowers target\'s strength and dexterity by 10%.\nDuration: 10s' });     // 5.0's Feint
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {
