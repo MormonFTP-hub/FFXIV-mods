@@ -1,6 +1,13 @@
-# Striking Dummy Sim (Black Mage, Samurai, Monk, Dragoon, Ninja, Reaper, Viper, Bard, Machinist, Paladin, Warrior, Dark Knight, Gunbreaker, Summoner, Red Mage, Pictomancer, White Mage, Astrologian, Scholar, Sage, Dancer)
+# Striking Dummy Sim (Black Mage, Samurai, Monk, Dragoon, Ninja, Reaper, Viper, Bard, Machinist, Paladin, Warrior, Dark Knight, Gunbreaker, Summoner, Red Mage, Pictomancer, White Mage, Astrologian, Scholar, Sage, Dancer, Blue Mage)
 
 A browser game: play a job the way it was in an older patch, on a striking dummy, at that patch's level cap (60 to 100). Each job version has that patch's kit and numbers, and they all share the game's timing rules: GCD, caster tax, slidecasting, the 0.5s action queue and animation lock. There's also a parse meter, so you can practise openers and loops the way they played back then.
+
+## Play it
+
+- **In your browser:** https://claude.ai/artifact/L442ej3EBeukr669nEVkzi. Nothing to install, and it has the game's own icons and 3D models.
+- **From your own copy:** download this repo (the green **Code** button, then **Download ZIP**, or `git clone`), unzip it and open `BlackMageSim/index.html` in Chrome, Edge or Firefox. Square Enix's files aren't kept on GitHub, so this copy uses the sim's own drawn icons and has no 3D characters. To add the game's, you need FFXIV installed: see [Game icons and models](#game-icons-and-models).
+
+Then press `J` to pick a job and a patch, `Tab` to target the dummy, and `F1` for the job's opener. The controls are under [Playing](#playing).
 
 ## Jobs and versions
 
@@ -176,7 +183,7 @@ python -P -E BlackMageSim/tools/export_models.py
 
 `work/` is git-ignored, so Square Enix's files never go into the repo. Without these files the sim uses its own drawn icons and figures. The models are drawn with three.js r128 from cdnjs, so they need an internet connection, like the fonts. Settings has a switch to turn them off.
 
-To send it to someone, bundle it into one file and send them `build/BlackMageSim.html`; they double-click it to play:
+To share it, send the link under [Play it](#play-it). The build script also bundles everything into one file, `build/BlackMageSim.html`, that plays when double-clicked; with the game's models and icons it's about 90 MB, too big for Discord or most email:
 
 ```
 python BlackMageSim/tools/build_single.py
