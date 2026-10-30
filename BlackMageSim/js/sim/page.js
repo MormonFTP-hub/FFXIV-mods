@@ -15,12 +15,14 @@
     fight: { style: 'patchwerk', duration: 300, variance: 10, targets: 1, iterations: 1000, ping: 50, latencyComp: false, positionals: 100, moveEvery: 30, moveFor: 3 },
     partyPreset: 'standard', party: B.PARTY_PRESETS.standard.slice(), weights: false, sets: '',
     rank: { iterations: 300, duration: 300, partyPreset: 'standard', targets: 1 },
+    search: { time: 120, width: 8 },
   };
   let state;
   try { state = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { state = null; }
   state = Object.assign({}, DEFAULTS, state || {});
   state.fight = Object.assign({}, DEFAULTS.fight, state.fight || {});
   state.rank = Object.assign({}, DEFAULTS.rank, state.rank || {});
+  state.search = Object.assign({}, DEFAULTS.search, state.search || {});
   if (!B.SIM_JOBS.includes(state.job)) state.job = DEFAULTS.job;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* private window */ } };
 
@@ -52,6 +54,7 @@
     <p class="tagline">Thousands of pulls on a striking dummy, at live patch <b>${esc(B.SIM_PATCH)}</b>, with the game's own numbers.</p></div></div>
   <nav class="tabs" role="tablist" aria-label="View">
     <button id="tab-sim" role="tab" data-tab="sim">One job</button>
+    <button id="tab-search" role="tab" data-tab="search">Best rotation</button>
     <button id="tab-rank" role="tab" data-tab="rank">Every job</button>
   </nav>
 </header>
@@ -67,10 +70,10 @@
       <section class="block"><h2>Fight</h2>
         <div class="fields">
           <label class="wide">Style<select id="f-style"><option value="patchwerk">Patchwerk: stand still and hit</option><option value="movement">Movement: no casting for a while every so often</option></select></label>
-          <label>Length (s)<input id="f-duration" type="number" min="30" max="1800" step="10"></label>
-          <label>Length ± %<input id="f-variance" type="number" min="0" max="50" step="1"></label>
+          <label class="simonly">Length (s)<input id="f-duration" type="number" min="30" max="1800" step="10"></label>
+          <label class="simonly">Length ± %<input id="f-variance" type="number" min="0" max="50" step="1"></label>
           <label>Targets<input id="f-targets" type="number" min="1" max="5" step="1"></label>
-          <label>Iterations<input id="f-iterations" type="number" min="10" max="50000" step="100"></label>
+          <label class="simonly">Iterations<input id="f-iterations" type="number" min="10" max="50000" step="100"></label>
           <label>Ping (ms)<input id="f-ping" type="number" min="0" max="500" step="5"></label>
           <label id="lab-pos">Positionals hit %<input id="f-positionals" type="number" min="0" max="100" step="5"></label>
           <label class="mv">Move every (s)<input id="f-moveEvery" type="number" min="5" max="300" step="1"></label>
@@ -83,7 +86,7 @@
         <div id="buffs" class="buffs"></div>
         <p class="muted small">Each buff lands where its job's opener puts it and again every two minutes; your own job's buff comes from your rotation, not from here.</p>
       </section>
-      <section class="block"><h2>Extras</h2>
+      <section class="block simonly"><h2>Extras</h2>
         <label class="check"><input id="o-weights" type="checkbox"> Stat weights (one more run per stat)</label>
         <details id="sets-box"><summary>Profile sets: compare gear changes</summary>
           <p class="muted small">One set per line. <code>+</code> or <code>−</code> changes a stat, a plain number sets it. Stats: main, wd, crt, det, dh, sks (or sps), ten.</p>
@@ -97,8 +100,17 @@
         <details><summary>Names you can use in conditions</summary><div class="scroll"><table class="tbl help" id="help"></table></div></details>
         <details><summary>This job's actions and statuses</summary><div id="ids" class="ids"></div></details>
       </section>
-      <div class="runbar"><button id="run" class="primary" type="button">Simulate</button><button id="stop" class="ghost" type="button" hidden>Stop</button>
+      <section class="block searchonly"><h2>Search</h2>
+        <p class="muted small">Tries every GCD that could go at each GCD of the fight, plays the rest of the fight out with the action list to judge it, and keeps the best lines. It can't do worse than the list. Abilities between GCDs still come from the list.</p>
+        <div class="fields">
+          <label>Time limit (s)<input id="q-time" type="number" min="10" max="900" step="10"></label>
+          <label>Lines kept<select id="q-width"><option value="4">4: quick</option><option value="8">8</option><option value="16">16</option><option value="32">32: thorough</option><option value="64">64: slow</option></select></label>
+        </div>
+      </section>
+      <div class="runbar simonly"><button id="run" class="primary" type="button">Simulate</button><button id="stop" class="ghost" type="button" hidden>Stop</button>
         <div class="prog" id="prog" hidden><div class="pbar"><i id="pfill"></i></div><span id="plabel" class="small"></span></div></div>
+      <div class="runbar searchonly"><button id="search-run" class="primary" type="button">Find the best GCD order</button><button id="search-stop" class="ghost" type="button" hidden>Stop</button>
+        <div class="prog" id="qprog" hidden><div class="pbar"><i id="qpfill"></i></div><span id="qplabel" class="small"></span></div></div>
     </div>
     <div id="pane-rank" hidden>
       <section class="block"><h2>Every job</h2>
@@ -115,6 +127,7 @@
     </div>
   </aside>
   <section class="report" id="report" aria-live="polite"></section>
+  <section class="report" id="search-report" aria-live="polite" hidden></section>
   <section class="report" id="rank-report" aria-live="polite" hidden></section>
 </main>
 <footer class="foot"><p>Built on the <a href="https://striking-dummy.lack-age-im.workers.dev">Striking Dummy Sim</a>'s engine and job modules. Damage formula, GCD and animation-lock rules as in game; party buffs on fixed two-minute windows. A fan project, not affiliated with Square Enix.</p></footer>`;
@@ -256,8 +269,11 @@
   function showTab(tab) {
     state.tab = tab; save();
     $$('.tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
-    $('#pane-sim').hidden = tab !== 'sim';
+    $('#pane-sim').hidden = tab !== 'sim' && tab !== 'search';
+    $$('.simonly').forEach(el => { el.hidden = tab !== 'sim'; });
+    $$('.searchonly').forEach(el => { el.hidden = tab !== 'search'; });
     $('#report').hidden = tab !== 'sim';
+    $('#search-report').hidden = tab !== 'search';
     $('#pane-rank').hidden = tab !== 'rank';
     $('#rank-report').hidden = tab !== 'rank';
     if (tab === 'rank' && !rankDone && !busy) runRank();
@@ -283,7 +299,7 @@
           }
           code += `self.onmessage = function (ev) {
   var m = ev.data;
-  try { postMessage({ id: m.id, agg: BLM.Sim.runRange(m.cfg, m.from, m.to, m.stats, m.seq) }); }
+  try { postMessage({ id: m.id, out: m.items ? BLM.Sim.rollouts(m.cfg, m.items) : BLM.Sim.runRange(m.cfg, m.from, m.to, m.stats, m.seq) }); }
   catch (err) { postMessage({ id: m.id, error: String((err && err.stack) || err) }); }
 };`;
           this.url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
@@ -321,13 +337,13 @@
         const t = tasks[id];
         w.onmessage = (ev) => {
           if (ev.data.error) { fail(new Error(ev.data.error)); return; }
-          out[ev.data.id] = ev.data.agg;
-          finished++; iters += t.to - t.from;
+          out[ev.data.id] = ev.data.out;
+          finished++; iters += t.items ? t.items.length : t.to - t.from;
           onDone(iters);
           if (finished === tasks.length) resolve(out); else feed(w);
         };
         w.onerror = (ev) => { ev.preventDefault(); fail(new Error(ev.message || 'worker error')); };
-        w.postMessage({ id, cfg: t.cfg, from: t.from, to: t.to, stats: t.stats || null, seq: !!t.seq });
+        w.postMessage(t.items ? { id, cfg: t.cfg, items: t.items } : { id, cfg: t.cfg, from: t.from, to: t.to, stats: t.stats || null, seq: !!t.seq });
       };
       Pool.workers.forEach(feed);
     });
@@ -341,6 +357,18 @@
     const out = [];
     let iters = 0;
     for (const t of tasks) {
+      if (t.items) {     // rotation-search rollouts, a few at a time
+        const res = [];
+        for (let i = 0; i < t.items.length; i += 4) {
+          if (cancelled) throw new Error('cancelled');
+          res.push(...B.Sim.rollouts(t.cfg, t.items.slice(i, i + 4)));
+          iters += Math.min(4, t.items.length - i);
+          onDone(iters);
+          await yieldNow();
+        }
+        out.push(res);
+        continue;
+      }
       const P = B.Sim.prepare(t.cfg);
       const agg = B.Sim.newAgg(!!t.seq);
       let i = t.from;
@@ -476,6 +504,64 @@
   $('#run').addEventListener('click', runSim);
   $('#stop').addEventListener('click', () => { cancelled = true; Pool.kill(); });
 
+  // ---------- the best GCD order ----------
+  function drawSearchFields() {
+    $('#q-time').value = state.search.time;
+    $('#q-width').value = String(state.search.width);
+  }
+  $('#q-time').addEventListener('input', (ev) => { state.search.time = +ev.target.value; save(); });
+  $('#q-width').addEventListener('change', (ev) => { state.search.width = +ev.target.value; save(); });
+  let searchStop = false;
+  async function runSearch() {
+    if (busy) return;
+    const cfg = Object.assign(currentCfg(), { duration: Math.max(10, Math.min(900, +state.search.time || 120)), variance: 0, weights: false });
+    try { B.Sim.prepare(cfg); } catch (e) { $('#search-report').innerHTML = `<div class="notice">${esc(e.message)}</div>`; return; }
+    cancelled = false; searchStop = false; busy = true;
+    $('#run').disabled = true; $('#rank-run').disabled = true; $('#search-run').disabled = true; $('#search-stop').hidden = false;
+    const bar = (frac, label) => {
+      $('#qprog').hidden = frac === null;
+      if (frac === null) return;
+      $('#qpfill').style.width = (frac * 100).toFixed(1) + '%';
+      $('#qplabel').textContent = label;
+    };
+    bar(0, 'Playing the action list…');
+    // Each batch of rollouts spread over the workers, a few per message.
+    const exec = async (items) => {
+      const per = Math.max(1, Math.ceil(items.length / (Pool.size() * 2)));
+      const tasks = [];
+      for (let i = 0; i < items.length; i += per) tasks.push({ cfg, items: items.slice(i, i + per) });
+      const parts = await execute(tasks, () => {});
+      return [].concat(...parts);
+    };
+    try {
+      const res = await B.Sim.search(cfg, {
+        width: state.search.width, exec, shouldStop: () => searchStop,
+        onProgress: (p) => bar(Math.min(1, p.depth / Math.max(1, p.total)), `GCD ${p.depth} of about ${p.total} · ${p.tried.toLocaleString()} fights played · ${p.best > p.guide + 0.5 ? 'best so far +' + ((p.best - p.guide) / p.guide * 100).toFixed(2) + '%' : 'nothing better than the list yet'}`),
+      });
+      const rep = B.Sim.searchReport(res);
+      $('#search-report').innerHTML = R().search(res, rep);
+      $('#copy-order').addEventListener('click', async (ev) => {
+        const txt = R().orderText(rep);
+        try { await navigator.clipboard.writeText(txt); ev.target.textContent = 'Copied'; }
+        catch (e) {
+          const ta = document.createElement('textarea');
+          ta.value = txt; ta.rows = 8; ta.className = 'copybox';
+          ev.target.replaceWith(ta); ta.select();
+        }
+      });
+    } catch (e) {
+      if (!cancelled) $('#search-report').innerHTML = `<div class="notice">The search stopped: ${esc(e.message)}</div>`;
+    } finally {
+      busy = false;
+      $('#run').disabled = false; $('#rank-run').disabled = false; $('#search-run').disabled = false; $('#search-stop').hidden = true;
+      bar(null);
+      if (cancelled) Pool.kill();
+    }
+  }
+  $('#search-run').addEventListener('click', runSearch);
+  // Stop keeps the best order found so far.
+  $('#search-stop').addEventListener('click', () => { searchStop = true; });
+
   // ---------- every job ----------
   let rankDone = false;
   function drawRankFields() {
@@ -518,9 +604,11 @@
   // ---------- start ----------
   drawAll();
   drawRankFields();
+  drawSearchFields();
+  $('#search-report').innerHTML = '<section class="card placeholder"><h2>Best rotation</h2><p class="muted">Pick a job and a time limit, then press “Find the best GCD order”. A two-minute window takes a few seconds, a full five-minute fight about half a minute.</p></section>';
   $('#report').innerHTML = '<section class="card placeholder"><h2>Simulating…</h2><p class="muted">A first run of the selected job is on its way.</p></section>';
   $('#rank-report').innerHTML = '<section class="card placeholder"><h2>Every job</h2><p class="muted">Press “Simulate every job” to rank all 21 jobs on the same fight.</p></section>';
-  showTab(state.tab === 'rank' ? 'rank' : 'sim');
+  showTab(['rank', 'search'].includes(state.tab) ? state.tab : 'sim');
   // Open on a real result: a quick run of the saved setup (a few hundred iterations, no extras).
   if (state.tab !== 'rank') {
     const keep = { it: state.fight.iterations, w: state.weights, sets: state.sets };

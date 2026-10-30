@@ -82,15 +82,41 @@
       const r = this.simPositionals === undefined ? 1 : this.simPositionals;
       return r >= 1 || Math.random() < r;
     }
+    // The rotation search plays on average luck: ping without its jitter (below) and every hit at its expected damage.
+    latency(nominal) { return super.latency(nominal || this.expected); }
     // Since 6.2, an action that always crits or direct hits still gains from crit- and direct-hit-rate buffs, by
     // its chance's worth of the bonus.
     damage(potency, snap, isDot, opts) {
+      if (this.expected && this.lv.formula !== 'hw') return this.expectedDamage(potency, snap, isDot, opts || {});
       const r = super.damage(potency, snap, isDot, opts);
       if (!opts || !snap || this.lv.formula === 'hw') return r;
       const s = this.stats, L = this.lv;
       if (opts.crit && snap.critAdd) r.amount = Math.floor(r.amount * (1 + snap.critAdd * (Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000 - 1)));
       if (opts.dh && snap.dhAdd) r.amount = Math.floor(r.amount * (1 + snap.dhAdd * 0.25));
       return r;
+    }
+    // The engine's formula (Engine.damage) without the dice: crits and direct hits count by their rates, no ±5% roll.
+    // The crit and direct-hit flags are still rolled, so a job that reacts to a crit (Monk's chakra) plays as usual.
+    expectedDamage(potency, snap, isDot, opts) {
+      const s = this.stats, L = this.lv;
+      const ap = s.apMod || (this.job.role === 'tank' ? L.apTank : L.ap);
+      const fAP = Math.floor(ap * (snap.main - L.main) / L.main) + 100;
+      const fDET = Math.floor(L.det * (s.det - L.main) / L.div) + 1000 + (opts.dhDet ? Math.floor(L.det * (s.dh - L.sub) / L.div) : 0);
+      const fTNC = s.ten ? Math.floor((L.ten || 100) * (s.ten - L.sub) / L.div) + 1000 : 1000;
+      let fWD = Math.floor(L.main * s.jobMod / 1000) + s.wd;
+      if (opts.auto) fWD = Math.floor(fWD * s.delay / 3);
+      let d = Math.floor(Math.floor(potency * fAP * fDET / 100) / 1000);
+      d = Math.floor(d * fTNC / 1000);
+      if (isDot || opts.auto) d = Math.floor(d * (Math.floor(130 * (s.speed - L.sub) / L.div) + 1000) / 1000);
+      d = Math.floor(Math.floor(d * fWD / 100) * s.trait / 100);
+      const critRate = Math.min(1, Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000 + (snap.critAdd || 0));
+      const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
+      const dhRate = Math.min(1, Math.floor(550 * (s.dh - L.sub) / L.div) / 1000 + (snap.dhAdd || 0));
+      const critF = opts.noCrit ? 1 : opts.crit ? critMult * (1 + (snap.critAdd || 0) * (critMult - 1)) : 1 + critRate * (critMult - 1);
+      const dhF = opts.dh ? 1.25 * (1 + (snap.dhAdd || 0) * 0.25) : 1 + dhRate * 0.25;
+      const crit = !opts.noCrit && (opts.crit || Math.random() < critRate);
+      const dh = opts.dh || Math.random() < dhRate;
+      return { amount: d * critF * dhF * snap.mult, crit, dh };
     }
   }
   B.SimEngine = SimEngine;
@@ -153,9 +179,12 @@
   }
 
   // Run iteration `it` of a prepared sim. Returns its totals; fills `agg` when given.
-  function iterate(P, it, agg, overrideStats) {
+  // ctl (the rotation search): { plan: GCD ids to press in order, choices: the GCD buttons the search may use, seed,
+  // collectAt: record the GCDs that could go at that GCD }. With ctl the run is on average luck (expected damage, no
+  // ping jitter, the fight exactly cfg.duration long); after the plan the action list carries on.
+  function iterate(P, it, agg, overrideStats, ctl) {
     const cfg = P.cfg;
-    const seed = ((cfg.seed || 12345) + it * 7919) >>> 0;
+    const seed = ctl ? ctl.seed >>> 0 : ((cfg.seed || 12345) + it * 7919) >>> 0;
     const R = rng(seed);
     const job = B.setJob(P.jobId, P.ver.id);
     job.stats = Object.assign({}, job.stats, overrideStats || P.stats);
@@ -184,17 +213,20 @@
     const savedRandom = Math.random;
     Math.random = R;
     try {
-      const variance = cfg.variance !== undefined ? +cfg.variance : 0.1;
+      const variance = ctl ? 0 : cfg.variance !== undefined ? +cfg.variance : 0.1;
       const D = Math.max(10, (+cfg.duration || 300) * (1 + variance * (2 * R() - 1)));
       const END = T0 + D;
       const e = new SimEngine(settings, job);
       e.raidSnap = raidSnap;
+      e.expected = !!ctl;
       e.simPositionals = cfg.positionals !== undefined ? +cfg.positionals : 1;
       // Everyone stands at the dummy's edge, as a raid stacks: point-blank AoE (Art of War) and Phlegma reach.
       e.pos.x = 0; e.pos.z = -2.4;
       e.now = 0;
       e.reset();
       e.gcdEnd = e.lockUntil = 0;
+      // The search fixes the server's 3s tick halfway through its range, so only real procs depend on the seed.
+      if (ctl) e.mpTickNext = e.dotTickNext = 1.75;
 
       const sim = {
         iteration: it, lastAction: null, lastGcd: null, vars: {},
@@ -204,7 +236,7 @@
       for (const list of Object.values(P.compiled.lists)) for (const ent of list) ent.last = -1e9;
 
       // What the iteration records.
-      const out = { dmg: 0, D, byId: {}, uses: {}, buffs: {}, seq: null, buckets: null, gcds: 0, idle: 0 };
+      const out = { dmg: 0, D, byId: {}, uses: {}, buffs: {}, seq: null, buckets: null, gcds: 0, idle: 0, gcdSeq: [] };
       const keepSeq = agg && agg.wantSeq && it === 0;
       if (keepSeq) out.seq = [];
       if (agg) out.buckets = new Float64Array(Math.ceil(D) + 1);
@@ -253,12 +285,27 @@
         if (target <= e.now + EPS) return;
         e.advance(target - e.now);
       };
+      // A GCD the search could press right now (the action list's own rules for movement included).
+      const gcdOk = (id) => {
+        const a = job.actions[id];
+        if (!a || a.kind !== 'gcd' || e.availableAt(id) > e.now + EPS || e.checkConditions(id)) return false;
+        const mi = sim.moveIn ? sim.moveIn() : Infinity;
+        return !(mi < Infinity && a.cast && mi < e.castTimeFor(id) - B.SLIDECAST);
+      };
+      const choicesNow = () => {
+        const ids = [];
+        for (const b of ctl.choices) { const id = e.resolve(b); if (!ids.includes(id) && gcdOk(id)) ids.push(id); }
+        return ids;
+      };
       const press = (id, ent) => {
+        const inFight = job.actions[id].kind === 'gcd' && e.now >= T0 - EPS;
+        if (inFight && ctl && ctl.collectAt === out.gcdSeq.length && !out.cands) out.cands = choicesNow();
         const ok = e.execute(id);
         if (!ok) return false;
         if (ent) ent.last = e.now;
         sim.lastAction = id;
         if (job.actions[id].kind === 'gcd') sim.lastGcd = id;
+        if (inFight) out.gcdSeq.push(id);
         if (out.seq && out.seq.length < 2000) {
           out.seq.push({ t: e.now - T0, id, gcd: job.actions[id].kind === 'gcd', line: ent ? ent.line : 0, mp: Math.round(e.mp),
             buffs: Object.keys(e.statuses).filter(k => e.has(k)) });
@@ -285,6 +332,15 @@
       while (e.now < END - EPS) {
         if (moveOn) { const m = movingAt(e.now); if (m !== e.moving) e.setMoving(m); }
         e.frame();
+        // The search's plan: its GCDs in order (after any `pre=1` ability the list would put first).
+        if (ctl && e.now >= T0 - EPS && out.gcdSeq.length < ctl.plan.length && !e.casting &&
+            e.lockUntil <= e.now + EPS && e.gcdEnd <= e.now + EPS) {
+          const first = B.SimAPL.choose(P.compiled, ctx, { abilitiesOnly: true });
+          if (first && first.id) { if (!press(first.id, first.entry)) step(e.now + 0.01); continue; }
+          const id = ctl.plan[out.gcdSeq.length];
+          if (!gcdOk(id) || !press(id, null)) { out.invalid = out.gcdSeq.length; break; }
+          continue;
+        }
         const pick = e.now >= T0 - EPS ? B.SimAPL.choose(P.compiled, ctx) : null;
         if (pick && pick.id) {
           if (e.now === guardT) { if (++guardN > 30) { step(e.now + 0.01); continue; } } else { guardT = e.now; guardN = 0; }
@@ -519,7 +575,102 @@
     return rows;
   }
 
-  B.Sim = { prepare, iterate, newAgg, run, rankAll, summarize, raidAt, raidQuery, rng,
+  // ---------- rotation search ----------
+  // Every GCD order can't be tried (a five-minute fight is about 120 GCDs with several choices each), so the search
+  // walks the fight one GCD at a time. At each GCD it tries every GCD that could go, judges each by playing the rest
+  // of the fight with the action list (a rollout), and keeps the best `width` lines to grow from. The best whole
+  // fight any rollout played is the answer, so it never does worse than the list itself. Everything runs on average
+  // luck (iterate's ctl), and a job whose result still depends on the seed (procs) is judged on three seeds.
+
+  // The GCDs the action list names anywhere (buttons included): what the search chooses between.
+  function gcdChoices(P) {
+    const A = P.job0.actions, ids = [];
+    for (const list of Object.values(P.compiled.lists)) {
+      for (const ent of list) {
+        if (ent.call || ent.wait || ent.varName) continue;
+        if (A[ent.action] && A[ent.action].kind === 'gcd' && !ids.includes(ent.action)) ids.push(ent.action);
+      }
+    }
+    return ids;
+  }
+  const prepCache = { key: null, P: null };
+  function prepared(cfg) {
+    const key = JSON.stringify(cfg);
+    if (prepCache.key !== key) { prepCache.key = key; prepCache.P = prepare(cfg); }
+    return prepCache.P;
+  }
+  // items: [{ plan, seeds }] → [{ score (damage, the seeds' average), cands (GCDs possible after the plan), gcdSeq }].
+  function rollouts(cfg, items) {
+    const P = prepared(cfg);
+    const choices = gcdChoices(P);
+    return items.map(item => {
+      let score = 0, first = null;
+      for (const seed of item.seeds) {
+        const out = iterate(P, 0, null, null, { plan: item.plan, choices, seed, collectAt: item.plan.length });
+        if (out.invalid !== undefined) return { invalid: true };
+        score += out.dmg;
+        if (!first) first = out;
+      }
+      return { score: score / item.seeds.length, cands: first.cands || [], gcdSeq: first.gcdSeq };
+    });
+  }
+
+  // opts: { width, exec(items) → Promise of rollouts' results (a page hands them to workers), onProgress(p), shouldStop }.
+  async function search(cfg, opts) {
+    opts = opts || {};
+    const t0 = clock();
+    cfg = Object.assign({}, cfg, { variance: 0, iterations: 1, weights: false });
+    const exec = opts.exec || (async (items) => rollouts(cfg, items));
+    const width = Math.max(1, Math.min(256, Math.round(+opts.width) || 12));
+    const probe = await exec([1, 2, 3].map(s => ({ plan: [], seeds: [s] })));
+    const scores = probe.map(p => p.score);
+    const varies = Math.max(...scores) - Math.min(...scores) > 1e-6 * Math.max(...scores);
+    const seeds = varies ? [1, 2, 3] : [1];
+    const guide = varies ? (await exec([{ plan: [], seeds }]))[0] : probe[0];
+    let best = { score: guide.score, plan: guide.gcdSeq, at: -1 };
+    let beam = [{ plan: [], score: guide.score, cands: guide.cands }];
+    let tried = probe.length + (varies ? 1 : 0), depth = 0, stopped = false;
+    const total = guide.gcdSeq.length;
+    for (; depth < 4000; depth++) {
+      const kids = [];
+      for (const node of beam) for (const c of node.cands || []) kids.push(node.plan.concat([c]));
+      if (!kids.length) break;
+      if (opts.shouldStop && opts.shouldStop()) { stopped = true; break; }
+      const res = await exec(kids.map(plan => ({ plan, seeds })));
+      tried += kids.length;
+      const scored = [];
+      res.forEach((r, i) => { if (r && !r.invalid) scored.push({ plan: kids[i], score: r.score, cands: r.cands, gcdSeq: r.gcdSeq }); });
+      for (const r of scored) if (r.score > best.score + 1e-6) best = { score: r.score, plan: r.gcdSeq, at: depth };
+      // Keep the best lines, one of each distinct position (two orders that end up in the same place score alike).
+      scored.sort((a, b) => b.score - a.score);
+      beam = [];
+      const seen = new Set();
+      for (const r of scored) {
+        const key = r.score.toFixed(1) + '|' + (r.cands || []).join(',');
+        if (seen.has(key)) continue;
+        seen.add(key);
+        beam.push(r);
+        if (beam.length >= width) break;
+      }
+      if (opts.onProgress) opts.onProgress({ depth: depth + 1, total, tried, best: best.score, guide: guide.score });
+    }
+    return { cfg, seeds, width, guide, best, tried, depth, total, stopped, ms: clock() - t0 };
+  }
+
+  // The search's answer as two reports (js/sim/report.js's shape): the best order found and the action list's own,
+  // each one fight on average luck with its sample sequence.
+  function searchReport(res) {
+    const P = prepare(res.cfg);
+    const choices = gcdChoices(P);
+    const one = (plan) => {
+      const agg = newAgg(true);
+      iterate(P, 0, agg, null, { plan, choices, seed: res.seeds[0], collectAt: -1 });
+      return report(P, agg, summarize(agg), [], 0);
+    };
+    return { best: one(res.best.plan), guide: one(res.guide.gcdSeq), bestPlan: res.best.plan, guidePlan: res.guide.gcdSeq };
+  }
+
+  B.Sim = { prepare, iterate, newAgg, run, rankAll, summarize, raidAt, raidQuery, rng, gcdChoices, rollouts, search, searchReport,
     runRange, mergeAggs, compare, weightRow, weightStats, finish, rankRow, gcdFor: (cfg) => gcdOf(prepare(cfg)) };
   B.SIM_APLS = B.SIM_APLS || {};
 })(window.BLM);

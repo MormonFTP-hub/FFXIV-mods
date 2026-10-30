@@ -16,12 +16,13 @@ actions+=/shinten,if=gauge.kenki>=75|(gauge.kenki>=35&cd.senei.remains>10&!buff.
 
 # Weaponskills.
 actions+=/tsubameGaeshi,if=proc.tsubameGaeshi
+actions+=/ogiNamikiri,if=gauge.namikiri
 actions+=/iaijutsu,if=job.senCount=3
+actions+=/higanbana,if=job.senCount=1&debuff.higanbana.remains<5&fight.remains>40
 actions+=/gekko,if=buff.meikyoShisui.up&!gauge.sen.getsu
 actions+=/kasha,if=buff.meikyoShisui.up&!gauge.sen.ka
 actions+=/yukikaze,if=buff.meikyoShisui.up&!gauge.sen.setsu
 actions+=/ogiNamikiri,if=usable.ogiNamikiri
-actions+=/higanbana,if=job.senCount=1&debuff.higanbana.remains<5&fight.remains>40&!buff.meikyoShisui.up
 actions+=/gekko,if=buff.meikyoShisui.up
 actions+=/gekko,if=combo.jinpu
 actions+=/kasha,if=combo.shifu

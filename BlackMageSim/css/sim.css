@@ -212,3 +212,12 @@ svg.seq .otxt { fill: var(--ink); font: 10.5px var(--f-body); }
 .seqlist li { break-inside: avoid; }
 .seqlist .num { display: inline-block; width: 52px; color: var(--muted); }
 svg.rank .lbl.name { font-size: 12px; }
+
+/* ---------- the rotation search ---------- */
+.gcdlist { max-height: 460px; overflow-y: auto; }
+.tbl.cmp tr.diff td { background: var(--window); }
+.tbl.cmp tr.diff td:nth-child(3) { font-weight: 700; }
+.dpsfig .err.good { color: var(--good); }
+.dpsfig.stack { flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; }
+@media (max-width: 560px) { .dpsfig.stack { align-items: flex-start; text-align: left; } }
+.tbl.cmp td { white-space: nowrap; }

@@ -269,5 +269,87 @@ ${uptimes(R)}
     return `${s}<div class="scroll"><table class="tbl rank"><thead><tr><th scope="col" class="num">#</th><th scope="col">Job</th><th scope="col" class="num">DPS</th><th scope="col" class="num">95%</th><th scope="col" class="num">Of top</th><th scope="col" class="num">Range</th><th scope="col" class="num">Base GCD</th><th scope="col">Version</th></tr></thead><tbody>${table}</tbody></table></div>`;
   }
 
-  B.SimReport = { render, rankings, text, fmt, mmss };
+  // ---------- the rotation search ----------
+  // How far ahead of the action list the best order is, second by second (cumulative damage, best minus list).
+  function aheadChart(best, guide) {
+    const W = 640, H = 170, L = 52, Rm = 12, T = 12, Bm = 26;
+    const n = Math.max(2, Math.floor(best.fight));
+    let a = 0, b = 0;
+    const diff = [];
+    for (let i = 0; i < n; i++) { a += best.timeline[i] || 0; b += guide.timeline[i] || 0; diff.push(a - b); }
+    const lo = Math.min(0, ...diff), hi = Math.max(1, ...diff);
+    const x = (t) => L + t / n * (W - L - Rm);
+    const y = (v) => T + (hi - v) / Math.max(1, hi - lo) * (H - T - Bm);
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Damage ahead of the action list over the fight">`;
+    for (const v of niceTicks(lo, hi, 4)) {
+      s += `<line class="grid" x1="${L}" x2="${W - Rm}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/>`;
+      s += `<text class="lbl" x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${v > 0 ? '+' : ''}${kfmt(v)}</text>`;
+    }
+    const every = n > 400 ? 120 : n > 150 ? 60 : n > 60 ? 30 : 10;
+    for (let t = 0; t <= n; t += every) s += `<text class="lbl" x="${x(t).toFixed(1)}" y="${H - 8}" text-anchor="middle">${mmss(t)}</text>`;
+    let d = `M${x(0).toFixed(1)} ${y(0).toFixed(1)}`;
+    diff.forEach((v, i) => { d += ` L${x(i + 1).toFixed(1)} ${y(v).toFixed(1)}`; });
+    s += `<path class="area" d="${d} L${x(n).toFixed(1)} ${y(0).toFixed(1)} Z"/><path class="line" d="${d}"/>`;
+    s += `<line class="axis" x1="${L}" x2="${W - Rm}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}"/>`;
+    return s + '</svg>';
+  }
+
+  function search(res, rep, extra) {
+    extra = extra || {};
+    const B1 = rep.best, G = rep.guide;
+    const D = res.cfg.duration;
+    const gain = res.best.score - res.guide.score;
+    const role = B1.role === 'tank' ? 'tank' : B1.role === 'healer' ? 'healer' : 'dps';
+    const bg = B1.seq.filter(q => q.gcd && q.t >= -1e-6), gg = G.seq.filter(q => q.gcd && q.t >= -1e-6);
+    const n = Math.max(bg.length, gg.length);
+    let changed = 0;
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      const a = bg[i], b = gg[i];
+      const diff = !a || !b || a.id !== b.id;
+      if (diff) changed++;
+      rows.push(`<tr${diff ? ' class="diff"' : ''}><td class="num muted">${i + 1}</td><td class="num muted">${a ? a.t.toFixed(2) : ''}</td><td>${a ? esc(a.name) : ''}</td><td class="num muted">${b ? b.t.toFixed(2) : ''}</td><td>${b ? esc(b.name) : ''}</td></tr>`);
+    }
+    const ids = [...new Set(bg.concat(gg).map(q => q.id))];
+    const count = (list, id) => list.filter(q => q.id === id).length;
+    const counts = ids.map(id => ({ id, name: (bg.concat(gg).find(q => q.id === id) || {}).name || id, b: count(bg, id), g: count(gg, id) }))
+      .sort((p, q) => Math.abs(q.b - q.g) - Math.abs(p.b - p.g) || q.b - p.b);
+    const party = B1.party.length ? B1.party.join(', ') : 'Solo, no raid buffs';
+    const first = bg.findIndex((q, i) => !gg[i] || gg[i].id !== q.id);
+    return `
+<section class="headline card">
+  <div class="who"><span class="jobchip ${role}">${esc(B1.abbr)}</span>
+    <div><h2 class="jobname">Best GCD order for ${esc(mmss(D))}</h2><p class="muted">${esc(B1.jobName)} · ${esc(B1.versionLabel)} · live ${esc(B1.patch)}</p></div></div>
+  <div class="dpsfig stack"><div><span class="big">${fmt(res.best.score / D)}</span> <span class="unit">DPS</span></div>
+    <span class="err ${gain > 0.5 ? 'good' : ''}">${gain > 0.5 ? `+${fmt(gain / D)} DPS (+${(gain / res.guide.score * 100).toFixed(2)}%) over the action list's ${fmt(res.guide.score / D)}` : `The action list's own order (${fmt(res.guide.score / D)}) is the best found`}</span></div>
+  <dl class="facts">
+    <div><dt>Searched</dt><dd>${fmt(res.tried)} fights played out, ${res.width} lines kept at each of ${fmt(res.depth)} GCDs, in ${(res.ms / 1000).toFixed(1)}s${res.stopped ? ' (stopped early)' : ''}</dd></div>
+    <div><dt>Changes</dt><dd>${changed ? `${changed} of ${n} GCDs differ from the action list${first >= 0 ? `, the first at GCD ${first + 1} (${bg[first].t.toFixed(2)}s)` : ''}` : 'None: the action list already plays the best order found'}</dd></div>
+    <div><dt>Party</dt><dd>${esc(party)}</dd></div>
+    <div><dt>Luck</dt><dd>Average: crits and direct hits at their rates, no damage roll, steady ping${res.seeds.length > 1 ? '; procs averaged over three seeds' : ''}</dd></div>
+  </dl>
+</section>
+<section class="card"><h2>Damage ahead of the action list</h2>${aheadChart(B1, G)}
+  <p class="muted small">Total damage of the best order minus the action list's, second by second. Where it climbs is where the new order gains.</p></section>
+<div class="pair">
+  <section class="card"><h2>GCD by GCD</h2>
+    <div class="scroll gcdlist"><table class="tbl cmp"><thead><tr><th scope="col" class="num">#</th><th scope="col" class="num">Time</th><th scope="col">Best order</th><th scope="col" class="num">Time</th><th scope="col">Action list</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+    <div class="row"><span class="muted small">Highlighted: a different GCD.</span><button id="copy-order" class="ghost" type="button">Copy the best order</button></div></section>
+  <section class="card"><h2>GCDs used</h2>
+    <div class="scroll"><table class="tbl"><thead><tr><th scope="col">Action</th><th scope="col" class="num">Best</th><th scope="col" class="num">List</th><th scope="col" class="num">Change</th></tr></thead>
+    <tbody>${counts.map(c => `<tr><th scope="row">${esc(c.name)}</th><td class="num">${c.b}</td><td class="num">${c.g}</td><td class="num ${c.b > c.g ? 'good' : c.b < c.g ? 'bad' : 'muted'}">${c.b === c.g ? '–' : (c.b > c.g ? '+' : '−') + Math.abs(c.b - c.g)}</td></tr>`).join('')}</tbody></table></div></section>
+</div>
+<section class="card"><h2>The best order, played out</h2>
+  <p class="muted small">Weaponskills and spells along the bottom; the abilities around them come from the action list.</p>
+  <div class="scroll seqwrap">${sequence(B1)}</div>
+  <details><summary>The action list's own fight</summary><div class="scroll seqwrap">${sequence(G)}</div></details>
+</section>`;
+  }
+
+  // The best order as plain text: one GCD a line with its time.
+  function orderText(rep) {
+    return rep.best.seq.filter(q => q.gcd && q.t >= -1e-6).map((q, i) => `${String(i + 1).padStart(3)}  ${q.t.toFixed(2).padStart(6)}  ${q.name}`).join('\n');
+  }
+
+  B.SimReport = { render, rankings, text, search, orderText, fmt, mmss };
 })(window.BLM);

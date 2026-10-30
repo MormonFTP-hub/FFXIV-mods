@@ -224,8 +224,9 @@
   }
 
   // Pick what to press now. Returns { entry, id } for an action, { wait: seconds } to hold, or null.
-  // ctx: { e, job, A, end, sim }.
-  function choose(compiled, ctx) {
+  // ctx: { e, job, A, end, sim }. opts.abilitiesOnly: only abilities (the rotation search picks the GCDs).
+  function choose(compiled, ctx, opts) {
+    const onlyAb = !!(opts && opts.abilitiesOnly);
     const e = ctx.e, now = e.now;
     if (e.casting || e.lockUntil > now + EPS) return null;
     const gcdReady = e.gcdEnd <= now + EPS;
@@ -247,7 +248,7 @@
         const a = ctx.A[id];
         if (!a) continue;
         if (a.kind === 'gcd') {
-          if (!gcdReady || pass === 1) continue;
+          if (!gcdReady || pass === 1 || onlyAb) continue;
           // Don't start a cast that forced movement would cut off (slidecasting allowed).
           if (moveIn < Infinity && a.cast && moveIn < e.castTimeFor(id) - B.SLIDECAST) continue;
         } else {
@@ -262,7 +263,7 @@
       return null;
     };
     const r = visit(compiled.lists.default || [], 0);
-    if (r || !gcdReady) return r;
+    if (r || !gcdReady || onlyAb) return r;
     // The GCD is ready but nothing on the list can use it: let abilities through.
     pass = 1;
     return visit(compiled.lists.default || [], 0);
