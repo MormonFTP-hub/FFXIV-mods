@@ -56,6 +56,7 @@ Two are not gear at all: **Hero Chaos Chao** replaces the Mammet #001 minion, an
 | [GOATS Sim](GoatsSim/README.md) | Browser game. Overwatch, late 2018: you're the Reinhardt in a GOATS mirror attacking Hanamura's first point: 4-minute rounds with respawns and ults built from 0%, the real hero models and map, bots that play the deathball and trade ults the way teams did, and a coach. |
 | [Voice Link](VoiceLink/README.md) | Dalamud plugin. Turns what you type into natural-sounding speech and gets it to other players through mod sync, paired chat reading or Discord. |
 | [PF Merc Bot](PfMercBot/README.md) | Discord bot plus a Google Apps Script board. Watches the NA Party Finder for listings that pay gil for mercs and posts them to a channel. |
+| [Aion 2 Assassin Board](Aion2AssassinBoard/README.md) | Google Apps Script board for Aion 2. A Google Form logs who took you into their party as an Assassin, and a Discord message lists those leaders per server. |
 | [Authenticator](Authenticator/README.md) | Windows app that shows the same 2-step verification codes as Google Authenticator on your phone. |
 | [Insta Viewer](InstaViewer/README.md) | Desktop viewer for Instagram links (posts, reels, carousels, profiles) without signing in. |
 | [SlimUI](SlimUI/README.md) | Lightweight ElvUI-style UI addon for World of Warcraft: unit frames, action bar skin, chat, minimap and tooltip cleanup. |
