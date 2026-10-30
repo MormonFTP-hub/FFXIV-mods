@@ -241,7 +241,7 @@ window.BLM = window.BLM || {};
   // history names the version's entry in docs/job-versions.md (B.JOB_HISTORY, js/versions.js), for its rating.
   B.JOBS = {};
   B.JOB_ORDER = [];
-  const EXPANSION_RANK = { DT: 0, EW: 1, ShB: 2, SB: 3, HW: 4, ARR: 5 };
+  const EXPANSION_RANK = { EC: -1, DT: 0, EW: 1, ShB: 2, SB: 3, HW: 4, ARR: 5 };     // EC: the Evercold previews
   B.registerJob = function (job) {
     if (!B.JOBS[job.id]) B.JOB_ORDER.push(job.id);
     const prev = B.JOBS[job.id];
