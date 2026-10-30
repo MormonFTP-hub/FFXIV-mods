@@ -7,7 +7,7 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      game models go next to it as game-models-0.js, -1.js, ...: the
                      model JSON cut into 10 MB string chunks that the last one joins
                      and parses, so every published file stays under the 16 MB limit.
-                     The icons (work/game-icons.js, ~16 MB) go next to it as game-icons-0.js,
+                     The icons (work/game-icons.js, ~18 MB) go next to it as game-icons-0.js,
                      -1.js, ...: whole icons per file, each file under 10 MB.
 And a folder:
   site/              a website to upload to a free static host (Cloudflare Pages, GitHub
@@ -97,7 +97,6 @@ def fragment(html: str) -> str:
     body = re.search(r"<body>(.*?)</body>", html, re.S).group(1)
     # The artifact host supplies charset and viewport metas.
     head = re.sub(r"\s*<meta (charset|name=\"viewport\")[^>]*>", "", head)
-    head = head.replace("<title>Black Mage Dummy (Endwalker)</title>", "<title>Endwalker Black Mage Dummy</title>")
     return head.strip() + "\n" + body.strip() + "\n"
 
 

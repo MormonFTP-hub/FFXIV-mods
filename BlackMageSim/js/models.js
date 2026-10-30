@@ -49,7 +49,7 @@
         try {
           this.chars[id] = this.chars[id] || this.buildCharacter(G.jobs[id]);
           this.ch = this.chars[id];
-          this.ch.group.visible = true;
+          this.ch.group.visible = this.texturesLoaded(this.ch);
           this.play(this.ch.anims.basic.idle, true);
         } catch (err) { console.error(`Game model for ${id} failed to load:`, err); }
       }
@@ -109,6 +109,8 @@
       const key = index + (srgb ? 's' : 'l');
       if (this.textures[key]) return this.textures[key];
       const t = this.texLoader.load(B.GAME_MODELS.textures[index]);
+      // The game's UVs count from the top of the image (as PMP Viewer loads them); three.js would flip it.
+      t.flipY = false;
       t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.anisotropy = 4;
@@ -183,12 +185,19 @@
         (bone || ch.group).add(grp);
         return { label: w.label, group: grp, tip: new T.Vector3(...w.tip) };
       });
+      // Its textures, so it shows only once they've decoded (before that, cut-out parts would draw as holes).
+      ch.textures = [...new Set([...mats, ...ch.weapons.flatMap((w) => w.group.children.map((c) => c.material))]
+        .flatMap((m) => [m.map, m.normalMap]).filter(Boolean))];
       ch.poseA = { p: new Float32Array(ch.nb * 3), q: new Float32Array(ch.nb * 4) };
       ch.poseB = { p: new Float32Array(ch.nb * 3), q: new Float32Array(ch.nb * 4) };
       ch.facing = Math.atan2(-this.e.pos.x, -this.e.pos.z);
       ch.lastPos = { x: this.e.pos.x, z: this.e.pos.z };
       ch.group.visible = false;
       return ch;
+    }
+
+    texturesLoaded(ch) {
+      return ch.loaded || (ch.loaded = ch.textures.every((t) => t.image));
     }
 
     showDummy(key) {
@@ -362,6 +371,7 @@
       ch.facing += diff * Math.min(1, dt * rate);
       ch.group.position.set(e.pos.x, sc.jumpY(), e.pos.z);
       ch.group.rotation.y = ch.facing;
+      if (!ch.group.visible && this.texturesLoaded(ch)) ch.group.visible = true;
 
       this.stateMachine();
       this.applyPose();

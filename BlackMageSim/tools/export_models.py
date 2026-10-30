@@ -10,7 +10,7 @@ Characters, materials and textures go through PMP Viewer's resolver and material
 preview); animations are decoded from the game's .pap files by its Havok reader. Identical textures (the face, skin
 and hair every job shares) are stored once. Writes
   BlackMageSim/work/game-models.js   BLM.GAME_MODELS = {...} (loaded by index.html, inlined by the build)
-work/ is git-ignored, so Square Enix's data stays out of the repo. Without the file the sim draws its own figures.
+work/ is git-ignored for its size (the models are about 70 MB). Without the file the sim draws its own figures.
 
 Run with the Python that runs PMP Viewer (numpy + Pillow):  python -P -E BlackMageSim/tools/export_models.py
 """
@@ -673,8 +673,7 @@ class Pack:
         return [kind, off, int(a.size)]
 
     def b64(self):
-        """Gzipped (the page inflates it with DecompressionStream): about 40% smaller, which keeps the shared
-        single-file build under Discord's 10 MB."""
+        """Gzipped (the page inflates it with DecompressionStream): about 40% smaller."""
         return base64.b64encode(gzip.compress(bytes(self.buf), 9, mtime=0)).decode()
 
 

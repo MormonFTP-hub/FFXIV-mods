@@ -4,7 +4,7 @@ Reads the Action, Status, Item and ClassJob sheets with PMP Viewer's game reader
 _hr1 icon textures, and writes:
   BlackMageSim/work/game-icons.js   BLM.GAME_ICONS = { id: data URL } (loaded by index.html, inlined by the build)
   BlackMageSim/work/icons/*.png     the same icons, for a look
-work/ is git-ignored, so Square Enix's art stays out of the repo. Without the file the sim uses its drawn icons.
+work/ is git-ignored for its size (about 18 MB). Without the file the sim uses its drawn icons.
 
 Run with the Python that runs PMP Viewer (numpy + Pillow):  python -P -E BlackMageSim/tools/extract_icons.py
 """
@@ -57,7 +57,7 @@ BLM_STATUSES = {
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated", "thunder3": "Thunder III",
     "addle": "Addle", "enochian": "Enochian", "thunder4": "Thunder IV",
     "thunder": "Thunder", "thunder2": "Thunder II", "ragingStrikes": "Raging Strikes",
-    "thunderhead": 3870, "highThunder": "High Thunder", "highThunder2": "High Thunder II",
+    "thunderhead": 3870, "highThunder": 3871, "highThunder2": 3872,   # both statuses are named "High Thunder"
 }
 SAM_ACTIONS = {
     "hakaze": (7477, "Hakaze"), "jinpu": (7478, "Jinpu"), "shifu": (7479, "Shifu"), "yukikaze": (7480, "Yukikaze"),
@@ -83,6 +83,7 @@ SAM_STATUSES = {
     "fugetsu": 1298, "fuka": 1299, "meditation": 1865, "kaiten": 1229, "meikyoShisui": 1233, "enhancedEnpi": 1236, "higanbana": 1228,
     "ogiNamikiriReady": 2959, "thirdEye": 1232, "meditate": 1231, "trueNorth": 1250, "bloodbath": 84, "feint": 1195,
     "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated", "slashingResDown": "Slashing Resistance Down",
+    "tendo": "Tendo", "zanshinReady": "Zanshin Ready", "tsubameReady": "Tsubame-gaeshi Ready",
 }
 
 GNB_ACTIONS = {
@@ -153,6 +154,8 @@ SMN_ACTIONS = {
     "egiAssault": (16509, "Egi Assault"), "egiAssault2": (16512, "Egi Assault II"), "firebirdTrance": (16549, "Firebird Trance"),
     # A Realm Reborn 2.0: Thunder from Thaumaturge.
     "thunder": (144, "Thunder"),
+    # Stormblood and older: Summon (Garuda-Egi) and Summon III (Ifrit-Egi), removed in 6.0; icons pinned below.
+    "summon": (165, "Summon"), "summon3": (180, "Summon III"),
 }
 SMN_STATUSES = {
     "bio3": "Bio III", "miasma3": "Miasma III", "dreadwyrmTrance": "Dreadwyrm Trance", "furtherRuin": "Further Ruin",
@@ -162,6 +165,7 @@ SMN_STATUSES = {
     "searingLight": 2703, "rubysGlimmer": 3873, "refulgentLux": 3874, "ifritsFavor": 2724, "garudasFavor": 2725, "titansFavor": 2853,
     "firebirdTrance": "Firebird Trance", "hellishConduit": 1867, "ruination": "Ruination", "crimsonStrikeReady": 4403, "slipstream": 3225, "radiantAegis": 2702, "furtherRuinDt": 2701,
     "thunder": "Thunder",
+    "inferno": "Inferno",
 }
 
 # Astrologian (Stormblood 4.x): the cards are their own actions ("the Balance" ...), played from Draw.
@@ -281,6 +285,7 @@ DRG_STATUSES = {
     "phlebotomize": 119, "powerSurge": 120, "internalRelease": 100,
     "draconianFire": 1863, "nastrondReady": "Nastrond Ready", "starcrossReady": "Starcross Ready", "dragonsFlight": "Dragon's Flight",
     "enhancedPiercingTalon": "Enhanced Piercing Talon",
+    "chaoticSpring": "Chaotic Spring", "keenFlurry": "Keen Flurry",
 }
 # Monk (Stormblood 4.2–4.58).
 MNK_ACTIONS = {
@@ -318,6 +323,7 @@ MNK_STATUSES = {
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
     "formlessFist": "Formless Fist", "disciplinedFist": "Disciplined Fist", "leadenFist": "Leaden Fist",
     "firesRumination": 3843, "windsRumination": 3842,
+    "gl4": "Greased Lightning", "anatman": "Anatman", "touchOfDeath": "Touch of Death", "fracture": "Fracture", "bloodForBlood": "Blood for Blood", "featherfoot": "Featherfoot",
 }
 
 # Bard (Stormblood 4.06–4.58).
@@ -386,7 +392,7 @@ MCH_STATUSES = {
     "wildfire": "Wildfire", "rapidFire": "Rapid Fire", "gaussBarrel": "Gauss Barrel", "flamethrower": "Flamethrower",
     "vulnerabilityUp": "Vulnerability Up", "ammunition": 862, "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
     "leadShot": "Lead Shot", "ragingStrikes": "Raging Strikes", "hawksEye": "Hawk's Eye", "bloodForBlood": "Blood for Blood",
-    "quellingStrikes": "Quelling Strikes", "keenFlurry": "Keen Flurry", "dismantle": "Dismantle", "hypercharge": "Hypercharge",
+    "quellingStrikes": "Quelling Strikes", "keenFlurry": "Keen Flurry", "dismantle": "Dismantled", "hypercharge": "Hypercharge",
     "tactician": 1951, "bioblaster": 1866, "armsLength": "Arm's Length",
     "hypercharged": 3864, "excavatorReady": 3865, "fullMetalMachinist": 3866,
 }
@@ -463,6 +469,7 @@ NIN_STATUSES = {
     "dancingEdge": "Slashing Resistance Down", "trickAttack": "Vulnerability Up", "doton": "Doton", "sprint": "Sprint", "medicated": "Medicated",
     "tenChiJin": 1186, "bunshin": 1954, "assassinateReady": 1955, "trueNorth": 1250, "bloodbath": 84, "armsLength": 1209,
     "shadowFangSlash": 572, "feint": 1195,
+    "mugVuln": "Vulnerability Up", "tenriJindoReady": "Tenri Jindo Ready", "kunaisBane": "Kunai's Bane",
 }
 
 # Paladin (Dawntrail 7.x): the current kit, so nothing is struck through.
@@ -498,6 +505,7 @@ PLD_STATUSES = {
     "sentinel": "Sentinel", "sheltron": "Sheltron", "goringBlade": "Goring Blade",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
     "shieldOath": 79, "bladeOfFaithReady": 3019, "bladeOfValor": "Blade of Valor",
+    "cover": "Cover", "fracture": "Fracture", "foresight": "Foresight",
 }
 
 # Viper (Dawntrail 7.05+): the current kit.
@@ -851,7 +859,7 @@ JOBS = {
                         "holmgang", "thrillOfBattle", "foresight", "bloodbath", "internalRelease", "awareness", "convalescence",
                         "anticipation", "provoke")},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 21},
-    "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {},
+    "smn": {"actions": SMN_ACTIONS, "statuses": SMN_STATUSES, "overrides": {"summon": 518, "summon3": 2680},
             "uncross": {"bio3": "130,215,90", "miasma3": "175,95,215", "bane": "190,120,235", "rouse": "240,175,80",
                         "shadowFlare": "150,85,215", "triBind": "120,165,235", "aetherpact": "120,225,165",
                         "enkindle": "255,175,90", "windBlade": "120,235,150", "shockwave": "170,230,170",
