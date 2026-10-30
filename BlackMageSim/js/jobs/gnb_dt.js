@@ -62,9 +62,11 @@
       set(A, 'fatedCircle', { desc: 'Delivers an attack with a potency of 300 to all nearby enemies.\nAdditional Effect: Grants Ready to Raze\nDuration: 10s\nCartridge Cost: 1' });
       A.fatedBrand = { name: 'Fated Brand', kind: 'ogcd', recast: 1, cdGroup: 'continuation', potency: 120, target: false, pbaoe: 5, aoe: true, ready: 'readyToRaze', delay: 0.5, fx: 'gnbCont',
         desc: 'Delivers an attack with a potency of 120 to all nearby enemies.\nCan only be executed when Ready to Raze.' };
-      A.reignOfBeasts = ws({ name: 'Reign of Beasts', potency: V.reign[0], range: 3, aoe: 0.4, fx: 'gnbZone', desc: `Delivers an attack with a potency of ${V.reign[0]} to target and all enemies nearby it, 60% less for all remaining enemies.\nCan only be executed while under the effect of Ready to Reign.\nChanges to Noble Blood, then Lion Heart.` });
-      A.nobleBlood = ws({ name: 'Noble Blood', potency: V.reign[1], range: 3, aoe: 0.4, fx: 'gnbDouble', desc: `Delivers an attack with a potency of ${V.reign[1]} to target and all enemies nearby it, 60% less for all remaining enemies.\nCombo Action: Reign of Beasts` });
-      A.lionHeart = ws({ name: 'Lion Heart', potency: V.reign[2], range: 3, aoe: 0.4, fx: 'gnbFang3', desc: `Delivers an attack with a potency of ${V.reign[2]} to target and all enemies nearby it, 60% less for all remaining enemies.\nCombo Action: Noble Blood` });
+      set(A, 'continuation', { desc: A.continuation.desc + '\nFated Circle may be followed by Fated Brand.' });
+      const num = (n) => n.toLocaleString('en-US');
+      A.reignOfBeasts = ws({ name: 'Reign of Beasts', potency: V.reign[0], range: 3, aoe: 0.4, fx: 'gnbZone', desc: `Delivers an attack with a potency of ${num(V.reign[0])} to target and all enemies nearby it, 60% less for all remaining enemies.\nCan only be executed while under the effect of Ready to Reign.\nChanges to Noble Blood, then Lion Heart.` });
+      A.nobleBlood = ws({ name: 'Noble Blood', potency: V.reign[1], range: 3, aoe: 0.4, fx: 'gnbDouble', desc: `Delivers an attack with a potency of ${num(V.reign[1])} to target and all enemies nearby it, 60% less for all remaining enemies.\nCombo Action: Reign of Beasts` });
+      A.lionHeart = ws({ name: 'Lion Heart', potency: V.reign[2], range: 3, aoe: 0.4, fx: 'gnbFang3', desc: `Delivers an attack with a potency of ${num(V.reign[2])} to target and all enemies nearby it, 60% less for all remaining enemies.\nCombo Action: Noble Blood` });
       A.trajectory = { name: 'Trajectory', kind: 'ogcd', recast: 30, charges: 2, target: true, range: 20, desc: 'Rushes toward target.\nMaximum Charges: 2\nCannot be executed while bound.' };
       A.greatNebula = { name: 'Great Nebula', kind: 'ogcd', recast: 120, desc: 'Reduces damage taken by 40% and increases maximum HP by 20%.\nDuration: 15s' };
       A.tincture = B.tincture(V.tincture);

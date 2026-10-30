@@ -50,7 +50,8 @@
       // Off the GCD.
       darkside: ab({ name: 'Darkside', recast: 5, mp: 600, desc: 'Increases damage dealt by 20%.\nWhile in combat, MP does not regenerate.\nEffect ends upon reuse.' }),
       grit: ab({ name: 'Grit', recast: 2.5, mp: V.grit, desc: 'Reduces damage taken by 20% and damage dealt by 20% while increasing enmity.\nEffect ends upon reuse.' }),
-      darkArts: ab({ name: 'Dark Arts', recast: 2, mp: 2400, desc: 'Strengthens the next Syphon Strike, Souleater, Bloodspiller, Quietus, Carve and Spit, Dark Passenger or Abyssal Drain' + (V.da43 ? ', Power Slash or Plunge' : '') + '.\nDuration: 10s' }),
+      darkArts: ab({ name: 'Dark Arts', recast: 2, mp: 2400, desc: (V.da43 ? 'Strengthens the next Syphon Strike, Souleater, Power Slash, Bloodspiller, Quietus, Carve and Spit, Dark Passenger, Abyssal Drain or Plunge.'
+        : 'Strengthens the next Syphon Strike, Souleater, Bloodspiller, Quietus, Carve and Spit, Dark Passenger or Abyssal Drain.') + '\nDuration: 10s' }),
       bloodWeapon: ab({ name: 'Blood Weapon', recast: 40, desc: 'Reduces weaponskill and spell recast time and auto-attack delay by 10%, and TP cost by 20%.\nAdditional Effect: Each physical attack restores 480 MP and adds 3 to the Blood Gauge\nDuration: 15s' }),
       delirium: ab({ name: 'Delirium', recast: V.delirium, cost: 50, desc: 'Restores 2,400 MP and extends Blood Weapon by 8s.\nBlood Gauge Cost: 50' }),
       saltedEarth: ab({ name: 'Salted Earth', recast: 45, target: true, range: 15, magic: true, dot: { potency: 75, duration: 21, aoe: true }, desc: 'Creates a patch of salted earth, dealing unaspected damage with a potency of 75 to any enemies who enter.\nDuration: 21s' }),
@@ -60,7 +61,7 @@
       theBlackestNight: ab({ name: 'The Blackest Night', recast: 15, mp: 2400, desc: `Creates a barrier that absorbs damage equal to 20% of maximum HP.\nDuration: ${V.tbn}s\nAdds 50 to the Blood Gauge if the barrier is fully absorbed.` }),
       shadowWall: ab({ name: 'Shadow Wall', recast: V.da43 ? 120 : 180, desc: 'Reduces damage taken by 30%.\nDuration: 10s' }),
       darkMind: ab({ name: 'Dark Mind', recast: 60, desc: 'Reduces magic vulnerability by 20%.\nDuration: 10s' }),
-      livingDead: ab({ name: 'Living Dead', recast: 300, desc: 'Your HP cannot fall below 1 while under the effect.\nDuration: 10s' }),
+      livingDead: ab({ name: 'Living Dead', recast: 300, desc: 'Grants the effect of Living Dead. When HP is reduced to 0 while under the effect of Living Dead, instead of becoming KO\'d, your status will change to Walking Dead.\nWhile under the effect of Walking Dead, most attacks will not lower your HP below 1. If HP is not fully restored before Walking Dead expires, you will be KO\'d.\nDuration: 10s' }),
       // Stormblood's tank role actions (none adds damage).
       rampart: ab({ name: 'Rampart', recast: 90, role: true, desc: 'Reduces damage taken by 20%.\nDuration: 20s' }),
       lowBlow: ab({ name: 'Low Blow', recast: 25, role: true, target: true, range: 3, desc: 'Stuns target.\nDuration: 5s' }),

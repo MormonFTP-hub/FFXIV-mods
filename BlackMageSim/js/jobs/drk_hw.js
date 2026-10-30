@@ -48,7 +48,7 @@
       set(A, 'syphonStrike', { mpGain: 884, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Hard Slash\nCombo Potency: 250\nCombo Bonus: Restores MP' });
       set(A, 'souleater', { comboPotency: 260, daPotency: 240, daComboPotency: 400, blood: 0, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Syphon Strike\nCombo Potency: 260\nCombo Bonus: Absorbs a portion of damage dealt as HP\nDark Arts Potency: 240\nDark Arts Combo Potency: 400' });
       A.deliriumWs = ws({ name: 'Delirium', potency: 100, comboPotency: 280, comboFrom: 'syphonStrike', tp: 50, fx: 'gnbBurst', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Syphon Strike\nCombo Potency: 280\nCombo Bonus: Reduces target\'s intelligence and mind by 10%\nDuration: 20s' });
-      A.scourge = ws({ name: 'Scourge', potency: 100, tp: 60, breaksCombo: true, dot: { potency: 40, duration: 30 }, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100.\nAdditional Effect: Damage over time\nPotency: 40\nDuration: 30s (Enhanced Scourge)' });
+      A.scourge = ws({ name: 'Scourge', potency: 100, tp: 60, breaksCombo: true, dot: { potency: 40, duration: 30 }, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100.\nAdditional Effect: Damage over time\nPotency: 40\nDuration: 30s' });
       A.fracture = ws({ name: 'Fracture', potency: 100, tp: 80, breaksCombo: true, dot: { potency: 20, duration: 18 }, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100.\nAdditional Effect: Damage over time\nPotency: 20\nDuration: 18s\n(Marauder cross-class skill)' });
       set(A, 'spinningSlash', { comboNext: false });
       set(A, 'unmend', { mp: 354 });

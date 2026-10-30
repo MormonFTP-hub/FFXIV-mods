@@ -60,12 +60,13 @@
       set(A, 'royalAuthority', { comboPotency: 350, comboFrom: 'savageBlade', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Savage Blade\nCombo Potency: 350' });
       set(A, 'rageOfHalone', { comboPotency: 260, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Savage Blade\nCombo Potency: 260\nCombo Bonus: Reduces target\'s strength by 10%\nDuration: 20s' });
       set(A, 'goringBlade', { comboPotency: 240, dot: { potency: 50, duration: 24 }, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Riot Blade\nCombo Potency: 240\nCombo Bonus: Damage over time\nPotency: 50\nDuration: 24s' });
-      set(A, 'fightOrFlight', { recast: 90, desc: 'Increases physical damage dealt by 30%.\nDuration: 30s (Enhanced Fight or Flight)' });
+      set(A, 'fightOrFlight', { recast: 90, desc: 'Increases physical damage dealt by 30%.\nDuration: 30s' });
       set(A, 'shieldSwipe', { potency: 150, desc: A.shieldSwipe.desc.replace('potency of 100', 'potency of 150') });
       set(A, 'sheltron', { oath: 0, recast: 60, desc: 'Block the next attack.\nDuration: 15s' });
       set(A, 'shieldBash', { desc: A.shieldBash.desc });
       set(A, 'clemency', { cast: 2, mp: 1061, desc: 'Restores target\'s HP.\nCure Potency: 1,200' });
-      set(A, 'swordOath', { mp: 0, desc: 'Each auto-attack is followed by an extra attack with a potency of 75 (weighted by weapon delay).\nCannot be used with Shield Oath.' });
+      // 3.4's 75 is weighted by weapon delay (onHit); before 3.4 the +50 wasn't.
+      set(A, 'swordOath', { mp: 0, desc: 'Each auto-attack is followed by an extra attack with a potency of 75.\nCannot be used with Shield Oath.' });
       set(A, 'shieldOath', { mp: 0, desc: 'Reduces damage taken by 20%, while reducing damage dealt by 15% and increasing enmity.\nCannot be used with Sword Oath.' });
       // Marauder and Conjurer cross-class skills.
       A.fracture = ws({ name: 'Fracture', potency: 100, tp: 80, breaksCombo: true, dot: { potency: 20, duration: 18 }, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100.\nAdditional Effect: Damage over time\nPotency: 20\nDuration: 18s\n(Marauder cross-class skill)' });
@@ -76,12 +77,13 @@
         set(A, 'fastBlade', { tp: 70 });
         set(A, 'royalAuthority', { comboPotency: 340, desc: A.royalAuthority.desc.replace('350', '340') });
         set(A, 'goringBlade', { comboPotency: 220, tp: V.goringTp, dot: { potency: 40, duration: 24 }, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Riot Blade\nCombo Potency: 220\nCombo Bonus: Damage over time\nPotency: 40\nDuration: 24s' });
-        set(A, 'swordOath', { desc: 'Increases the potency of auto-attacks by 50 (not weighted by weapon delay).\nUse breaks your weaponskill combo.\nCannot be used with Shield Oath.' });
+        set(A, 'swordOath', { desc: 'Increases the potency of auto-attacks by 50.\nUse breaks your weaponskill combo.\nCannot be used with Shield Oath.' });
         set(A, 'shieldOath', { desc: 'Reduces damage taken by 20%, while reducing damage dealt by 20% and increasing enmity.\nUse breaks your weaponskill combo.\nCannot be used with Sword Oath.' });
         set(A, 'clemency', { cast: 3 });
         set(A, 'divineVeil', { recast: 150 });
         set(A, 'sheltron', { recast: 30, desc: 'Block the next physical attack.\nDuration: 10s' });
-        if (version === 'hw30') set(A, 'shieldSwipe', { potency: 210, desc: 'A weaponskill: delivers an attack with a potency of 210.\nCan only be executed immediately after blocking an attack.' });
+        // 3.0–3.07: a weaponskill (on the GCD) after a block.
+        if (version === 'hw30') set(A, 'shieldSwipe', { kind: 'gcd', recast: 2.5, potency: 210, desc: 'Delivers an attack with a potency of 210.\nCan only be executed immediately after blocking an attack.' });
         A.tincture = Object.assign({}, A.tincture, { name: 'Draconian Potion of Strength', desc: 'Temporarily increases strength.\nStrength +20% (Max 105)\nDuration: 15s' });
       }
       if (V.arr) {

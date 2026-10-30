@@ -32,14 +32,19 @@
       A.bio2 = spell({ name: 'Bio II', potency: 0, cast: 2.5, mp: 530, dot: { potency: 35, duration: 30 }, sound: 'dot', desc: 'Deals unaspected damage over time.\nPotency: 35\nDuration: 30s' });
       A.miasma = spell({ name: 'Miasma', potency: 20, cast: 2.5, mp: 442, dot: { potency: 35, duration: 24 }, desc: 'Deals unaspected damage with a potency of 20.\nAdditional Effect: Unaspected damage over time\nPotency: 35\nDuration: 24s\nAdditional Effect: Reduces HP recovery via healing magic by 10%' });
       A.triDisaster = { name: 'Tri-disaster', kind: 'ogcd', recast: 60, target: true, range: 25, desc: 'Inflicts target with Bio, Bio II and Miasma.' };
-      set('fester', { recast: 10, perDot: 100, desc: 'Deals unaspected damage with a potency of 100 for each of your Bio, Bio II and Miasma effects on the target (300 with all three).\nAetherflow Gauge Cost: 1' });
-      set('painflare', { recast: 10, potency: 200, desc: 'Deals unaspected damage with a potency of 200 to target and all enemies nearby it.\nAetherflow Gauge Cost: 1' });
-      set('bane', { desc: 'Spreads a target\'s Bio, Bio II and Miasma effects to nearby enemies, with their remaining duration.\nAetherflow Gauge Cost: 1' });
+      // No job gauge before 4.0: Aetherflow is a status with stacks, and each one spent is a step of Aethertrail.
+      const flow = '\nCan only be executed while under the effect of Aetherflow.\nAdditional Effect: Aethertrail Attunement +1';
+      set('fester', { recast: 10, perDot: 100, desc: `Deals unaspected damage with a potency of 100 for each of your Bio, Bio II and Miasma effects on the target (300 with all three).${flow}` });
+      set('painflare', { recast: 10, potency: 200, desc: `Deals unaspected damage with a potency of 200 to target and all enemies nearby it.${flow}` });
+      set('bane', { desc: `Spreads a target's Bio, Bio II and Miasma effects to nearby enemies, with their remaining duration.${flow}` });
+      set('energyDrain', { desc: `Deals unaspected damage with a potency of 150.\nAdditional Effect: Absorbs a portion of damage dealt as HP, and restores MP${flow}` });
       set('aetherflow', { desc: 'Restores 20% of maximum MP.\nAdditional Effect: Aetherflow III' });
       set('dreadwyrmTrance', { recast: 30, desc: 'Increases magic damage dealt by 10% while reducing the MP cost of Ruin III.\nDuration: 15s\nCan only be executed while in possession of 3 stacks of Aethertrail Attunement.' });
       set('deathflare', { recast: 30 });
       set('rouse', { recast: 60, desc: 'Increases damage and healing dealt by pet by 40% (Enhanced Rouse: 60s recast).\nDuration: 20s' });
       A.spur = { name: 'Spur', kind: 'ogcd', recast: 120, desc: 'Increases the attack power of your pet by 40%.\nDuration: 20s' };
+      set('enkindle', { desc: A.enkindle.desc.replace(/\nEnhanced Enkindle:.*$/, '') });     // Further Ruin came in 4.0
+      set('surecast', { desc: 'The next spell is cast without interruption.\nDuration: 10s' });
       set('contagion', { desc: 'Orders Garuda-Egi to use Contagion: extends the duration of your Bio, Bio II and Miasma on the target by 15s.' });
       set('summon', { cast: 6, mp: 1768 });
       set('summon3', { cast: 6, mp: 1768 });

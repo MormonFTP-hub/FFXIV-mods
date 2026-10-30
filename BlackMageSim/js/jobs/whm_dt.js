@@ -53,7 +53,7 @@
       liturgyOfTheBell: ab({ name: 'Liturgy of the Bell', recast: 180, desc: 'Places the Liturgic Bell at the specified location.\nDuration: 20s' }),
       aetherialShift: ab({ name: 'Aetherial Shift', recast: 60, desc: 'Dash 15 yalms forward.' }),
       // The healer role actions.
-      swiftcast: ab({ name: 'Swiftcast', recast: 40, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s\n(40s recast with Enhanced Swiftcast)' }),
+      swiftcast: ab({ name: 'Swiftcast', recast: 40, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),     // 40s: Enhanced Swiftcast
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 60, role: true, desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s' }),
       surecast: ab({ name: 'Surecast', recast: 120, role: true, desc: 'Spells can be cast without interruption.\nDuration: 6s' }),
       rescue: ab({ name: 'Rescue', recast: 120, role: true, desc: 'Instantly draws target party member to your side.' }),

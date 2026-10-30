@@ -25,7 +25,8 @@
       set(A, 'unveiledGibbet', { potency: 400, desc: A.unveiledGibbet.desc.replace('440', '400') });
       set(A, 'unveiledGallows', { potency: 400, desc: A.unveiledGallows.desc.replace('440', '400') });
       set(A, 'lemuresSlice', { potency: 240, desc: 'Delivers an attack with a potency of 240.\nVoid Shroud Cost: 2' });
-      set(A, 'harvestMoon', { potency: 600, desc: 'Delivers an attack with a potency of 600 to target and all enemies nearby it.\nAdditional Effect: Increases Soul Gauge by 10\nCan only be executed while under the effect of Soulsow.' });
+      set(A, 'communio', { desc: A.communio.desc.replace('\nGrants Perfectio Parata if Perfectio Occulta is up.', '') });
+      set(A, 'harvestMoon', { potency: 600, desc: 'Deals unaspected damage with a potency of 600 to target and all enemies nearby it, 50% less for the rest.\nAdditional Effect: Increases Soul Gauge by 10\nCan only be executed while under the effect of Soulsow.' });
       set(A, 'gluttony', { potency: 520, desc: 'Delivers an attack with a potency of 520 to target and all enemies nearby it.\nAdditional Effect: Grants 2 stacks of Soul Reaver\nDuration: 30s\nSoul Gauge Cost: 50' });
       set(A, 'plentifulHarvest', { desc: 'Delivers an attack with a potency of 720 (+40 per Immortal Sacrifice stack after the first, up to 1,000) to target and all enemies nearby it, 60% less for the rest.\nAdditional Effect: Increases Shroud Gauge by 50\nCan only be executed while under the effect of Immortal Sacrifice, after Bloodsown Circle ends.' });
       set(A, 'enshroud', { recast: 15, desc: 'Grants Enshrouded and 5 stacks of Lemure Shroud.\nDuration: 30s\nShroud Gauge Cost: 50\nRecast: 15s\nWhile Enshrouded, Gibbet and Gallows become Void and Cross Reaping, Blood Stalk Lemure\'s Slice and Enshroud Communio.' });

@@ -107,6 +107,7 @@
         baseRegen: Math.round(MAX_MP * 0.02), uiRegen: [0.32, 0.47, 0.62].map(k => Math.round(MAX_MP * k)),
       });
       if (V.arr) this.cfg = Object.assign({}, this.cfg, { enochian: 1.0, baseRegen: 73, uiRegen: [1164, 1709, 2255] });
+      this.actions = B.blmTimerText(this.actions, this.cfg);     // the version's element timer; 12s procs
       this.stats = Object.assign({ mainStat: 'int', jobMod: 115, trait: 130, dh: 354, delay: 3.28 }, V.stats);
       this.selfStatusOrder = ['enochian', 'circleOfPower', 'leyLines', 'ragingStrikes', 'swiftcast', 'sharpcast', 'firestarter', 'thundercloud',
         'medicated', 'manaward', 'surecast', 'sprint'];

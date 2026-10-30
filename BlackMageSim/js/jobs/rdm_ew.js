@@ -41,7 +41,7 @@
       note: 'Level 100: Manafication readies Prefulgence at once with no +5% stacks, Embolden +10% to your own magic, Vice of Thorns 950; the 7.4 savage gear' },
   };
   const spell = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.7, spell: true, magic: true, breaksCombo: true, sound: 'paradox', fx: 'gnbBurst' }, o);
-  const melee = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, magic: true, fx: 'gnbSlash2' }, o);
+  const melee = (o) => Object.assign({ kind: 'gcd', type: 'Weaponskill', target: true, range: B.MELEE_RANGE, delay: 0.5, magic: true, fx: 'gnbSlash2' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const ACCEL = { verthunder3: 1, veraero3: 1, impact: 1 };
 
@@ -94,6 +94,7 @@
         A.prefulgence = ab({ name: 'Prefulgence', recast: 1, potency: V.pref || 1200, target: true, range: 25, aoe: V.falloff || 0.45, ready: 'prefulgenceReady', delay: 0.6, fx: 'gnbDouble', desc: `Delivers an attack with a potency of ${n(V.pref || 1200)} to target and all enemies nearby it, ${less}% less for the rest.\nCan only be executed while under the effect of Prefulgence Ready.` });
       }
       A.lucidDreaming = Object.assign({}, A.lucidDreaming, { desc: 'Gradually restores own MP.\nPotency: 55\nDuration: 21s' });
+      A.addle = Object.assign({}, B.ROLE_ACTIONS.caster.addle);     // Endwalker's wording (the 5.x one lowered Intelligence and Mind)
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

@@ -185,7 +185,7 @@ ${seq(['bloodWeapon', 'hardSlash', ['edgeOfShadow'], ['delirium'], 'syphonStrike
       A.disesteem = ws({ name: 'Disesteem', potency: 1000, range: 10, aoe: 0.75, fx: 'gnbZone', desc: 'Deals unaspected damage to all enemies in a straight line before you with a potency of 1,000 for the first enemy, and 25% less for all remaining enemies.\nCan only be executed while under the effect of Scorn.' });
       A.shadowstride = ab({ name: 'Shadowstride', recast: 30, charges: 2, target: true, range: 20, desc: 'Move quickly to the specified target.\nMaximum Charges: 2\nCannot be executed while bound.' });
       A.shadowedVigil = ab({ name: 'Shadowed Vigil', recast: 120, desc: 'Reduces damage taken by 40%.\nDuration: 15s\nAdditional Effect: Vigilant (heals when HP falls low)' });
-      set(A, 'delirium', { desc: 'Grants 3 stacks of Delirium and 3 stacks of Blood Weapon.\nDelirium: Bloodspiller plays Scarlet Delirium → Comeuppance → Torcleaver and Quietus plays Impalement, all without Blood.\nBlood Weapon: each weaponskill or spell that lands increases Blood Gauge by 10 and restores 600 MP.\nDuration: 15s' });
+      set(A, 'delirium', { desc: 'Grants 3 stacks of Delirium and 3 stacks of Blood Weapon.\nDelirium: Bloodspiller becomes Scarlet Delirium, then Comeuppance and Torcleaver, and Quietus becomes Impalement, all without Blood.\nBlood Weapon: each weaponskill or spell that lands increases Blood Gauge by 10 and restores 600 MP.\nDuration: 15s' });
       set(A, 'livingShadow', { cost: undefined, desc: `Conjure a simulacrum of your darkside to fight alongside you.\nSimulacrum Attack Potency: 420\nDuration: ${V.shadow.dur}s\nAdditional Effect: Grants Scorn\nDuration: 30s` });
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

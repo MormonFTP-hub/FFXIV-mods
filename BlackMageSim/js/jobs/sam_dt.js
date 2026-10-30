@@ -19,6 +19,7 @@
   const KMAP = { tenkaGoken: 'kaeshiGoken', midareSetsugekka: 'kaeshiSetsugekka', tendoGoken: 'tendoKaeshiGoken', tendoSetsugekka: 'tendoKaeshiSetsugekka' };
   const KAESHI = { kaeshiGoken: 1, kaeshiSetsugekka: 1, tendoKaeshiGoken: 1, tendoKaeshiSetsugekka: 1 };
   const TENDO = { tendoGoken: 2, tendoSetsugekka: 3 };
+  const READY = 'Additional Effect: Grants Tsubame-gaeshi Ready\nDuration: 30s';     // 7.05+: Tenka Goken and Midare Setsugekka
 
   class SamuraiDT extends EW {
     constructor() {
@@ -35,9 +36,10 @@
       set(A, 'enpi', { enhancedPotency: 270 });
       pot('higanbana', 200, 0, { dot: { potency: 50, duration: 60 } });
       pot('midareSetsugekka', 680); pot('tenkaGoken', 300);
+      for (const id of ['tenkaGoken', 'midareSetsugekka']) set(A, id, { desc: A[id].desc.replace('Additional Effect: Grants a stack of Meditation', READY + '\nAdditional Effect: Grants a stack of Meditation') });
       const kaeshi = { cd: undefined, charges: undefined, cdGroup: undefined };
       set(A, 'tsubameGaeshi', Object.assign({}, kaeshi, { desc: 'Repeats the Iaijutsu that granted Tsubame-gaeshi Ready (Tenka Goken, Midare Setsugekka or their Tendo forms).\nTsubame-gaeshi Ready lasts 30s; Higanbana can\'t be repeated.' }));
-      set(A, 'kaeshiGoken', Object.assign({}, kaeshi, { potency: 300 }));
+      set(A, 'kaeshiGoken', Object.assign({}, kaeshi, { potency: 300, desc: 'Delivers an attack to all enemies in a cone before you with a potency of 300.\nCan only be executed while under the effect of Tsubame-gaeshi Ready (Tenka Goken).' }));
       set(A, 'kaeshiSetsugekka', Object.assign({}, kaeshi, { potency: 680, desc: 'Delivers a critical hit with a potency of 680.\nCan only be executed while under the effect of Tsubame-gaeshi Ready (Midare Setsugekka).' }));
       A.tendoGoken = ws({ name: 'Tendo Goken', potency: 410, cast: 1.3, aoe: true, fx: 'tenka', desc: 'Delivers an attack with a potency of 410 to all nearby enemies.\nCan only be executed under the effect of Tendo and two Sen.\nAdditional Effect: Grants Tsubame-gaeshi Ready\nDuration: 30s' });
       A.tendoSetsugekka = ws({ name: 'Tendo Setsugekka', potency: 1100, cast: 1.3, fx: 'midare', desc: 'Delivers a critical hit with a potency of 1,100.\nCan only be executed under the effect of Tendo and three Sen.\nAdditional Effect: Grants Tsubame-gaeshi Ready\nDuration: 30s' });
@@ -51,6 +53,8 @@
       set(A, 'gyoten', { recast: 5 });
       set(A, 'meikyoShisui', { desc: 'Execute up to 3 weaponskill combos without meeting combo prerequisites.\nDuration: 20s\nAdditional Effect: Grants Tendo\nDuration: 30s' });
       set(A, 'ikishoten', { desc: 'Increases Kenki Gauge by 50.\nAdditional Effect: Grants Ogi Namikiri Ready and Zanshin Ready\nDuration: 30s\nCan only be executed while in combat.' });
+      // Level 82 upgrades Third Eye to Tengentsu (same button and recast; its heal-over-time doesn't matter on a dummy).
+      set(A, 'thirdEye', { name: 'Tengentsu', desc: 'Reduces damage taken by 10%.\nDuration: 4s\nAdditional Effect: Grants Tengentsu\'s Foresight when hit\nTengentsu\'s Foresight Effect: Gradually restores HP\nCure Potency: 200\nDuration: 9s\nAdditional Effect: Increases Kenki Gauge by 10 when hit' });
       A.zanshin = { name: 'Zanshin', kind: 'ogcd', recast: 1, potency: 940, kenkiCost: 50, target: true, range: 8, aoe: [1, 0.6], delay: 0.6, fx: 'senei', desc: 'Delivers an attack with a potency of 940 to the first enemy in a cone, 40% less for the rest.\nKenki Gauge Cost: 50\nCan only be executed while under the effect of Zanshin Ready.' };
       A.tincture = B.tincture('strdt4');
       this.actions = A;
@@ -59,6 +63,7 @@
         tendo: { name: 'Tendo', self: true, icon: 'st_meikyo' },
         zanshinReady: { name: 'Zanshin Ready', self: true, icon: 'st_meikyo' },
         tsubameReady: { name: 'Tsubame-gaeshi Ready', self: true, icon: 'st_meikyo' },
+        thirdEye: Object.assign({}, this.statuses.thirdEye, { name: 'Tengentsu' }),
       });
       this.selfStatusOrder = ['fugetsu', 'fuka', 'meikyoShisui', 'tendo', 'tsubameReady', 'ogiNamikiriReady', 'zanshinReady', 'enhancedEnpi', 'meditate',
         'trueNorth', 'thirdEye', 'medicated', 'bloodbath', 'armsLength', 'sprint'];
@@ -117,6 +122,7 @@
     ability(id, e) {
       switch (id) {
         case 'meikyoShisui': e.addStatus('meikyoShisui', 20, { stacks: 3 }); e.addStatus('tendo', 30); return;
+        case 'thirdEye': e.addStatus('thirdEye', 4); return;     // Tengentsu
         case 'ikishoten': this.addKenki(e, 50); e.addStatus('ogiNamikiriReady', 30); e.addStatus('zanshinReady', 30); return;
         case 'zanshin':
           this.addKenki(e, -50);
@@ -152,10 +158,13 @@ ${seq([['meikyoShisui'], ['trueNorth'], 'gekko', ['tincture'], 'kasha', ['ikisho
       const pot = (id, potency, combo, extra) => set(A, id, Object.assign({ potency }, combo ? { comboPotency: combo } : {}, extra || {}));
       pot('jinpu', 160, 320); pot('shifu', 160, 320); pot('gekko', 180, 390); pot('kasha', 180, 390); pot('yukikaze', 180, 360);
       pot('midareSetsugekka', 700);
+      for (const id of ['tenkaGoken', 'midareSetsugekka']) set(A, id, { desc: A[id].desc.replace(READY + '\n', '') });     // only Meikyo grants it in 7.0
+      set(A, 'kaeshiGoken', { desc: 'Delivers an attack to all enemies in a cone before you with a potency of 300.\nCan only be executed immediately after Tenka Goken under the effect of Tsubame-gaeshi Ready.' });
       pot('kaeshiSetsugekka', 700, 0, { desc: 'Delivers a critical hit with a potency of 700.\nCan only be executed immediately after Midare Setsugekka under the effect of Tsubame-gaeshi Ready.' });
-      pot('tendoGoken', 420, 0, { desc: A.tendoGoken.desc.replace('410', '420').replace('Additional Effect: Grants Tsubame-gaeshi Ready\nDuration: 30s', 'Tsubame-gaeshi Ready (from Meikyo Shisui) lets its Kaeshi follow.') });
-      pot('tendoKaeshiGoken', 420, 0, { desc: A.tendoKaeshiGoken.desc.replace('410', '420') });
-      pot('tendoSetsugekka', 1020, 0, { desc: 'Delivers a critical hit with a potency of 1,020.\nCan only be executed under the effect of Tendo and three Sen.\nTsubame-gaeshi Ready (from Meikyo Shisui) lets its Kaeshi follow.' });
+      const follow = 'Its Kaeshi can follow as the next weaponskill while under the effect of Tsubame-gaeshi Ready (Meikyo Shisui).';
+      pot('tendoGoken', 420, 0, { desc: A.tendoGoken.desc.replace('410', '420').replace(READY, follow) });
+      pot('tendoKaeshiGoken', 420, 0, { desc: A.tendoKaeshiGoken.desc.replace('410', '420').replace('executed after', 'executed immediately after') });
+      pot('tendoSetsugekka', 1020, 0, { desc: 'Delivers a critical hit with a potency of 1,020.\nCan only be executed under the effect of Tendo and three Sen.\n' + follow });
       pot('tendoKaeshiSetsugekka', 1020, 0, { desc: 'Delivers a critical hit with a potency of 1,020.\nCan only be executed immediately after Tendo Setsugekka.' });
       pot('ogiNamikiri', 900, 0, { aoe: [1, 0.25] }); pot('kaeshiNamikiri', 900, 0, { aoe: [1, 0.25] });
       set(A, 'zanshin', { potency: 900, aoe: [1, 0.4], desc: A.zanshin.desc.replace('940', '900').replace('40% less', '60% less') });

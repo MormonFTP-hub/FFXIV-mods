@@ -42,7 +42,7 @@
     provoke: ab({ name: 'Provoke', recast: 40, role: true, target: true, range: 25, desc: 'Gesture threateningly, placing yourself at the top of a target\'s enmity list.' }),
     awareness: ab({ name: 'Awareness', recast: 120, role: true, desc: 'Nullifies the chance of suffering critical damage.\nDuration: 25s' }),
     convalescence: ab({ name: 'Convalescence', recast: 120, role: true, desc: 'Increases HP recovery via healing magic by 20%.\nDuration: 20s' }),
-    flash: { name: 'Flash', kind: 'gcd', role: true, recast: 2.5, desc: 'Blinds nearby enemies and increases enmity.' },
+    flash: { name: 'Flash', kind: 'gcd', role: true, recast: 2.5, type: 'Spell', desc: 'Blinds nearby enemies and increases enmity.' },
     secondWind: ab({ name: 'Second Wind', recast: 120, role: true, desc: 'Instantly restores own HP.' }),
     ...B.GENERAL_ACTIONS,
     tincture: B.tincture('str'),

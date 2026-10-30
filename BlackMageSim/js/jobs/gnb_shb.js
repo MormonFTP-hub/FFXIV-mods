@@ -89,7 +89,7 @@
       set('superbolide', { desc: 'Reduces HP to 1 and renders you impervious to most attacks.\nDuration: 8s' });
       set('tincture', B.tincture(V.tincture));
       set('nebula', { desc: `Reduces damage taken by 30%.\nDuration: ${V.nebula}s` });
-      if (V.reprisal === 5) set('reprisal', { desc: 'Reduces damage dealt by target by 10%.\nDuration: 5s' });
+      if (V.reprisal === 5) set('reprisal', { desc: 'Reduces damage dealt by nearby enemies by 10%.\nDuration: 5s' });
       A.heartOfStone = { name: 'Heart of Stone', kind: 'ogcd', recast: 25, desc: 'Reduces damage taken by 15%.\nDuration: 7s\nAdditional Effect: When targeting a party member while under the effect of Brutal Shell, that effect is also granted to the target.' };
       delete A.doubleDown; delete A.hypervelocity; delete A.heartOfCorundum;
       return A;

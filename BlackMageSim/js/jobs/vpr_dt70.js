@@ -16,7 +16,7 @@
     constructor() {
       super();
       const A = Object.assign({}, this.actions);
-      set(A, 'steelFangs', { potency: 200, desc: 'Delivers an attack with a potency of 200.\n※This action cannot be assigned to a hotbar.\nSteel Fangs and Dread Fangs change to Hunter\'s Sting and Swiftskin\'s Sting.' });
+      set(A, 'steelFangs', { potency: 200, desc: 'Delivers an attack with a potency of 200.\nSteel Fangs and Dread Fangs change to Hunter\'s Sting and Swiftskin\'s Sting.' });
       set(A, 'reavingFangs', { name: 'Dread Fangs', potency: 140, gnash: true, desc: 'Delivers an attack with a potency of 140.\nAdditional Effect: Afflicts target with Noxious Gnash, increasing your damage dealt to it by 10%\nDuration: 20s (extends up to 40s)' });
       for (const id of ['huntersSting', 'swiftskinsSting']) set(A, id, { potency: 260, desc: A[id].desc.replace('potency of 300', 'potency of 260') });
       for (const id of ['flankstingStrike', 'flanksbaneFang', 'hindstingStrike', 'hindsbaneFang']) set(A, id, { potency: 300, desc: A[id].desc.replace(/potency of 340/g, 'potency of 300').replace(/400/g, '360').replace(/440/g, '400').replace(/500/g, '460') });
@@ -29,14 +29,13 @@
       for (const id of ['firstGeneration', 'secondGeneration', 'thirdGeneration', 'fourthGeneration']) set(A, id, { potency: 400, seqPotency: 600, aoe: 0.4, desc: A[id].desc.replace('480', '400').replace('680', '600') });
       set(A, 'ouroboros', { potency: 1050, aoe: 0.4, desc: 'Delivers an attack with a potency of 1,050 to target and all enemies nearby it, 60% less for the rest.\nCan only be executed after Fourth Generation.' });
       for (const id of ['firstLegacy', 'secondLegacy', 'thirdLegacy', 'fourthLegacy']) set(A, id, { potency: 250, aoe: 0.4, desc: A[id].desc.replace('320', '250') });
-      set(A, 'steelMaw', { potency: 100 });
+      set(A, 'steelMaw', { potency: 100, desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nSteel Maw and Dread Maw change to Hunter\'s Bite and Swiftskin\'s Bite.' });
       set(A, 'reavingMaw', { name: 'Dread Maw', potency: 80, gnash: true, desc: 'Delivers an attack with a potency of 80 to all nearby enemies.\nAdditional Effect: Afflicts all enemies hit with Noxious Gnash (+10% to your damage, 20s, up to 40s)' });
       set(A, 'huntersBite', { potency: 120 });
       set(A, 'swiftskinsBite', { potency: 120 });
-      set(A, 'jaggedMaw', { potency: 140, venomBonus: 20 });
-      set(A, 'bloodiedMaw', { potency: 140, venomBonus: 20 });
+      for (const id of ['jaggedMaw', 'bloodiedMaw']) set(A, id, { potency: 140, venomBonus: 20, desc: A[id].desc.replace('potency of 180', 'potency of 140').replace('Venom Potency: 220', 'Venom Potency: 160') });
       set(A, 'lastLash', { potency: 100 });
-      set(A, 'vicepit', { name: 'Pit of Dread', potency: 200, gnash: true });
+      set(A, 'vicepit', { name: 'Pit of Dread', potency: 200, gnash: true, desc: 'Delivers an attack with a potency of 200 to all nearby enemies.\nAdditional Effect: Afflicts all enemies hit with Noxious Gnash (+10% to your damage, 20s, up to 40s)\nAdditional Effect: Rattling Coil +1\nMaximum Charges: 2 (shared with Dreadwinder)\nOpens Hunter\'s Den and Swiftskin\'s Den.' });
       set(A, 'huntersDen', { potency: 250 });
       set(A, 'swiftskinsDen', { potency: 250 });
       A.tincture = B.tincture('dexdt1');

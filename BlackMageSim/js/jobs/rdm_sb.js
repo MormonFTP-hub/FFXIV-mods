@@ -47,7 +47,7 @@
       set(A, 'enchantedZwerchhau', { comboPotency: S.zwerch });
       set(A, 'enchantedRedoublement', { comboPotency: S.redoub, desc: A.enchantedRedoublement.desc.replace('Verthunder and Veraero become Verflare and Verholy.', 'Allows Verflare and Verholy.') });
       set(A, 'fleche', { potency: S.fleche, desc: `Delivers an attack with a potency of ${S.fleche}.` });
-      set(A, 'contreSixte', { potency: S.contre, recast: 45, aoe: 0.5, desc: `Delivers an attack to all nearby enemies with a potency of ${S.contre} for the first enemy, 10% less for the second, 20% less for the third, 30% less for the fourth, 40% less for the fifth, and 50% less for all remaining enemies.` });
+      set(A, 'contreSixte', { potency: S.contre, recast: 45, aoe: 0.5, desc: `Delivers an attack to target and all enemies nearby it with a potency of ${S.contre} for the first enemy, 10% less for the second, 20% less for the third, 30% less for the fourth, 40% less for the fifth, and 50% less for all remaining enemies.` });
       set(A, 'displacement', { potency: S.displacement, cdGroup: undefined, desc: `Delivers an attack with a potency of ${S.displacement}.\nAdditional Effect: 15-yalm backstep\nCannot be executed while bound.` });
       set(A, 'manafication', { recast: 120, desc: 'Doubles current Black Mana and White Mana levels.\nAdditional Effect: Resets Corps-a-corps and Displacement recast timers\nAll combos are canceled upon execution of Manafication.' });
       // Stormblood's caster role actions: Lucid Dreaming was a 120s Refresh (potency 80).

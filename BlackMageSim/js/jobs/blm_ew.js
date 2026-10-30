@@ -620,6 +620,25 @@ ${seq(['sharpcast', 'fire3', 'thunder3', 'fire4', ['triplecast'], 'fire4', 'fire
 
   B.BlackMageEW = BlackMageEW;
 
+  // A version's timers in its tooltips: each "Duration" line after Astral Fire or Umbral Ice follows cfg.elementDur
+  // (15s when unset), Firestarter's follows cfg.fsDur and Thundercloud's cfg.tcDur. A timer that never runs out
+  // (7.2's Infinity / 1e9) drops its line. Returns a copy of the table; the actions it changes are copied too.
+  B.blmTimerText = function (actions, cfg) {
+    const A = Object.assign({}, actions);
+    const line = (s) => (s > 0 && s < 1e6 ? `\nDuration: ${s}s` : '');
+    const el = line(cfg.elementDur || ELEMENT_DURATION), fs = line(cfg.fsDur), tc = line(cfg.tcDur);
+    for (const id of Object.keys(A)) {
+      const a = A[id];
+      if (!a || a.kind === 'item' || typeof a.desc !== 'string') continue;
+      const desc = a.desc
+        .replace(/([^\n]*(?:Astral Fire|Umbral Ice)[^\n]*)\nDuration: \d+s/g, (m, l) => l + el)
+        .replace(/([^\n]*next Fire III will cost no MP[^\n]*)\nDuration: \d+s/g, (m, l) => l + fs)
+        .replace(/([^\n]*after each tick that the next Thunder spell[^\n]*)\nDuration: \d+s/g, (m, l) => l + tc);
+      if (desc !== a.desc) A[id] = Object.assign({}, a, { desc });
+    }
+    return A;
+  };
+
   B.registerJob({
     id: 'blm', name: 'Black Mage', abbr: 'BLM', role: 'caster', classJob: 25,
     versions: [{ id: 'ew65', label: 'Endwalker 6.0–6.58', history: 'EW 6.0–6.58', note: 'Paradox, Sharpcast and Triplecast with 2 charges, Enochian 23%', create: () => new BlackMageEW() }],

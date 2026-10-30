@@ -29,6 +29,9 @@
       for (const k of Object.keys(A)) if (A[k] && A[k].mp) A[k] = Object.assign({}, A[k], { mp: Math.round(A[k].mp * MP_SCALE) });
       if (A.windBlade) set(A, 'windBlade', { potency: 100 });
       if (A.burningStrike) set(A, 'burningStrike', { potency: 120 });
+      for (const k of ['fester', 'bane', 'energyDrain']) {
+        if (A[k]) A[k] = Object.assign({}, A[k], { desc: A[k].desc.replace('\nAdditional Effect: Aethertrail Attunement +1', '') });
+      }
       A.tincture = Object.assign({}, A.tincture, { name: 'X-Potion of Intelligence', desc: 'This diluted brew temporarily increases intelligence.\nIntelligence +20% (Max 84)\nDuration: 15s' });
       this.actions = A;
       this.stats = Object.assign({}, this.stats, { hp: 7500, main: 665, wd: 82, det: 256, crit: 626, dh: 341, speed: 459, piety: 210, delay: 3.12 });
@@ -46,6 +49,11 @@
     // No Aethertrail Attunement: Aetherflow always gives three.
     spendFlow(e) {
       super.spendFlow(e);
+      e.g.trail = 0;
+    }
+    // Energy Drain spends its stack in the Stormblood code, which adds a step of Aethertrail; clear that too.
+    ability(id, e) {
+      super.ability(id, e);
       e.g.trail = 0;
     }
 

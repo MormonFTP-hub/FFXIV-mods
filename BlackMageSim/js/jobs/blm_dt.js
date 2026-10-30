@@ -81,7 +81,7 @@
       A.retrace = { name: 'Retrace', kind: 'ogcd', recast: 40, desc: 'Connects to the ley lines beneath you, moving your Ley Lines circle here.\nCan only be executed while under the effect of Ley Lines.' };
       set(A, 'swiftcast', { recast: 40 });
       A.tincture = B.tincture(V.tincture);
-      this.actions = A;
+      this.actions = B.blmTimerText(A, this.cfg);     // 7.2: no Duration lines, as nothing runs out
       this.statuses = Object.assign({}, this.statuses, {
         thunderhead: { name: 'Thunderhead', self: true, icon: 'st_thunderhead' },
         highThunder: { name: 'High Thunder', self: false, icon: 'st_highThunder' },

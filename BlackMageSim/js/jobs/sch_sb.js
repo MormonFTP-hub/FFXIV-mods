@@ -73,7 +73,8 @@
       aetherpact: ab({ name: 'Aetherpact', recast: V.aetherpact, desc: 'Orders your faerie to execute Fey Union, gradually restoring a party member\'s HP.\nCure Potency: 480\nFaerie Gauge Cost: 10 per tick\nPress again to dissolve the union.' }),
       summon: heal({ name: 'Summon', cast: E ? 6 : 3, mp: E ? 2400 : 1200, faerie: 'eos', desc: 'Summons Eos, a faerie healer.' }),
       summon2: heal({ name: 'Summon II', cast: E ? 6 : 3, mp: E ? 2400 : 1200, faerie: 'selene', desc: 'Summons Selene, a faerie healer. Selene keeps Fey Wind up: 3% faster casts and GCD for you and nearby party members (30s, every 60s).' }),
-      whisperingDawn: ab({ name: 'Whispering Dawn', recast: 60, desc: `Orders Eos to gradually restore the HP of party members nearby.\nCure Potency: ${V.dawn}\nDuration: 21s${V.dawnCast ? `\nCast time: ${V.dawnCast}s (Eos's)` : ''}` }),
+      // V.dawnCast: Eos's own cast time for it before 4.3 (a heal, so not modelled).
+      whisperingDawn: ab({ name: 'Whispering Dawn', recast: 60, desc: `Orders Eos to gradually restore the HP of party members nearby.\nCure Potency: ${V.dawn}\nDuration: 21s` }),
       feyCovenant: ab({ name: 'Fey Covenant', recast: 120, desc: 'Orders Eos to increase magic defense of nearby party members by 20%.\nDuration: 20s' }),
       feyIllumination: ab({ name: 'Fey Illumination', recast: 120, desc: 'Orders Eos to increase healing magic potency of nearby party members by 10%.\nDuration: 20s' }),
       silentDusk: ab({ name: 'Silent Dusk', recast: 40, target: true, range: 25, desc: 'Orders Selene to silence the target.' }),

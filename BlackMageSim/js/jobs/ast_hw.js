@@ -54,9 +54,10 @@
         // Conjurer and Thaumaturge cross-class skills.
         clericStance: ab({ name: 'Cleric Stance', recast: 5, role: true, desc: 'Swaps your Mind and Intelligence, increases attack magic potency by 10% and reduces healing magic potency by 20%.\nEffect ends upon reuse.' }),
         swiftcast: S.swiftcast,
-        surecast: S.surecast,
-        protect: ab({ name: 'Protect', recast: 2.5, role: true, desc: 'Increases the physical and magic defense of nearby party members.\nDuration: 30m' }),
-        stoneskin: ab({ name: 'Stoneskin', recast: 2.5, role: true, desc: 'Creates a barrier that nullifies damage up to 10% of maximum HP.\nDuration: 30m' }),
+        surecast: Object.assign({}, S.surecast, { desc: 'The next spell is cast without interruption.\nDuration: 10s' }),
+        // Spells in the game (cast before the pull); here they do nothing, so they're left as instant buttons.
+        protect: ab({ name: 'Protect', recast: 2.5, role: true, type: 'Spell', desc: 'Increases the physical and magic defense of nearby party members.\nDuration: 30m' }),
+        stoneskin: ab({ name: 'Stoneskin', recast: 2.5, role: true, type: 'Spell', desc: 'Creates a barrier that nullifies damage up to 10% of maximum HP.\nDuration: 30m' }),
         ...B.GENERAL_ACTIONS,
         tincture: Object.assign({}, B.tincture('mnd3sb'), { name: 'Supramax-Potion of Mind', dur: 15, desc: 'This diluted brew temporarily increases mind.\nMind +20% (Max 154)\nDuration: 15s' }),
       };

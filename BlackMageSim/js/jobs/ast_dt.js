@@ -68,6 +68,7 @@
         desc: `Deals unaspected damage to target and all enemies nearby it with a potency of ${V.oracle}${V.oracleAoe === true ? '' : ' for the first enemy, and 50% less for all remaining enemies'}.\nCan only be executed while under the effect of Divining.` });
       A.divination = ab({ name: 'Divination', recast: 120, desc: 'Increases damage dealt by yourself and nearby party members by 6%.\nDuration: 20s\nAdditional Effect: Grants Divining (Oracle)\nDuration: 30s\n※Action changes to Oracle while under the effect of Divining.' });
       A.heliosConjunction = heal({ name: 'Helios Conjunction', cast: 1.5, mp: 700, desc: 'Restores own HP and the HP of all nearby party members.\nCure Potency: 250\nAdditional Effect: Regen\nCure Potency: 175\nDuration: 15s' });
+      A.horoscope = Object.assign({}, A.horoscope, { desc: 'Reads your fortune: Helios or Helios Conjunction upgrades the heal stored for when it ends.' });
       A.sunSign = ab({ name: 'Sun Sign', recast: 1, desc: 'Reduces damage taken by yourself and nearby party members by 10%.\nDuration: 15s\nCan only be executed while under the effect of Suntouched.' });
       if (version !== 'dt701') A.esuna = Object.assign({}, A.esuna, { cast: undefined });
       A.tincture = B.tincture(V.tincture);

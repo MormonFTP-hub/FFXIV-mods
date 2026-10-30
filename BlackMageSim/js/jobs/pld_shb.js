@@ -37,7 +37,8 @@
       shieldLob: ws({ name: 'Shield Lob', potency: 120, range: 20, delay: 0.7, fx: 'gnbShot', desc: 'Delivers a ranged attack with a potency of 120.\nAdditional Effect: Increased enmity' }),
       totalEclipse: ws({ name: 'Total Eclipse', potency: 120, comboStart: true, comboNext: true, target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 120 to all nearby enemies.' }),
       prominence: ws({ name: 'Prominence', potency: 100, comboPotency: 220, comboFrom: 'totalEclipse', target: false, pbaoe: 5, aoe: true, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Total Eclipse\nCombo Potency: 220\nCombo Bonus: Restores MP' }),
-      holySpirit: spell({ name: 'Holy Spirit', potency: 350, cast: 1.5, desc: 'Deals unaspected damage with a potency of 350.\nCast 1.5s, recast 2.5s (no spell speed on tank gear).' }),
+      // A 1.5s cast on a 2.5s recast either way: no spell speed on tank gear (fixedRecast).
+      holySpirit: spell({ name: 'Holy Spirit', potency: 350, cast: 1.5, desc: 'Deals unaspected damage with a potency of 350.' }),
       holyCircle: spell({ name: 'Holy Circle', potency: 250, cast: 1.5, target: false, pbaoe: 5, aoe: true, desc: 'Deals unaspected damage with a potency of 250 to all nearby enemies.' }),
       confiteor: spell({ name: 'Confiteor', potency: 800, aoe: true, fx: 'gnbZone', desc: 'Deals unaspected damage with a potency of 800 to target and all enemies nearby it.\nCan only be executed while under the effect of Requiescat. Effect fades upon execution.' }),
       clemency: spell({ name: 'Clemency', potency: 0, cast: 1.5, magic: false, target: false, desc: 'Restores target\'s HP.\nCure Potency: 1,200\nAdditional Effect: Restores to self 50% of HP restored to target if target is a party member' }),
@@ -56,7 +57,7 @@
       divineVeil: ab({ name: 'Divine Veil', recast: 90, desc: 'Upon HP recovery via healing magic, a protective barrier is cast on all party members within 15 yalms.\nDuration: 30s' }),
       passageOfArms: ab({ name: 'Passage of Arms', recast: 120, desc: 'Increases block rate to 100% and creates a designated area in a cone behind you in which party members will only suffer 85% of all damage inflicted.\nDuration: 18s\nEffect ends upon using another action or moving.' }),
       ...B.ROLE_ACTIONS.tank,
-      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by target by 10%.\nDuration: 5s' } : {}),
+      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by nearby enemies by 10%.\nDuration: 5s' } : {}),
       ...B.GENERAL_ACTIONS,
       tincture: B.tincture(V.tincture),
       auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },

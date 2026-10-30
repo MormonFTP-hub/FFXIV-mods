@@ -64,8 +64,10 @@
       set(A, 'higanbana', { cast: 1.8, potency: 250, dot: { potency: V.higanDot, duration: 60 }, desc: `Delivers an attack with a potency of 250.\nAdditional Effect: Damage over time\nPotency: ${V.higanDot}\nDuration: 60s${med}\nCan only be executed when under the effect of one of the following: Setsu, Getsu, or Ka.` });
       set(A, 'tenkaGoken', { cast: 1.8, potency: 360, desc: `Delivers an attack with a potency of 360 to all enemies in a cone before you.${med}\nCan only be executed when under the effect of two of the following: Setsu, Getsu, or Ka.` });
       set(A, 'midareSetsugekka', { cast: 1.8, potency: 800, desc: `Delivers an attack with a potency of 800.${med}\nCan only be executed when under the effect of Setsu, Getsu, and Ka.` });
-      const fixed = Object.assign(V.tsubameFixed ? { fixedRecast: 2.5 } : {}, V.kaeshiCast ? { cast: V.kaeshiCast } : {});
-      const lock = (V.kaeshiCast ? `\nCast: ${V.kaeshiCast}s` : '') + (V.tsubameFixed ? '\nTriggers the cooldown of weaponskills upon execution (2.5s, not affected by skill speed).' : '\nTriggers the cooldown of weaponskills upon execution.');
+      // 5.0x: the Kaeshi lock the GCD for a flat 2.5s (skill speed doesn't shorten it); 5.0–5.01 also gave them a cast
+      // (still weaponskills). helpHtml says both.
+      const fixed = Object.assign(V.tsubameFixed ? { fixedRecast: 2.5 } : {}, V.kaeshiCast ? { cast: V.kaeshiCast, type: 'Weaponskill' } : {});
+      const lock = '\nTriggers the cooldown of weaponskills upon execution.';
       set(A, 'tsubameGaeshi', Object.assign({ charges: undefined, desc: `Repeats the previously executed iaijutsu with increased potency.\nCan only be executed immediately following Iaijutsu.${lock}` }, fixed));
       set(A, 'kaeshiHiganbana', Object.assign({ potency: 375, charges: undefined, dot: { potency: V.kaeshiDot, duration: 60 }, desc: `Delivers an attack with a potency of 375.\nAdditional Effect: Damage over time\nPotency: ${V.kaeshiDot}\nDuration: 60s${med}\nEffect cannot be stacked with Higanbana.${lock}` }, fixed));
       set(A, 'kaeshiGoken', Object.assign({ potency: 540, charges: undefined, desc: `Delivers an attack with a potency of 540 to all enemies in a cone before you.${med}${lock}` }, fixed));

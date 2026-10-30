@@ -114,6 +114,8 @@
       desc: 'Creates a barrier that nullifies damage totaling up to 30% of maximum HP.\nDuration: 20s',
     },
     ...B.ROLE_ACTIONS.caster,
+    // Before 6.0 Addle lowered the target's Intelligence and Mind (Endwalker made it 5% physical / 10% magic).
+    addle: Object.assign({}, B.ROLE_ACTIONS.caster.addle, { desc: 'Lowers target\'s intelligence and mind by 10%.\nDuration: 10s' }),
     // 5.x Lucid Dreaming: potency 50, so 500 MP a tick (Endwalker raised it to 55).
     lucidDreaming: Object.assign({}, B.ROLE_ACTIONS.caster.lucidDreaming, { desc: 'Gradually restores MP.\nPotency: 50\nDuration: 21s' }),
     ...B.GENERAL_ACTIONS,

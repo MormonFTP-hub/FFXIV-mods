@@ -41,7 +41,12 @@
       set(A, 'disembowel', { potency: 140, comboPotency: 250, desc: 'Delivers an attack with a potency of 140.\nCombo Action: True Thrust or Raiden Thrust\nCombo Potency: 250\nCombo Bonus: Grants Power Surge, increasing damage dealt by 10%\nDuration: 30s' });
       A.chaoticSpring = ws({ name: 'Chaotic Spring', potency: 100, comboPotency: 260, comboFrom: 'disembowel', positional: 'rear', posBonus: 40, dot: { potency: 45, duration: 24 }, fx: 'gnbFang3',
         desc: 'Delivers an attack with a potency of 100.\n140 when executed from a target\'s rear.\nCombo Action: Disembowel\nCombo Potency: 260\nRear Combo Potency: 300\nCombo Bonus: Damage over time\nPotency: 45\nDuration: 24s\nCombo Bonus: Grants Wheel in Motion\nDuration: 30s' });
-      for (const id of ['fangAndClaw', 'wheelingThrust']) set(A, id, { potency: 260, desc: A[id].desc.replace(/\d{3}/, '260') });
+      // Each opens the other (Wheel in Motion / Fang and Claw Bared); as the fifth hit it is 100 stronger and grants
+      // Draconian Fire instead.
+      set(A, 'fangAndClaw', { potency: 260, desc: 'Delivers an attack with a potency of 260.\n300 when executed from a target\'s flank.\nCan only be executed while under the effect of Fang and Claw Bared.\nAdditional Effect: Grants Wheel in Motion\nDuration: 30s\nAfter Wheeling Thrust: Potency +100, and grants Draconian Fire instead\nDuration: 30s' });
+      set(A, 'wheelingThrust', { potency: 260, desc: 'Delivers an attack with a potency of 260.\n300 when executed from a target\'s rear.\nCan only be executed while under the effect of Wheel in Motion.\nAdditional Effect: Grants Fang and Claw Bared\nDuration: 30s\nAfter Fang and Claw: Potency +100, and grants Draconian Fire instead\nDuration: 30s' });
+      set(A, 'sonicThrust', { desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Doom Spike\nCombo Potency: 200\nCombo Bonus: Grants Power Surge\nDuration: 30s' });
+      set(A, 'coerthanTorment', { desc: 'Delivers an attack with a potency of 100 to all enemies in a straight line before you.\nCombo Action: Sonic Thrust\nCombo Potency: 230' });
       set(A, 'highJump', { potency: 400, desc: 'Delivers a jumping attack with a potency of 400.\nAdditional Effect: Grants Dive Ready\nDuration: 15s' });
       set(A, 'spineshatterDive', { potency: 250, charges: 2, desc: 'Delivers a jumping attack with a potency of 250.\nMaximum Charges: 2' });
       set(A, 'dragonfireDive', { potency: 300 });
@@ -59,6 +64,10 @@
       this.statuses = Object.assign({}, this.statuses, {
         powerSurge: { name: 'Power Surge', self: true, icon: 'st_disembowel' },
         chaoticSpring: { name: 'Chaotic Spring', self: false, icon: 'st_chaos' },
+        // The same procs under their Endwalker names.
+        sharperFangAndClaw: Object.assign({}, this.statuses.sharperFangAndClaw, { name: 'Fang and Claw Bared' }),
+        enhancedWheelingThrust: Object.assign({}, this.statuses.enhancedWheelingThrust, { name: 'Wheel in Motion' }),
+        raidenThrustReady: Object.assign({}, this.statuses.raidenThrustReady, { name: 'Draconian Fire' }),
       });
       this.selfStatusOrder = ['lifeOfTheDragon', 'powerSurge', 'lanceCharge', 'battleLitany', 'rightEye', 'raidenThrustReady', 'sharperFangAndClaw',
         'enhancedWheelingThrust', 'diveReady', 'lifeSurge', 'medicated', 'trueNorth', 'bloodbath', 'feint', 'armsLength', 'sprint'];
@@ -120,7 +129,7 @@
       const crit = e.has('lifeSurge');
       if (crit) e.removeStatus('lifeSurge');
       const snap = this.snapshot(a, e);
-      if (id === 'disembowel' && combo) e.addStatus('powerSurge', 30);
+      if ((id === 'disembowel' || id === 'sonicThrust') && combo) e.addStatus('powerSurge', 30);
       const after = id === 'chaoticSpring' && combo ? () => e.addTStatus('chaoticSpring', 24, { snap: Object.assign({}, snap), dot: { potency: 45, id } }) : null;
       e.queueHit(id, potency, snap, a.delay, after, { positional: a.positional ? (pos ? 'hit' : 'miss') : null, crit });
     }

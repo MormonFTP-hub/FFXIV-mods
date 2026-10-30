@@ -62,7 +62,7 @@
       crownPlay: V.crownPlay ? ab({ name: 'Crown Play', recast: 1, desc: 'Plays the crown Minor Arcana drew: Lord of Crowns (damage to nearby enemies) or Lady of Crowns (a heal).\n※Action changes to the crown you hold.' }) : undefined,
       play: ab({ name: 'Play', recast: 1, desc: 'Plays the drawn arcanum (here, on yourself), adding its astrosign.\n※Action changes to the card you hold.' }),
       ...Object.fromEntries(Object.entries(CARDS).map(([k, c]) => [k, ab({ name: c.name[0].toUpperCase() + c.name.slice(1), recast: 1, cdGroup: 'play', card: k,
-        desc: `Increases damage dealt by a party member by ${c.mine ? '6% (ranged or healer)' : '3% (6% for a melee or tank)'}.\nDuration: 15s\nAstrosign: ${c.sign[0].toUpperCase() + c.sign.slice(1)}` })])),
+        desc: `Increases damage dealt by a party member by 3% (6% for ${c.mine ? 'a ranged DPS or healer' : 'a melee or tank'}).\nDuration: 15s\nAstrosign: ${c.sign[0].toUpperCase() + c.sign.slice(1)}` })])),
       astrodyne: ab({ name: 'Astrodyne', recast: 1, desc: 'Grants effects by the number of different astrosigns read:\n1: Harmony of Spirit (MP regeneration, potency 50)\n2: also Harmony of Body (10% shorter casts and recasts)\n3: also Harmony of Mind (+5% damage and healing)\nDuration: 15s\nCan only be executed with three astrosigns.' }),
       benefic: heal({ name: 'Benefic', cast: 1.5, mp: 400, desc: 'Restores target\'s HP.\nCure Potency: 500' }),
       benefic2: heal({ name: 'Benefic II', cast: 1.5, mp: 700, desc: 'Restores target\'s HP.\nCure Potency: 800' }),
@@ -77,7 +77,7 @@
       neutralSect: ab({ name: 'Neutral Sect', recast: 120, desc: 'Increases healing magic potency by 20%; Aspected heals also add a barrier.\nDuration: 20s' }),
       exaltation: ab({ name: 'Exaltation', recast: 60, desc: 'Reduces damage taken by a party member by 10% and heals them (500) after 8s.' }),
       synastry: ab({ name: 'Synastry', recast: 120, desc: 'Your single-target heals also heal a party member for 40% of the amount.\nDuration: 20s' }),
-      swiftcast: ab({ name: 'Swiftcast', recast: V.swift, role: true, desc: `Next spell is cast immediately.\nDuration: 10s${V.swift === 40 ? '\n(40s recast with Enhanced Swiftcast)' : ''}` }),
+      swiftcast: ab({ name: 'Swiftcast', recast: V.swift, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),     // 40s at level 100 (Enhanced Swiftcast)
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 60, role: true, desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s' }),
       surecast: ab({ name: 'Surecast', recast: 120, role: true, desc: 'Spells can be cast without interruption.\nDuration: 6s' }),
       rescue: ab({ name: 'Rescue', recast: 120, role: true, desc: 'Instantly draws target party member to your side.' }),

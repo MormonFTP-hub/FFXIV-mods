@@ -37,7 +37,7 @@
   function buildActions(V) {
     return {
       dosis3: spell({ name: 'Dosis III', potency: V.dosis || 330, cast: 1.5, mp: 400, orb: true, desc: `Deals unaspected damage with a potency of ${V.dosis || 330}.\nAdditional Effect: Restores HP of Kardion partner\nUnder Eukrasia, Dosis III becomes Eukrasian Dosis III.` }),
-      eukrasia: heal({ name: 'Eukrasia', recast: 1, target: false, desc: 'Grants Eukrasia: Dosis, Diagnosis and Prognosis become their Eukrasian versions.\nRecast: 1s' }),
+      eukrasia: heal({ name: 'Eukrasia', recast: 1, target: false, desc: `Grants Eukrasia: Dosis, Diagnosis${V.level === 100 ? ', Prognosis and Dyskrasia' : ' and Prognosis'} become their Eukrasian versions.\nRecast: 1s` }),
       eukrasianDosis3: spell({ name: 'Eukrasian Dosis III', potency: 0, mp: 400, recast: 1.5, dot: { potency: V.edosis, duration: 30 }, sound: 'dot', desc: `Deals unaspected damage over time.\nPotency: ${V.edosis}\nDuration: 30s\nRecast: 1.5s` }),
       phlegma3: spell({ name: 'Phlegma III', potency: V.phlegma, mp: 400, range: 6, cd: V.phlegmaRecast, charges: 2, aoe: 0.5, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.phlegma} to target and all enemies nearby it, 50% less for all remaining enemies.\nMaximum Charges: 2 (${V.phlegmaRecast}s)` }),
       toxikon2: spell({ name: 'Toxikon II', potency: V.dosis || 330, mp: 0, aoe: 0.5, sting: true, desc: `Deals unaspected damage with a potency of ${V.dosis || 330} to target and all enemies nearby it, 50% less for the rest.\nAddersting Cost: 1` }),
@@ -46,7 +46,7 @@
       diagnosis: heal({ name: 'Diagnosis', cast: 1.5, mp: 400, desc: 'Restores target\'s HP.\nCure Potency: 450' }),
       prognosis: heal({ name: 'Prognosis', cast: 2, mp: 700, desc: 'Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: 300' }),
       eukrasianDiagnosis: heal({ name: 'Eukrasian Diagnosis', mp: 900, recast: 1.5, desc: 'Restores target\'s HP and erects a barrier.\nCure Potency: 300\nBreaking the barrier grants Addersting.' }),
-      eukrasianPrognosis: heal({ name: 'Eukrasian Prognosis', mp: 900, recast: 1.5, desc: 'Restores own HP and the HP of nearby party members and erects a barrier.\nCure Potency: 100' }),
+      eukrasianPrognosis: heal({ name: V.level === 100 ? 'Eukrasian Prognosis II' : 'Eukrasian Prognosis', mp: 900, recast: 1.5, desc: 'Restores own HP and the HP of nearby party members and erects a barrier.\nCure Potency: 100' }),
       egeiro: heal({ name: 'Egeiro', cast: 8, mp: 2400, desc: 'Resurrects target to a weakened state.' }),
       kardia: ab({ name: 'Kardia', recast: 5, desc: 'Grants Kardion to a party member: your damage spells restore its HP (Cure Potency 170).' }),
       soteria: ab({ name: 'Soteria', recast: V.soteriaRecast || 90, desc: V.soteria === 'one' ? 'Increases the healing of Kardion by 50%.\nDuration: 15s' : 'Grants 4 stacks of Soteria, each increasing Kardion\'s healing by 70%.\nDuration: 15s' }),

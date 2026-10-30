@@ -77,7 +77,7 @@
       set(A, 'rockbreaker', { potency: V.rb, gl: V.gl, target: false, pbaoe: 5, desc: `Delivers an attack with a potency of ${V.rb} to all nearby enemies.${V.gl ? '\nAdditional Effect: Greased Lightning' : ''}\nCan only be executed when in coeurl form.\nAdditional Effect: Changes form to opo-opo` });
       A.fourPointFury = ws({ name: 'Four-point Fury', potency: V.fpf, form: 'raptor', needs: 'raptor', target: false, pbaoe: 5, aoe: true, desc: `Delivers an attack with a potency of ${V.fpf} to all nearby enemies.\nAdditional Effect: Extends Twin Snakes by 10s (up to 15s)\nCan only be executed when in raptor form.\nAdditional Effect: Changes form to coeurl` });
       A.sixSidedStar = ws({ name: 'Six-sided Star', potency: V.sss, recast: 5, fx: 'gnbDouble', desc: `Delivers an attack with a potency of ${V.sss}.${V.gl ? '\nAdditional Effect: Extends Greased Lightning to its full duration' : ''}\nRecast: 5s (the GCD it starts)` });
-      set(A, 'formShift', { desc: V.formless ? 'Grants Formless Fist: the next weaponskill counts as any form.\nDuration: 15s' : `Changes to the next form (opo-opo with no form).${V.shiftGl ? `\nAdditional Effect: Extends Greased Lightning${V.shiftGl === 'coeurl' ? ' (in coeurl form)' : ''}` : ''}\nDuration: ${lf}s` });
+      set(A, 'formShift', { desc: V.formless ? 'Grants Formless Fist: the next weaponskill counts as any form.\nDuration: 15s' : `Changes to the next form (opo-opo form if no form is active).${V.shiftGl ? `\nAdditional Effect: Extends Greased Lightning${V.shiftGl === 'coeurl' ? ' (in coeurl form)' : ''}` : ''}\nDuration: ${lf}s` });
       set(A, 'meditation', { recast: V.med, desc: `Opens a chakra (up to five)${V.allChakra ? '; all five out of combat' : ''}.\nShares a recast timer with all weaponskills.\nMeditation changes to The Forbidden Chakra with five open.` });
       set(A, 'forbiddenChakra', { recast: 1, cdGroup: 'chakra', potency: V.fc, desc: `Delivers an attack with a potency of ${V.fc}.\nCan only be executed with five chakra open.` });
       A.enlightenment = ab({ name: 'Enlightenment', recast: 1, cdGroup: 'chakra', potency: 220, target: true, range: 10, aoe: true, delay: 0.6, fx: 'senei', desc: 'Delivers an attack with a potency of 220 to all enemies in a straight line before you.\nCan only be executed with five chakra open.' });
@@ -90,8 +90,9 @@
       set(A, 'riddleOfEarth', { recast: V.roe, charges: V.gl ? undefined : 3, desc: V.gl ? 'Reduces damage taken and extends Greased Lightning to its full duration.\nDuration: 10s' : 'Grants three stacks of Riddle of Earth, reducing damage taken by 10%.\nMaximum Charges: 3' });
       set(A, 'fistsOfFire', { desc: 'Increases damage dealt by 10%.\nCannot be used with Fists of Earth or Fists of Wind.' });
       set(A, 'fistsOfWind', { desc: `Increases movement speed.${V.gl ? '\nAllows Greased Lightning IV.' : ''}\nCannot be used with Fists of Fire or Fists of Earth.` });
-      A.anatman = ab({ name: 'Anatman', recast: 60, desc: V.gl ? 'Channels to restore Greased Lightning: here it fills the stacks to the maximum and its full duration.' : 'Extends Twin Snakes and your form to their full durations.' });
+      A.anatman = ab({ name: 'Anatman', recast: 60, desc: V.gl ? 'While channeling, extends Greased Lightning to its full duration and raises it to its maximum stacks.' : 'Extends Twin Snakes and your form to their full durations.' });
       set(A, 'trueNorth', { recast: 45, charges: 2, desc: 'Nullifies all action direction requirements.\nDuration: 10s\nMaximum Charges: 2' });
+      set(A, 'feint', { recast: 90, desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' });     // 5.0's Feint
       A.tincture = B.tincture(V.tincture);
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {

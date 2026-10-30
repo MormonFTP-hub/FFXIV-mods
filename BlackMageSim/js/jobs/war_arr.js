@@ -24,6 +24,12 @@
       this.wrathCrit = true;
       const A = Object.assign({}, this.actions);
       for (const k of ['deliverance', 'fellCleave', 'decimate', 'rawIntuition', 'equilibrium']) delete A[k];
+      // No Abandon before 3.0: the stack builders only add Wrath.
+      for (const k of Object.keys(A)) {
+        if (typeof A[k].desc === 'string' && A[k].desc.includes('Wrath / Abandon +1')) set(A, k, { desc: A[k].desc.replace('Wrath / Abandon +1', 'Wrath +1') });
+      }
+      // Fracture's DoT lasted 18s in A Realm Reborn.
+      set(A, 'fracture', { dot: { potency: 20, duration: 18 }, desc: A.fracture.desc.replace('Duration: 30s', 'Duration: 18s') });
       set(A, 'brutalSwing', { potency: 50, desc: 'Delivers an attack with a potency of 50.\nAdditional Effect: Stun\nDuration: 5s' });
       set(A, 'defiance', { desc: 'Increases maximum HP by 25% and enmity, while reducing damage dealt by 25%. Weaponskills build Wrath (+2% critical hit rate a stack); five make you Infuriated.\nEffect ends upon reuse.' });
       set(A, 'infuriate', { desc: 'Grants five stacks of Wrath.\nCan only be executed in Defiance.' });
@@ -83,7 +89,8 @@ ${seq(['tomahawk', ['unchained'], ['berserk'], 'heavySwing', ['internalRelease']
       super();
       const A = Object.assign({}, this.actions);
       set(A, 'unchained', { recast: 180 });
-      set(A, 'internalRelease', { desc: 'Increases critical hit rate by 20%.\nDuration: 15s\n(Pugilist cross-class)' });
+      set(A, 'internalRelease', { desc: 'Increases critical hit rate by 20%.\nDuration: 15s\n(Pugilist cross-class skill)' });
+      set(A, 'innerBeast', { desc: A.innerBeast.desc.replace('Absorbs 100% of damage', 'Absorbs 300% of damage') });
       set(A, 'stormsEye', { tp: 70, desc: A.stormsEye.desc.replace('Duration: 20s', 'Duration: 15s') });
       set(A, 'stormsPath', { tp: 90 });
       set(A, 'brutalSwing', { recast: 30 });

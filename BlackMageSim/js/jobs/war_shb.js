@@ -56,7 +56,7 @@
       equilibrium: ab({ name: 'Equilibrium', recast: 60, desc: 'Restores own HP.\nCure Potency: 1,200' }),
       shakeItOff: ab({ name: 'Shake It Off', recast: 90, desc: 'Creates a barrier around self and all nearby party members that absorbs damage totaling 12% of maximum HP.\nDispels Thrill of Battle, Vengeance and Raw Intuition, increasing damage absorbed by 2% for each effect removed.\nDuration: 15s' }),
       ...B.ROLE_ACTIONS.tank,
-      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by target by 10%.\nDuration: 5s' } : {}),
+      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by nearby enemies by 10%.\nDuration: 5s' } : {}),
       ...B.GENERAL_ACTIONS,
       tincture: B.tincture(V.tincture),
       auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },

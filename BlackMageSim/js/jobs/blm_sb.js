@@ -83,6 +83,7 @@ ${seq(['blizzard3', ['enochian'], 'thunder3', 'blizzard4', 'fire3', ['leyLines']
       this.maxMp = S.maxMp;
       this.actions = S.actions();
       this.cfg = Object.assign({}, this.cfg, S.cfg);
+      this.actions = B.blmTimerText(this.actions, this.cfg);     // 13s elements; Firestarter and Thundercloud 18s
       this.stats = S.stats;
       this.selfStatusOrder = ['enochian', 'circleOfPower', 'leyLines', 'triplecast', 'swiftcast', 'sharpcast', 'firestarter',
         'thundercloud', 'medicated', 'lucidDreaming', 'manaward', 'surecast', 'sprint'];

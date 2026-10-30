@@ -26,7 +26,8 @@
       note: 'The launch Red Mage: Engagement, Scorch, Verthunder II / Veraero II, a one-proc Acceleration; the 5.08 numbers and Eden\'s Gate gear' },
   };
   const spell = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.7, spell: true, magic: true, breaksCombo: true, sound: 'paradox', fx: 'gnbBurst' }, o);
-  const melee = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'gnbSlash' }, o);
+  // The melee combo is weaponskills in the game (magic damage when enchanted); type only sets the tooltip's header.
+  const melee = (o) => Object.assign({ kind: 'gcd', type: 'Weaponskill', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'gnbSlash' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
 
   function buildActions(V) {
@@ -66,6 +67,8 @@
       embolden: ab({ name: 'Embolden', recast: 120, desc: 'Increases own magic damage dealt by 10% and physical damage dealt by nearby party members by 10%. Both effects are reduced by 20% every 4s.\nDuration: 20s' }),
       manafication: ab({ name: 'Manafication', recast: 110, desc: 'Doubles current Black Mana and White Mana levels.\nAdditional Effect: Resets Corps-a-corps, Displacement, and Engagement recast timers\nAdditional Effect: Increases magic damage dealt by 5%\nDuration: 10s\nAll combos are canceled upon execution of Manafication.' }),
       ...B.ROLE_ACTIONS.caster,
+      // Before 6.0 Addle lowered the target's Intelligence and Mind (Endwalker made it 5% physical / 10% magic).
+      addle: Object.assign({}, B.ROLE_ACTIONS.caster.addle, { desc: 'Lowers target\'s intelligence and mind by 10%.\nDuration: 10s' }),
       swiftcast: ab({ name: 'Swiftcast', recast: 60, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 60, role: true, desc: 'Gradually restores own MP.\nPotency: 50\nDuration: 21s' }),
       ...B.GENERAL_ACTIONS,

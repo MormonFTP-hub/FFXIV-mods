@@ -33,7 +33,7 @@
         miasma2: spell({ name: 'Miasma II', potency: 20, mp: 619, target: false, pbaoe: 5, aoe: true, dot: { potency: 10, duration: 15, aoe: true }, desc: 'Deals unaspected damage with a potency of 20 to all nearby enemies.\nAdditional Effect: Unaspected damage over time\nPotency: 10\nDuration: 15s' }),
         shadowFlare: spell({ name: 'Shadow Flare', potency: 0, cast: 3, mp: 707, dot: { potency: 25, duration: 30, aoe: true }, desc: 'Creates a patch of dark miasma on the ground, dealing unaspected damage with a potency of 25 to any enemies who enter.\nDuration: 30s\nAdditional Effect: Slow +5%\nCannot be used alongside Sacred Soil.' }),
         aero: spell({ name: 'Aero', potency: 50, mp: 354, dot: { potency: 25, duration: 18 }, school: 'wind', sound: 'wind', desc: 'Deals wind damage with a potency of 50.\nAdditional Effect: Wind damage over time\nPotency: 25\nDuration: 18s\n(Conjurer cross-class skill)' }),
-        energyDrain: ab({ name: 'Energy Drain', recast: 3, potency: 150, flow: true, target: true, range: 25, delay: 0.6, school: 'aether', sound: 'xeno', desc: 'Deals unaspected damage with a potency of 150.\nAdditional Effect: Absorbs a portion of damage dealt as HP and restores MP (doubled by Energy Siphon)\nAetherflow Cost: 1' }),
+        energyDrain: ab({ name: 'Energy Drain', recast: 3, potency: 150, flow: true, target: true, range: 25, delay: 0.6, school: 'aether', sound: 'xeno', desc: 'Deals unaspected damage with a potency of 150.\nAdditional Effect: Absorbs a portion of damage dealt as HP and restores MP\nAetherflow Cost: 1' }),
         bane: Object.assign({}, S.bane, { desc: 'Spreads a target\'s Bio, Bio II and Miasma effects to nearby enemies, with potency reduced by 20% for the second enemy, 40% for the third, 60% for the fourth and 80% for the rest.\nAetherflow Cost: 1' }),
         aetherflow: ab({ name: 'Aetherflow', recast: 60, desc: 'Restores 20% of maximum MP.\nAdditional Effect: Aetherflow III (three stacks)' }),
         dissipation: ab({ name: 'Dissipation', recast: 180, desc: 'Dismisses your faerie, granting you Aetherflow III and increasing healing magic potency by 20%.\nDuration: 30s\nCannot summon your faerie while under the effect of Dissipation; it doesn\'t come back on its own.' }),
@@ -59,9 +59,10 @@
         // Conjurer and Thaumaturge cross-class skills.
         clericStance: ab({ name: 'Cleric Stance', recast: 5, role: true, desc: 'Swaps your Mind and Intelligence, increases attack magic potency by 10% and reduces healing magic potency by 20%.\nEffect ends upon reuse.' }),
         swiftcast: S.swiftcast,
-        surecast: S.surecast,
-        protect: ab({ name: 'Protect', recast: 2.5, role: true, desc: 'Increases the physical and magic defense of nearby party members.\nDuration: 30m' }),
-        stoneskin: ab({ name: 'Stoneskin', recast: 2.5, role: true, desc: 'Creates a barrier that nullifies damage up to 10% of maximum HP.\nDuration: 30m' }),
+        surecast: Object.assign({}, S.surecast, { desc: 'The next spell is cast without interruption.\nDuration: 10s' }),
+        // Spells in the game (cast before the pull); here they do nothing, so they're left as instant buttons.
+        protect: ab({ name: 'Protect', recast: 2.5, role: true, type: 'Spell', desc: 'Increases the physical and magic defense of nearby party members.\nDuration: 30m' }),
+        stoneskin: ab({ name: 'Stoneskin', recast: 2.5, role: true, type: 'Spell', desc: 'Creates a barrier that nullifies damage up to 10% of maximum HP.\nDuration: 30m' }),
         ...B.GENERAL_ACTIONS,
         tincture: Object.assign({}, B.tincture('mnd3sb'), { name: 'Supramax-Potion of Mind', dur: 15, desc: 'This diluted brew temporarily increases mind.\nMind +20% (Max 154)\nDuration: 15s' }),
       };

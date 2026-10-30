@@ -54,7 +54,7 @@
       livingDead: ab({ name: 'Living Dead', recast: 300, desc: 'Grants the effect of Living Dead. When HP is reduced to 0 while under the effect of Living Dead, instead of becoming KO\'d, your status will change to Walking Dead.\nLiving Dead Duration: 10s' }),
       darkMissionary: ab({ name: 'Dark Missionary', recast: 90, desc: 'Reduces magic damage taken by self and nearby party members by 10%.\nDuration: 15s' }),
       ...B.ROLE_ACTIONS.tank,
-      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by target by 10%.\nDuration: 5s' } : {}),
+      reprisal: Object.assign({}, B.ROLE_ACTIONS.tank.reprisal, V.reprisal === 5 ? { desc: 'Reduces damage dealt by nearby enemies by 10%.\nDuration: 5s' } : {}),
       ...B.GENERAL_ACTIONS,
       tincture: B.tincture(V.tincture),
       auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },

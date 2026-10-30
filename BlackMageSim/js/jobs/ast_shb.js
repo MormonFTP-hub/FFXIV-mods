@@ -57,6 +57,12 @@
       set(A, 'stellarBurst', { potency: 100 });
       set(A, 'stellarExplosion', { potency: 150 });
       set(A, 'earthlyStar', { desc: 'Deploys an Earthly Star (here, at the dummy) and grants Earthly Dominance.\nStellar Detonation within 10s: Stellar Burst, 100 potency.\nAfter 10s it becomes Giant Dominance: Stellar Explosion, 150 potency.\nThe star detonates on its own after 20s.' });
+      set(A, 'stellarDetonation', { desc: 'Detonates the Earthly Star: Stellar Burst (100) under Earthly Dominance, Stellar Explosion (150) under Giant Dominance.' });
+      // Shadowbringers: Celestial Intersection had one charge (the second came with Endwalker's level 88 trait), cards
+      // gave seals rather than astrosigns, and Neutral Sect worked through Diurnal and Nocturnal Sect.
+      set(A, 'celestialIntersection', { charges: undefined, desc: 'Restores target\'s HP (200) and grants a barrier (400).' });
+      for (const k of Object.keys(SIGN)) set(A, k, { desc: A[k].desc.replace(/Astrosign: (\w+)/, 'Additional Effect: Grants $1 Seal') });
+      set(A, 'neutralSect', { desc: 'Increases healing magic potency by 20%.\nAdditional Effect: Aspected Benefic and Aspected Helios grant both Diurnal and Nocturnal Sect effects.\nDuration: 20s' });
       A.play = ab({ name: 'Play', recast: 1, cdGroup: 'play', desc: 'Plays the drawn arcanum (here, on yourself) and adds its seal.\n※Action changes to the card you hold.' });
       set(A, 'draw', { charges: undefined, desc: `Draws a card (arcanum) from your divining deck.${V.drawMp ? '\nAdditional Effect: Restores 8% of maximum MP' : ''}\nCannot be executed while holding a card.` });
       set(A, 'redraw', { recast: 30, charges: 3, desc: 'Draws a different card in place of the one you hold.\nMaximum Charges: 3' });

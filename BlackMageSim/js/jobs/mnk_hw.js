@@ -36,6 +36,7 @@
       set('internalRelease', { desc: 'Increases critical hit rate by 30% (Enhanced Internal Release).\nDuration: 15s' });
       set('fistsOfFire', { desc: 'Increases damage dealt by 5%.\nCannot be used with Fists of Earth or Fists of Wind.' });
       set('mantra', { recast: 120 });
+      set('shoulderTackle', { desc: 'Rushes target and delivers an attack with a potency of 100.\nAdditional Effect: Stun\nDuration: 2s' });     // the elemental Tackles came with 4.0
       A.touchOfDeath = Object.assign({}, S.bootshine, { name: 'Touch of Death', potency: 20, tp: 80, form: null, positional: null, dot: { potency: 25, duration: 30 }, fx: 'slash3',
         desc: 'Delivers an attack with a potency of 20.\nAdditional Effect: Damage over time\nPotency: 25\nDuration: 30s' });
       // Cross-class skills (Lancer and Marauder).

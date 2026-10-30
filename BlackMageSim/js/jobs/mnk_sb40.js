@@ -29,7 +29,8 @@
       set(A, 'mantra', { recast: 120 });
       set(A, 'trueNorth', { recast: 150 });
       set(A, 'fistsOfFire', { desc: A.fistsOfFire.desc.replace('6%', '5%') });
-      set(A, 'brotherhood', { desc: 'Increases physical damage dealt by nearby party members by 5%.\nDuration: 15s\nAdditional Effect: 30% chance of opening a chakra when a party member\'s weaponskill lands\nIn 4.0–4.18 the Monk himself gets neither, so alone on a dummy it does nothing.' });
+      // The Monk himself gets neither the +5% nor the chakra in 4.0–4.18, so alone on a dummy it does nothing.
+      set(A, 'brotherhood', { desc: 'Increases physical damage dealt by nearby party members by 5%.\nDuration: 15s\nAdditional Effect: 30% chance of opening a chakra when a party member\'s weaponskill lands\nDoes not affect the Monk himself.' });
       A.tincture = B.tincture('str1sb');
       this.actions = A;
       this.stats = { hp: 27000, main: 2505, mainStat: 'str', jobMod: 110, trait: 100, wd: 100, det: 950, crit: 1950, dh: 1400, speed: 900, delay: 2.56 };

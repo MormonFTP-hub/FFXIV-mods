@@ -43,7 +43,7 @@
       set(A, 'atonement', { potency: V.atone, ready: undefined, breaksCombo: V.atoneBreaks || undefined, desc: `Delivers an attack with a potency of ${V.atone}.\nAdditional Effect: Restores MP\nCan only be executed while under the effect of Sword Oath.${V.atoneBreaks ? '' : '\nDoes not break the Fast Blade combo.'}` });
       set(A, 'goringBlade', { ready: undefined, cd: 60, desc: 'Delivers an attack with a potency of 700.\nRecast: 60s' });
       set(A, 'holySpirit', { potency: 350, dm: 450, req: 650, desc: tip('Holy Spirit', 350, 450, 650) + '\nDivine Might or Requiescat: cast immediately (Divine Might is used first).' });
-      set(A, 'holyCircle', { potency: 100, dm: 200, req: 300, desc: tip('Holy Circle', 100, 200, 300) });
+      set(A, 'holyCircle', { potency: 100, dm: 200, req: 300, desc: 'Deals unaspected damage with a potency of 100 to all nearby enemies.\nDivine Might Potency: 200\nRequiescat Potency: 300' });
       for (const [id, p] of [['confiteor', V.conf], ['bladeOfFaith', V.faith], ['bladeOfTruth', V.truth], ['bladeOfValor', V.valor]]) {
         set(A, id, { potency: p[0], req: p[1], aoe: 0.5, desc: `Deals unaspected damage with a potency of ${p[0]} to target and all enemies nearby it, 50% less for all remaining enemies.\nRequiescat Potency: ${p[1]}${id === 'confiteor' ? '\nCan only be executed while under the effect of Confiteor Ready.\nConfiteor changes to Blade of Faith, Blade of Truth and Blade of Valor.' : ''}` });
       }

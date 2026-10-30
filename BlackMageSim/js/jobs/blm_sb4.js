@@ -31,6 +31,7 @@
       A.tincture = B.tincture('int1sb');
       this.actions = A;
       this.cfg = Object.assign({}, this.cfg, { fsDur: 12, tcDur: 12, tincture: 'int1sb' });
+      this.actions = B.blmTimerText(this.actions, this.cfg);
       this.stats = { hp: 24000, main: 2519, mainStat: 'int', jobMod: 115, trait: 130, wd: 135, det: 1060, crit: 1650, dh: 1450, speed: 1050, delay: 3.28 };
       this.referenceDps = V.ref;
     }
