@@ -175,6 +175,7 @@
       this.ui.setJob();
       if (fresh) this.ui.openBarSetup();
       this.wireEngine();
+      this.debug = new B.DebugLog(this);
       this.wireInput();
       this.layout();
       window.addEventListener('resize', () => this.layout());
@@ -189,6 +190,7 @@
     },
 
     applySettings() {
+      if (this.debug) this.debug.add('settings changed');
       this.sfx.setVolume(this.store.settings.volume);
       this.models.setEnabled();
       this.map.setEnabled();
@@ -225,6 +227,7 @@
 
     // Change job or version: a fresh engine state, the job's hotbars, gauge, help and model.
     switchJob(jobId, versionId) {
+      if (this.debug) this.debug.add(`switch job to ${jobId}${versionId ? ':' + versionId : ''}`);
       if (this.ui.barSetup) this.ui.closeBarSetup(false);     // a setup left half done keeps that job's usual bars
       const st = this.store.settings;
       st.job = jobId;
@@ -379,6 +382,7 @@
       this.cdEndedAt = null;
       const pre = this.recentUses.filter(u => u.t >= start - 25);
       this.enc = new Encounter(this.history.length + 1, start, pre);
+      if (this.debug) this.debug.add(`pull ${this.enc.n} started`);
       this.ui.log(`Pull ${this.enc.n} started.`, 'dim', 'system');
     },
 
@@ -396,6 +400,7 @@
       this.noNewUntil = this.engine.now + (reason === 'time' ? 5 : 0);
       const dur = enc.duration();
       const dps = enc.total / dur;
+      if (this.debug) this.debug.add(`pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'} (${reason}): ${Math.round(dps)} DPS over ${dur.toFixed(1)}s`);
       const mm = Math.floor(dur / 60) + ':' + String(Math.floor(dur % 60)).padStart(2, '0');
       this.ui.log(`Pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'}: ${fmt(dps)} DPS over ${mm}.`, 'sys', 'system');
       if (reason === 'time') this.ui.count('TIME', true);
@@ -458,6 +463,7 @@
         case '/reset': this.fullReset(); break;
         case '/help': this.ui.openWindow('win-help'); break;
         case '/echo': case '/e': this.ui.log(arg, 'echo', 'system'); break;
+        case '/debug': this.debug.copy(); break;
         default:
           if (t.startsWith('/')) this.ui.log(`The command "${cmd}" does not exist.`, 'err', 'system');
           else this.ui.log(`${this.store.settings.name}: ${t}`, 'act', 'system');
@@ -611,6 +617,7 @@
     // ---------- loop ----------
     frame(t) {
       const dt = Math.min(0.1, Math.max(0, (t - this.last) / 1000));
+      if (this.debug) this.debug.frame((t - this.last) / 1000);
       this.last = t;
       const e = this.engine;
 

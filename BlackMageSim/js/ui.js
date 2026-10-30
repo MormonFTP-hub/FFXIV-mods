@@ -720,7 +720,7 @@
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
 <tr><td>Camera</td><td>Hold the right mouse button and drag to turn the camera and your character: while it's held, <kbd>A</kbd> <kbd>D</kbd> strafe and <kbd>S</kbd> backpedals at walking pace. Drag with the left button to turn just the camera. Hold both buttons to run forward. The wheel zooms.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>
-<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>.</td></tr>
+<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>, <code>/debug</code> (copies a debug log to paste to Claude).</td></tr>
 <tr><td>Windows</td><td><kbd>J</kbd> Job, <kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
 </table>
 <h3>Timing</h3>
@@ -811,6 +811,8 @@ ${job.helpHtml(seq, ic)}
       bind('#s-dummy', 'dummy');
       bind('#s-dummies', 'dummies', el => parseInt(el.value, 10));
       $('#s-resetbars').addEventListener('click', () => this.app.resetLayout());
+      $('#s-debug').addEventListener('click', () => this.app.debug.copy());
+      $('#debug-copy').addEventListener('click', () => this.app.debug.copy());
     }
 
     fillSettings() {

@@ -130,6 +130,7 @@
           <div class="row2"><label><input id="s-timeline" type="checkbox"> Show cast timeline</label></div>
           <div class="note">Stats are a best-in-slot set for the job's version. Spell or skill speed is the only stat you can change, per job. Settings, hotbars and keybinds save in this browser.</div>
           <div class="note"><button class="btn" id="s-resetbars">Restore default hotbars and keybinds</button></div>
+          <div class="note"><button class="btn" id="s-debug">Copy debug log</button> What the sim is doing right now, to paste to Claude when something's off. Also <code>/debug</code> in chat.</div>
         </div>
       </div>
     </div>
@@ -149,6 +150,14 @@
       <div class="wb" id="barsetup"></div>
     </div>
 
+    <div id="win-debug" class="win panel ia">
+      <div class="wt">Debug log<button class="x" data-close>✕</button></div>
+      <div class="wb">
+        <div class="debugbar"><button class="btn" id="debug-copy">Refresh and copy</button><span id="debug-msg"></span></div>
+        <textarea id="debug-text" readonly spellcheck="false"></textarea>
+      </div>
+    </div>
+
     <div id="win-help" class="win panel ia">
       <div class="wt"><span id="help-title">How to play</span><button class="x" data-close>✕</button></div>
       <div class="wb help" id="helpbody"></div>
@@ -164,6 +173,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/debuglog.js"></script>
   <script src="js/versions.js"></script>
   <!-- Made by tools/extract_icons.py and tools/export_models.py from your own game install; without them the
        drawn icons and figures are used. -->
