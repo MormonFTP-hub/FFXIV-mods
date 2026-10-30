@@ -16,7 +16,7 @@
 // (2014–15). The jump animation locks (0.8 / 1.0 / 1.5s) are guesses. A bot parses about 578, 536, 419 and 312.
 (function (B) {
   const HW = B.DragoonHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   const VERSIONS = {
     arr245: { label: 'A Realm Reborn 2.45–2.57', history: 'ARR 2.45–2.57', ft: 360, chaos: [200, 50, 35], phlebo: 30, anySide: true, heavy: 1.15,

@@ -9,7 +9,7 @@
 // Dexterity (max 84).
 (function (B) {
   const HW = B.NinjaHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class NinjaARR extends HW {
     constructor() {

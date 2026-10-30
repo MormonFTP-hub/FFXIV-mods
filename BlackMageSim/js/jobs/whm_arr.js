@@ -13,7 +13,7 @@
 (function (B) {
   const HW = B.WhiteMageHW;
   const MP_SCALE = 2660 / 8840;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   const VERSIONS = {
     arr23: { label: 'A Realm Reborn 2.3–2.57', history: 'ARR 2.3–2.57', holy: 200, pom: [150, 15], maxMp: 3896, potion: 84, ref: 290,

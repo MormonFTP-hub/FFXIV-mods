@@ -15,7 +15,7 @@
   const SB = B.DarkKnightSB;
   const EPS = 1e-6;
   const DS_DRAIN = 265;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   // ref: a scripted bot parses about 1,800 / 990 in these two over 5 minutes.
   const VERSIONS = {
     hw326: { label: 'Heavensward 3.26–3.57', history: 'HW 3.26–3.57', da: 3, potion: ['Supramax-Potion of Strength', 154], ref: 1910,

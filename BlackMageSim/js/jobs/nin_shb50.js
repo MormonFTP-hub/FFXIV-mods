@@ -15,7 +15,7 @@
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'slash' }, o);
   const jutsu = (o) => ab(Object.assign({ cdGroup: 'ninjutsu', recast: 20, lock: 0.8, jutsu: true, school: 'ninjutsu', delay: 0.6, target: true, range: 25 }, o));
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const KEEPS_HIDDEN = { hide: 1, kassatsu: 1, tincture: 1, sprint: 1, shadeShift: 1, secondWind: 1, bloodbath: 1, trueNorth: 1, armsLength: 1 };
 
   // The Ninjutsu a run of mudras makes; under Kassatsu, Katon and Hyoton are upgraded.

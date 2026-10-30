@@ -34,7 +34,7 @@
       note: 'The launch Samurai: Tsubame-gaeshi\'s Kaeshi with a 1.5s cast, Kaiten on 5s, Meikyo on 60s, Meditation 30s and a weaker Shoha' },
   };
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.45 }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const SHOHA_OLD = [0, 100, 300, 400, 450, 500];
   const KAESHI = ['kaeshiHiganbana', 'kaeshiGoken', 'kaeshiSetsugekka'];
 

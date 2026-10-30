@@ -25,7 +25,7 @@
       gear: 'The Balance\'s 7.55 savage set (Strength 6,472, 158 weapon damage, 2.50), with a Grade 4 Gemdraught',
       note: 'Level 100: Primal Ruination Ready 20s, 7.2\'s combo and Upheaval, 7.5\'s Inner Chaos 700, Primal Rend 720 and Primal Ruination 800; the 7.55 savage gear' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class WarriorDT extends EW {
     constructor(version) {

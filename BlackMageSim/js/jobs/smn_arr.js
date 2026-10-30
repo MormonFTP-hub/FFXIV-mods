@@ -14,7 +14,7 @@
 (function (B) {
   const HW = B.SummonerHW;
   const MP_SCALE = 2660 / 8840;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class SummonerARR extends HW {
     constructor() {

@@ -44,7 +44,7 @@
       gear: 'a Prototype Gordian set (i190) with the Hive Longpole (Intelligence 935, 100 magic damage)',
       note: 'The launch: Enochian refreshed only by Blizzard IV, 5s shorter each time (pressing it again doesn’t reset it), Thundercloud 5%, Thunder DoTs 35; i190 gear' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class BlackMageHW extends SB {
     constructor(version) {

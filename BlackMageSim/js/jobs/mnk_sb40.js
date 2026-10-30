@@ -8,7 +8,7 @@
 // ref: scaled from the 4.2 bot by gear and potency (no bot of its own yet).
 (function (B) {
   const SB = B.MonkSB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class MonkSB40 extends SB {
     constructor() {

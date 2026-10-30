@@ -24,7 +24,7 @@
       stats: { hp: 103086, main: 2891, wd: 126, det: 1844, crit: 2377, dh: 1012, speed: 400, ten: 751 },
       note: 'Level 90: spells no longer break combos, Requiescat ending grants Blade of Faith Ready, 6.21\'s Holy Spirit 600 and Confiteor 1,000; Abyssos gear' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class PaladinEW60 extends EW {
     constructor(version) {

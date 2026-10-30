@@ -15,7 +15,7 @@
 (function (B) {
   const EW = B.SamuraiEW61;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 6, delay: 0.6, school: 'iai' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const KMAP = { tenkaGoken: 'kaeshiGoken', midareSetsugekka: 'kaeshiSetsugekka', tendoGoken: 'tendoKaeshiGoken', tendoSetsugekka: 'tendoKaeshiSetsugekka' };
   const KAESHI = { kaeshiGoken: 1, kaeshiSetsugekka: 1, tendoKaeshiGoken: 1, tendoKaeshiSetsugekka: 1 };
   const TENDO = { tendoGoken: 2, tendoSetsugekka: 3 };
@@ -31,6 +31,7 @@
       const pot = (id, potency, combo, extra) => set(A, id, Object.assign({ potency }, combo ? { comboPotency: combo } : {}, extra || {}));
       pot('hakaze', 240, 0, { name: 'Gyofu', desc: 'Delivers an attack with a potency of 240.\nAdditional Effect: Increases Kenki Gauge by 5' });
       pot('jinpu', 140, 300); pot('shifu', 140, 300); pot('gekko', 160, 370); pot('kasha', 160, 370); pot('yukikaze', 160, 340);
+      for (const id of ['jinpu', 'shifu', 'yukikaze']) set(A, id, { desc: A[id].desc.replace('Combo Action: Hakaze', 'Combo Action: Gyofu') });
       set(A, 'enpi', { enhancedPotency: 270 });
       pot('higanbana', 200, 0, { dot: { potency: 50, duration: 60 } });
       pot('midareSetsugekka', 680); pot('tenkaGoken', 300);

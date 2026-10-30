@@ -4,7 +4,7 @@
 // notes; gear is The Balance's 6.4/6.5 set at 2.15 with Fuka.
 (function (B) {
   const EW608 = B.SamuraiEW608;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const CRIT = { midareSetsugekka: 1, kaeshiSetsugekka: 1, ogiNamikiri: 1, kaeshiNamikiri: 1 };
 
   class SamuraiEW61 extends EW608 {

@@ -9,7 +9,14 @@
   const SONGS = { magesBallad: 'Mage\'s Ballad', armysPaeon: 'Army\'s Paeon', wanderersMinuet: 'the Wanderer\'s Minuet' };
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.6, fx: 'gnbShot' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const song = (name) => ab({ name, recast: 80, potency: 100, target: true, range: 25, delay: 0.5, song: true, fx: 'gnbShot' });
+  // What each song's Repertoire gives, for its tooltip.
+  const REPERTOIRE = {
+    'Mage\'s Ballad': 'Bloodletter and Rain of Death are ready again',
+    'Army\'s Paeon': 'a stack of 4% faster weaponskills and spells, up to four',
+    'the Wanderer\'s Minuet': 'a Pitch Perfect stack, up to three (Pitch Perfect can only be used while singing it)',
+  };
+  const song = (name) => ab({ name, recast: 80, potency: 100, target: true, range: 25, delay: 0.5, song: true, fx: 'gnbShot',
+    desc: `Deals damage with a potency of 100.\nAdditional Effect: Grants ${name} and Critical Up (+2% critical hit rate) to self and nearby party members\nDuration: 30s\nRepertoire Effect: each critical tick of Caustic Bite or Stormbite, and each Empyreal Arrow, means ${REPERTOIRE[name]}\nEnds any other song.` });
   const ACTIONS = {
     heavyShot: ws({ name: 'Heavy Shot', potency: 150, tp: 50, desc: 'Delivers an attack with a potency of 150.\nAdditional Effect: 20% chance of Straighter Shot\nDuration: 10s' }),
     straightShot: ws({ name: 'Straight Shot', potency: 140, tp: 50, desc: 'Delivers an attack with a potency of 140.\nAdditional Effect: Increases critical hit rate by 10%\nDuration: 30s\nStraighter Shot Bonus: Guaranteed critical hit' }),

@@ -197,13 +197,14 @@
       let cast = '—', recast = '—', mp = '—';
       if (a.kind === 'gcd') {
         cast = a.cast ? e.speedScale(a.cast).toFixed(2) + 's' : 'Instant';
-        recast = e.speedScale(2.5).toFixed(2) + 's';
+        // Its own recast (Army's Paeon's 1.5s steps), or the cooldown of a GCD on charges (Holy Sanctuary's 30s).
+        recast = (a.cd ? (a.cdScales ? e.speedScale(a.cd) : a.cd) : e.gcdRecast(id)).toFixed(2) + 's';
         mp = id === 'despair' ? '800+' : a.mp ? String(a.mp) : '0';
       } else {
         cast = 'Instant';
         recast = a.recast + 's';
       }
-      tip.innerHTML = `<div class="t1"><img src="${B.icon(id)}" alt=""><div><b>${esc(a.name)}</b><small>${kindLabel(a)}${a.target ? ' · Range 25y' : ''}</small></div></div>` +
+      tip.innerHTML = `<div class="t1"><img src="${B.icon(id)}" alt=""><div><b>${esc(a.name)}</b><small>${kindLabel(a)}${a.target ? ` · Range ${a.range || B.RANGE}y` : ''}${a.kind === 'gcd' && a.charges ? ` · ${a.charges} charges` : ''}</small></div></div>` +
         `<div class="grid"><div>Cast<b>${cast}</b></div><div>Recast<b>${recast}</b></div><div>${a.kind === 'gcd' ? 'MP Cost' : (a.charges ? 'Charges' : 'Lock')}<b>${a.kind === 'gcd' ? mp : (a.charges ? a.charges : e.animLock(a.lock, true).toFixed(2) + 's')}</b></div></div>` +
         `<div class="desc">${esc(a.desc)}</div>`;
       tip.classList.add('show');

@@ -12,7 +12,7 @@
 // about 24,200 / 36,700 on these.
 (function (B) {
   const EW = B.NinjaEW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const VERSIONS = {
     dt71: { label: 'Dawntrail 7.1–7.57', history: 'DT 7.1–7.57', ae: [220, 400], ac: [240, 440], bane: 700, doku: 400, pk: 700, bhava: 400, zesho: 700, tenri: 1100, raiju: 700,

@@ -11,7 +11,7 @@
 //    491, 47 weapon damage, 2.72 delay) with the HQ Mega-Potion of Strength (max 61).
 (function (B) {
   const HW = B.MonkHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class MonkARR extends HW {
     constructor() {

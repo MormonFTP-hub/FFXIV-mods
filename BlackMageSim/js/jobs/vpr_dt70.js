@@ -8,7 +8,7 @@
 // parses about 22,580 on this.
 (function (B) {
   const DT = B.ViperDT;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VENOMS = ['flankstungVenom', 'flanksbaneVenom', 'hindstungVenom', 'hindsbaneVenom'];
   const GNASH = 1.10;
 
@@ -40,6 +40,13 @@
       set(A, 'huntersDen', { potency: 250 });
       set(A, 'swiftskinsDen', { potency: 250 });
       A.tincture = B.tincture('dexdt1');
+      // The rest of the kit's tooltips name the launch versions too (Hunter's Coil follows Dreadwinder, not Vicewinder).
+      const LAUNCH = [['Reaving Fangs', 'Dread Fangs'], ['Vicewinder', 'Dreadwinder'], ['Reaving Maw', 'Dread Maw'], ['Vicepit', 'Pit of Dread']];
+      for (const id of Object.keys(A)) {
+        if (typeof A[id].desc !== 'string') continue;
+        const desc = LAUNCH.reduce((d, [now, then]) => d.split(now).join(then), A[id].desc);
+        if (desc !== A[id].desc) A[id] = Object.assign({}, A[id], { desc });
+      }
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, { noxiousGnash: { name: 'Noxious Gnash', self: false, icon: 'st_venom' } });
       this.selfStatusOrder = this.selfStatusOrder.filter(k => k !== 'honedSteel' && k !== 'honedReavers');

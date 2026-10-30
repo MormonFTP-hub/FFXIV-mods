@@ -19,7 +19,7 @@
 (function (B) {
   const EW = B.AstrologianEW;
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const SIGN = { balance: 'solar', bole: 'solar', arrow: 'lunar', ewer: 'lunar', spear: 'celestial', spire: 'celestial' };
   const MINE = { bole: 1, ewer: 1, spire: 1 };
   const STATUS = { balance: 'ewBalance', bole: 'ewBole', arrow: 'ewArrow', ewer: 'ewEwer', spear: 'ewSpear', spire: 'ewSpire' };

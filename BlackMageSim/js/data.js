@@ -236,6 +236,36 @@ window.BLM = window.BLM || {};
     tincture: (e) => e.addStatus('medicated', (e.job.actions.tincture && e.job.actions.tincture.dur) || 30),
   };
 
+  // ---------- version tweaks to an action ----------
+  // A version's change to an action: A[id] becomes a copy with o's fields. When o changes the potency or the combo
+  // potency and brings no description of its own, the description's numbers follow, so the tooltip matches what the
+  // action deals: "potency of 120", "Combo Potency: 280", and the positional line under each ("150 when executed from
+  // a target's rear"), which keeps its bonus over the new number.
+  const N = (s) => +String(s).replace(/,/g, '');
+  const fmtPotency = (n, like) => (n >= 1000 || /,/.test(like) ? n.toLocaleString('en-US') : String(n));
+  B.retuneDesc = function (desc, was, now) {
+    let ref = 'potency';
+    return desc.split('\n').map((line) => {
+      if (/^Combo Potency: /.test(line)) {
+        ref = 'comboPotency';
+        return line.replace(/[\d,]+/, (m) => (N(m) === was.comboPotency && typeof now.comboPotency === 'number' ? fmtPotency(now.comboPotency, m) : m));
+      }
+      line = line.replace(/potency of ([\d,]+)/, (all, m) => (N(m) === was.potency && typeof now.potency === 'number' ? 'potency of ' + fmtPotency(now.potency, m) : all));
+      // "170 when executed from a target's rear", "Rear Combo Potency: 380": the same bonus over the new number.
+      const shift = (all, pre, m, post) => {
+        const k = pre ? 'comboPotency' : ref, o = was[k], n = now[k];
+        return typeof o === 'number' && typeof n === 'number' && o !== n ? pre + fmtPotency(N(m) - o + n, m) + post : all;
+      };
+      return line.replace(/^()([\d,]+)( when executed)/, shift).replace(/^((?:Rear|Flank) Combo Potency: )([\d,]+)()/, shift);
+    }).join('\n');
+  };
+  B.setAction = function (A, id, o) {
+    const was = A[id] || {}, now = Object.assign({}, was, o);
+    const changed = ('potency' in o && o.potency !== was.potency) || ('comboPotency' in o && o.comboPotency !== was.comboPotency);
+    if (changed && !('desc' in o) && typeof was.desc === 'string') now.desc = B.retuneDesc(was.desc, was, now);
+    A[id] = now;
+  };
+
   // ---------- job registry ----------
   // B.JOBS[id] = { id, name, abbr, role, classJob, versions: [{ id, label, history, note, create() }] }
   // history names the version's entry in docs/job-versions.md (B.JOB_HISTORY, js/versions.js), for its rating.

@@ -20,7 +20,7 @@
       stats: { hp: 122878, main: 3311, wd: 132, det: 2182, crit: 2540, dh: 976, speed: 400, ten: 529 },
       note: 'Level 90: Atonement no longer breaks the combo, Riot Blade 300 and Royal Authority 400, the 6.5 Confiteor chain; Anabaseios gear' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const tip = (name, base, dm, req) => `Deals unaspected damage with a potency of ${base}.${dm ? `\nDivine Might Potency: ${dm}` : ''}\nRequiescat Potency: ${req}`;
 
   class PaladinEW extends DT {

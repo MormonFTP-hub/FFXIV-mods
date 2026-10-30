@@ -21,7 +21,7 @@
   const GLK = ['gl1', 'gl2', 'gl3', 'gl4'];
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.45, fx: 'gnbSlash' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o, { tp: undefined }); };
+  const set = (A, id, o) => B.setAction(A, id, Object.assign({}, o, { tp: undefined }));
   const early = { boot: 150, leaden: 300, dk: 180, ts: 220, twin: 150, snap: 210, demo: 70, demoDot: 65, pos: 20, aotd: [80, 110], fpf: 120, rb: 120,
     sss: 400, fc: 370, tk: 430, tkRecast: 10, ef: 200, rof: 1.30, rofSlow: 15, bhChakra: 0.3, pb: [10, 120, 0], deepMed: 0.7, gl: true, med: 1.2,
     roe: 60, formDur: 10, shiftGl: null, allChakra: false };

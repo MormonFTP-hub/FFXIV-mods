@@ -14,7 +14,7 @@
 (function (B) {
   const EPS = 1e-6;
   const HW = B.AstrologianHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     hw33: { label: 'Heavensward 3.3–3.38', history: 'HW 3.3–3.38', spread: 30, shuffle: false, la: 24, ewer: 442, potion: ['Max-Potion of Mind', 127], ref: 1280,
       stats: { main: 1260, wd: 111, det: 560, crit: 700, speed: 540, piety: 536 }, maxMp: 12670,

@@ -14,7 +14,7 @@
     sb40: { label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', cast: 3.0, triple: 90, fireMp: 1440, b4Mp: 1200, foulMp: 240, ref: 4800,
       note: 'Level 70, the launch: 3s Fire IV and Blizzard IV, a 90s Triplecast, Foul costing MP, the job gauge and Polyglot debut' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class BlackMageSB4 extends SB {
     constructor(version) {

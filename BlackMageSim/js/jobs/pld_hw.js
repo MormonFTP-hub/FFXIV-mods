@@ -23,7 +23,7 @@
 //    parses about 390.
 (function (B) {
   const SB = B.PaladinSB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.55, fx: 'gnbSlash' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
 

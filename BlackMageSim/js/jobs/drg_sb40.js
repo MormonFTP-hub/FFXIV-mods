@@ -21,7 +21,7 @@
       lance: 30, full: 440, disembowel: 230, elusive: 60, ref: 4700,
       note: 'Level 70, the launch: the Dragon Gauge with four Eyes, Mirage Dive, Nastrond and Dragon Sight, a 15s Blood of the Dragon; Deltascape gear' },
   };
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class DragoonSB40 extends SB {
     constructor(version) {

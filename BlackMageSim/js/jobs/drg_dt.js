@@ -18,7 +18,7 @@
   const LIFE = 20;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'gnbFang' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const V = { label: 'Dawntrail 7.1–7.57', history: 'DT 7.1–7.57', tincture: 'strdt4', ref: 38380,
     stats: { hp: 227580, main: 6513, wd: 158, det: 2506, crit: 3605, dh: 1982, speed: 420 },
     note: 'Level 100: a proc-free combo loop into Drakesbane, every Geirskogul a 20s Life of the Dragon (+15%), Nastrond once, Stardiver into Starcross, Rise of the Dragon; the 7.4 savage set' };

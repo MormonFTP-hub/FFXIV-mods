@@ -7,7 +7,7 @@
 // ref: scaled from the 3.5 bot by gear and the 3.07 / 3.2 changes (no bot of its own yet).
 (function (B) {
   const HW = B.MonkHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class MonkHW30 extends HW {
     constructor() {

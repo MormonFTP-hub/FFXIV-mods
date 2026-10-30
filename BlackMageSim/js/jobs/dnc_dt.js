@@ -10,7 +10,7 @@
 (function (B) {
   const EW = B.DancerEW;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.5, fx: 'gnbSlash' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class DancerDT extends EW {
     constructor() {

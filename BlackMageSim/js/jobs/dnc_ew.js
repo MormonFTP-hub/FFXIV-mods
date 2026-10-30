@@ -11,7 +11,7 @@
 // scripted bot alone parses about 10,450 / 6,610 on these.
 (function (B) {
   const SHB = B.DancerShB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     ew61: { label: 'Endwalker 6.1–6.58', history: 'EW 6.1–6.58', silken: true, dhDet: true, tincture: 'dex8', gcd: 2.49, ref: 11070,
       stats: { hp: 80000, main: 3379, wd: 132, det: 1952, crit: 2557, dh: 1380, speed: 436 },

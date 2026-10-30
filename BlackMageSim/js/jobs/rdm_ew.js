@@ -89,8 +89,9 @@
       A.swiftcast = Object.assign({}, A.swiftcast, { recast: V.swift });
       if (V.dt) {
         A.grandImpact = spell({ name: 'Grand Impact', potency: 600, mp: 0, black: 3, white: 3, aoe: V.falloff || 0.45, ready: 'grandImpactReady', breaksCombo: undefined, fx: 'gnbZone', desc: 'Deals unaspected damage with a potency of 600 to target and all enemies nearby it, 55% less for the rest.\nAdditional Effect: Increases both Black Mana and White Mana by 3\nCan only be executed while under the effect of Grand Impact Ready.' });
-        A.viceOfThorns = ab({ name: 'Vice of Thorns', recast: 1, potency: V.vice || 900, target: true, range: 25, aoe: V.falloff || 0.45, ready: 'thornedFlourish', delay: 0.6, fx: 'gnbBow', desc: 'Delivers an attack with a potency of 900 to target and all enemies nearby it, 55% less for the rest.\nCan only be executed while under the effect of Thorned Flourish.' });
-        A.prefulgence = ab({ name: 'Prefulgence', recast: 1, potency: V.pref || 1200, target: true, range: 25, aoe: V.falloff || 0.45, ready: 'prefulgenceReady', delay: 0.6, fx: 'gnbDouble', desc: 'Delivers an attack with a potency of 1,200 to target and all enemies nearby it, 55% less for the rest.\nCan only be executed while under the effect of Prefulgence Ready.' });
+        const less = Math.round((1 - (V.falloff || 0.45)) * 100), n = (x) => x.toLocaleString('en-US');
+        A.viceOfThorns = ab({ name: 'Vice of Thorns', recast: 1, potency: V.vice || 900, target: true, range: 25, aoe: V.falloff || 0.45, ready: 'thornedFlourish', delay: 0.6, fx: 'gnbBow', desc: `Delivers an attack with a potency of ${n(V.vice || 900)} to target and all enemies nearby it, ${less}% less for the rest.\nCan only be executed while under the effect of Thorned Flourish.` });
+        A.prefulgence = ab({ name: 'Prefulgence', recast: 1, potency: V.pref || 1200, target: true, range: 25, aoe: V.falloff || 0.45, ready: 'prefulgenceReady', delay: 0.6, fx: 'gnbDouble', desc: `Delivers an attack with a potency of ${n(V.pref || 1200)} to target and all enemies nearby it, ${less}% less for the rest.\nCan only be executed while under the effect of Prefulgence Ready.` });
       }
       A.lucidDreaming = Object.assign({}, A.lucidDreaming, { desc: 'Gradually restores own MP.\nPotency: 55\nDuration: 21s' });
       A.tincture = B.tincture(V.tincture);

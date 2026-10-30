@@ -10,7 +10,7 @@
 // each tier (6.0 and 6.1 share one on purpose). ref: a scripted bot parses about 5,030 / 5,030 / 6,160 / 7,430.
 (function (B) {
   const DT = B.WhiteMageDT;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     ew63: { label: 'Endwalker 6.3–6.58', history: 'EW 6.3–6.58', misery: 1240, miseryAoe: 0.5, dia: 65, lilyTime: 20, assize: 40, liturgy: 20, tincture: 'mnd', ref: 7880,
       stats: { hp: 77580, main: 3365, wd: 132, det: 2047, crit: 2502, dh: 1012, speed: 664, piety: 390 },

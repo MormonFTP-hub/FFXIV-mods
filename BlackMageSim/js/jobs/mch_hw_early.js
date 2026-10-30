@@ -13,7 +13,7 @@
 (function (B) {
   const EPS = 1e-6;
   const HW = B.MachinistHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     hw32: { label: 'Heavensward 3.2–3.38', history: 'HW 3.2–3.38', early: false, potion: ['Max-Potion of Dexterity', 127], ref: 1950,
       stats: { hp: 24000, main: 1250, wd: 73, det: 600, crit: 900, speed: 470 },

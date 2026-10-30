@@ -13,7 +13,7 @@
 (function (B) {
   const SHB = B.MachinistShB;
   const EPS = 1e-6;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     ew63: { label: 'Endwalker 6.3–6.58', history: 'EW 6.3–6.58', slug: 300, clean: [120, 380], blast: 200, tools: 600, gauss: 130, wf: 240, wfCap: 6, stacks: true,
       queenFixed: true, dhDet: true, tincture: 'dex8', ref: 12900,

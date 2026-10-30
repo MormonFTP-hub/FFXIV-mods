@@ -19,7 +19,7 @@
 (function (B) {
   const EW = B.BlackMageEW;
   const ICE_MP = [2500, 5000, 10000];
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   const VERSIONS = {
     dt72: { label: 'Dawntrail 7.2–7.57', history: 'DT 7.2–7.57', timers: false, fast: true, f4: 300, f3: 290, despair: 350, despairCast: 0, para: 540,

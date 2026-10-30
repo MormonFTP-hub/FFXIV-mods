@@ -12,7 +12,7 @@
 //    Strength 492, 47 weapon damage) with the HQ Mega-Potion of Strength (max 61); X-Potions came with 2.2.
 (function (B) {
   const HW = B.WarriorHW;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class WarriorARR extends HW {
     constructor() {

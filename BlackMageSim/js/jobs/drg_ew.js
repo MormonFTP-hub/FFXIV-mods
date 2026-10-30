@@ -14,7 +14,7 @@
   const EPS = 1e-6;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'gnbFang' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const VERSIONS = {
     ew63: { label: 'Endwalker 6.3–6.58', history: 'EW 6.3–6.58', lifeSurge: 40, sightNorth: true, tincture: 'str', ref: 12670,
       stats: { hp: 86628, main: 3379, wd: 132, det: 1818, crit: 2567, dh: 1540, speed: 400 },

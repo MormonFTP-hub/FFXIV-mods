@@ -18,7 +18,7 @@
 (function (B) {
   const EW = B.MonkEW;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'slash' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const FORM = { opo: 'opoOpo', raptor: 'raptor', coeurl: 'coeurl' };
   const NEXT = { opo: 'raptor', raptor: 'coeurl', coeurl: 'opo' };
 

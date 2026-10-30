@@ -10,7 +10,7 @@
 (function (B) {
   const EW = B.BardEW;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.6, fx: 'gnbShot' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const ENCORE = [0, 700, 800, 1100];
 
   class BardDT extends EW {

@@ -9,7 +9,7 @@
 // MP costs are the data's units × 120, the pool 12,000 × Red Mage's 120%. Gear is the 4.58 item data's (pre-6.0).
 (function (B) {
   const ShB = B.RedMageShB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const S = {
     jolt: 240, ver: 310, proc: 270, impact: 270, flare: 600, fleche: 420, contre: 350, displacement: 130,
     riposte: 210, zwerch: 290, redoub: 470,

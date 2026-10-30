@@ -13,7 +13,7 @@
   const NINKI_MAX = 100, TCJ_DUR = 10;
   const HW = B.NinjaHW;
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   function jutsuFor(seq) {
     if (!seq.length) return null;

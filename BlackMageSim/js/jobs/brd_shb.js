@@ -18,7 +18,7 @@
   const EPS = 1e-6;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.6, fx: 'gnbShot' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o, { tp: undefined }); };
+  const set = (A, id, o) => B.setAction(A, id, Object.assign({}, o, { tp: undefined }));
   const VERSIONS = {
     shb51: { label: 'Shadowbringers 5.1–5.58', history: 'ShB 5.1–5.58', burst: 250, caustic: 40, storm: 50, apexPer: 6, side: [100, 200, 350], songBuffs: true,
       tincture: 'dex4', ref: 20870, stats: { hp: 140689, main: 5560, wd: 134, det: 1993, crit: 4001, dh: 2907, speed: 711 },

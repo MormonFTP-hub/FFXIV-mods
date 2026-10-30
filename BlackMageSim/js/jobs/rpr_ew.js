@@ -5,7 +5,7 @@
 // each patch and the Lodestone notes; gear is The Balance's 6.4 Anabaseios set at 2.49.
 (function (B) {
   const DT = B.ReaperDT;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class ReaperEW extends DT {
     constructor() {

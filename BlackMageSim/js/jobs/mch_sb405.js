@@ -8,7 +8,7 @@
 // ref: scaled from the 4.06 bot by gear and the buff changes (no bot of its own yet).
 (function (B) {
   const SB = B.MachinistSB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
 
   class MachinistSB405 extends SB {
     constructor() {

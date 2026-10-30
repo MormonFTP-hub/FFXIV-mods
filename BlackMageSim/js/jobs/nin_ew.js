@@ -13,7 +13,7 @@
 // 6.55 set for 6.1–6.58). ref: a scripted bot parses about 7,360 / 7,970 / 12,410 on these.
 (function (B) {
   const SHB = B.NinjaShB;
-  const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
+  const set = B.setAction;     // a version's change to an action (its description's numbers follow the potency)
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.5, fx: 'slash' }, o);
   const COMBO = { spinningEdge: 1, gustSlash: 1, aeolianEdge: 1, armorCrush: 1, huraijin: 1 };
   const VERSIONS = {
