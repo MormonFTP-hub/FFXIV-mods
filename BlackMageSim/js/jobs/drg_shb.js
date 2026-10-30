@@ -58,6 +58,8 @@
       dragonSight: ab({ name: 'Dragon Sight', recast: 120, desc: 'Grants Right Eye to self, increasing damage dealt by 10%. Also grants target party member Left Eye (+5%).\nDuration: 20s' }),
       elusiveJump: ab({ name: 'Elusive Jump', recast: 30, lock: 0.8, desc: 'Executes a jump to a location 15 yalms behind you.\nCannot be executed while bound.' }),
       ...B.ROLE_ACTIONS.melee,
+      // 5.x's Feint (6.0 reworded it to physical / magic damage dealt).
+      feint: Object.assign({}, B.ROLE_ACTIONS.melee.feint, { desc: 'Lowers target\'s strength and dexterity by 10%, and intelligence and mind by 5%.\nDuration: 10s' }),
       ...B.GENERAL_ACTIONS,
       tincture: B.tincture(V.tincture),
       auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
