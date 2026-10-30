@@ -79,7 +79,7 @@
 
       // What's loaded.
       const G = B.GAME_MODELS, M = B.GAME_MAP, map = app.map, models = app.models;
-      L.push(`Loaded: three.js ${window.THREE ? 'r' + THREE.REVISION : 'no'} · icons ${B.GAME_ICONS ? Object.keys(B.GAME_ICONS).length : 'no'} · models ${G ? `yes (${Object.keys(G.jobs || {}).length} characters, ${models && models.active() ? 'on' : 'off'}${models && models.ch ? '' : ', none for this job'})` : 'no'}`
+      L.push(`Loaded: three.js ${window.THREE ? 'r' + THREE.REVISION : 'no'} · icons ${B.GAME_ICONS ? Object.keys(B.GAME_ICONS).length : 'no'} · models ${G ? `yes (${Object.keys(G.jobs || {}).length} characters, ${!models || !models.ok ? 'failed' : !models.ready ? 'loading' : models.active() ? 'on' : models.ch ? 'off' : 'none for this job'})` : 'no'}`
         + ` · map ${M ? `${M.name} (${map && map.active() ? 'on' : map && map.ok ? (map.ready ? 'off' : 'loading') : 'failed'}${map && map.world ? `, ${n0(map.world.t.length / 9)} collision triangles` : ''})` : 'no'}`);
       if (map && map.renderer && map.active()) {
         const r = map.renderer.info.render;
