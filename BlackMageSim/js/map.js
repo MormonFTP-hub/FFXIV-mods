@@ -29,6 +29,7 @@
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
       this.buf = await new Response(stream).arrayBuffer();
+      if (G.collision && B.MapWorld) this.world = new B.MapWorld(this.view(G.collision), G.sea && G.sea.y);
       this.build();
       this.ready = true;
       this.setEnabled();

@@ -124,8 +124,9 @@
       const m = this.modelsOn();
       const dist = (m ? 8 : 12.5) * this.camZoom, pivotY = (m ? 1.6 : 2.0) + this.jumpY() * 0.3, lift = m ? 0.55 : 0.8;
       const ch = Math.cos(this.camPitch), sh = Math.sin(this.camPitch);
-      const cam = { x: p.x - fx * dist * ch + sx, y: Math.max(0.35, pivotY + dist * sh) + sy, z: p.z - fz * dist * ch };
-      const look = { x: p.x, y: pivotY + lift, z: p.z };
+      const py = p.y || 0;      // the floor you stand on (the game's map)
+      const cam = { x: p.x - fx * dist * ch + sx, y: py + Math.max(0.35, pivotY + dist * sh) + sy, z: p.z - fz * dist * ch };
+      const look = { x: p.x, y: py + pivotY + lift, z: p.z };
       // Right-handed like three.js and the game, so the 2D scene and the 3D models line up.
       const f = norm(sub(look, cam));
       const r = norm(cross(f, { x: 0, y: 1, z: 0 }));
@@ -608,7 +609,7 @@
       const p = this.e.pos;
       const b = this.moveBasis();
       const up = this.e.casting || this.release > 0 ? 2.35 : 1.9;
-      return { x: p.x + b.rx * 0.55 + b.fx * 0.15, y: up + this.jumpY(), z: p.z + b.rz * 0.55 + b.fz * 0.15 };
+      return { x: p.x + b.rx * 0.55 + b.fx * 0.15, y: (p.y || 0) + up + this.jumpY(), z: p.z + b.rz * 0.55 + b.fz * 0.15 };
     }
 
     jumpY() {
@@ -658,7 +659,7 @@
         const col = ELEMENT_COLORS[a.school] || ELEMENT_COLORS.none;
         if (Math.random() < dt * 40) {
           const ang = Math.random() * Math.PI * 2;
-          this.particles.push({ x: e.pos.x + Math.cos(ang) * 1.2, y: 0.1, z: e.pos.z + Math.sin(ang) * 1.2, vx: -Math.cos(ang) * 0.8, vy: 2.2, vz: -Math.sin(ang) * 0.8, life: 0.7, age: 0, size: 0.16, color: col[0], grav: 0, drag: 0 });
+          this.particles.push({ x: e.pos.x + Math.cos(ang) * 1.2, y: (e.pos.y || 0) + 0.1, z: e.pos.z + Math.sin(ang) * 1.2, vx: -Math.cos(ang) * 0.8, vy: 2.2, vz: -Math.sin(ang) * 0.8, life: 0.7, age: 0, size: 0.16, color: col[0], grav: 0, drag: 0 });
         }
       }
       // Astral Fire embers or Umbral Ice snow around the mage.
@@ -666,7 +667,7 @@
       if (aura !== 0 && Math.random() < dt * 6 * Math.abs(aura)) {
         const fire = aura > 0;
         this.particles.push({
-          x: e.pos.x + (Math.random() - 0.5) * 1.2, y: fire ? 0.4 + Math.random() : 2 + Math.random() * 0.5, z: e.pos.z + (Math.random() - 0.5) * 1.2,
+          x: e.pos.x + (Math.random() - 0.5) * 1.2, y: (e.pos.y || 0) + (fire ? 0.4 + Math.random() : 2 + Math.random() * 0.5), z: e.pos.z + (Math.random() - 0.5) * 1.2,
           vx: 0, vy: fire ? 1.1 : -0.7, vz: 0, life: 1.4, age: 0, size: 0.1,
           color: fire ? '255,140,60' : '200,235,255', grav: 0, drag: 0,
         });
@@ -710,7 +711,7 @@
       // Billboards sorted far to near. With the game's models drawn in 3D between the two canvases, decor nearer
       // than the mage goes on the effects canvas so it still covers him.
       const p = this.e.pos;
-      const pc = this.toCam(p.x, this.jumpY(), p.z);
+      const pc = this.toCam(p.x, (p.y || 0) + this.jumpY(), p.z);
       const back = [], front = [];
       for (const d of mapOn ? [] : this.decor) {
         const c = this.toCam(d.x, 0, d.z);
@@ -847,7 +848,7 @@
 
       // Shadows.
       this.shadow(0, 0, 0.9);
-      this.shadow(this.e.pos.x, this.e.pos.z, 0.55 * (1 - this.jumpY() * 0.4));
+      this.shadow(this.e.pos.x, this.e.pos.z, 0.55 * (1 - this.jumpY() * 0.4), this.e.pos.y || 0);
     }
 
     // Melee range around the dummy, split into its rear and flank quarters (the dummy faces -Z). The quarter
@@ -878,30 +879,30 @@
       }
     }
 
-    shadow(x, z, r) {
+    shadow(x, z, r, y) {
       const ctx = this.ctx;
-      if (this.groundPath(x, z, r, 24)) { ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill(); }
+      if (this.groundPath(x, z, r, 24, y || 0)) { ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill(); }
     }
 
     drawLeyLines() {
       const ll = this.e.leyLines;
       if (!ll) return;
-      const ctx = this.ctx;
+      const ctx = this.ctx, ly = (ll.y || 0) + 0.01;
       const left = ll.until - this.e.now, age = this.e.now - ll.start;
       const a = Math.min(1, age * 3, left * 2);
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      if (this.groundPath(ll.x, ll.z, 3, 64)) {
+      if (this.groundPath(ll.x, ll.z, 3, 64, ly)) {
         ctx.fillStyle = `rgba(140,60,220,${0.18 * a})`; ctx.fill();
         ctx.strokeStyle = `rgba(220,170,255,${0.85 * a})`; ctx.lineWidth = 3; ctx.stroke();
       }
-      if (this.groundPath(ll.x, ll.z, 2.4, 64)) { ctx.strokeStyle = `rgba(200,140,255,${0.5 * a})`; ctx.lineWidth = 1.5; ctx.stroke(); }
+      if (this.groundPath(ll.x, ll.z, 2.4, 64, ly)) { ctx.strokeStyle = `rgba(200,140,255,${0.5 * a})`; ctx.lineWidth = 1.5; ctx.stroke(); }
       // Rotating rune marks.
       const rot = this.time * 0.5;
       for (let i = 0; i < 12; i++) {
         const ang = rot + i / 12 * Math.PI * 2;
-        const p1 = this.project(ll.x + Math.cos(ang) * 2.45, 0.01, ll.z + Math.sin(ang) * 2.45);
-        const p2 = this.project(ll.x + Math.cos(ang + 0.12) * 2.95, 0.01, ll.z + Math.sin(ang + 0.12) * 2.95);
+        const p1 = this.project(ll.x + Math.cos(ang) * 2.45, ly, ll.z + Math.sin(ang) * 2.45);
+        const p2 = this.project(ll.x + Math.cos(ang + 0.12) * 2.95, ly, ll.z + Math.sin(ang + 0.12) * 2.95);
         if (p1 && p2) {
           ctx.strokeStyle = `rgba(240,210,255,${0.8 * a})`; ctx.lineWidth = 2;
           ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
@@ -911,7 +912,7 @@
       const pts = [];
       for (let i = 0; i < 6; i++) {
         const ang = -rot + i * Math.PI * 2 / 6 * 2;
-        pts.push(this.project(ll.x + Math.cos(ang) * 2.3, 0.01, ll.z + Math.sin(ang) * 2.3));
+        pts.push(this.project(ll.x + Math.cos(ang) * 2.3, ly, ll.z + Math.sin(ang) * 2.3));
       }
       if (pts.every(Boolean)) {
         ctx.strokeStyle = `rgba(200,140,255,${0.4 * a})`; ctx.lineWidth = 1.5;
@@ -930,25 +931,26 @@
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       const r = 1.3;
-      if (this.groundPath(e.pos.x, e.pos.z, r, 40, 0.02)) {
+      const gy = (e.pos.y || 0) + 0.02;
+      if (this.groundPath(e.pos.x, e.pos.z, r, 40, gy)) {
         ctx.strokeStyle = `rgba(${col},0.9)`; ctx.lineWidth = 2.5; ctx.stroke();
         ctx.fillStyle = `rgba(${col},0.12)`; ctx.fill();
       }
-      if (this.groundPath(e.pos.x, e.pos.z, r * 0.75, 40, 0.02)) { ctx.strokeStyle = `rgba(${col},0.6)`; ctx.lineWidth = 1.2; ctx.stroke(); }
+      if (this.groundPath(e.pos.x, e.pos.z, r * 0.75, 40, gy)) { ctx.strokeStyle = `rgba(${col},0.6)`; ctx.lineWidth = 1.2; ctx.stroke(); }
       // Progress sweep.
       const steps = Math.max(2, Math.round(40 * k));
       ctx.beginPath();
       for (let i = 0; i <= steps; i++) {
         const ang = -Math.PI / 2 + i / 40 * Math.PI * 2;
-        const q = this.project(e.pos.x + Math.cos(ang) * r * 1.12, 0.02, e.pos.z + Math.sin(ang) * r * 1.12);
+        const q = this.project(e.pos.x + Math.cos(ang) * r * 1.12, gy, e.pos.z + Math.sin(ang) * r * 1.12);
         if (q) i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y);
       }
       ctx.strokeStyle = `rgba(255,255,255,0.8)`; ctx.lineWidth = 2; ctx.stroke();
       const rot = this.time * 2;
       for (let i = 0; i < 3; i++) {
         const ang = rot + i * Math.PI * 2 / 3;
-        const q1 = this.project(e.pos.x + Math.cos(ang) * r * 0.75, 0.02, e.pos.z + Math.sin(ang) * r * 0.75);
-        const q2 = this.project(e.pos.x + Math.cos(ang + 2.1) * r * 0.75, 0.02, e.pos.z + Math.sin(ang + 2.1) * r * 0.75);
+        const q1 = this.project(e.pos.x + Math.cos(ang) * r * 0.75, gy, e.pos.z + Math.sin(ang) * r * 0.75);
+        const q2 = this.project(e.pos.x + Math.cos(ang + 2.1) * r * 0.75, gy, e.pos.z + Math.sin(ang + 2.1) * r * 0.75);
         if (q1 && q2) { ctx.strokeStyle = `rgba(${col},0.7)`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(q1.x, q1.y); ctx.lineTo(q2.x, q2.y); ctx.stroke(); }
       }
       ctx.restore();
@@ -1475,7 +1477,7 @@
       const d = k ? B.EXTRA_DUMMIES[k - 1] : null;
       return d ? this.project(d.x, 2.5, d.z) : this.project(0, 2.7, 0);
     }
-    mageHead() { const p = this.e.pos; return this.project(p.x, (this.modelsOn() ? 2.4 : 2.9) + this.jumpY(), p.z); }
+    mageHead() { const p = this.e.pos; return this.project(p.x, (p.y || 0) + (this.modelsOn() ? 2.4 : 2.9) + this.jumpY(), p.z); }
 
     hitDummy(x, y) {
       const b = this.project(0, 0, 0), t = this.project(0, 2.5, 0);

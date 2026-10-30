@@ -371,7 +371,7 @@
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
       ch.facing += diff * Math.min(1, dt * rate);
-      ch.group.position.set(e.pos.x, sc.jumpY(), e.pos.z);
+      ch.group.position.set(e.pos.x, (e.pos.y || 0) + sc.jumpY(), e.pos.z);
       ch.group.rotation.y = ch.facing;
       if (!ch.group.visible && this.texturesLoaded(ch)) ch.group.visible = true;
 

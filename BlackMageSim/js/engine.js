@@ -12,7 +12,8 @@
       this.now = 0;
       this.settings = settings;
       this.job = job;
-      this.pos = { x: 0, z: -10 };
+      this.pos = { x: 0, y: 0, z: -10 };     // y: the floor you stand on (the game's map; 0 without it)
+      this.world = null;                      // the map's collision (B.MapWorld) while the map is on
       this.reset();
     }
 
@@ -559,21 +560,25 @@
     }
 
     // ---------- movement ----------
-    // speedMul: below 1 for backpedalling.
+    // speedMul: below 1 for backpedalling. On the game's map you walk through its collision (stairs, walls, ledges);
+    // without it, a flat floor 38 yalms around the dummy.
     move(dx, dz, dt, speedMul) {
-      const moving = dx !== 0 || dz !== 0;
+      const moving = dx !== 0 || dz !== 0, w = this.world;
       if (moving) {
         const speed = 6 * (this.has('sprint') ? 1.3 : 1) * (speedMul || 1);
         const len = Math.hypot(dx, dz);
-        this.pos.x += dx / len * speed * dt;
-        this.pos.z += dz / len * speed * dt;
+        const sx = dx / len * speed * dt, sz = dz / len * speed * dt;
+        if (w) w.walk(this.pos, sx, sz);
+        else { this.pos.x += sx; this.pos.z += sz; }
         // Keep a little space from the dummy's hitbox.
         const d = Math.hypot(this.pos.x, this.pos.z);
-        if (d < 1.4) { this.pos.x *= 1.4 / d; this.pos.z *= 1.4 / d; }
-        const lim = 38;
+        if (d < 1.4 && Math.abs(this.pos.y) < 1.5) { this.pos.x *= 1.4 / d; this.pos.z *= 1.4 / d; }
+        const lim = w ? 150 : 38;
         const r = Math.hypot(this.pos.x, this.pos.z);
         if (r > lim) { this.pos.x *= lim / r; this.pos.z *= lim / r; }
       }
+      if (w) w.fall(this.pos, dt);
+      else this.pos.y = 0;
       if (moving !== this.moving || moving) this.setMoving(moving);
     }
 

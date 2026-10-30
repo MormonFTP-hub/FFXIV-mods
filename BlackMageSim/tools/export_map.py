@@ -4,7 +4,9 @@ outside the Wolves' Den with its striking dummies.
 Reads the zone's layout (level/bg.lgb: every placed model, and the shared groups (.sgb) it places, recursively), its
 terrain (bgplate/terrain.tera and its plates) and the striking dummies on level/planmap.lgb, then writes each model
 once (both texture layers of bg.shpk, blended by vertex alpha; the sea's water.shpk as water) and every placement as a
-matrix. The map is moved so one of the pier's striking dummies stands at the sim's origin, turned to face the sim's
+matrix. Also the game's own collision, what you stand on and bump into: each placed model's .pcb and the terrain's
+tiles (collision/list.pcb), as one list of triangles near the pier (the flat tiles at sea level are left out: no
+walking on the water). The map is moved so one of the pier's striking dummies stands at the sim's origin, turned to face the sim's
 player (who starts on -Z), with its deck at y = 0; that dummy itself is left out, since the sim draws its own there.
 
 Writes BlackMageSim/work/game-map.js (BLM.GAME_MAP), which index.html loads and build_single.py publishes in chunks.
@@ -58,7 +60,8 @@ def read_layers(d, start, layers_off, count):
             typ, _, _ = struct.unpack_from("<iIi", d, s)
             t, r, sc = (struct.unpack_from("<3f", d, s + o) for o in (12, 24, 36))
             path = cstr(d, s + struct.unpack_from("<i", d, s + 48)[0]) if typ in (TYPE_BG, TYPE_SG) else None
-            insts.append({"type": typ, "t": t, "r": r, "s": sc, "path": path})
+            col = struct.unpack_from("<i", d, s + 52)[0] if typ == TYPE_BG else 0
+            insts.append({"type": typ, "t": t, "r": r, "s": sc, "path": path, "col": cstr(d, s + col) if col else None})
         out.append({"name": cstr(d, ls + name_off), "insts": insts})
     return out
 
@@ -100,12 +103,15 @@ def matrix(t, r, s):
 
 
 _sgb = {}
+COLLIDERS = []       # (.pcb path, world matrix)
 
 
 def walk(insts, parent, out, depth=0):
     """Every model the instances place, with its world matrix; shared groups open into their own layers."""
     for i in insts:
         w = parent @ matrix(i["t"], i["r"], i["s"])
+        if i["type"] == TYPE_BG and i["col"]:
+            COLLIDERS.append((i["col"], w))
         if i["type"] == TYPE_BG and i["path"]:
             out.append((i["path"], w))
         elif i["type"] == TYPE_SG and i["path"] and depth < 8:
@@ -142,7 +148,64 @@ def placements():
         m = np.eye(4)
         m[0, 3], m[2, 3] = size * (x + 0.5), size * (z + 0.5)
         out.append((f"{base}bgplate/{i:04d}.mdl", m))
+    # The terrain's collision tiles, already in world space.
+    lst = open(game.game_file(base + "collision/list.pcb"), "rb").read()
+    for i in range(struct.unpack_from("<I", lst, 0)[0]):
+        COLLIDERS.append((f"{base}collision/tr{struct.unpack_from('<I', lst, 32 + i * 32)[0]:04d}.pcb", np.eye(4)))
     return out
+
+
+# ---------- collision ----------
+def read_pcb(b):
+    """A .pcb's triangles (n, 3, 3): a binary tree whose groups (type 0x30) keep their first child 0x30 bytes in and
+    their second at their size; the leaves hold float and 16-bit vertices (spread over the leaf's box) and triangles
+    of three byte indices."""
+    tris, stack = [], [0x18]
+    while stack:
+        off = stack.pop()
+        typ, size = struct.unpack_from("<II", b, off)
+        if typ == 0x30:
+            stack += [off + size, off + 0x30]
+            continue
+        lo, hi = np.array(struct.unpack_from("<3f", b, off + 8)), np.array(struct.unpack_from("<3f", b, off + 20))
+        n16, ni, nf = struct.unpack_from("<HHI", b, off + 32)
+        p = off + 0x28
+        vf = np.frombuffer(b, "<f4", nf * 3, p).reshape(-1, 3).astype(np.float64)
+        p += nf * 12
+        v16 = np.frombuffer(b, "<u2", n16 * 3, p).reshape(-1, 3) / 65535.0 * (hi - lo) + lo
+        p += n16 * 6
+        idx = np.frombuffer(b, np.uint8, ni * 12, p).reshape(-1, 12)[:, :3].astype(np.int64)
+        if ni:
+            tris.append(np.concatenate([vf, v16])[idx])
+    tris = np.concatenate(tris) if tris else np.zeros((0, 3, 3))
+    assert len(tris) == struct.unpack_from("<I", b, 0x0c)[0]
+    return tris
+
+
+def collision(sim, reach=160.0):
+    """Every collision triangle within `reach` of the dummy, in the sim's frame, as float32 (n, 9)."""
+    cache, out = {}, []
+    for path, w in COLLIDERS:
+        if path not in cache:
+            local = game.game_file(path)
+            t = read_pcb(open(local, "rb").read()) if local else np.zeros((0, 3, 3))
+            if "/collision/tr" in path and len(t) and np.ptp(t[..., 1]) < 0.01:
+                t = np.zeros((0, 3, 3))          # a flat tile at sea level: the water
+            cache[path] = t
+        t = cache[path]
+        if not len(t):
+            continue
+        m = sim @ w
+        v = t.reshape(-1, 3) @ m[:3, :3].T + m[:3, 3]
+        v = v.reshape(-1, 3, 3)
+        c = v.mean(1)
+        keep = np.hypot(c[:, 0], c[:, 2]) < reach
+        n = np.cross(v[:, 1] - v[:, 0], v[:, 2] - v[:, 0])
+        keep &= np.linalg.norm(n, axis=1) > 1e-6
+        out.append(v[keep])
+    tris = np.concatenate(out).astype(np.float32)
+    print(f"  collision: {len(COLLIDERS)} colliders, {len(cache)} files, {len(tris)} triangles near the pier")
+    return tris.reshape(-1)
 
 
 def to_sim():
@@ -264,6 +327,7 @@ def main():
     for m in models:
         m["instances"] = pack.put(np.array(m.pop("inst"), np.float32), "f32")
     data = {"version": 1, "name": ZONE["name"], "zone": ZONE["bg"], "dummy": ZONE["dummy"], "sea": sea,
+            "collision": pack.put(collision(sim), "f32"),
             "models": models, "materials": mats, "textures": X.TEXTURES, "bin": pack.b64(), "binEncoding": "gzip"}
     js = ("// Generated by tools/export_map.py from your FFXIV install. FINAL FANTASY XIV (c) SQUARE ENIX.\n"
           "window.BLM = window.BLM || {};\nBLM.GAME_MAP = " + json.dumps(data, separators=(",", ":")) + ";\n")

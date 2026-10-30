@@ -457,7 +457,7 @@
           e.emit('polyglot', { n: g.polyglot });
           return;
         case 'leyLines':
-          e.leyLines = { x: e.pos.x, z: e.pos.z, until: e.now + 30, start: e.now };
+          e.leyLines = { x: e.pos.x, y: e.pos.y || 0, z: e.pos.z, until: e.now + 30, start: e.now };
           e.addStatus('leyLines', 30);
           return;
         case 'betweenTheLines': {

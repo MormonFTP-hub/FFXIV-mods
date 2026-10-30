@@ -234,7 +234,7 @@
       this.job = B.setJob(jobId, st.versions[jobId]);
       const fresh = !this.hasBars();          // before anything draws the bars (which fills in the defaults)
       this.engine.setJob(this.job);
-      this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
+      this.engine.pos.x = 0; this.engine.pos.y = 0; this.engine.pos.z = -this.job.startDistance;
       this.scene.resetCamera();
       this.cd = null; this.cdEndedAt = null; this.recentUses = [];
       this.ui.setJob();
@@ -405,7 +405,7 @@
 
     fullReset() {
       this.engine.reset();
-      this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
+      this.engine.pos.x = 0; this.engine.pos.y = 0; this.engine.pos.z = -this.job.startDistance;
       this.scene.resetCamera();
       this.enc = null;
       this.cd = null;
@@ -632,6 +632,7 @@
       if (Math.abs(dx) < 1e-6 && Math.abs(dz) < 1e-6) { dx = 0; dz = 0; }
       this.scene.mouselook = mouselook;
       this.scene.backpedal = mouselook && fwd < 0;
+      e.world = this.map.active() ? this.map.world || null : null;
       e.move(dx, dz, dt, this.scene.backpedal ? BACKPEDAL : 1);
       e.advance(dt);
       e.frame();

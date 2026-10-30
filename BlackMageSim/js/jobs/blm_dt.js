@@ -192,7 +192,7 @@
         }
         case 'leyLines': {
           const d = this.V.ley[1];
-          e.leyLines = { x: e.pos.x, z: e.pos.z, until: e.now + d, start: e.now };
+          e.leyLines = { x: e.pos.x, y: e.pos.y || 0, z: e.pos.z, until: e.now + d, start: e.now };
           e.addStatus('leyLines', d);
           return;
         }
