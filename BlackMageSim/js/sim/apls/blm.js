@@ -1,0 +1,20 @@
+BLM.SIM_APLS.blm = `
+actions.precombat=fire3,at=-3.5
+actions=/tincture,if=time<8
+actions+=/leyLines,if=!buff.leyLines.up&time>3
+actions+=/amplifier,if=gauge.polyglot<3
+actions+=/manafont,if=gauge.element>0&mp<800
+actions+=/triplecast,if=gauge.element>0&!buff.triplecast.up&mp>=4000&cd.triplecast.charges>=2
+actions+=/highThunder,if=buff.thunderhead.up&debuff.highThunder.remains<3
+actions+=/flareStar,if=gauge.soul>=6
+actions+=/xenoglossy,if=gauge.polyglot>=3|moving
+actions+=/paradox,if=gauge.element>0&gauge.paradox
+actions+=/fire4,if=gauge.element>0&mp>=2400
+actions+=/despair,if=gauge.element>0&mp>=800
+actions+=/blizzard3,if=gauge.element>0
+actions+=/blizzard4,if=gauge.element<0&gauge.hearts<3
+actions+=/paradox,if=gauge.element<0&gauge.paradox
+actions+=/fire3,if=gauge.element<0
+actions+=/xenoglossy
+actions+=/fire3
+`;

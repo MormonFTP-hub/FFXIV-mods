@@ -9,10 +9,12 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      and parses, so every published file stays under the 16 MB limit.
                      The icons (work/game-icons.js, ~18 MB) go next to it as game-icons-0.js,
                      -1.js, ...: whole icons per file, each file under 10 MB.
+  DummySimLab.html   the simulator (sim.html) in one file; sim-artifact.html its artifact fragment.
 And a folder:
   site/              a website to upload to a free static host (Cloudflare Pages, GitHub
                      Pages, Netlify): the page as index.html with the icon and model files
-                     beside it, every file under 25 MB (Cloudflare Pages' limit).
+                     beside it, every file under 25 MB (Cloudflare Pages' limit), and the simulator as
+                     sim.html.
 """
 import json
 import re
@@ -113,6 +115,16 @@ def site(page: str, files) -> None:
     (SITE / ".assetsignore").write_text(".wrangler\n", encoding="utf-8")
 
 
+def sim_lab() -> None:
+    """Dummy Sim Lab (sim.html), the simulator: one self-contained file, an artifact fragment and the site's sim.html."""
+    page = inline((ROOT / "sim.html").read_text(encoding="utf-8"))
+    (OUT / "DummySimLab.html").write_text(page, encoding="utf-8")
+    (OUT / "sim-artifact.html").write_text(fragment(page), encoding="utf-8")
+    (SITE / "sim.html").write_text(page, encoding="utf-8")
+    for name in ("DummySimLab.html", "sim-artifact.html"):
+        print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
+
+
 def main():
     src = (ROOT / "index.html").read_text(encoding="utf-8")
     OUT.mkdir(exist_ok=True)
@@ -123,6 +135,7 @@ def main():
     page = inline(src, keep=keep)
     (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
     site(page, [*icons, *chunks])
+    sim_lab()
     for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks):
         print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
     files = sorted(SITE.iterdir())

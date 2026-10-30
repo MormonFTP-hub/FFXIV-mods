@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aion 2 Dummy Sim</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="arena" aria-label="Training ground: you and the striking dummy, seen from above"></canvas>
+
+  <nav id="menu" aria-label="Menu">
+    <button id="b-class" class="cls-btn" title="Pick a class (C)"><i id="b-class-mark"></i><span><b id="b-class-name">Assassin</b><small id="b-class-sub">Dagger · melee</small></span></button>
+    <button id="b-build" title="Skill levels, stigmas and specializations (B)">Build<kbd>B</kbd></button>
+    <button id="b-stats" title="Your character's stats (V)">Stats<kbd>V</kbd></button>
+    <button id="b-leaders" class="hot" title="Leaders who take your class (L)">Leaders<kbd>L</kbd></button>
+    <button id="b-help" title="How to play (H)">Help<kbd>H</kbd></button>
+  </nav>
+
+  <div id="target" class="hud">
+    <div class="trow"><b>Striking Dummy</b><span id="t-kind">Boss · status immune</span><span id="t-pct">100%</span></div>
+    <div class="bar hp"><i id="t-hp"></i></div>
+    <div class="bar stg" title="Stagger gauge"><i id="t-stg"></i><span id="t-stg-n">Stagger 0%</span></div>
+    <div id="t-debuffs" class="chips"></div>
+  </div>
+
+  <aside id="meter" class="hud" aria-label="Damage meter">
+    <div class="mhead">
+      <div><span class="lbl">DPS</span><b id="m-dps">0</b></div>
+      <div><span class="lbl">Time</span><b id="m-time">0:00</b></div>
+    </div>
+    <div class="msub"><span id="m-total">0 damage</span><span id="m-crit">crit 0%</span><span id="m-back">back 0%</span></div>
+    <div class="mbars" id="m-bars"></div>
+    <div class="mfoot">
+      <select id="pull" title="Parse length"><option value="60">1:00 parse</option><option value="120">2:00 parse</option><option value="180" selected>3:00 parse</option><option value="300">5:00 parse</option><option value="0">No time limit</option></select>
+      <button id="b-reset" title="Reset the dummy (R)">Reset<kbd>R</kbd></button>
+      <button id="b-copy" title="Copy this parse as text">Copy parse</button>
+    </div>
+    <div class="mfoot">
+      <button id="b-auto" title="Let the sim play the rotation (P)">Auto-play<kbd>P</kbd></button>
+      <button id="b-run" title="Simulate a whole parse at once">Run a parse</button>
+    </div>
+  </aside>
+
+  <div id="player" class="hud">
+    <div id="buffs" class="chips"></div>
+    <div class="pbars">
+      <div class="bar php"><i id="p-hp"></i><span>HP</span></div>
+      <div class="bar pmp"><i id="p-mp"></i><span id="p-mp-n">MP</span></div>
+    </div>
+    <div id="castbar" hidden><i id="cb-fill"></i><span id="cb-name"></span></div>
+  </div>
+
+  <div id="hotbar" class="hud" aria-label="Skills"></div>
+  <div id="tip" role="tooltip" hidden></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <section id="class-panel" class="sheet" hidden aria-label="Pick a class">
+    <header><h2>Pick a class</h2><button class="close" data-close>Close</button></header>
+    <div id="class-list" class="cls-grid"></div>
+    <p class="fine">Numbers come from the global client (build 0.0.4387.0) as listed by MetaBot. Timing and the damage formula are the community's best read, not NCSOFT's.</p>
+  </section>
+
+  <section id="build-panel" class="sheet" hidden aria-label="Build">
+    <header><h2>Build</h2><button class="close" data-close>Close</button></header>
+    <div class="field-row">
+      <label for="lv-active">Active skill level <output id="lv-active-n">20</output></label>
+      <input id="lv-active" type="range" min="1" max="40" value="20">
+      <label for="lv-stigma">Stigma skill level <output id="lv-stigma-n">10</output></label>
+      <input id="lv-stigma" type="range" min="1" max="40" value="10">
+    </div>
+    <h3>Stigmas <small id="stig-count"></small></h3>
+    <div id="stigma-list" class="pick-list"></div>
+    <h3>Specializations</h3>
+    <p class="fine">Each skill opens a specialization slot at skill level 8, 12 and 20. Ones that do nothing on a dummy are greyed out.</p>
+    <div id="spec-list" class="spec-list"></div>
+  </section>
+
+  <section id="stats-panel" class="sheet" hidden aria-label="Stats">
+    <header><h2>Stats</h2><button class="close" data-close>Close</button></header>
+    <p class="fine">Type in your character sheet, or start from a preset.</p>
+    <div class="presets" id="presets"></div>
+    <form id="stats-form" class="stats-grid" autocomplete="off"></form>
+    <h3>Dummy</h3>
+    <div class="stats-grid" id="dummy-form"></div>
+  </section>
+
+  <section id="board-panel" class="sheet wide" hidden aria-label="Leaders who take your class">
+    <header>
+      <h2>Leaders who take <span id="board-track">Assassins</span></h2>
+      <button class="close" data-close>Close</button>
+    </header>
+    <p id="board-mode" class="mode"></p>
+    <form id="board-form" class="log-form" autocomplete="off">
+      <input id="bf-leader" name="leader" placeholder="Party leader's name" maxlength="40" aria-label="Party leader's character name">
+      <input id="bf-server" name="server" list="board-servers" placeholder="Server" maxlength="40" aria-label="Server">
+      <datalist id="board-servers"></datalist>
+      <fieldset class="seg" aria-label="What happened?">
+        <label><input type="radio" name="result" value="yes" checked><span>Took me</span></label>
+        <label><input type="radio" name="result" value="no"><span>Turned me down</span></label>
+        <label><input type="radio" name="result" value="kick"><span>Kicked me</span></label>
+      </fieldset>
+      <select id="bf-content" name="content" aria-label="Content"></select>
+      <select id="bf-cls" name="cls" aria-label="You applied as"></select>
+      <input id="bf-note" name="note" placeholder="Note, e.g. wants 3k CP" maxlength="160" aria-label="Note">
+      <button type="submit" class="primary">Log party</button>
+    </form>
+    <p id="board-summary" class="summary"></p>
+    <div class="board-tools">
+      <input id="board-search" type="search" placeholder="Find a leader" aria-label="Find a leader">
+      <select id="board-server" aria-label="Server"></select>
+      <label class="inline">Board for <select id="board-class"></select></label>
+    </div>
+    <div id="board-list"></div>
+    <div class="board-tools">
+      <button id="board-mine-toggle" aria-expanded="false">Your entries (<span id="board-mine-count">0</span>)</button>
+      <button id="board-export">Copy CSV</button>
+      <button id="board-import">Import</button>
+    </div>
+    <div id="board-io" hidden><textarea id="board-io-text" rows="6" aria-label="CSV"></textarea></div>
+    <div id="board-mine" hidden></div>
+  </section>
+
+  <section id="help-panel" class="sheet" hidden aria-label="Help">
+    <header><h2>How to play</h2><button class="close" data-close>Close</button></header>
+    <div class="help">
+      <p>Hit the dummy with your skills and watch the meter. The parse starts on your first hit and stops when the timer runs out.</p>
+      <dl>
+        <dt>Skills</dt><dd>Keys <kbd>1</kbd>–<kbd>0</kbd> for the top row and <kbd>Q</kbd> <kbd>E</kbd> <kbd>F</kbd> <kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd> <kbd>G</kbd> <kbd>T</kbd> for the stigma row, or click or tap the buttons. Press a skill while another is still animating and it goes next.</dd>
+        <dt>Moving</dt><dd><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrow keys, or click or tap the ground. The shaded half behind the dummy is where back attacks land.</dd>
+        <dt>Procs</dt><dd>A skill with a gold ring is ready now (Heart Gore after a critical hit, Shadow Fall on its proc). Its ring drains as the window runs out.</dd>
+        <dt>Menu</dt><dd><kbd>C</kbd> class, <kbd>B</kbd> build, <kbd>V</kbd> stats, <kbd>L</kbd> leaders, <kbd>R</kbd> reset, <kbd>P</kbd> auto-play, <kbd>Esc</kbd> closes a panel.</dd>
+      </dl>
+      <p><b>Leaders</b> keeps a list of the party leaders who took you, per server, with how often they said yes, no, or kicked you. Log every application, not just the good ones, so the numbers mean something. Leaders who only ever said no stay off the list.</p>
+      <p class="fine">This is a fan-made practice tool. It doesn't read the game, its traffic or its memory. Skill numbers are from the global client via MetaBot; the timing and the damage formula are estimates, so treat a parse here as practice, not proof.</p>
+    </div>
+  </section>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/classes/assassin.js"></script>
+<script src="js/classes/gladiator.js"></script>
+<script src="js/classes/templar.js"></script>
+<script src="js/classes/ranger.js"></script>
+<script src="js/classes/sorcerer.js"></script>
+<script src="js/classes/spiritmaster.js"></script>
+<script src="js/classes/cleric.js"></script>
+<script src="js/classes/chanter.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/board.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -51,6 +51,13 @@ try {
 } catch { Write-Host "couldn't fetch $Url : $($_.Exception.Message)"; exit 1 }
 if ($got -ne $want) { Write-Host "the live page is $got bytes, build/site/index.html is ${want}: check $Url"; exit 1 }
 Write-Host "live: $Url ($got bytes, matches the build)"
+# The simulator, Dummy Sim Lab, at sim.html.
+$want = (Get-Item "$Site\sim.html").Length
+try {
+  $got = (Invoke-WebRequest -Uri "${Url}sim.html" -UseBasicParsing -Headers @{ 'Cache-Control' = 'no-cache' } -TimeoutSec 60 -ErrorAction Stop).RawContentLength
+} catch { Write-Host "couldn't fetch ${Url}sim.html : $($_.Exception.Message)"; exit 1 }
+if ($got -ne $want) { Write-Host "the live sim.html is $got bytes, build/site/sim.html is ${want}: check ${Url}sim.html"; exit 1 }
+Write-Host "live: ${Url}sim.html ($got bytes, matches the build)"
 
 if (-not $NoGitHub) {
   Step python @("$Repo\tools\autobackup_hook.py", '--run')

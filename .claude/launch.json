@@ -171,6 +171,39 @@
         "GoatsSim"
       ],
       "port": 8803
+    },
+    {
+      "name": "sim-lab",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8811",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "BlackMageSim"
+      ],
+      "port": 8811,
+      "autoPort": false
+    },
+    {
+      "name": "aion2-sim",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8815",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "Aion2Sim"
+      ],
+      "port": 8815
     }
   ]
 }

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dummy Sim Lab</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Marcellus+SC&display=swap">
+  <link rel="stylesheet" href="css/sim.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script src="js/data.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/jobs/blm_ew.js"></script>
+  <script src="js/jobs/blm_dt.js"></script>
+  <script src="js/jobs/blm_shb.js"></script>
+  <script src="js/jobs/blm_sb.js"></script>
+  <script src="js/jobs/blm_sb4.js"></script>
+  <script src="js/jobs/blm_hw.js"></script>
+  <script src="js/jobs/sam_ew.js"></script>
+  <script src="js/jobs/sam_ew61.js"></script>
+  <script src="js/jobs/sam_dt.js"></script>
+  <script src="js/jobs/sam_sb.js"></script>
+  <script src="js/jobs/sam_shb.js"></script>
+  <script src="js/jobs/gnb_ew.js"></script>
+  <script src="js/jobs/gnb_dt.js"></script>
+  <script src="js/jobs/pld_dt.js"></script>
+  <script src="js/jobs/pld_ew.js"></script>
+  <script src="js/jobs/pld_ew60.js"></script>
+  <script src="js/jobs/pld_shb.js"></script>
+  <script src="js/jobs/pld_sb.js"></script>
+  <script src="js/jobs/pld_sb40.js"></script>
+  <script src="js/jobs/pld_hw.js"></script>
+  <script src="js/jobs/gnb_shb.js"></script>
+  <script src="js/jobs/smn_dt.js"></script>
+  <script src="js/jobs/smn_shb.js"></script>
+  <script src="js/jobs/smn_sb.js"></script>
+  <script src="js/jobs/smn_sb40.js"></script>
+  <script src="js/jobs/smn_hw.js"></script>
+  <script src="js/jobs/smn_arr.js"></script>
+  <script src="js/jobs/whm_dt.js"></script>
+  <script src="js/jobs/whm_ew.js"></script>
+  <script src="js/jobs/whm_sb.js"></script>
+  <script src="js/jobs/whm_hw.js"></script>
+  <script src="js/jobs/whm_arr.js"></script>
+  <script src="js/jobs/whm_shb.js"></script>
+  <script src="js/jobs/sge_ew.js"></script>
+  <script src="js/jobs/ast_ew.js"></script>
+  <script src="js/jobs/ast_dt.js"></script>
+  <script src="js/jobs/ast_shb.js"></script>
+  <script src="js/jobs/ast_sb.js"></script>
+  <script src="js/jobs/ast_hw.js"></script>
+  <script src="js/jobs/ast_hw_early.js"></script>
+  <script src="js/jobs/sch_sb.js"></script>
+  <script src="js/jobs/sch_ew.js"></script>
+  <script src="js/jobs/sch_hw.js"></script>
+  <script src="js/jobs/sch_arr.js"></script>
+  <script src="js/jobs/mnk_sb.js"></script>
+  <script src="js/jobs/mnk_shb.js"></script>
+  <script src="js/jobs/mnk_sb40.js"></script>
+  <script src="js/jobs/mnk_hw.js"></script>
+  <script src="js/jobs/mnk_hw30.js"></script>
+  <script src="js/jobs/mnk_arr.js"></script>
+  <script src="js/jobs/mnk_ew.js"></script>
+  <script src="js/jobs/mnk_dt.js"></script>
+  <script src="js/jobs/drg_sb.js"></script>
+  <script src="js/jobs/drg_sb40.js"></script>
+  <script src="js/jobs/drg_hw.js"></script>
+  <script src="js/jobs/drg_arr.js"></script>
+  <script src="js/jobs/drg_shb.js"></script>
+  <script src="js/jobs/drg_ew.js"></script>
+  <script src="js/jobs/drg_dt.js"></script>
+  <script src="js/jobs/brd_sb.js"></script>
+  <script src="js/jobs/brd_shb.js"></script>
+  <script src="js/jobs/brd_sb40.js"></script>
+  <script src="js/jobs/brd_hw.js"></script>
+  <script src="js/jobs/brd_ew.js"></script>
+  <script src="js/jobs/brd_dt.js"></script>
+  <script src="js/jobs/mch_sb.js"></script>
+  <script src="js/jobs/mch_sb405.js"></script>
+  <script src="js/jobs/war_hw.js"></script>
+  <script src="js/jobs/war_arr.js"></script>
+  <script src="js/jobs/war_ew.js"></script>
+  <script src="js/jobs/war_dt.js"></script>
+  <script src="js/jobs/war_shb.js"></script>
+  <script src="js/jobs/war_sb.js"></script>
+  <script src="js/jobs/drk_shb.js"></script>
+  <script src="js/jobs/drk_ew.js"></script>
+  <script src="js/jobs/drk_sb.js"></script>
+  <script src="js/jobs/drk_hw.js"></script>
+  <script src="js/jobs/nin_hw.js"></script>
+  <script src="js/jobs/nin_arr.js"></script>
+  <script src="js/jobs/nin_sb.js"></script>
+  <script src="js/jobs/nin_shb.js"></script>
+  <script src="js/jobs/nin_shb50.js"></script>
+  <script src="js/jobs/nin_ew.js"></script>
+  <script src="js/jobs/nin_dt.js"></script>
+  <script src="js/jobs/vpr_dt.js"></script>
+  <script src="js/jobs/vpr_dt70.js"></script>
+  <script src="js/jobs/rpr_dt.js"></script>
+  <script src="js/jobs/rpr_ew.js"></script>
+  <script src="js/jobs/mch_hw.js"></script>
+  <script src="js/jobs/mch_hw_early.js"></script>
+  <script src="js/jobs/mch_shb.js"></script>
+  <script src="js/jobs/mch_ew.js"></script>
+  <script src="js/jobs/mch_dt.js"></script>
+  <script src="js/jobs/rdm_shb.js"></script>
+  <script src="js/jobs/rdm_sb.js"></script>
+  <script src="js/jobs/rdm_ew.js"></script>
+  <script src="js/jobs/pct_dt.js"></script>
+  <script src="js/jobs/dnc_shb.js"></script>
+  <script src="js/jobs/dnc_ew.js"></script>
+  <script src="js/jobs/dnc_dt.js"></script>
+  <script src="js/sim/expr.js"></script>
+  <script src="js/sim/apl.js"></script>
+  <script src="js/sim/sim.js"></script>
+  <script src="js/sim/apls/pld.js"></script>
+  <script src="js/sim/apls/war.js"></script>
+  <script src="js/sim/apls/drk.js"></script>
+  <script src="js/sim/apls/gnb.js"></script>
+  <script src="js/sim/apls/whm.js"></script>
+  <script src="js/sim/apls/sch.js"></script>
+  <script src="js/sim/apls/ast.js"></script>
+  <script src="js/sim/apls/sge.js"></script>
+  <script src="js/sim/apls/mnk.js"></script>
+  <script src="js/sim/apls/drg.js"></script>
+  <script src="js/sim/apls/nin.js"></script>
+  <script src="js/sim/apls/sam.js"></script>
+  <script src="js/sim/apls/rpr.js"></script>
+  <script src="js/sim/apls/vpr.js"></script>
+  <script src="js/sim/apls/brd.js"></script>
+  <script src="js/sim/apls/mch.js"></script>
+  <script src="js/sim/apls/dnc.js"></script>
+  <script src="js/sim/apls/blm.js"></script>
+  <script src="js/sim/apls/smn.js"></script>
+  <script src="js/sim/apls/rdm.js"></script>
+  <script src="js/sim/apls/pct.js"></script>
+  <script src="js/sim/report.js"></script>
+  <script src="js/sim/page.js"></script>
+</body>
+</html>
