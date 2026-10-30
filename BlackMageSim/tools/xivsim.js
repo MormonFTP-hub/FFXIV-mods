@@ -5,7 +5,7 @@
 //   node BlackMageSim/tools/xivsim.js job=blm apl=my_blm.simc html=report.json
 //   node BlackMageSim/tools/xivsim.js rank=1 iterations=300 party=standard
 //
-// Options (key=value): job, iterations, time (fight length, s), variance (0.1 = ±10%), targets, ping (ms),
+// Options (key=value): job, version (another of the job's versions by id, e.g. dt705; the live one by default), iterations, time (fight length, s), variance (0.1 = ±10%), targets, ping (ms),
 // latency_comp, positionals (0–1), party (none | standard | all | comma-separated buff ids), style
 // (patchwerk | movement), weights, apl (a file with an action list), main / wd / det / crit / dh / speed / ten
 // (stat overrides), seed, json (write the full report there), rank (every job), seq (print the sample sequence).
@@ -55,6 +55,7 @@ async function main() {
   const o = args();
   const cfg = {
     job: o.job || 'sam',
+    version: o.version,
     iterations: +(o.iterations || 1000),
     duration: +(o.time || o.duration || 300),
     variance: o.variance !== undefined ? +o.variance : 0.1,
@@ -84,7 +85,7 @@ async function main() {
   const R = await B.Sim.run(cfg, { onProgress: (f, l) => process.stderr.write(`\r${lpad((f * 100).toFixed(0), 3)}% ${pad(l, 22)}`) });
   process.stderr.write('\r' + ' '.repeat(34) + '\r');
   const S = R.summary;
-  console.log(`${R.jobName} — ${R.versionLabel} (live ${R.patch})`);
+  console.log(`${R.jobName} — ${R.versionLabel}${B.liveVersion(R.job).id === R.version ? ` (live ${R.patch})` : ' (not the live version)'}`);
   console.log(`  ${R.settings.iterations} iterations, ${fmt(R.fight, 1)}s average fight, ${R.settings.targets} target(s), ping ${R.settings.ping}ms, ${(R.ms / 1000).toFixed(1)}s`);
   if (R.party.length) console.log(`  Party buffs: ${R.party.join(', ')}`);
   console.log(`  Stats: main ${R.stats.main}  WD ${R.stats.wd}  DET ${R.stats.det}  CRT ${R.stats.crit}  DH ${R.stats.dh}  speed ${R.stats.speed}${R.stats.ten ? '  TEN ' + R.stats.ten : ''}  (GCD ${R.gcd.toFixed(2)})`);

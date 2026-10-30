@@ -15,6 +15,7 @@ A2.DATA.chanter = {
    "stagger": 2,
    "icon": "star",
    "hue": 95,
+   "hits": 2,
    "desc": "Deals 160 (+228.8% Attack) damage to up to 4 enemies within 4m. /",
    "dmg": {
     "1": 160,
@@ -104,6 +105,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "star",
    "hue": 95,
+   "hits": 2,
    "desc": "Deals 74 (+84.2% Attack) damage to up to 4 enemies within 4m and restores 100 MP.",
    "dmg": {
     "1": 74,
@@ -196,6 +198,7 @@ A2.DATA.chanter = {
    "stagger": 10,
    "icon": "dash",
    "hue": 95,
+   "hits": 1,
    "desc": "Rushes at a target within 20m and deals 112 (+189.8% Attack) damage to up to 4 enemies and restores 100 MP. /",
    "dmg": {
     "1": 112,
@@ -279,6 +282,7 @@ A2.DATA.chanter = {
    "stagger": 10,
    "icon": "dash",
    "hue": 95,
+   "hits": 1,
    "desc": "Deals 224 (+218.4% Attack) damage to a target within 20m. Has a 60% chance to inflict Stun for 3s. / 100% chance to inflict Stun on NPC targets. / [Dark Crush] becomes available for 2s on skill use. /",
    "dmg": {
     "1": 224,
@@ -365,6 +369,7 @@ A2.DATA.chanter = {
    "stagger": 5,
    "icon": "dash",
    "hue": 95,
+   "hits": 1,
    "desc": "Deals 215 (+210.2% Attack) damage to a target within 20m. /",
    "dmg": {
     "1": 215,
@@ -448,6 +453,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "star",
    "hue": 95,
+   "hits": 4,
    "desc": "Deals 120 (+82.5% Attack) damage to a target afflicted with Stagger within 4m.",
    "dmg": {
     "1": 120,
@@ -540,6 +546,7 @@ A2.DATA.chanter = {
    "stagger": 10,
    "icon": "whirl",
    "hue": 95,
+   "hits": 1,
    "desc": "Selects a target within 4m and deals 345 (+182% Attack) damage to up to 4 enemies within 4m with a 40% chance to inflict Seal for 3s on Block. / 100% chance to inflict Seal on NPC targets. /",
    "dmg": {
     "1": 345,
@@ -623,6 +630,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "star",
    "hue": 95,
+   "hits": 1,
    "desc": "HEAL: Restores 183 (+100% Attack)-201 HP and removes 1, 1 debuff(s) for the caster and party members within 40m. Restores 183 HP every 2s for 8s.",
    "dmg": {
     "1": 183,
@@ -709,6 +717,7 @@ A2.DATA.chanter = {
    "stagger": 10,
    "icon": "dash",
    "hue": 95,
+   "hits": 1,
    "desc": "Move to a target within 10m and deal 260 (+102% Attack) damage with a 50% chance to inflict Stun for 3s after using [Dodge] or while flying. / 100% chance to inflict Stun on NPC targets. /",
    "dmg": {
     "1": 260,
@@ -795,6 +804,7 @@ A2.DATA.chanter = {
    "stagger": 10,
    "icon": "whirl",
    "hue": 95,
+   "hits": 2,
    "desc": "Deals 538 (+211.2% Attack) damage to a target afflicted with Stun within 4m and inflicts Knockdown for 3s. / Has a 7% chance to trigger on attacking a target with Incapacitated Immunity, changing the skill motion. /",
    "dmg": {
     "1": 538,
@@ -884,6 +894,7 @@ A2.DATA.chanter = {
    "stagger": 15,
    "icon": "whirl",
    "hue": 95,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 2,347 (+700.1% Attack) damage to up to 4 enemies nearby. Increases the caster's Critical Damage Boost by 15% for 30s on hit. Stacks up to 2 times. / [Dark Crush] becomes available for 2s on skill use. /",
    "dmg": {
     "1": 2347,
@@ -980,6 +991,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "star",
    "hue": 95,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. / Tenacity: Grants Status Effect Immunity / Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -1018,6 +1030,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "bolt",
    "hue": 95,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 986 (+167% Attack) damage to up to 4 enemies within 4m of the target, with a 30% chance to inflict Stun for 3s. / 100% chance to inflict Stun on NPC targets. / Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 986,
@@ -1082,6 +1095,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "shield",
    "hue": 95,
+   "hits": 1,
    "desc": "Prevents the HP of the caster and party members within 40m from falling below 10% for 3s. / Cannot block certain powerful attacks. Unaffected by cooldown increase effects. / Tenaciousness, Salvation, Barrier Spell effects, and Unstoppable effect cannot be applied for 30s if Invincibility stacking is blocked.",
    "noHit": true,
    "maxLv": 40,
@@ -1116,6 +1130,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "target",
    "hue": 95,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,034 (+175% Attack) damage to up to 4 enemies within 4m. Has a 50% chance to inflict Seal for 5s. / 100% chance to inflict Seal on NPC targets. / [Dark Crush] becomes available for 3s on skill use.",
    "dmg": {
     "1": 1034,
@@ -1177,6 +1192,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "target",
    "hue": 95,
+   "hits": 1,
    "desc": "Temporarily increases Block Damage Reduction by 100% and guarantees Block. Restores 110 MP and Stamina once on Block.",
    "noHit": true,
    "maxLv": 40,
@@ -1217,6 +1233,7 @@ A2.DATA.chanter = {
    "stagger": 20,
    "icon": "star",
    "hue": 95,
+   "hits": 1,
    "desc": "Rushes to a target within 20m and deals 1,288 (+218% Attack) damage and reduces their Defense by 30% for 5s. Increases damage by 20% to targets afflicted with an Impact-type status. /",
    "dmg": {
     "1": 1288,
@@ -1284,6 +1301,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "up",
    "hue": 95,
+   "hits": 1,
    "desc": "Increases the caster's Max HP by 5.4% for 120s and immediately restores 5.4% HP. / Not affected by buff dispel effects.",
    "noHit": true,
    "maxLv": 40,
@@ -1318,6 +1336,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "heal",
    "hue": 95,
+   "hits": 1,
    "desc": "HEAL: Restores 927 (+100% Attack)-1,020 HP for the caster and party members within 40m.",
    "dmg": {
     "1": 927,
@@ -1379,6 +1398,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "star",
    "hue": 95,
+   "hits": 1,
    "desc": "Grants a Protective Shield that blocks damage equaling 16% of Max HP for 20s to the caster and nearby party members within 40m.",
    "noHit": true,
    "maxLv": 40,
@@ -1413,6 +1433,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "up",
    "hue": 95,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,384 (+234.3% Attack) damage to up to 4 enemies within 4m. / [Dark Crush] becomes available for 3s on skill use.",
    "dmg": {
     "1": 1384,
@@ -1477,6 +1498,7 @@ A2.DATA.chanter = {
    "stagger": 50,
    "icon": "star",
    "hue": 95,
+   "hits": 3,
    "desc": "Deals 1,078 (+182.5% Attack) damage to up to 4 enemies within 4m of the target, with a 50% chance to inflict Knockdown. / 100% chance to land Knockdown on NPC targets. /",
    "dmg": {
     "1": 1078,
@@ -1544,6 +1566,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "wind",
    "hue": 95,
+   "hits": 1,
    "desc": "Increases Combat Speed by 20% and reduces skill cooldowns by 20% for 10s. / Increases Combat Speed by 20% and reduces skill cooldowns by 10% for party members within 40m. / Cannot receive effect of [Power of the Storm] if Cleric skill [Earth's Blessing] effect is active.",
    "noHit": true,
    "maxLv": 40,
@@ -1581,6 +1604,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "note",
    "hue": 95,
+   "hits": 1,
    "desc": "Increases Move Speed by 10.5% and grants a 15% chance to restore 127 (+100% Attack)-140 HP on landing an attack to the caster and nearby party members. / Healing Cooldown: 1s",
    "dmg": {
     "1": 127,
@@ -1642,6 +1666,7 @@ A2.DATA.chanter = {
    "stagger": 0,
    "icon": "note",
    "hue": 95,
+   "hits": 1,
    "desc": "Increases PvE Damage Boost and PvE Damage Tolerance by 10.5% and PvP Damage Boost and PvP Damage Tolerance by 5.25% for the caster and nearby party members. / Does not stack with the Damage Boost effect from the Cleric skill [Light of Protection]; only the higher-level skill effect applies. If both skills are the same ",
    "noHit": true,
    "maxLv": 40,

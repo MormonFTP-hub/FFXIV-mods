@@ -44,8 +44,10 @@ actions+=/blizzardInCyan
 actions+=/creatureMotif,if=!buff.starryMuse.up&(cd.livingMuse.charges>=1|cd.livingMuse.remains<4|cd.starryMuse.remains<8)
 actions+=/hammerMotif,if=!buff.starryMuse.up&!buff.hammerTime.up&(cd.strikingMuse.charges>=1|cd.strikingMuse.remains<4)
 actions+=/starrySkyMotif,if=!buff.starryMuse.up&cd.starryMuse.remains<var.sky
-# Filler.
-actions+=/holyInWhite,if=gauge.white>=5
+# Filler (instants while moving).
+actions+=/holyInWhite,if=gauge.white>=5|moving
+actions+=/cometInBlack,if=moving
+actions+=/hammerStamp,if=moving
 actions+=/fireInRed
 
 actions.aoe=/holyInWhite

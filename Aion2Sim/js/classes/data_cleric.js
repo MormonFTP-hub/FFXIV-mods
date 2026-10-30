@@ -15,6 +15,7 @@ A2.DATA.cleric = {
    "stagger": 10,
    "icon": "target",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 59 (+113.3% Attack) Wind damage to up to 4 enemies within 4m of the target. Reduces enemy PvE Damage Boost by 5%, PvP Damage Boost by 2.5%, and deals 74 (+141.9% Attack) Damage over Time every 1s for 10s. /",
    "dmg": {
     "1": 59,
@@ -98,6 +99,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "rock",
    "hue": 52,
+   "hits": 1,
    "desc": "Deals 50 (+48.3% Attack) Earth damage to a target within 20m and restores 110 MP.",
    "dmg": {
     "1": 50,
@@ -184,6 +186,7 @@ A2.DATA.cleric = {
    "stagger": 2,
    "icon": "bolt",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 81 (+108.6% Attack) Wind damage to up to 4 enemies within 4m of the target. /",
    "dmg": {
     "1": 81,
@@ -270,6 +273,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "Summons a Divine Aura near the caster that lasts for 5s. The Aura is stationary and periodically deals 394 (+431.1% Attack) Earth damage to a selected target within 20m.",
    "dmg": {
     "1": 394,
@@ -353,6 +357,7 @@ A2.DATA.cleric = {
    "stagger": 10,
    "icon": "chain",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 138 (+151.8% Attack) Earth damage to up to 4 enemies within 4m of the target. Reduces enemy PvE Damage Tolerance by 5%, PvP Damage Tolerance by 2.5%, and deals 173 (+189.8% Attack) Damage over Time every 1s for 10s. /",
    "dmg": {
     "1": 138,
@@ -433,6 +438,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "bolt",
    "hue": 52,
+   "hits": 4,
    "desc": "Deals 147 (+113% Attack) damage to a target afflicted with Stagger within 20m.",
    "dmg": {
     "1": 147,
@@ -525,6 +531,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "heal",
    "hue": 52,
+   "hits": 1,
    "desc": "HEAL: Restores 616-739 HP every 2s for 30s to the caster and party members within 40m.",
    "dmg": {
     "1": 616,
@@ -605,6 +612,7 @@ A2.DATA.cleric = {
    "stagger": 7,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m afflicted with Chain of Torment and deals 325 (+192.1% Attack) Earth damage to up to 4 enemies within 4m of the target. /",
    "dmg": {
     "1": 325,
@@ -697,6 +705,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "heal",
    "hue": 52,
+   "hits": 1,
    "desc": "HEAL: Restores 192 (+100% Attack)-211 HP to the caster and the party member with the lowest HP within 40m.",
    "dmg": {
     "1": 192,
@@ -783,6 +792,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "heal",
    "hue": 52,
+   "hits": 1,
    "desc": "HEAL: Restores 379 (+100% Attack)-417 HP and removes 1 debuff for the caster and party members within 40m.",
    "dmg": {
     "1": 379,
@@ -869,6 +879,7 @@ A2.DATA.cleric = {
    "stagger": 20,
    "icon": "bolt",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 987 (+327.6% Attack)-2,963 (+982.8% Attack) Wind damage to up to 4 enemies within 4m of the target. / Max 3 Charge Levels / 20-",
    "dmg": {
     "1": 987,
@@ -958,6 +969,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. / Tenacity: Grants Status Effect Immunity / Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -996,6 +1008,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "HEAL: Removes up to 2 debuffs and restores 1,602 (+100% Attack)-1,762 HP to the caster and party members within 40m.",
    "dmg": {
     "1": 1602,
@@ -1060,6 +1073,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "dash",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 891 (+166% Attack) damage to up to 4 enemies within 4m with a 30% chance to inflict Root. / 100% chance to inflict Root on NPC targets. / Increases Defense by max 20% proportional to hit targets.",
    "dmg": {
     "1": 891,
@@ -1124,6 +1138,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "HEAL: Grants Benevolence to the caster for 20s. Restores 90 (+100% Attack)-100 HP every 2s to the caster and party members within 40m for the duration.",
    "dmg": {
     "1": 90,
@@ -1185,6 +1200,7 @@ A2.DATA.cleric = {
    "stagger": 20,
    "icon": "rock",
    "hue": 52,
+   "hits": 1,
    "desc": "Deals 1,186 (+221% Attack) Earth damage to a target within 20m and 1,186 (+221% Attack) damage every 1s for 10s. /",
    "dmg": {
     "1": 1186,
@@ -1249,6 +1265,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "heal",
    "hue": 52,
+   "hits": 1,
    "desc": "Increases PvE Damage Boost and PvE Damage Tolerance by 10.5% and PvP Damage Boost and PvP Damage Tolerance by 5.25% for the caster and nearby party members. / Does not stack with the Damage Boost effect from the Chanter skill [Undefeated Mantra] and only the highest skill level effect applies. If both skills are the sa",
    "noHit": true,
    "maxLv": 40,
@@ -1283,6 +1300,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "Summons a Noble Aura near the caster that lasts for 300s. The Aura follows the caster and attacks their target together. / Deals 472 (+88% Attack) damage to a target within 20m. / Aura Attack Cooldown: 2s",
    "dmg": {
     "1": 472,
@@ -1347,6 +1365,7 @@ A2.DATA.cleric = {
    "stagger": 50,
    "icon": "burst",
    "hue": 52,
+   "hits": 1,
    "desc": "Deals 1,154 (+215% Attack) Earth damage to a target within 20m. /",
    "dmg": {
     "1": 1154,
@@ -1414,6 +1433,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "note",
    "hue": 52,
+   "hits": 1,
    "desc": "Increases Attack by 20% for 10s.",
    "noHit": true,
    "maxLv": 40,
@@ -1448,6 +1468,7 @@ A2.DATA.cleric = {
    "stagger": 15,
    "icon": "chain",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 939 (+175% Attack) Earth damage to up to 4 enemies within 4m of the target. Has a 75% chance to inflict Root for 10s. / 100% chance to inflict Root on NPC targets. /",
    "dmg": {
     "1": 939,
@@ -1512,6 +1533,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "heal",
    "hue": 52,
+   "hits": 1,
    "desc": "The caster is immune to damage and status effects for 3s. / Cannot block certain powerful attacks. Unaffected by cooldown increase effects. / Tenaciousness, Salvation, Barrier Spell effects, and Unstoppable effect cannot be applied for 30s if Invincibility stacking is blocked.",
    "noHit": true,
    "maxLv": 40,
@@ -1546,6 +1568,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "spirit",
    "hue": 52,
+   "hits": 1,
    "desc": "Resurrects a fallen party member within 40m of the caster.",
    "noHit": true,
    "maxLv": 40,
@@ -1580,6 +1603,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "ice",
    "hue": 52,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,100 (+205% Attack) Earth damage to up to 4 enemies within 4m of the target. Deals 2,862 (+533% Attack) damage every 1s and reduces enemy Incoming Heal and HP Potion Recovery by 60% for 20s.",
    "dmg": {
     "1": 1100,
@@ -1641,6 +1665,7 @@ A2.DATA.cleric = {
    "stagger": 0,
    "icon": "star",
    "hue": 52,
+   "hits": 1,
    "desc": "Increases PvE Damage Tolerance by 20% and PvP Damage Tolerance by 10% for 10s for the caster and party members within 40m. / Unaffected by cooldown increase effects.",
    "noHit": true,
    "maxLv": 40,

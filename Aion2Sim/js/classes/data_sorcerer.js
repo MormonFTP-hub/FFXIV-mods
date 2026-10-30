@@ -15,6 +15,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 62 (+63% Attack) Fire damage to a target within 20m and restores 100 MP.",
    "dmg": {
     "1": 62,
@@ -68,6 +69,7 @@ A2.DATA.sorcerer = {
    "stagger": 2,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 79 (+92.5% Attack) Water damage to up to 4 enemies within 4m of the target and inflicts Slow, reducing Move Speed by 40% for 5s.",
    "dmg": {
     "1": 79,
@@ -130,6 +132,7 @@ A2.DATA.sorcerer = {
    "stagger": 5,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 114 (+192.5% Attack) Fire damage to a target within 20m.",
    "dmg": {
     "1": 114,
@@ -183,6 +186,7 @@ A2.DATA.sorcerer = {
    "stagger": 10,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and summons a Bittercold Wind lasting for 2s at their location. Deals 238 (+232.3% Attack) Water damage to up to 4 enemies within 4m of the Bittercold Wind, with a 60% chance to inflict Root for 3s. 100% chance to inflict Root on NPC targets.",
    "dmg": {
     "1": 238,
@@ -242,6 +246,7 @@ A2.DATA.sorcerer = {
    "stagger": 7,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 198 (+193.2% Attack) Fire damage to a target afflicted with Fire Mark within 20m and restores 100 MP.",
    "dmg": {
     "1": 198,
@@ -301,6 +306,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 120 (+82.5% Attack) Fire damage to a target afflicted with Stagger within 20m.",
    "dmg": {
     "1": 120,
@@ -360,6 +366,7 @@ A2.DATA.sorcerer = {
    "stagger": 10,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 178 (+94% Attack) Water damage to up to 4 enemies within 4m of the target, with a 50% chance to inflict Frost on the target for 3s. 100% chance to inflict Frost on NPC targets.",
    "dmg": {
     "1": 178,
@@ -413,6 +420,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 275 (+145% Attack) Water damage to up to 4 enemies within 4m. Inflicts Slow for 3s.",
    "dmg": {
     "1": 275,
@@ -466,6 +474,7 @@ A2.DATA.sorcerer = {
    "stagger": 7,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target afflicted with Frost within 20m and deals 395 (+155% Attack) Water damage to up to 4 enemies within 4m of the target. Has a 7% chance to trigger on attacking a target with Incapacitated Immunity.",
    "dmg": {
     "1": 395,
@@ -519,6 +528,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Increases the caster's Attack by 10% and Accuracy by 100 for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Attack by 10% and Accuracy by 100 for 30s.",
@@ -568,6 +578,7 @@ A2.DATA.sorcerer = {
    "stagger": 20,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,137 (+339.3% Attack)-3,412 (+1,017.8% Attack) Fire damage to up to 4 enemies within 4m of the target. Max 3 Charge Levels 20-",
    "dmg": {
     "1": 1137,
@@ -632,6 +643,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. Tenacity: Grants Status Effect Immunity Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -670,6 +682,7 @@ A2.DATA.sorcerer = {
    "stagger": 20,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 1,037 (+175.5% Attack) Water damage to a target within 20m with a 75% chance to inflict Seal for 5s. 100% chance to inflict Seal on NPC targets.",
    "dmg": {
     "1": 1037,
@@ -715,6 +728,7 @@ A2.DATA.sorcerer = {
    "stagger": 20,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,477 (+250% Attack) Water damage to up to 4 enemies within 4m of the target.",
    "dmg": {
     "1": 1477,
@@ -766,6 +780,7 @@ A2.DATA.sorcerer = {
    "stagger": 50,
    "icon": "burst",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 1,140 (+193.1% Attack) Fire damage to a target within 20m.",
    "dmg": {
     "1": 1140,
@@ -817,6 +832,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "dash",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 886 (+150% Attack) damage to up to 4 enemies within 4m, with a 30% chance to inflict Frost for 3s. 100% chance to land Frost on NPC targets. Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 886,
@@ -868,6 +884,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "shield",
    "hue": 12,
+   "hits": 1,
    "desc": "Grants a 16% Max HP Protective Shield for 60s. Increases PvE Damage Tolerance by 10% and PvP Damage Tolerance by 5% for the shield's duration, and restores 300 Stamina when the effect ends.",
    "noHit": true,
    "descMax": "Grants a 40% Max HP Protective Shield for 60s. Increases PvE Damage Tolerance by 10% and PvP Damage Tolerance by 5% for the shield's duration, and restores 300 Stamina when the effect ends.",
@@ -910,6 +927,7 @@ A2.DATA.sorcerer = {
    "stagger": 20,
    "icon": "ice",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 945 (+160% Attack) Water damage, inflicting Slow on up to 4 enemies within 5m. Summons a Cold Storm at the target's location for 7s, inflicting Frostbite. Frostbite: Deals 472 (+80% Attack) Water Damage over Time every 1s for 10s. The Damage over Time amount increases when targets ",
    "dmg": {
     "1": 945,
@@ -965,6 +983,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Increases the caster's Fire Attack by 20% and Water Attack by 20% for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Fire Attack by 20% and Water Attack by 20% for 22.5s.",
@@ -1004,6 +1023,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Grants Hibernation to the caster for 5s. The caster becomes immune to damage and status effects while Hibernation is active. Using [Remove Hibernation] while Hibernation is active immediately removes the effect, restores 20% Max HP, and moves the caster backward. Cannot block certain powerful attacks and is unaffected ",
    "noHit": true,
    "maxLv": 25,
@@ -1042,6 +1062,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "flame",
    "hue": 12,
+   "hits": 1,
    "desc": "Summon a Fire Wall that lasts for 3s at the location of a target within 20m. Deals 1,300 (+220% Attack) Fire damage and inflicts Embers on up to 4 enemies within the Fire Wall area (1x10m) for 10s. Embers: Deals 650 (+110% Attack) Fire Damage over Time every 1s for 10s. Damage over Time amount increases when targets mo",
    "dmg": {
     "1": 1300,
@@ -1097,6 +1118,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 998 (+169% Attack) damage to up to 4 enemies within 4m of the target, with a 75% chance to inflict Airborne for 3s. 100% chance to inflict Airborne on NPC targets.",
    "dmg": {
     "1": 998,
@@ -1145,6 +1167,7 @@ A2.DATA.sorcerer = {
    "stagger": 20,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Polymorphs a target within 20m into a tree for 10s, reducing their Fire Tolerance by 20%, while the caster moves back. Polymorph is canceled if the target is attacked.",
    "noHit": true,
    "maxLv": 25,
@@ -1183,6 +1206,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "star",
    "hue": 12,
+   "hits": 1,
    "desc": "Increases the caster's PvE Damage Tolerance by 20%, PvP Damage Tolerance by 10%, and grants a 5% chance to inflict Frost for 3s on enemies that attack the caster from within 7m for 10s. Grants Magic Displacement while MP is 50% or more for the duration. Magic Displacement: Damage taken by the caster is divided, directi",
    "noHit": true,
    "descMax": "Increases the caster's PvE Damage Tolerance by 20%, PvP Damage Tolerance by 10%, and grants a 5% chance to inflict Frost for 3s on enemies that attack the caster from within 7m for 22.5s. Grants Magic Displacement while MP is 50% or more for the duration. Magic Displacement: Damage taken by the caster is divided, direc",
@@ -1222,6 +1246,7 @@ A2.DATA.sorcerer = {
    "stagger": 0,
    "icon": "burst",
    "hue": 12,
+   "hits": 1,
    "desc": "Deals 1,116 (+189% Attack) Fire damage to a target within 20m after 4s. Increases damage taken from the caster by 15% during the delay.",
    "dmg": {
     "1": 1116,

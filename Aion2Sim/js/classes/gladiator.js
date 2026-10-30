@@ -20,7 +20,7 @@
       leapingSlam: {move: 'to', anim: 0.85},
       mockingBlade: {anim: 1.0, inflicts: {knockdown: 3}},
       overheadSlam: {anim: 0.7, needs: 'knockdown', immuneProc: 0.07},
-      swordAuraRampage: {anim: 0.65, needs: 'stagger'},
+      swordAuraRampage: {hits: 4, anim: 0.65, needs: 'stagger'},
       ankleSlice: {anim: 0.8},
       crushingWave: {anim: 0.9},
       rushStrike: {move: 'to', anim: 0.8, inflicts: {knockdown: 3}},
@@ -39,7 +39,7 @@
         },
         specs: {3: {hook: true}},
       },
-      lungeStance: {anim: 0.3, onUse(sim, s) { const b = sim.buffOn('lungeStance'); if (b && on(s, 0)) b.stat.multiHit = 5; }, specs: {0: {hook: true}}},
+      lungeStance: {anim: 0.3, onUse(sim, s) { const b = sim.buffOn('lungeStance'); if (b && on(s, 0)) b.stat.double = 5; }, specs: {0: {hook: true}}},
       zikelsBlessing: {
         anim: 0.3,
         onUse(sim, s) {
@@ -55,7 +55,7 @@
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {
         crit: A2.pv(C, 'identifyWeakness', 0, lv), pve: A2.pv(C, 'attackPreparation', 0, lv),
         multi: A2.pv(C, 'impactHit', 1, lv), front: A2.pv(C, 'experiencedCounterstrike', 0, lv),
@@ -63,13 +63,13 @@
       };
       st.critHit = (st.critHit || 0) + sim.pas.crit;
       st.pveBoost = (st.pveBoost || 0) + sim.pas.pve;
-      st.multiHit = (st.multiHit || 0) + sim.pas.multi;
+      st.double = (st.double || 0) + sim.pas.multi;
       st.frontBoost = (st.frontBoost || 0) + sim.pas.front;
     },
 
     onHit(sim, ev, o) {
       if (o.proc || o.dot) return;
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       if (lv >= 17 && (sim.hasStatus('stagger') || sim.hasStatus('knockdown') || sim.hasStatus('airborne')) && sim.icdReady('impulse', 1)) {
         A2.procHit(sim, 'impulse', 'Destructive Impulse', sim.pas.impulse[0], sim.pas.impulse[1], 18);
       }

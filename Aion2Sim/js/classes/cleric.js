@@ -47,10 +47,10 @@
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {grace: A2.pv(C, 'empyreanLordsGrace', 2, lv)};
       st.critHit = (st.critHit || 0) + A2.pv(C, 'empyreanLordsGrace', 0, lv);
-      st.multiHit = (st.multiHit || 0) + A2.pv(C, 'empyreanLordsGrace', 1, lv);
+      st.double = (st.double || 0) + A2.pv(C, 'empyreanLordsGrace', 1, lv);
       st.critDmg = (st.critDmg || 0) + A2.pv(C, 'earthsGrace', 0, lv);
     },
     onHit(sim, ev, o) {

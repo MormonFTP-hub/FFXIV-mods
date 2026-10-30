@@ -28,7 +28,7 @@ actions+=/technicalFinish,if=proc.technicalFinish
 # Abilities, woven between GCDs.
 actions+=/devilment,if=buff.technicalFinish.up|cd.technicalStep.remains>100
 actions+=/tincture,if=buff.technicalFinish.up|(cd.technicalStep.remains>100&time>5)
-actions+=/flourish,if=!buff.finishingMoveReady.up&!buff.fourfoldFanDance.up&!buff.flourishingFanDance.up&(buff.technicalFinish.up|cd.technicalStep.remains>50|fight.remains<20)
+actions+=/flourish,if=!buff.finishingMoveReady.up&!buff.fourfoldFanDance.up&!buff.flourishingFanDance.up&(buff.technicalFinish.up|cd.technicalStep.remains>8)
 actions+=/fanDance4,if=buff.technicalFinish.up|buff.fourfoldFanDance.remains<5|cd.flourish.remains<5
 actions+=/fanDance3
 actions+=/fanDance2,if=targets>=3&(gauge.feathers>=4|buff.technicalFinish.up|(gauge.feathers>=3&cd.technicalStep.remains>15))

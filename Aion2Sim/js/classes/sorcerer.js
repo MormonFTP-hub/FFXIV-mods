@@ -21,7 +21,7 @@
       firestorm: {anim: 0.9, range: 20, specs: {3: {mod: {dmgPct: 45}, text: '+15% damage per fireball, up to +75% (the sim counts three fireballs: +45%)'}}},
       bittercoldWind: {anim: 0.8, range: 20, inflicts: {root: 3}},
       blaze: {anim: 0.7, range: 20, needs: 'fireMark', specs: {0: {mod: {mpGainPct: 50}}}},
-      flameScattershot: {anim: 0.55, range: 20, needs: 'stagger'},
+      flameScattershot: {hits: 4, anim: 0.55, range: 20, needs: 'stagger'},
       frost: {anim: 0.8, range: 20, inflicts: {frost: 3}, specs: {1: {mod: {cd: -5}}, 2: {hook: true}}, onHit(sim, ev) { if (on(ev.s, 2) && sim.hasStatus('frost')) sim.p.cds.frostBurst = sim.t; }},
       wintersShackles: {anim: 0.8, range: 20, inflicts: {slow: 3}},
       frostBurst: {anim: 0.8, range: 20, needs: 'frost', immuneProc: 0.07},
@@ -40,7 +40,7 @@
       elementEnhancement: {
         anim: 0.3, keep: true, noHit: true, buff: {name: 'Element Enhancement', dur: {1: 10, 40: 30}, stat: {atkPct: 20}},
         desc: '+20% Fire Attack and +20% Water Attack for 10s (the sim counts it as +20% Attack, since every Sorcerer hit is fire or water).',
-        onUse(sim, s) { const b = sim.buffOn('elementEnhancement'); if (b && on(s, 3)) b.atkPct += 10; if (b && on(s, 4)) b.stat.multiHit = 7; },
+        onUse(sim, s) { const b = sim.buffOn('elementEnhancement'); if (b && on(s, 3)) b.atkPct += 10; if (b && on(s, 4)) b.stat.double = 7; },
         specs: {3: {hook: true}, 4: {hook: true}},
       },
       delayedExplosion: {
@@ -58,13 +58,13 @@
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {
         mark: A2.pv(C, 'fireMark', 2, lv), earthCrit: A2.pv(C, 'robeOfEarth', 2, lv), snap: A2.pv(C, 'coldSnap', 1, lv),
         grace: A2.pv(C, 'graceOfEnhancement', 4, lv), vit: A2.pv(C, 'vitalityEvaporation', 0, lv), vitHp: A2.pv(C, 'vitalityEvaporation', 2, lv),
       };
       st.pveBoost = (st.pveBoost || 0) + A2.pv(C, 'robeOfFlame', 1, lv);
-      st.multiHit = (st.multiHit || 0) + A2.pv(C, 'robeOfFlame', 3, lv);
+      st.double = (st.double || 0) + A2.pv(C, 'robeOfFlame', 3, lv);
     },
     statHook(sim, k, v) {
       const mp = sim.p.mp / sim.stats.mpMax;

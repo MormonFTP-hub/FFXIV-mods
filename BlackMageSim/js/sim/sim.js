@@ -65,6 +65,12 @@
 
   // ---------- the engine, as the simulator drives it ----------
   class SimEngine extends B.Engine {
+    // A job taking a status away quietly still ends its uptime.
+    removeStatus(key, silent) {
+      const had = !!this.statuses[key];
+      super.removeStatus(key, silent);
+      if (had && silent) this.emit('statusLose', { key, self: true });
+    }
     queueHit(id, potency, snap, delay, after, opts) {
       if (this.raidSnap && snap && !snap.__raid) snap = this.raidSnap(snap, this.now);
       return super.queueHit(id, potency, snap, delay, after, opts);

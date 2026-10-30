@@ -15,6 +15,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "sword",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 79 (+94.8% Attack) damage to up to 4 enemies within 4m and increases Enmity. Restores 100 MP.",
    "dmg": {
     "1": 79,
@@ -74,6 +75,7 @@ A2.DATA.templar = {
    "stagger": 3,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 93 (+119.5% Attack) damage to up to 4 enemies within 4m and increases Enmity.",
    "dmg": {
     "1": 93,
@@ -133,6 +135,7 @@ A2.DATA.templar = {
    "stagger": 10,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 49 (+87.5% Attack) damage to a target within 20m and pulls them in front of the caster, with a 75% chance to inflict Root for 2s. 100% chance to inflict Root on NPC targets.",
    "dmg": {
     "1": 49,
@@ -180,6 +183,7 @@ A2.DATA.templar = {
    "stagger": 10,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 173 (+175.8% Attack) damage to up to 4 enemies within 4m. Has a 60% chance to inflict Stun on the target for 3s. Triggers [Judgment] for 2s. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 173,
@@ -233,6 +237,7 @@ A2.DATA.templar = {
    "stagger": 5,
    "icon": "hammer",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 227 (+229.5% Attack) damage to a target within 4m and increases Enmity.",
    "dmg": {
     "1": 227,
@@ -286,6 +291,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 152 (+108% Attack) damage to a target afflicted with Stagger within 4m and increases Enmity.",
    "dmg": {
     "1": 152,
@@ -342,6 +348,7 @@ A2.DATA.templar = {
    "stagger": 10,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 336 (+184% Attack) damage to up to 4 enemies within 4m and inflicts Debilitate for 5s on Block. Debilitate: Reduces Defense by 25%",
    "dmg": {
     "1": 336,
@@ -392,6 +399,7 @@ A2.DATA.templar = {
    "stagger": 5,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 388 (+212.5% Attack) damage to up to 4 enemies within 5m of the caster. Immediately restores 180 (+100% Attack)-198 HP and grants Warding to the caster for 10s. Triggers [Judgment] for 2s. Warding: Increases PvE Damage Tolerance by 20% and PvP Damage Tolerance by 10%",
    "dmg": {
     "1": 388,
@@ -442,6 +450,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Rushes to a target within 10m and deals 258 (+105% Attack) damage after using [Dodge] or while flying. Has a 30% chance to inflict Stun for 3s. Triggers [Judgment] for 2s. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 258,
@@ -495,6 +504,7 @@ A2.DATA.templar = {
    "stagger": 10,
    "icon": "burst",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 791 (+321.8% Attack) damage to a target afflicted with Stun or Knockdown within 4m with a 30% chance to inflict Knockdown for 3s. 100% chance to inflict Knockdown on NPC targets. Has a 5% chance to trigger when attacking a target with Incapacitated Immunity.",
    "dmg": {
     "1": 791,
@@ -551,6 +561,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "hammer",
    "hue": 45,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,394 (+430.5% Attack)-4,184 (+1,291.5% Attack) damage to up to 4 enemies within 4m of the target and grants the Executor effect to the caster for 20s. Executor: Increases Accuracy by 200, PvE Damage Boost by 20%, and PvP Damage Boost by 10% Max 3 Charge Levels 20-",
    "dmg": {
     "1": 1394,
@@ -619,6 +630,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. Tenacity: Grants Status Effect Immunity Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -657,6 +669,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Increases PvE Damage Tolerance by 30% and PvP Damage Tolerance by 15% for 10s. Unaffected by cooldown increase effects.",
    "noHit": true,
    "descMax": "Increases PvE Damage Tolerance by 30% and PvP Damage Tolerance by 15% for 22.5s. Unaffected by cooldown increase effects.",
@@ -699,6 +712,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,045 (+182.5% Attack) damage to up to 4 enemies within 7m of the target, pulling them in front of the caster. Inflicts Root for 3s.",
    "dmg": {
     "1": 1045,
@@ -747,6 +761,7 @@ A2.DATA.templar = {
    "stagger": 50,
    "icon": "hammer",
    "hue": 45,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 939 (+164% Attack) damage to up to 4 enemies within 4m of the target with a 50% chance to inflict Stun for 3s. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 939,
@@ -801,6 +816,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Grants a Protective Shield that blocks damage equaling 41% of Max HP for 3s to the caster and nearby party members within 40m.",
    "noHit": true,
    "descMax": "Grants a Protective Shield that blocks damage equaling 65% of Max HP for 3s to the caster and nearby party members within 40m.",
@@ -840,6 +856,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "up",
    "hue": 45,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 951 (+166% Attack) damage to up to 4 enemies within 4m with a 30% chance to inflict Stun for 3s. 100% chance to inflict Stun on NPC targets. Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 951,
@@ -891,6 +908,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Rushes to a target within 20m and deals 1,254 (+219% Attack) damage. Has a 75% chance to inflict Knockdown for 3s. Grants a Protective Shield that blocks damage equaling 5% Max HP for 5s on hit. Triggers [Judgment] for 3s. 100% chance to inflict Knockdown on NPC targets.",
    "dmg": {
     "1": 1254,
@@ -936,6 +954,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Increases Attack proportional to Defense for 10s.",
    "noHit": true,
    "descMax": "Increases Attack proportional to Defense for 22.5s.",
@@ -981,6 +1000,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "shield",
    "hue": 45,
+   "hits": 1,
    "desc": "Temporarily increases Block Damage Reduction by 100% and guarantees Block. Restores 110 MP and Stamina once on Block.",
    "noHit": true,
    "descMax": "Temporarily increases Block Damage Reduction by 100% and guarantees Block. Restores 350 MP and Stamina once on Block.",
@@ -1029,6 +1049,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Increases Max HP by 5.4% for 120s and immediately restores HP by 5.4% of Max HP. Not affected by buff dispel effects.",
    "noHit": true,
    "descMax": "Increases Max HP by 15% for 120s and immediately restores HP by 15% of Max HP. Not affected by buff dispel effects.",
@@ -1068,6 +1089,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "sword",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals  1,335 (+233% Attack) damage to up to 4 enemies within 4m and reduces Defense by 30% for 5s. Deals 20% more damage on attacking a target inflicted with Impact-type status.",
    "dmg": {
     "1": 1335,
@@ -1119,6 +1141,7 @@ A2.DATA.templar = {
    "stagger": 20,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Deals 888 (+155% Attack) damage to a target within 20m and increases Enmity. Inflict Shrink for 15s on hit and has a 50% chance to inflict Taunt for 3s if the target is a player. Shrink: Reduces Accuracy by 200 and Attack by 10%",
    "dmg": {
     "1": 888,
@@ -1167,6 +1190,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Increases the caster's PvE Damage Tolerance by 20% and PvP Damage Tolerance by 10% and redirects damage taken by a party member within 40m each time they are attacked, sharing 50% to the caster and 50% to the attacked party member for 6s. Unaffected by cooldown increase effects.",
    "noHit": true,
    "descMax": "Increases the caster's PvE Damage Tolerance by 20% and PvP Damage Tolerance by 10% and redirects damage taken by a party member within 40m each time they are attacked, sharing 26% to the caster and 26% to the attacked party member for 6s. Unaffected by cooldown increase effects.",
@@ -1206,6 +1230,7 @@ A2.DATA.templar = {
    "stagger": 0,
    "icon": "star",
    "hue": 45,
+   "hits": 1,
    "desc": "Increases Impact-type Resist by 50% for 10s.",
    "noHit": true,
    "descMax": "Increases Impact-type Resist by 50% for 22.5s.",

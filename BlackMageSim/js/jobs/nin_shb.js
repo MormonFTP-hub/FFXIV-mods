@@ -165,6 +165,11 @@
     check(id, e) {
       const a = this.actions[id], g = e.g;
       if (e.has('tenChiJin') && !a.tcj) return 'Unable to execute action while under the effect of Ten Chi Jin.';
+      // Ten Chi Jin's ninjutsu only go off as its next step, from a sign not used yet.
+      if (a.tcj) {
+        const step = g.tcj && e.has('tenChiJin') ? [TCJ1, TCJ2, TCJ3][g.tcj.length] : null;
+        if (!step || step[a.sign] !== id || g.tcj.includes(a.sign)) return 'Unable to execute action.';
+      }
       if (id === 'ninjutsu') return 'Unable to execute action. Mudra required.';
       if (a.jutsu && !a.tcj && this.resolveId('ninjutsu', e) !== id) return 'Unable to execute action. Mudra required.';
       if (MUDRAS.includes(id) && g.tcj && e.has('tenChiJin')) return 'Unable to execute action.';

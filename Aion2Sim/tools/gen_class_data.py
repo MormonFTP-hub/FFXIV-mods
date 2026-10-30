@@ -116,7 +116,7 @@ STAT_WORDS = [
     (r'^Casting Speed by ([\d.]+)%', 'castSpeed'), (r'^PvE Damage Boost by ([\d.]+)%', 'pveBoost'),
     (r'^(?:Weapon )?Damage Boost by ([\d.]+)%', 'dmgBoost'), (r'^Critical Damage Boost by ([\d.]+)%', 'critDmg'),
     (r'^Critical Hit by ([\d,]+)', 'critHit'), (r'^Multi-Hit Chance by ([\d.]+)%', 'multiHit'),
-    (r'^Double Chance by ([\d.]+)%', 'multiHit'), (r'^Back Attack Damage Boost by ([\d.]+)%', 'backBoost'),
+    (r'^Double Chance by ([\d.]+)%', 'double'), (r'^Back Attack Damage Boost by ([\d.]+)%', 'backBoost'),
 ]
 
 
@@ -168,7 +168,7 @@ def convert(d, hue):
             sk = {'name': a['name'], 'kind': kind, 'unlock': a.get('unlock') or 22, 'cd': a.get('cd') or 0,
                   'range': a.get('range') or (40 if not a.get('base') else 4), 'mp': a.get('mp') or 0,
                   'mpGain': a.get('mpGain') or 0, 'moving': bool(a.get('usableWhileMoving')),
-                  'stagger': a.get('stagger') or 0, 'icon': icon_for(a['name']), 'hue': hue,
+                  'stagger': a.get('stagger') or 0, 'icon': icon_for(a['name']), 'hue': hue, 'hits': a.get('hits') or 1,
                   'desc': clean_desc(a.get('effects'))}
             if bl:
                 sk['dmg'] = {int(k): v for k, v in bl.items()}

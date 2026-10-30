@@ -21,7 +21,7 @@
       poach: {anim: 0.7, range: 20},
       shieldSmite: {anim: 0.8, lights: {judgment: 2}, inflicts: {stun: 3}},
       judgment: {anim: 0.7, when: judgmentWhen, procId: 'judgment', procWindow: 2, specs: {1: {mod: {dmgPct: 15}, text: 'Extra damage against a target with an Impact-type status (amount not published; the sim uses +15%)'}, 2: {text: 'Extra damage on hit (amount not published)'}}},
-      flashRampage: {anim: 0.65, needs: 'stagger'},
+      flashRampage: {hits: 4, anim: 0.65, needs: 'stagger'},
       debilitatingSmash: {anim: 0.85},
       wardingStrike: {anim: 0.9, lights: {judgment: 2}},
       shieldRush: {anim: 0.8, move: 'to', lights: {judgment: 2}, inflicts: {stun: 3}},
@@ -48,12 +48,12 @@
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {crit: A2.pv(C, 'punishingBenediction', 0, lv), pb: A2.pv(C, 'punishingBenediction', 3, lv),
                  roar: A2.pv(C, 'insultingRoar', 1, lv), front: A2.pv(C, 'fury', 0, lv), multi: A2.pv(C, 'impactHit', 1, lv)};
       st.critHit = (st.critHit || 0) + sim.pas.crit;
       st.frontBoost = (st.frontBoost || 0) + sim.pas.front;
-      st.multiHit = (st.multiHit || 0) + sim.pas.multi;
+      st.double = (st.double || 0) + sim.pas.multi;
     },
 
     onHit(sim, ev, o) {

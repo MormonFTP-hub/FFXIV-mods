@@ -15,6 +15,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "ice",
    "hue": 190,
+   "hits": 1,
    "desc": "Deals 54 (+51.5% Attack) Water damage to a target within 20m and restores 100 MP.",
    "dmg": {
     "1": 54,
@@ -101,6 +102,7 @@ A2.DATA.spiritmaster = {
    "stagger": 3,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 63 (+67.3% Attack) Fire damage to up to 4 enemies within 4m of the target. /",
    "dmg": {
     "1": 63,
@@ -190,6 +192,7 @@ A2.DATA.spiritmaster = {
    "stagger": 7,
    "icon": "flame",
    "hue": 190,
+   "hits": 1,
    "desc": "Summons a Fire Spirit. / The Fire Spirit rushes towards a target within 20m and uses a skill that deals 68 (+120% Attack) damage to up to 4 enemies within 5m. / The Fire Spirit fights alongside the caster using basic attacks, with a 15% chance to use its skill each time an attack lands. It is dismissed upon selecting t",
    "dmg": {
     "1": 68,
@@ -273,6 +276,7 @@ A2.DATA.spiritmaster = {
    "stagger": 7,
    "icon": "spirit",
    "hue": 190,
+   "hits": 1,
    "desc": "Summons a Water Spirit. / The Water Spirit uses a skill that deals 143 (+145% Attack) Water damage to a target within 20m. / The Water Spirit fights alongside the caster using basic attacks, with a 15% chance to use its skill and restoring 20 of the Spiritmaster's MP each time an attack lands. It is dismissed upon sele",
    "dmg": {
     "1": 143,
@@ -356,6 +360,7 @@ A2.DATA.spiritmaster = {
    "stagger": 10,
    "icon": "sword",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 74 (+75% Attack) damage to up to 4 enemies within 4m of the target, and inflicts Curse. / Curse: Deals 148 (+150% Attack) Damage over Time every 1s and reduces damage dealt to the Spiritmaster by 10% for 5s. / The Spirit joins for a coordinated assault. / Fire: 99 (+101% Attack) Ao",
    "dmg": {
     "1": 74,
@@ -448,6 +453,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "arrow",
    "hue": 190,
+   "hits": 4,
    "desc": "Deals 116 (+82.5% Attack) damage to a target afflicted with Stagger within 20m.",
    "dmg": {
     "1": 116,
@@ -540,6 +546,7 @@ A2.DATA.spiritmaster = {
    "stagger": 7,
    "icon": "rock",
    "hue": 190,
+   "hits": 1,
    "desc": "Summons an Earth Spirit. / The Earth Spirit uses a skill that deals 247 (+135% Attack) Earth damage to a target within 20m and increases Enmity by 3,750. Has a 30% chance to inflict Taunt for 2s if the target is a player. / The Earth Spirit fights alongside the caster using basic attacks, with a 10% chance to use its s",
    "dmg": {
     "1": 247,
@@ -623,6 +630,7 @@ A2.DATA.spiritmaster = {
    "stagger": 5,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "A skill that is triggered briefly each time a Spirit uses its skill. / Selects a target within 20m and deals 157 (+86% Attack) damage to up to 4 enemies within 4m of the target and inflicts Slow, reducing Move Speed by 40% for 3s on hit. Restores 100 MP. /",
    "dmg": {
     "1": 157,
@@ -706,6 +714,7 @@ A2.DATA.spiritmaster = {
    "stagger": 7,
    "icon": "wind",
    "hue": 190,
+   "hits": 4,
    "desc": "Summons a Wind Spirit. / The Wind Spirit selects a target within 20m and uses a skill that deals 273 (+111% Attack) Wind damage to up to 4 enemies within 5m of the target and restores 134 (+100% Attack)-147 HP to the Spiritmaster. / The Wind Spirit fights alongside the caster using basic attacks, with a 10% chance to u",
    "dmg": {
     "1": 273,
@@ -789,6 +798,7 @@ A2.DATA.spiritmaster = {
    "stagger": 15,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Deals 246 (+100% Attack) damage to a target within 20m, with a 70% chance to inflict Fear for 5s. / 100% chance to inflict Fear on NPC targets. /",
    "dmg": {
     "1": 246,
@@ -878,6 +888,7 @@ A2.DATA.spiritmaster = {
    "stagger": 10,
    "icon": "spirit",
    "hue": 190,
+   "hits": 1,
    "desc": "The Spiritmaster receives an element each time a Spirit uses its skill. Grants Four Elements status and the ability to use the [Elemental Fusion] skill upon reaching 4 stacks. [Elemental Fusion] can only be used when granted Four Elements, and using [Elemental Fusion] will immediately remove Four Elements. Cannot recei",
    "dmg": {
     "1": 1075,
@@ -958,6 +969,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. / Tenacity: Grants Status Effect Immunity / Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -996,6 +1008,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "dash",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 939 (+164% Attack) damage to up to 4 enemies within 4m of the target, with a 30% chance to inflict Fear for 5s. / 100% chance to inflict Fear on NPC targets. / Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 939,
@@ -1060,6 +1073,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Increases the Spirit's PvE Damage Tolerance by 20% and PvP Damage Tolerance by 10% for 4s, and redirects damage taken each time the Spiritmaster is attacked, sharing 50% to the Spiritmaster and 50% to the Spirit. / This effect is applied to the summoned Spirit with the highest HP. If HP is equal, it will be applied to ",
    "noHit": true,
    "maxLv": 40,
@@ -1094,6 +1108,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 859 (+150% Attack) damage to up to 4 enemies within 4m of the target, with a 50% chance to inflict Fear for 5s. / 100% chance to inflict Fear on NPC targets.",
    "dmg": {
     "1": 859,
@@ -1155,6 +1170,7 @@ A2.DATA.spiritmaster = {
    "stagger": 20,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 601 (+105% Attack) damage to up to 4 enemies within 4m, and deals 1,203 (+210% Attack) Damage over Time every 1s for 10s. /",
    "dmg": {
     "1": 601,
@@ -1216,6 +1232,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "spirit",
    "hue": 190,
+   "hits": 1,
    "desc": "Increases PvE Damage Boost by 20%, PvP Damage Boost by 10%, PvE Damage Tolerance by 20%, PvP Damage Tolerance by 10%, and restores 1,850-2,035 HP every 1s for 10s to the caster and Spirit. / Unaffected by cooldown increase effects.",
    "noHit": true,
    "maxLv": 40,
@@ -1250,6 +1267,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "flame",
    "hue": 190,
+   "hits": 1,
    "desc": "Has a 50% chance to deal 234 (+41% Attack) extra damage to enemies on landing an attack for 10s. / Cooldown: 1s",
    "dmg": {
     "1": 234,
@@ -1311,6 +1329,7 @@ A2.DATA.spiritmaster = {
    "stagger": 10,
    "icon": "sword",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 429 (+75% Attack) damage to up to 4 enemies within 4m of the target, inflicting Corrode for 20s. / Corrode: Increases damage taken from the Spirit by 10% and deals 859 (+150% Attack) Damage over Time every 1s / The Spirit joins for a coordinated assault. / Fire: 544 (+95% Attack) A",
    "dmg": {
     "1": 429,
@@ -1372,6 +1391,7 @@ A2.DATA.spiritmaster = {
    "stagger": 50,
    "icon": "sword",
    "hue": 190,
+   "hits": 5,
    "desc": "Deals 573 (+100% Attack) damage to a target within 20m. / The Spirit joins you in a coordinated assault. / Fire: 664 (+116% Attack) AoE damage / Water: 797 (+139.2% Attack) damage / Earth: 731 (+127.6% Attack) damage / Wind: 598 (+104.4% Attack) AoE damage / Ancient: 1,063 (+185.6% Attack) AoE damage /",
    "dmg": {
     "1": 573,
@@ -1439,6 +1459,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Increases Status Effect Chance by 20% and Status Effect Resist by 20% for the caster for 10s.",
    "noHit": true,
    "maxLv": 40,
@@ -1473,6 +1494,7 @@ A2.DATA.spiritmaster = {
    "stagger": 20,
    "icon": "shield",
    "hue": 190,
+   "hits": 1,
    "desc": "Deals 1,071 (+187% Attack) damage to a target within 20m, with a 75% chance to inflict Seal for 5s. /",
    "dmg": {
     "1": 1071,
@@ -1534,6 +1556,7 @@ A2.DATA.spiritmaster = {
    "stagger": 20,
    "icon": "orb",
    "hue": 190,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,031 (+180% Attack) damage to up to 4 enemies within 4m of the target, removing up to 2 buffs. / Deals 371 (+64.8% Attack)-495 (+86.4% Attack) extra damage based on the number of buffs removed. /",
    "dmg": {
     "1": 1031,
@@ -1598,6 +1621,7 @@ A2.DATA.spiritmaster = {
    "stagger": 0,
    "icon": "star",
    "hue": 190,
+   "hits": 1,
    "desc": "Deals 1,180 (+206% Attack) damage and 300 MP damage to a target within 20m. Absorbs 1000, 1000% HP and restores 300 MP.",
    "dmg": {
     "1": 1180,
@@ -1662,6 +1686,7 @@ A2.DATA.spiritmaster = {
    "stagger": 20,
    "icon": "spirit",
    "hue": 190,
+   "hits": 4,
    "desc": "Summons an Ancient Spirit for 30s and grants Four Elements status each time the Ancient Spirit uses its skill. / The Ancient Spirit uses a skill on a target within 20m, dealing 1,082 (+189% Attack) damage to up to 4 enemies within 4m. / The Ancient Spirit fights alongside the caster using basic attacks and reuses its s",
    "dmg": {
     "1": 1082,

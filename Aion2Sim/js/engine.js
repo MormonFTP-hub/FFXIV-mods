@@ -10,16 +10,18 @@
   'use strict';
   const A2 = window.A2 = window.A2 || {};
 
+  // The community's model (Taiwanese and Korean tests, expcarry, mmoherald); NCSOFT publishes no formula.
   const FORMULA = A2.FORMULA = {
-    critBase: 1.5,          // a critical hit before Critical Damage Boost
-    critK: 1600,            // Critical Hit rating -> chance: rating / (rating + critK)
-    critCap: 0.8,
-    multiHitDmg: 1.0,       // an extra Multi-Hit strike lands for this share of the hit
-    brokenBonus: 0.2,       // a boss whose stagger gauge broke takes this much more damage
-    breakTime: 6,           // how long the stagger break lasts
-    staggerMax: 100,
+    critBase: 1.5,          // a critical hit before Critical Damage Boost (PvE)
+    critPer: 1500,          // about 6.66% critical chance per 100 Critical Hit...
+    critCap: 0.5,           // ...up to the Global client's 50% cap (the stat roll only; sure crits and stagger sit on top)
+    brokenCrit: 0.45,       // a Staggered boss takes critical hits about 95% of the time in Global parses
+    doubleMult: 2,          // a Double hit deals x2 in PvE
+    multiHitDmg: 0.1,       // each extra Multi-Hit strike deals 10% of the hit, up to 4 of them
+    breakTime: 5,           // "about 5 seconds on most bosses"
+    staggerMax: 300,        // gauge size isn't published; 300 gives a solo player a break every half minute or so
     backArc: Math.PI,       // the rear half counts as behind
-    variance: 0.04,         // hits roll ±4%
+    variance: 0.04,         // the weapon's min-max roll, roughly
   };
   const QUEUE = 0.5;
   const MOVE_SPEED = 6.2;    // m/s on foot
@@ -60,6 +62,7 @@
     this.stats = {};
     this.build();
     this.p.mp = this.stats.mpMax;
+    if (this.cfg.dummy.stagger === 'off') this.tg.noStagger = true;
     if (this.cls.init) this.cls.init(this);
   };
 
@@ -84,6 +87,7 @@
     }
     const st = Object.assign({}, cfg.stats);
     st.mpMax = st.mpMax || 1000;
+    this.lvP = cfg.lvPassive || cfg.lvActive;   // passive skill level
     if (cls.passives) cls.passives(this, st);
     this.stats = st;
   };
@@ -142,9 +146,14 @@
     return v;
   };
 
-  Sim.prototype.critChance = function (bonusRating) {
+  /** Critical chance: the stat roll (capped), then sure-crit bonuses and a broken stagger gauge on top. */
+  Sim.prototype.critChance = function (bonusRating, bonusPct) {
     const r = this.stat('critHit') + (bonusRating || 0);
-    return Math.min(FORMULA.critCap, Math.max(0, r / (r + FORMULA.critK)) + this.stat('critPct') / 100);
+    const cap = (this.cfg.stats.critCap || FORMULA.critCap * 100) / 100;
+    let c = Math.min(cap, Math.max(0, r / FORMULA.critPer));
+    c += (this.stat('critPct') + (bonusPct || 0)) / 100;
+    if (this.t < this.tg.brokenUntil) c += FORMULA.brokenCrit;
+    return Math.min(1, c);
   };
 
   // --- positions --------------------------------------------------------------------------------
@@ -260,7 +269,9 @@
     if (d.nextTick == null || d.nextTick > this.t + every) d.nextTick = this.t + every;
     d.every = every;
     const row = {id: 'dot:' + s.id, name: `${s.name} (${d0.name})`, hue: s.hue, icon: s.icon, mods: {}};
-    d.tick = (sim) => sim.hit(row, {base, atk: d0.atk, dot: true, as: row.id, asName: row.name, pct: s.mods.dotPct || 0});
+    // the tooltip's number is the whole effect, split across its ticks (or per tick, if the player picks that reading)
+    const split = this.cfg.dummy.dotMode === 'tick' ? 1 : Math.max(1, Math.round((d0.dur || 10) / (d0.every || 1)));
+    d.tick = (sim) => sim.hit(row, {base: base / split, atk: d0.atk / split, dot: true, as: row.id, asName: row.name, pct: s.mods.dotPct || 0});
     return d;
   };
   /** An orb, aura or spirit that attacks on its own for a while: {every, chance, dur, base, atk}. */
@@ -371,11 +382,11 @@
       mult *= 1 + this.stat('backBoost') / 100;
       if (s.backPct) mult *= 1 + s.backPct / 100;
     }
-    const crit = !o.noCrit && (o.crit || (s.mods && s.mods.crit) ||
-                 this.rand() < this.critChance(s.critBonus || 0) + ((s.mods && s.mods.critPct) || 0) / 100);
+    // damage over time: no crit, no Double, no Multi-Hit, no back attack (Taiwanese tests)
+    const crit = !o.noCrit && !o.dot && (o.crit || (s.mods && s.mods.crit) ||
+                 this.rand() < this.critChance(s.critBonus || 0, (s.mods && s.mods.critPct) || 0));
     if (crit) mult *= FORMULA.critBase + (this.stat('critDmg') + (o.critDmg || 0)) / 100;
     if (s.mods && s.mods.immuneDmg && this.immune()) mult *= 1 + s.mods.immuneDmg / 100;
-    if (this.t < this.tg.brokenUntil) mult *= 1 + FORMULA.brokenBonus;
     let red = A2.clamp(this.cfg.dummy.reduction || 0, 0, 90), vuln = 0, defDown = 0;
     for (const id in this.tg.debuffs) {
       const d = this.tg.debuffs[id];
@@ -383,31 +394,32 @@
       if (d.vuln) vuln += d.vuln;
       if (d.def) defDown = Math.max(defDown, d.def);
     }
-    mult *= (1 - red * (1 - Math.min(defDown, 100) / 100) / 100) * (1 + vuln / 100);
+    // lowered damage tolerance joins the damage-boost bucket; Defense cuts read as less damage reduction
+    mult *= (1 - red * (1 - Math.min(defDown, 100) / 100) / 100) * (1 + vuln / 100 / Math.max(1, mult));
     if (!back && this.stat('frontBoost')) mult *= 1 + this.stat('frontBoost') / 100;
     if (this.cls.damageHook) mult = this.cls.damageHook(this, s, mult, o);
     mult *= 1 + (this.rand() * 2 - 1) * FORMULA.variance;
     let amt = dmg * mult;
-    // Multi-Hit: the strike lands again (more than once at high chance), never on ticks and procs.
-    let multi = 0;
-    if (!o.dot && !o.proc && !o.noMulti) {
-      let chance = (this.stat('multiHit') + (s.mods && s.mods.multi || 0)) / 100;
-      while (chance > 0 && multi < 3) {
-        if (this.rand() < Math.min(1, chance)) multi++; else break;
-        chance -= 1;
+    // Double: x2 in PvE. Multi-Hit: up to 4 extra strikes of 10% each (the first sure, each next one 50%).
+    let dbl = false, multi = 0;
+    if (!o.dot) {
+      if (this.rand() < this.stat('double') / 100) { dbl = true; amt *= FORMULA.doubleMult; }
+      if (!o.proc && !o.noMulti && this.rand() < (this.stat('multiHit') + (s.mods && s.mods.multi || 0)) / 100) {
+        multi = 1;
+        while (multi < 4 && this.rand() < 0.5) multi++;
+        amt *= 1 + multi * FORMULA.multiHitDmg;
       }
-      amt *= 1 + multi * FORMULA.multiHitDmg;
     }
     amt = Math.max(1, Math.round(amt));
-    this.record(s, amt, crit, back, multi, o);
-    const ev = {s, amt, crit, back, multi: multi ? multi + 1 : 0, dot: !!o.dot, proc: !!o.proc, hue: s.hue};
+    this.record(s, amt, crit, back, multi, o, dbl);
+    const ev = {s, amt, crit, back, dbl, multi, dot: !!o.dot, proc: !!o.proc, hue: s.hue};
     this.tg.flash = 1;
     this.emit('damage', ev);
     // stagger
     const stg = (s.stagger || 0) + (s.mods && s.mods.stagger || 0);
-    if (stg && this.t >= this.tg.brokenUntil) {
+    if (stg && this.t >= this.tg.brokenUntil && !this.tg.noStagger) {
       this.tg.stg += stg;
-      if (this.tg.stg >= FORMULA.staggerMax) {
+      if (this.tg.stg >= (this.cfg.dummy.stagger === 'party' ? 100 : FORMULA.staggerMax)) {
         this.tg.stg = 0;
         this.tg.brokenUntil = this.t + FORMULA.breakTime;
         this.emit('text', 'Stagger break!', '#ffe9a8');
@@ -440,15 +452,17 @@
     return ev;
   };
 
-  Sim.prototype.record = function (s, amt, crit, back, multi, o) {
+  Sim.prototype.record = function (s, amt, crit, back, multi, o, dbl) {
     if (this.done) return;
     const key = o.as || s.meterId || s.id;
-    const row = this.bySkill[key] || (this.bySkill[key] = {id: key, name: o.asName || s.meterName || s.name, dmg: 0, hits: 0, crits: 0, backs: 0, multis: 0, hue: s.hue, icon: s.icon});
+    const row = this.bySkill[key] || (this.bySkill[key] = {id: key, name: o.asName || s.meterName || s.name, dmg: 0, hits: 0, crits: 0, backs: 0, multis: 0, dbls: 0, ticks: 0, hue: s.hue, icon: s.icon});
     row.dmg += amt;
     row.hits++;
+    if (o.dot) row.ticks++;
     if (crit) row.crits++;
     if (back) row.backs++;
     if (multi) row.multis++;
+    if (dbl) row.dbls++;
     this.total += amt;
     this.log.push({t: this.t, id: key, amt, crit});
   };

@@ -120,7 +120,7 @@
         }
         case 'combo': {
           if (p[1] === 'any' || !p[1]) return (c) => (c.e.combo && c.e.combo.until > c.e.now ? 1 : 0);
-          const id = act(p[1]);
+          const id = p[1];     // a combo id needn't be an action (Dragoon's drgFifth)
           return (c) => (c.e.inCombo(id) ? 1 : 0);
         }
         case 'ready': {        // could be pressed right now (GCD or recast permitting) and meets its conditions
@@ -285,7 +285,7 @@
     ['proc.X', 'X is highlighted on the hotbar'],
     ['is.BUTTON.ACTION', 'the button currently stands for that action (fire.paradox)'],
     ['action.X.cast_time / mp / potency', 'an action\'s numbers'],
-    ['gauge.F', 'the job gauge (gauge.kenki, gauge.sen.setsu)'],
+    ['gauge.F', 'the job gauge (gauge.kenki, gauge.sen.setsu); text fields compare with quotes: gauge.demi="solar"'],
     ['job.F', 'one of the job module\'s helpers, called with the engine'],
     ['raid.up / remains / in', 'party raid buffs: any up, time left, time until the next window'],
     ['raid.NAME.up / remains', 'one raid buff (divination, litany, chain, …)'],

@@ -23,7 +23,7 @@
         onHit(sim, ev) { if (ev.crit) sim.p.mp = Math.min(sim.stats.mpMax, sim.p.mp + 100); },
         specs: {0: {mod: {dotDur: 2}}},
       },
-      arrowScattershot: {anim: 0.55, range: 20, needs: 'stagger'},
+      arrowScattershot: {hits: 4, anim: 0.55, range: 20, needs: 'stagger'},
       galeArrow: {anim: 0.8, range: 20, specs: {0: {hook: true}}, onUse(sim, s) { if (on(s, 0)) { const b = sim.buffOn('galeArrow'); if (b) b.until += 5; } }},
       burstArrow: {anim: 0.8, range: 20, needs: ['slow', 'root']},
       suppressingArrow: {anim: 0.7, range: 20},
@@ -50,7 +50,7 @@
           if (!b) return;
           if (on(s, 0)) b.stat.multiHit = (b.stat.multiHit || 0) + 50;
           if (on(s, 2)) b.stat.critDmg = 20;
-          if (on(s, 3)) b.stat.multiHit = (b.stat.multiHit || 0) + 7;
+          if (on(s, 3)) b.stat.double = 7;
           if (on(s, 4)) b.until += 5;
         },
         specs: {0: {hook: true}, 2: {hook: true}, 3: {hook: true}, 4: {hook: true}},
@@ -58,13 +58,13 @@
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {
         conc: A2.pv(C, 'concentratedFire', 1, lv), rooting: A2.pv(C, 'rootingEye', 1, lv), melee: A2.pv(C, 'meleeFire', 1, lv),
         soul: A2.pv(C, 'huntersSoul', 1, lv),
       };
       st.pveBoost = (st.pveBoost || 0) + A2.pv(C, 'focusedEye', 1, lv);
-      st.multiHit = (st.multiHit || 0) + A2.pv(C, 'focusedEye', 3, lv);
+      st.double = (st.double || 0) + A2.pv(C, 'focusedEye', 3, lv);
       st.critDmg = (st.critDmg || 0) + A2.pv(C, 'huntersResolve', 0, lv);
     },
 

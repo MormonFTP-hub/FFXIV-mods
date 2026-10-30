@@ -35,10 +35,10 @@ actions+=/crimsonCyclone
 actions+=/crimsonStrike
 actions+=/slipstream
 actions+=/gemshine
-# The primals, in order.
-actions+=/summonTitan2
-actions+=/summonGaruda2
-actions+=/summonIfrit2
+# The primals, in order, once the last one's Rites and Favors are spent.
+actions+=/summonTitan2,if=gauge.stacks=0&!buff.ifritsFavor.up&!buff.crimsonStrikeReady.up&!buff.garudasFavor.up
+actions+=/summonGaruda2,if=gauge.stacks=0&!buff.ifritsFavor.up&!buff.crimsonStrikeReady.up&!buff.garudasFavor.up
+actions+=/summonIfrit2,if=gauge.stacks=0&!buff.ifritsFavor.up&!buff.crimsonStrikeReady.up&!buff.garudasFavor.up
 # Filler.
 actions+=/ruin4
 actions+=/ruin3

@@ -107,12 +107,12 @@
 
     init(sim) { sim.spirit = null; },
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {descent: A2.pv(C, 'spiritsDescent', 1, lv), corrode: A2.pv(C, 'corrode', 2, lv), counter: A2.pv(C, 'consecutiveCountercurrent', 1, lv),
                  unify: A2.pv(C, 'elementUnification', 0, lv)};
       st.pveBoost = (st.pveBoost || 0) + A2.pv(C, 'spiritStrike', 0, lv);
       st.critHit = (st.critHit || 0) + A2.pv(C, 'corrode', 0, lv);
-      st.multiHit = (st.multiHit || 0) + A2.pv(C, 'mentalFocus', 1, lv);
+      st.double = (st.double || 0) + A2.pv(C, 'mentalFocus', 1, lv);
     },
 
     onStep(sim) {

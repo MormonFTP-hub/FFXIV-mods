@@ -15,6 +15,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "sword",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 51 (+43% Attack) damage to up to 4 enemies within 4m and increases Enmity. Restores 100 MP.",
    "dmg": {
     "1": 51,
@@ -74,6 +75,7 @@ A2.DATA.gladiator = {
    "stagger": 2,
    "icon": "star",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 70 (+74.3% Attack) damage to up to 4 enemies within 4m and increases Enmity.",
    "dmg": {
     "1": 70,
@@ -133,6 +135,7 @@ A2.DATA.gladiator = {
    "stagger": 10,
    "icon": "dash",
    "hue": 18,
+   "hits": 1,
    "desc": "Leaps to a target within 20m and deals 70 (+115% Attack) damage.",
    "dmg": {
     "1": 70,
@@ -180,6 +183,7 @@ A2.DATA.gladiator = {
    "stagger": 15,
    "icon": "sword",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 207 (+194.4% Attack) damage to a target within 4m and inflicts Knockdown for 3s. Changes skill motion when attacking targets with Incapacitated Immunity.",
    "dmg": {
     "1": 207,
@@ -233,6 +237,7 @@ A2.DATA.gladiator = {
    "stagger": 5,
    "icon": "hammer",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 174 (+163.6% Attack) damage to a target afflicted with Knockdown within 4m and increases Enmity. Has a 7% chance to trigger when attacking a target with Incapacitated Immunity.",
    "dmg": {
     "1": 174,
@@ -286,6 +291,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "note",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 124 (+82.5% Attack) damage to a target afflicted with Stagger within 4m.",
    "dmg": {
     "1": 124,
@@ -345,6 +351,7 @@ A2.DATA.gladiator = {
    "stagger": 10,
    "icon": "ice",
    "hue": 18,
+   "hits": 1,
    "desc": "Selects a target within 4m and deals 294 (+150% Attack) damage to up to 4 enemies within 4m with a 50% chance to inflict Root for 3s on Block. 100% chance to inflict Root on NPC targets.",
    "dmg": {
     "1": 294,
@@ -398,6 +405,7 @@ A2.DATA.gladiator = {
    "stagger": 5,
    "icon": "whirl",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 206 (+105% Attack) damage to up to 4 enemies within 5m of the caster.",
    "dmg": {
     "1": 206,
@@ -451,6 +459,7 @@ A2.DATA.gladiator = {
    "stagger": 10,
    "icon": "dash",
    "hue": 18,
+   "hits": 1,
    "desc": "Moves to a target within 10m and deals 330 (+125% Attack) damage with a 30% chance to inflict Knockdown for 3s after using [Dodge] or while flying. 100% chance to inflict Knockdown on NPC targets.",
    "dmg": {
     "1": 330,
@@ -504,6 +513,7 @@ A2.DATA.gladiator = {
    "stagger": 20,
    "icon": "chain",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 479 (+181.5% Attack) damage to a target afflicted with Knockdown within 4m with a 50% chance to inflict Airborne for 3s. 100% chance to inflict Airborne on NPC targets. Has a 5% chance to trigger on attacking a target with Incapacitated Immunity.",
    "dmg": {
     "1": 479,
@@ -560,6 +570,7 @@ A2.DATA.gladiator = {
    "stagger": 25,
    "icon": "star",
    "hue": 18,
+   "hits": 1,
    "desc": "Rushes to a target within 7.5m to deal 2,387 (+689% Attack) damage to up to 4 enemies nearby and grants Prepare for Battle for 20s. Prepare for Battle: Increases PvE Damage Boost by 20%, PvP Damage Boost by 10%, Critical Hit by 100, and Status Effect Chance by 15%",
    "dmg": {
     "1": 2387,
@@ -627,6 +638,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "star",
    "hue": 18,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. Tenacity: Grants Status Effect Immunity Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -665,6 +677,7 @@ A2.DATA.gladiator = {
    "stagger": 5,
    "icon": "sword",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 534 (+87.8% Attack) damage to a target within 20m and reduces Defense by 30% and Incoming Heal by 50% for 10s.",
    "dmg": {
     "1": 534,
@@ -710,6 +723,7 @@ A2.DATA.gladiator = {
    "stagger": 20,
    "icon": "chain",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 1,059 (+174% Attack) damage to a target within 4m with a 75% chance to inflict Seal for 5s. 100% chance to inflict Seal on NPC targets.",
    "dmg": {
     "1": 1059,
@@ -755,6 +769,7 @@ A2.DATA.gladiator = {
    "stagger": 50,
    "icon": "up",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 1,068 (+175.5% Attack) damage to up to 4 enemies within 5m of the caster and has a 50% chance to inflict Knockdown for 3s. 100% chance to inflict Knockdown on NPC targets.",
    "dmg": {
     "1": 1068,
@@ -803,6 +818,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "up",
    "hue": 18,
+   "hits": 1,
    "desc": "Increases the caster's Combat Speed by 20% for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Combat Speed by 20% for 22.5s.",
@@ -852,6 +868,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "star",
    "hue": 18,
+   "hits": 1,
    "desc": "The caster becomes immune to damage and status effects for 3s. Increases PvE Damage Tolerance by 50% and PvP Damage Tolerance by 25% for 3s when the effect ends. Cannot block certain powerful attacks. Unaffected by cooldown increase effects. Tenaciousness, Salvation, and Barrier Spell effects cannot be applied for 30s ",
    "noHit": true,
    "maxLv": 25,
@@ -890,6 +907,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "dash",
    "hue": 18,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 998 (+164% Attack) damage up to 4 enemies within 4m of the target, with a 30% chance to inflict Knockdown for 3s. 100% chance to inflict Knockdown on NPC targets. Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 998,
@@ -941,6 +959,7 @@ A2.DATA.gladiator = {
    "stagger": 20,
    "icon": "dash",
    "hue": 18,
+   "hits": 1,
    "desc": "Rushes forward 10m and deals 974 (+160% Attack) damage to up to 4 enemies on the path, with a 60% chance to inflict Root for 3s. 100% chance to inflict Root on NPC targets.",
    "dmg": {
     "1": 974,
@@ -986,6 +1005,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "up",
    "hue": 18,
+   "hits": 1,
    "desc": "Increases the caster's Attack by 20% and Accuracy by 100 for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Attack by 20% and Accuracy by 100 for 22.5s.",
@@ -1038,6 +1058,7 @@ A2.DATA.gladiator = {
    "stagger": 20,
    "icon": "poison",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 1,522 (+250% Attack) damage to up to 4 enemies within 4m and absorbs 1000, 1000% HP.",
    "dmg": {
     "1": 1522,
@@ -1089,6 +1110,7 @@ A2.DATA.gladiator = {
    "stagger": 20,
    "icon": "up",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 1,327 (+218% Attack) damage to a target within 4m. Inflicts Wounded for 10s on hit, reducing the enemy's Attack by 10%, and increases the caster's PvE Damage Boost by 10% and PvP Damage Boost by 5% for 10s. Triggers [Overhead Slam] on the target for 10s on hit. Wounded does not stack with the Shrink effect from t",
    "dmg": {
     "1": 1327,
@@ -1140,6 +1162,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "shield",
    "hue": 18,
+   "hits": 1,
    "desc": "Temporarily increases Block Damage Reduction by 100% and guarantees Parry. Restores 110 MP and Stamina once on Parry.",
    "noHit": true,
    "descMax": "Temporarily increases Block Damage Reduction by 100% and guarantees Parry. Restores 350 MP and Stamina once on Parry.",
@@ -1185,6 +1208,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "whirl",
    "hue": 18,
+   "hits": 1,
    "desc": "Deals 207 (+34% Attack) Damage over Time to up to 4 enemies within 3m of the caster for 10s.",
    "dmg": {
     "1": 207,
@@ -1243,6 +1267,7 @@ A2.DATA.gladiator = {
    "stagger": 0,
    "icon": "star",
    "hue": 18,
+   "hits": 1,
    "desc": "Increases Impact-type Resist by 50% for 10s.",
    "noHit": true,
    "descMax": "Increases Impact-type Resist by 50% for 22.5s.",

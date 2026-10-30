@@ -50,17 +50,17 @@
                            if (!b) return;
                            if (on(s, 0)) b.stat.critHit = 100;
                            if (on(s, 2)) b.stat.critDmg = 5;
-                           if (on(s, 3)) b.stat.multiHit = 5;
+                           if (on(s, 3)) b.stat.double = 5;
                          },
                          specs: {0: {hook: true}, 2: {hook: true}, 3: {hook: true}}},
     },
 
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {raging: A2.pv(C, 'ragingSpell', 0, lv), wind: A2.pv(C, 'windsPromise', 2, lv), earth: A2.pv(C, 'earthsPromise', 0, lv)};
       st.critHit = (st.critHit || 0) + A2.pv(C, 'inspiringSpell', 0, lv);
       st.pveBoost = (st.pveBoost || 0) + A2.pv(C, 'attackPreparation', 0, lv);
-      st.multiHit = (st.multiHit || 0) + A2.pv(C, 'impactHit', 1, lv);
+      st.double = (st.double || 0) + A2.pv(C, 'impactHit', 1, lv);
       st.critDmg = (st.critDmg || 0) + A2.pv(C, 'windsPromise', 0, lv);
     },
 

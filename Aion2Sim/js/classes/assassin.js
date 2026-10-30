@@ -94,7 +94,7 @@
     stormRampage: {
       name: 'Storm Rampage', kind: 'active', unlock: 5, cd: 0, range: 4, moving: false, anim: 0.65,
       dmg: {1: 107, 10: 637, 20: 1049, 40: 1692}, atk: 82.5, icon: 'whirl', hue: 200,
-      desc: 'Hits a target afflicted with Stagger (a broken stagger gauge on a boss).',
+      desc: 'Strikes 4 times, only while the target is Staggered (its stagger gauge broken).', hits: 4,
       when(sim) { return sim.t < sim.tg.brokenUntil || !!sim.debuffOn('stun') || 'The target must be Staggered'; },
       onHit(sim, ev) {
         const s = ev.s;
@@ -304,7 +304,7 @@
 
     // The class's passives at the active skill level.
     passives(sim, st) {
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       sim.pas = {
         ewCrit: A2.lv({1: 100, 40: 490}, lv), ewAtk: A2.lv({1: 5.5, 40: 25}, lv),
         clone: {1: 17, 10: 106, 20: 172, 40: 279},
@@ -314,7 +314,7 @@
         defBreak: A2.lv({1: 12, 40: 90}, lv),
         detHp: A2.lv({1: 30, 40: 69}, lv), det: {1: 228, 10: 433, 20: 579, 40: 871},
       };
-      st.multiHit = (st.multiHit || 0) + sim.pas.multi;   // Impact Hit's Double chance
+      st.double = (st.double || 0) + sim.pas.multi;   // Impact Hit's Double Chance
     },
     statHook(sim, k, v) {
       const swift = sim.buffOn('swift');
@@ -342,7 +342,7 @@
     onHit(sim, ev, o) {
       if (o && (o.dot || o.as === 'clone')) return;
       const s = ev.s;
-      const lv = sim.cfg.lvActive;
+      const lv = sim.lvP;
       // Heart Gore lights on a critical
       if (ev.crit && !o.proc && sim.has('heartGore')) sim.proc('heartGore', 6);
       const ic = sim.buffOn('illusiveClone');
@@ -370,7 +370,8 @@
         const base = A2.lv(sim.pas.poison, lv);
         const d = sim.debuff('poison', 10, {name: 'Poison', short: 'Poison', icon: 'poison', hue: 120});
         if (d.nextTick == null || d.nextTick > sim.t + 1) d.nextTick = sim.t + 1;
-        d.tick = (sm) => sm.hit({id: 'poison', name: 'Apply Poison', hue: 120, icon: 'poison', mods: {}}, {base, atk: 138, dot: true, noMulti: true, as: 'poison', asName: 'Apply Poison'});
+        const split = sim.cfg.dummy.dotMode === 'tick' ? 1 : 10;
+        d.tick = (sm) => sm.hit({id: 'poison', name: 'Apply Poison', hue: 120, icon: 'poison', mods: {}}, {base: base / split, atk: 138 / split, dot: true, as: 'poison', asName: 'Apply Poison'});
       }
       // Ambush Stance
       const stance = sim.buffOn('ambushStance');

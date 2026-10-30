@@ -18,6 +18,13 @@
         i = j;
         continue;
       }
+      if (c === '"' || c === "'") {          // a quoted string, for gauge fields that hold one: gauge.demi="solar"
+        const j = src.indexOf(c, i + 1);
+        if (j < 0) throw new Error(`unclosed quote in "${src}"`);
+        out.push({ t: 'str', v: src.slice(i + 1, j) });
+        i = j + 1;
+        continue;
+      }
       if (/[A-Za-z_]/.test(c)) {
         let j = i;
         while (j < src.length && /[A-Za-z0-9_.]/.test(src[j])) j++;
@@ -43,12 +50,15 @@
   ];
   const num = (v) => (v === true ? 1 : v === false || v === null || v === undefined || v !== v ? 0 : typeof v === 'number' ? v : 1);
 
+  // Equality compares text as text when either side is a string, numbers otherwise.
+  const same = (a, b) => (typeof a === 'string' || typeof b === 'string' ? String(a) === String(b) : Math.abs(num(a) - num(b)) < 1e-9);
+
   function combine(op, l, r) {
     switch (op) {
       case '|': case '||': return (c) => (num(l(c)) || num(r(c)) ? 1 : 0);
       case '&': case '&&': return (c) => (num(l(c)) && num(r(c)) ? 1 : 0);
-      case '=': case '==': return (c) => (Math.abs(num(l(c)) - num(r(c))) < 1e-9 ? 1 : 0);
-      case '!=': return (c) => (Math.abs(num(l(c)) - num(r(c))) >= 1e-9 ? 1 : 0);
+      case '=': case '==': return (c) => (same(l(c), r(c)) ? 1 : 0);
+      case '!=': return (c) => (same(l(c), r(c)) ? 0 : 1);
       case '<': return (c) => (num(l(c)) < num(r(c)) - 1e-9 ? 1 : 0);
       case '<=': return (c) => (num(l(c)) <= num(r(c)) + 1e-9 ? 1 : 0);
       case '>': return (c) => (num(l(c)) > num(r(c)) + 1e-9 ? 1 : 0);
@@ -87,7 +97,7 @@
     function primary() {
       const tk = toks[p++];
       if (!tk) throw new Error(`"${src}" ends early`);
-      if (tk.t === 'num') { const v = tk.v; return () => v; }
+      if (tk.t === 'num' || tk.t === 'str') { const v = tk.v; return () => v; }
       if (tk.t === 'id') {
         if (tk.v === 'true') return () => 1;
         if (tk.v === 'false') return () => 0;

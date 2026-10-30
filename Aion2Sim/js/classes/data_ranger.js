@@ -15,6 +15,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 47 (+39.6% Attack) Wind damage to a target within 20m and restores 120 MP.",
    "dmg": {
     "1": 47,
@@ -74,6 +75,7 @@ A2.DATA.ranger = {
    "stagger": 1,
    "icon": "wind",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 56 (+56.7% Attack) Wind damage to up to 4 enemies within 4m of the target.",
    "dmg": {
     "1": 56,
@@ -133,6 +135,7 @@ A2.DATA.ranger = {
    "stagger": 10,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 60 (+109% Attack) Earth damage to up to 4 enemies within 4m of the target. Inflicts Slow, reducing Move Speed by 40% for 5s.",
    "dmg": {
     "1": 60,
@@ -186,6 +189,7 @@ A2.DATA.ranger = {
    "stagger": 7,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 142 (+146.3% Attack) Wind damage to a target within 20m. Moves the caster in the input direction and grants Precision for 10s. Precision: Increases Critical Hit by 300",
    "dmg": {
     "1": 142,
@@ -246,6 +250,7 @@ A2.DATA.ranger = {
    "stagger": 5,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 112 (+115.5% Attack) Fire damage to up to 4 enemies within 4m of the target and restores 100 MP on landing a Critical Hit. Inflicts Bleed on targets, dealing 43 (+45% Attack) Fire damage every 1s for 6s and reducing Incoming Heal by 60%. Incoming Heal reduction from [Drill Dart], [",
    "dmg": {
     "1": 112,
@@ -309,6 +314,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 96 (+70% Attack) Wind damage to a target afflicted with Stagger within 20m.",
    "dmg": {
     "1": 96,
@@ -365,6 +371,7 @@ A2.DATA.ranger = {
    "stagger": 10,
    "icon": "wind",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 365 (+203.5% Attack) Wind damage to up to 4 enemies within 4m of the target. Grants Gale to the caster for 10s. Gale: Increases Combat Speed by 7%, PvE Damage Boost by 7%, and PvP Damage Boost by 3.5%",
    "dmg": {
     "1": 365,
@@ -426,6 +433,7 @@ A2.DATA.ranger = {
    "stagger": 10,
    "icon": "burst",
    "hue": 135,
+   "hits": 1,
    "desc": "Sets an explosive trap at the caster's location. The trap lasts for 10 seconds and deals 344 (+192% Attack) Earth damage to up to 4 enemies within 5m when stepped on. Has a 40% chance to inflict Stun for 3s. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 344,
@@ -476,6 +484,7 @@ A2.DATA.ranger = {
    "stagger": 15,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target afflicted with Slow or Root within 20m and deals 544 (+225.5% Attack) Wind damage to up to 4 enemies within 4m of the target.",
    "dmg": {
     "1": 544,
@@ -532,6 +541,7 @@ A2.DATA.ranger = {
    "stagger": 10,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 362 (+150% Attack) Wind damage to a target within 20m with a 40% chance to inflict Stun for 3s while Precision is active. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 362,
@@ -585,6 +595,7 @@ A2.DATA.ranger = {
    "stagger": 10,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 599 (+188.3% Attack)-1,798 (+564.8% Attack) Wind damage to a target within 20m. Increases damage by 35% if the caster has Precision. Max 3 Charge Levels 10-",
    "dmg": {
     "1": 599,
@@ -646,6 +657,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Removes Stun, Knockdown, Airborne, Grab, Frost, and Fear from the caster and grants Tenacity for 5s. Tenacity: Grants Status Effect Immunity Unaffected by cooldown reduction effects.",
    "noHit": true,
    "maxLv": 40,
@@ -684,6 +696,7 @@ A2.DATA.ranger = {
    "stagger": 20,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,426 (+253% Attack) Fire damage to up to 4 enemies within 4m. Increases damage by 20% to targets afflicted with Slow or Root.",
    "dmg": {
     "1": 1426,
@@ -737,6 +750,7 @@ A2.DATA.ranger = {
    "stagger": 15,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 1,099 (+195% Attack) Wind damage to a target within 20m and inflicts Blind for 3s.",
    "dmg": {
     "1": 1099,
@@ -787,6 +801,7 @@ A2.DATA.ranger = {
    "stagger": 50,
    "icon": "wind",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 1,184 (+210% Attack) Wind damage to up to 4 enemies within 4m of the target. Has a 50% chance to inflict Stun for 3s. 100% chance to inflict Stun on NPC targets.",
    "dmg": {
     "1": 1184,
@@ -834,6 +849,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Increases the caster's Attack by 20% for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Attack by 20% for 30s.",
@@ -883,6 +899,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Enter Stealth for 10s. Cannot be used in combat and the Stealth effect is removed upon entering combat.",
    "noHit": true,
    "maxLv": 40,
@@ -921,6 +938,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "dash",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 902 (+160% Attack) Wind damage to up to 4 enemies within 4m of the target. Has a 30% chance to inflict Stun for 3s. 100% chance to inflict Stun on NPC targets. Increases Defense by up to 20% proportional to the number of targets hit.",
    "dmg": {
     "1": 902,
@@ -974,6 +992,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "flame",
    "hue": 135,
+   "hits": 1,
    "desc": "Summons an orb that provides supporting fire for 15s near the caster. The orb has a 25% chance to fire a shot dealing 243 (+43.2% Attack) Wind damage and absorbing 150, 150% HP. Firing Cooldown: 0.5s",
    "dmg": {
     "1": 243,
@@ -1034,6 +1053,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "up",
    "hue": 135,
+   "hits": 1,
    "desc": "Increases the caster's Critical Hit by 200 and Accuracy by 100 for 10s.",
    "noHit": true,
    "descMax": "Increases the caster's Critical Hit by 200 and Accuracy by 100 for 30s.",
@@ -1086,6 +1106,7 @@ A2.DATA.ranger = {
    "stagger": 20,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Deals 1,043 (+185% Attack) Wind damage to a target within 20m. Has a 75% chance to inflict Seal for 5s. 100% chance to inflict Seal on NPC targets.",
    "dmg": {
     "1": 1043,
@@ -1133,6 +1154,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Moves behind a target within 5m and deals 857 (+152% Attack) Wind damage and inflicts Knock Back. The caster moves back.",
    "dmg": {
     "1": 857,
@@ -1183,6 +1205,7 @@ A2.DATA.ranger = {
    "stagger": 0,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Increases the caster's PvE Damage Tolerance by 20%, PvP Damage Tolerance by 10%, and Critical Hit Resist by 200 for 6s. Grants Mother Nature's Embrace for the duration. Mother Nature's Embrace: The caster has a 50% chance to absorb 25% of damage taken as HP. Unaffected by cooldown increase effects.",
    "noHit": true,
    "maxLv": 40,
@@ -1221,6 +1244,7 @@ A2.DATA.ranger = {
    "stagger": 20,
    "icon": "arrow",
    "hue": 135,
+   "hits": 1,
    "desc": "Selects a target within 20m and deals 964 (+171% Attack) Fire damage to up to 4 enemies within 4m. Inflicts Crimson Flames for 10s. Crimson Flames: Takes 482 (+85.5% Attack) Fire Damage over Time every 1s. Damage over Time amount increases when targets move.",
    "dmg": {
     "1": 964,
@@ -1281,6 +1305,7 @@ A2.DATA.ranger = {
    "stagger": 20,
    "icon": "star",
    "hue": 135,
+   "hits": 1,
    "desc": "Sets an explosive trap at the caster's location. The trap lasts for 30 seconds and deals 1,218 (+216% Attack) Earth damage to up to 4 enemies within 5m when stepped on. Inflicts Airborne for 3s.",
    "dmg": {
     "1": 1218,
