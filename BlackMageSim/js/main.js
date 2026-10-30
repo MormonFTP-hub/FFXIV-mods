@@ -114,7 +114,10 @@
       window.removeEventListener('pointerup', this.onUp);
       const app = this.app, src = this.src;
       if (!this.active) {
-        if (src.from === 'slot') app.useSlot(src.b, src.i);
+        if (src.from === 'slot') {
+          if (app.ui.barSetup) app.ui.barSetupPlace(src.b, src.i);      // during hotbar setup a click places the action
+          else app.useSlot(src.b, src.i);
+        }
         return;
       }
       this.active = false;
@@ -135,6 +138,7 @@
       }
       app.save();
       app.ui.refreshBars();
+      if (app.ui.barSetup) app.ui.renderBarSetup();
     }
   }
 
@@ -154,6 +158,7 @@
       this.store = loadStore();
       const st = this.store.settings;
       this.job = B.setJob(st.job, st.versions[st.job]);
+      const fresh = !this.hasBars();          // before the hotbars are first drawn (which fills in the defaults)
       this.engine = new B.Engine(st, this.job);
       this.engine.pos.z = -this.job.startDistance;
       this.sfx = new B.Sfx();
@@ -164,6 +169,7 @@
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
       this.ui.setJob();
+      if (fresh) this.ui.openBarSetup();
       this.wireEngine();
       this.wireInput();
       this.layout();
@@ -185,6 +191,9 @@
     },
 
     jobKey() { return this.job.id + ':' + this.job.version; },
+
+    // Whether this job version has hotbars of its own yet (the first visit gets the hotbar setup).
+    hasBars() { return okGrid(this.store.barsByJob[this.jobKey()], v => v === null || !!A[v]); },
 
     // This job version's hotbars, from its defaults the first time (or if a saved slot names an unknown action).
     bars() {
@@ -211,12 +220,14 @@
 
     // Change job or version: a fresh engine state, the job's hotbars, gauge, help and model.
     switchJob(jobId, versionId) {
+      if (this.ui.barSetup) this.ui.closeBarSetup(false);     // a setup left half done keeps that job's usual bars
       const st = this.store.settings;
       st.job = jobId;
       if (versionId) st.versions[jobId] = versionId;
       this.save();
       this.enc = null;
       this.job = B.setJob(jobId, st.versions[jobId]);
+      const fresh = !this.hasBars();          // before anything draws the bars (which fills in the defaults)
       this.engine.setJob(this.job);
       this.engine.pos.x = 0; this.engine.pos.z = -this.job.startDistance;
       this.scene.resetCamera();
@@ -224,6 +235,7 @@
       this.ui.setJob();
       this.models.setJob();
       this.ui.log(`You change to ${this.job.name} (${this.job.versionLabel}).`, 'sys', 'system');
+      if (fresh) this.ui.openBarSetup();
     },
 
     resetLayout() {
@@ -480,6 +492,7 @@
       window.addEventListener('keydown', ev => {
         if (ev.target && (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT')) return;
         const code = ev.code;
+        if (this.ui.barSetup) { this.ui.barSetupKey(ev); return; }
         if (this.keybindMode) { this.bindKey(ev); return; }
         if (code === 'Enter') { ev.preventDefault(); chatin.focus(); return; }
         if (code === 'Escape') {

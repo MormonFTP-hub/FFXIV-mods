@@ -363,4 +363,30 @@ button.chip:hover { background: rgba(255, 255, 255, 0.12); }
 .chip.on { color: var(--gold); outline: 2px solid var(--gold); outline-offset: 1px; }
 .jobkey { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .jobkey .chip { cursor: default; }
+/* Hotbar setup: one action at a time, pressed onto a key. Sits high so the hotbars stay in view. */
+#win-barsetup { width: 760px; top: 34%; }
+#barsetup { display: flex; flex-direction: column; gap: 12px; }
+.bsintro { font-size: 14px; color: var(--muted); }
+.bscur { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--gold); }
+.bscur img { width: 64px; height: 64px; border-radius: 10px; }
+.bscur small { display: block; font: 600 11px var(--num); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.bscur b { display: block; font: 700 22px var(--ui); color: var(--gold); }
+.bscur span { font-size: 13px; color: var(--muted); }
+.bsmsg { min-height: 20px; font-size: 13.5px; color: var(--text); }
+#barsetup kbd { font: 600 12px var(--num); background: #0d0c12; border: 1px solid #555; border-radius: 3px; padding: 0 5px; color: var(--text); }
+.bsq { display: flex; flex-wrap: wrap; gap: 6px; }
+.bsi { width: 42px; text-align: center; opacity: .5; }
+.bsi img { display: block; width: 36px; height: 36px; margin: 0 auto; border-radius: 6px; border: 2px solid transparent; }
+.bsi small { display: block; height: 14px; font: 600 10.5px var(--num); color: var(--muted); }
+.bsi.set, .bsi.now { opacity: 1; }
+.bsi.set small { color: var(--gold); }
+.bsi.now img { border-color: var(--gold); }
+.bsi.off img { filter: grayscale(1); }
+.bsbtn { display: flex; align-items: center; gap: 8px; }
+.bsbtn span { flex: 1; }
+.bsbtn button, .bsopen { cursor: pointer; color: var(--text); background: linear-gradient(180deg, #34313d, #1d1b23); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 6px; padding: 6px 12px; font: 600 13px var(--ui); }
+.bsbtn button:hover, .bsopen:hover { border-color: var(--gold); }
+.bsbtn button:disabled { opacity: .4; cursor: default; border-color: rgba(255, 255, 255, 0.16); }
+.bsbtn button.main { border-color: var(--gold); color: var(--gold); }
+.bsopen { margin-left: 8px; padding: 3px 10px; font-size: 12.5px; }
 .member .nm small { margin-left: 8px; font: 500 12px var(--num); color: var(--muted); }
