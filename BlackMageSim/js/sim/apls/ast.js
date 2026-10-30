@@ -5,7 +5,8 @@
 // Divination), so Umbral Draw always lands in the burst. Cards go on yourself; the Arrow, the Spire, the Bole, the
 // Ewer and Lady of Crowns add no damage and stay in hand. Combust III kept up, Earthly Star on cooldown and set off
 // once it has matured, Lucid Dreaming for MP. The tincture goes with Divination, or earlier when waiting for it would
-// cost a use before the fight ends; Lightspeed (otherwise kept for the burst's weaves) makes room for it.
+// cost a use before the fight ends. Lightspeed goes just before Divination for the weaves, whenever a charge would
+// be lost, and to make room for the tincture.
 BLM.SIM_APLS.ast = `
 # Astrologian — Dawntrail 7.4–7.57
 actions.precombat=earthlyStar,at=-4
@@ -17,7 +18,8 @@ actions+=/variable,name=want_pot,value=cd.tincture.ready&(time<10|var.burst_in<3
 
 # Abilities, woven between GCDs.
 actions+=/tincture,if=var.want_pot
-actions+=/lightspeed,if=!buff.lightspeed.up&time>2&(var.burst_in<3|var.want_pot|var.burst_in>20&(cd.lightspeed.charges>=2|cd.lightspeed.charges=1&cd.lightspeed.fullin<5))
+actions+=/lightspeed,if=!buff.lightspeed.up&(cd.divination.remains<3|cd.lightspeed.charges>=2|cd.lightspeed.fullin<10|var.want_pot)&time>2
+actions+=/lightspeed,if=!buff.lightspeed.up&movement.in<1.5&movement.in>0
 actions+=/divination,if=time>4&!buff.divining.up
 actions+=/play1,if=var.burst|is.play1.spearDt&cd.divination.remains>17
 actions+=/oracle,if=buff.divining.up
@@ -35,4 +37,5 @@ actions+=/gravity2,if=targets>=3
 # Single target.
 actions+=/combust3,if=debuff.combust3.remains<2.5&fight.remains>12
 actions+=/fallMalefic
+actions+=/combust3,if=moving&debuff.combust3.remains<12
 `;

@@ -65,6 +65,10 @@
 
   // ---------- the engine, as the simulator drives it ----------
   class SimEngine extends B.Engine {
+    queueHit(id, potency, snap, delay, after, opts) {
+      if (this.raidSnap && snap && !snap.__raid) snap = this.raidSnap(snap, this.now);
+      return super.queueHit(id, potency, snap, delay, after, opts);
+    }
     // Positionals land at the rate in the settings (default: every one).
     positionalHit(a) {
       if (!a.positional) return false;
@@ -158,15 +162,18 @@
     // engine time T0 and fight time is e.now - T0.
     const pre = P.compiled.lists.precombat || [];
     const T0 = 1 - Math.min(-5, ...pre.filter(p => p.at !== undefined).map(p => p.at));
+    // Party buffs go onto every snapshot when it's taken (DoTs keep the buffs they were applied with). A hit queued
+    // with a snapshot of its own (Living Shadow's) gets them as it's queued; __raid marks a snapshot that has them.
+    let raidSnap = null;
     if (buffs.length) {
-      const own = job.snapshot.bind(job);
-      job.snapshot = function (a, e) {
-        const s = own(a, e);
-        const r = raidAt(buffs, e.now - T0);
-        if (!r.up.length) return s;
+      raidSnap = (s, now) => {
+        const r = raidAt(buffs, now - T0);
+        if (!r.up.length) return Object.assign({}, s, { __raid: true });
         return Object.assign({}, s, { mult: (s.mult === undefined ? 1 : s.mult) * r.mult,
-          critAdd: (s.critAdd || 0) + r.crit, dhAdd: (s.dhAdd || 0) + r.dh });
+          critAdd: (s.critAdd || 0) + r.crit, dhAdd: (s.dhAdd || 0) + r.dh, __raid: true });
       };
+      const own = job.snapshot.bind(job);
+      job.snapshot = function (a, e) { return raidSnap(own(a, e), e.now); };
     }
     const savedRandom = Math.random;
     Math.random = R;
@@ -175,6 +182,7 @@
       const D = Math.max(10, (+cfg.duration || 300) * (1 + variance * (2 * R() - 1)));
       const END = T0 + D;
       const e = new SimEngine(settings, job);
+      e.raidSnap = raidSnap;
       e.simPositionals = cfg.positionals !== undefined ? +cfg.positionals : 1;
       e.pos.x = 0; e.pos.z = -(B.isCaster(job) || job.role === 'ranged' ? 8 : 2.4);
       e.now = 0;

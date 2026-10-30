@@ -14,14 +14,18 @@
 (function (B) {
   const EPS = 1e-6;
 
+  const OPTIONS = ['if', 'at', 'line_cd', 'pre', 'clip', 'name', 'value', 'sec'];
+
   function parseEntry(body, lineNo) {
     const parts = body.split(',').map(s => s.trim()).filter(Boolean);
     if (!parts.length) return null;
-    const ent = { action: parts[0], line: lineNo, opts: {} };
+    const ent = { action: parts[0], line: lineNo, opts: {}, errors: [] };
     for (const kv of parts.slice(1)) {
       const k = kv.indexOf('=');
-      if (k < 0) ent.opts[kv] = '1';
-      else ent.opts[kv.slice(0, k).trim()] = kv.slice(k + 1).trim();
+      const key = k < 0 ? kv : kv.slice(0, k).trim();
+      if (!OPTIONS.includes(key)) ent.errors.push(`line ${lineNo}: unknown option "${key}" (known: ${OPTIONS.join(', ')})`);
+      else if (ent.opts[key] !== undefined) ent.errors.push(`line ${lineNo}: "${key}" given twice; the last one counts`);
+      ent.opts[key] = k < 0 ? '1' : kv.slice(k + 1).trim();
     }
     return ent;
   }
@@ -38,7 +42,7 @@
       const name = m[1] || 'default';
       if (m[2] === '=' && lists[name] && lists[name].length) lists[name] = [];     // `=` starts the list over
       const ent = parseEntry(m[3], i + 1);
-      if (ent) (lists[name] = lists[name] || []).push(ent);
+      if (ent) { errors.push(...ent.errors); (lists[name] = lists[name] || []).push(ent); }
     });
     return { lists, errors };
   }

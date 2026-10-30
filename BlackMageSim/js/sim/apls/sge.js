@@ -18,7 +18,7 @@ actions+=/variable,name=want_pot,value=cd.tincture.ready&(var.burst_in<3|(fight.
 
 # Abilities, woven between GCDs.
 actions+=/tincture,if=var.want_pot
-actions+=/psyche,if=time>5|time<1
+actions+=/psyche,if=time>5
 actions+=/druochole,if=gauge.gall>=3|gauge.gall>=1&mp<7000
 actions+=/rhizomata,if=gauge.gall<3
 actions+=/lucidDreaming,if=mp<7000
@@ -37,4 +37,8 @@ actions+=/phlegma3,if=var.window|buff.medicated.up&time>30|cd.phlegma3.charges>=
 actions+=/phlegma3,if=var.want_pot&gcd.ready
 actions+=/toxikon2,if=var.want_pot|mp<800|fight.remains<gauge.sting*gcd+1
 actions+=/dosis3
+# Moving: the instants.
+actions+=/toxikon2,if=moving
+actions+=/phlegma3,if=moving
+actions+=/eukrasia,if=moving&!buff.eukrasia.up&debuff.eukrasianDosis3.remains<15
 `;

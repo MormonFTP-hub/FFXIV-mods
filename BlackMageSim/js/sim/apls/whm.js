@@ -35,5 +35,7 @@ actions+=/glare4,if=buff.sacredSight.up
 actions+=/afflatusRapture,if=gauge.lilies>=3&gauge.blood<3
 actions+=/afflatusRapture,if=gauge.lilies>=1&gauge.blood<3&(var.want_pot|fight.remains<gcd*(3-gauge.blood)+gcd+2)
 actions+=/glare3
-actions+=/dia
+# Moving: the instants.
+actions+=/afflatusRapture,if=moving&gauge.lilies>=1&gauge.blood<3
+actions+=/dia,if=moving&debuff.dia.remains<15
 `;

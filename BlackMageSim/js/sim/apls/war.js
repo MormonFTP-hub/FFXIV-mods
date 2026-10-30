@@ -9,8 +9,8 @@ actions.precombat=tomahawk,at=-0.7
 actions.precombat+=/infuriate
 
 # Abilities, woven between GCDs.
-actions=/tincture,if=cd.innerRelease.remains<3&(prev_gcd.stormsEye|time>10)&((time+10)%120<20)
-actions+=/innerRelease,if=buff.surgingTempest.up&(prev_gcd.stormsEye|time>10)
+actions=/tincture,if=cd.innerRelease.remains<3&(prev_gcd.stormsEye|prev_gcd.mythrilTempest|time>10)&((time+10)%120<20)
+actions+=/innerRelease,if=buff.surgingTempest.up&(prev_gcd.stormsEye|prev_gcd.mythrilTempest|time>10)
 actions+=/primalWrath
 actions+=/upheaval,if=buff.surgingTempest.up&targets<3
 actions+=/orogeny,if=buff.surgingTempest.up&targets>=3
