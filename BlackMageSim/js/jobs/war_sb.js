@@ -3,6 +3,8 @@
 // spender), and pays 50 for Fell Cleave (Deliverance) or Inner Beast (Defiance), 20 for Upheaval (300, ×1.2 under Thrill
 // of Battle's extra HP) and Onslaught. Deliverance is +5% damage and +0.1% crit per gauge point; Defiance (the tank
 // stance) −20%. Maim lowers the dummy's slashing resistance 10% (24s); Storm's Eye is a damage buff on yourself (30s).
+//  - 4.0–4.01: as 4.05, but Inner Release and Unchained cost 20 Beast Gauge, Storm's Path is 250, Heavy Swing costs 70 TP
+//    and swapping stance halves the gauge (2017's job guide, the 4.05 notes and wiki revisions).
 //  - 4.05–4.06: Berserk +30% for 20s (60s); Inner Release (120s, 20s) halves gauge costs; Storm's Eye +20%. Fell Cleave
 //    and Inner Beast are separate buttons, each usable only in its stance.
 //  - 4.1–4.18: the same numbers; Inner Beast and Steel Cyclone turn into Fell Cleave and Decimate in Deliverance.
@@ -26,6 +28,11 @@
       stats: { hp: 52979, main: 2132, wd: 100, det: 1448, crit: 1146, dh: 1222, speed: 699, ten: 1360 }, tincture: 'str1sb',
       gear: 'the 4.0/4.1 guide\'s 2.44 Genji set (Strength 2,132, 100 weapon damage)',
       note: 'Level 70: Berserk +30%, Inner Release halving gauge costs, Storm\'s Eye +20%; Deliverance turns Inner Beast into Fell Cleave; Deltascape gear' },
+    sb40: { label: 'Stormblood 4.0–4.01', history: 'SB 4.0–4.01', ir42: false, swap: false, eye: 1.20, ref: 3110, irCost: 20, hsTp: 70,
+      pot: { stormsPath: 250 },
+      stats: { hp: 52979, main: 2132, wd: 100, det: 1448, crit: 1146, dh: 1222, speed: 699, ten: 1360 }, tincture: 'str1sb',
+      gear: 'the 4.0/4.1 guide\'s 2.44 Genji set (Strength 2,132, 100 weapon damage)',
+      note: 'Level 70, the launch: the Beast Gauge (halved by stance swaps), Inner Release and Unchained for 20 gauge, Berserk +30%; i340 gear' },
     sb405: { label: 'Stormblood 4.05–4.06', history: 'SB 4.05–4.06', ir42: false, swap: false, eye: 1.20, ref: 3120,
       stats: { hp: 52979, main: 2132, wd: 100, det: 1448, crit: 1146, dh: 1222, speed: 699, ten: 1360 }, tincture: 'str1sb',
       gear: 'the 4.0/4.1 guide\'s 2.44 Genji set (Strength 2,132, 100 weapon damage)',
@@ -38,7 +45,7 @@
     const P = Object.assign({ heavySwing: 150, skullSunder: 200, butchersBlock: 280, maim: 190, stormsPath: 270, stormsEye: 270, fellCleave: 500, overpower: 120, tomahawk: 130 }, V.pot || {});
     const eye = Math.round((V.eye - 1) * 100);
     const A = {
-      heavySwing: ws({ name: 'Heavy Swing', potency: P.heavySwing, tp: 60, comboStart: true, comboNext: true, desc: `Delivers an attack with a potency of ${P.heavySwing}.` }),
+      heavySwing: ws({ name: 'Heavy Swing', potency: P.heavySwing, tp: V.hsTp || 60, comboStart: true, comboNext: true, desc: `Delivers an attack with a potency of ${P.heavySwing}.` }),
       skullSunder: ws({ name: 'Skull Sunder', potency: 100, comboPotency: P.skullSunder, comboFrom: 'heavySwing', comboNext: true, tp: 60, beast: 10, desc: `Delivers an attack with a potency of 100.\nCombo Action: Heavy Swing\nCombo Potency: ${P.skullSunder}\nCombo Bonus: Increases Beast Gauge by 10` }),
       butchersBlock: ws({ name: 'Butcher\'s Block', potency: 100, comboPotency: P.butchersBlock, comboFrom: 'skullSunder', tp: 60, beast: 10, fx: 'gnbBurst', desc: `Delivers an attack with a potency of 100.\nCombo Action: Skull Sunder\nCombo Potency: ${P.butchersBlock}\nCombo Bonus: Increases Beast Gauge by 10` }),
       maim: ws({ name: 'Maim', potency: 100, comboPotency: P.maim, comboFrom: 'heavySwing', comboNext: true, tp: 60, beast: 10, fx: 'gnbSlash2', desc: `Delivers an attack with a potency of 100.\nCombo Action: Heavy Swing\nCombo Potency: ${P.maim}\nCombo Bonus: Reduces target's slashing resistance by 10%\nDuration: 24s\nCombo Bonus: Increases Beast Gauge by 10` }),
@@ -58,8 +65,8 @@
       defiance: ab({ name: 'Defiance', recast: 10, cdGroup: 'stance', desc: 'Increases maximum HP by 25% and enmity, while reducing damage dealt by 20%.\nCannot be used with Deliverance.' }),
       innerRelease: V.ir42
         ? ab({ name: 'Inner Release', recast: 90, desc: 'Beast Gauge actions cost nothing, and every attack is a critical direct hit.\nDuration: 10s\nAdditional Effect: Nullifies stun, sleep, bind, heavy, knockback and draw-in' })
-        : ab({ name: 'Inner Release', recast: 120, cdGroup: 'release', desc: 'Halves the Beast Gauge cost of all actions.\nDuration: 20s\nCan only be executed in Deliverance. Shares a recast timer with Unchained.' }),
-      unchained: ab({ name: 'Unchained', recast: V.ir42 ? 90 : 120, cdGroup: V.ir42 ? undefined : 'release', desc: 'Nullifies the damage penalty from Defiance.\nDuration: 20s\nCan only be executed in Defiance.' }),
+        : ab({ name: 'Inner Release', recast: 120, cdGroup: 'release', cost: V.irCost, desc: `Halves the Beast Gauge cost of all actions.\nDuration: 20s\nCan only be executed in Deliverance. Shares a recast timer with Unchained.${V.irCost ? `\nBeast Gauge Cost: ${V.irCost}` : ''}` }),
+      unchained: ab({ name: 'Unchained', recast: V.ir42 ? 90 : 120, cdGroup: V.ir42 ? undefined : 'release', cost: V.irCost, desc: `Nullifies the damage penalty from Defiance.\nDuration: 20s\nCan only be executed in Defiance.${V.irCost ? `\nBeast Gauge Cost: ${V.irCost}` : ''}` }),
       equilibrium: ab({ name: 'Equilibrium', recast: 60, desc: 'Defiance: restores own HP (cure potency 1,200).\nDeliverance: restores 200 TP.' }),
       thrillOfBattle: ab({ name: 'Thrill of Battle', recast: 120, desc: 'Increases maximum HP by 20% and restores the amount increased.\nDuration: 20s' }),
       vengeance: ab({ name: 'Vengeance', recast: 120, desc: 'Reduces damage taken by 30% and delivers a counter when hit.\nDuration: 15s' }),
@@ -209,6 +216,7 @@
         case 'upheaval': e.queueHit(id, Math.round(a.potency * (e.has('thrillOfBattle') ? 1.2 : 1)), snap, a.delay); return;
         case 'infuriate': this.gain(e, 50); return;
         case 'deliverance': case 'defiance':
+          if (this.V.irCost && this.stance(e) && this.stance(e) !== id) g.beast = Math.floor(g.beast / 2);
           e.removeStatus(id === 'deliverance' ? 'defiance' : 'deliverance', true);
           e.addStatus(id, 1e9, { permanent: true });
           return;
@@ -283,12 +291,12 @@
 <h3>The opener (${V.ir42 ? 'The Balance\'s 4.2 opener, after the tank part' : 'the 4.1 wiki\'s DPS opener'})</h3>
 ${opener}
 <p>${V.ir42 ? 'The Balance\'s openers start in Defiance (Unchained, Tomahawk, Equilibrium) for threat; on a dummy, start in Deliverance.' : 'From the FFXIV wiki\'s 4.1 Warrior rotations: Deliverance and Infuriate early, Berserk and Inner Release together once the gauge is up.'}</p>
-<p style="color:#a9a3b4">The ${V.ir42 ? '4.2–4.58' : '4.1'} numbers: Heavy Swing ${V.pot ? 160 : 150}, Skull Sunder combo ${V.pot ? 210 : 200}, Butcher's Block combo ${V.pot ? 300 : 280}, Maim combo ${V.pot ? 200 : 190}, Storm's Path and Storm's Eye combo ${V.pot ? 280 : 270}, Fell Cleave ${V.pot ? 520 : 500}, Inner Beast 350, Upheaval 300, Onslaught 100. Gear: ${V.gear}, with ${V.ir42 ? 'the Grade 3' : 'the ungraded'} Infusion of Strength.</p>`;
+<p style="color:#a9a3b4">${V.irCost ? `In 4.0–4.01 Inner Release and Unchained cost ${V.irCost} Beast Gauge, Storm's Path is 250 and swapping stance halves the gauge. ` : ''}The ${V.ir42 ? '4.2–4.58' : '4.1'} numbers: Heavy Swing ${V.pot ? 160 : 150}, Skull Sunder combo ${V.pot ? 210 : 200}, Butcher's Block combo ${V.pot ? 300 : 280}, Maim combo ${V.pot ? 200 : 190}, Storm's Path and Storm's Eye combo ${V.pot ? 280 : 270}, Fell Cleave ${V.pot ? 520 : 500}, Inner Beast 350, Upheaval 300, Onslaught 100. Gear: ${V.gear}, with ${V.ir42 ? 'the Grade 3' : 'the ungraded'} Infusion of Strength.</p>`;
     }
   }
 
   B.registerJob({
     id: 'war', name: 'Warrior', abbr: 'WAR', role: 'tank', classJob: 21,
-    versions: ['sb42', 'sb41', 'sb405'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WarriorSB(v) })),
+    versions: ['sb42', 'sb41', 'sb405', 'sb40'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WarriorSB(v) })),
   });
 })(window.BLM);

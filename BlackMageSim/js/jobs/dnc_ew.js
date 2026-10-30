@@ -180,6 +180,7 @@ ${seq(['standardStep', 'emboite', 'entrechat', 'standardFinish', 'technicalStep'
     }
   }
 
+  B.DancerEW = DancerEW;
   B.registerJob({
     id: 'dnc', name: 'Dancer', abbr: 'DNC', role: 'ranged', classJob: 38,
     versions: ['ew61', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new DancerEW(v) })),

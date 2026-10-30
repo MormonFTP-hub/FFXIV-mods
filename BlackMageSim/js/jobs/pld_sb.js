@@ -133,9 +133,9 @@
       let mult = 1;
       const magic = a && a.magic;
       if (e.has('shieldOath')) mult *= 0.85;
-      if (!magic && e.has('fightOrFlight')) mult *= 1.25;
+      if (!magic && e.has('fightOrFlight')) mult *= this.fofMult || 1.25;
       if (magic && e.has('requiescat')) mult *= 1.20;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES.str3sb.cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? (this.potionCap || B.TINCTURES.str3sb.cap) : 0);
       return { mult, main };
     }
 
@@ -150,7 +150,7 @@
           e.removeStatus(id === 'swordOath' ? 'shieldOath' : 'swordOath', true);
           e.addStatus(id, 1e9, { permanent: true });
           return;
-        case 'fightOrFlight': e.addStatus('fightOrFlight', 25); return;
+        case 'fightOrFlight': e.addStatus('fightOrFlight', this.fofDur || 25); return;
         case 'requiescat': {
           const frac = e.mp / e.maxMp;
           if (frac >= 0.8 - EPS) e.addStatus('requiescat', 12);
@@ -238,6 +238,7 @@ ${seq(['fastBlade', 'riotBlade', ['fightOrFlight'], 'goringBlade', ['circleOfSco
     }
   }
 
+  B.PaladinSB = PaladinSB;
   B.registerJob({
     id: 'pld', name: 'Paladin', abbr: 'PLD', role: 'tank', classJob: 19,
     versions: [{ id: 'sb405', label: 'Stormblood 4.05–4.58', history: 'SB 4.05–4.58', note: 'Level 70 on TP and a small MP pool: Sword Oath\'s extra hits, Royal Authority and Goring Blade, Fight or Flight for weaponskills, Requiescat for five Holy Spirits; the 4.2 numbers and Alphascape gear', create: () => new PaladinSB() }],

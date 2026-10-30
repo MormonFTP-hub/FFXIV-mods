@@ -37,7 +37,17 @@ window.BLM = window.BLM || {};
     // Heavensward (3.x): damage = potency × (WD/25 + 1) × main/9 × (1 + DET/7290), crit (CRT−354)/(858×5) + 5% for
     // 1.45× + the same, no Direct Hit; Skill Speed on the 4.x shape with 354 / 858. formula: 'hw' switches the engine.
     hw60: { main: 218, sub: 354, div: 858, det: 118, ap: 100, apTank: 100, formula: 'hw' },
-    sb70: { main: 292, sub: 364, div: 2170, ap: 125, apTank: 105, det: 130 },    // level 70 in 4.x (Allagan Studies)
+    // Level 50 in 2.x: ParamGrow's level table (sub and divisor 341, base main 202) with the Heavensward shape refitted to
+    // the ARR community formulas (valk's calculator, Reddit's caster fit; about 2-4% off), a flat ×1.5 crit and no speed
+    // scaling on DoTs (both 3.0 changes).
+    arr50: { main: 202, sub: 341, div: 341, det: 118, ap: 100, apTank: 100, formula: 'hw', strDiv: 10.8, detDiv: 2300, casterStrDiv: 7.75,
+      casterDetDiv: 4000, autoStrDiv: 10.35, autoDetDiv: 1000, critDiv: 1705, critMult: 1.5, dotSpeed: false },
+    sb70: { main: 292, sub: 364, div: 2170, ap: 125, apTank: 105, det: 130 },
+    // Blue Mage's caps (Allagan Studies' level tables): level 70 in 6.x, and levels 60 and 50 at Shadowbringers' formula.
+    ew70: { main: 292, sub: 364, div: 900, ap: 125, apTank: 105, det: 140 },
+    blu80: { main: 340, sub: 380, div: 1300, ap: 165, apTank: 115, det: 140 },  // Blue Mage at 80 (Allagan Studies' BLU doc: det 140)
+    blu60: { main: 218, sub: 354, div: 858, ap: 100, apTank: 100, det: 130 },
+    blu50: { main: 202, sub: 341, div: 341, ap: 75, apTank: 75, det: 130 },    // level 70 in 4.x (Allagan Studies)
   };
 
   // The current job's tables. These objects stay the same; their contents change with the job.
@@ -146,14 +156,19 @@ window.BLM = window.BLM || {};
     dex1: { name: 'Tincture of Dexterity', cap: 312 },          // 5.0's only one
     dex2: { name: 'Grade 2 Tincture of Dexterity', cap: 339 },
     dex4: { name: 'Grade 4 Tincture of Dexterity', cap: 464 },
-    dex6: { name: 'Grade 6 Tincture of Dexterity', cap: 189 },    // the 6.0x tier
+    dex6: { name: 'Grade 6 Tincture of Dexterity', cap: 189 },
+    int6: { name: 'Grade 6 Tincture of Intelligence', cap: 189 },    // the 6.0x tier
     dex7: { name: 'Grade 7 Tincture of Dexterity', cap: 223 },    // the 6.2 tier
     dex8: { name: 'Grade 8 Tincture of Dexterity', cap: 262 },    // the 6.4 tier
     int2: { name: 'Grade 2 Tincture of Intelligence', cap: 339 },
     intdt3: { name: 'Grade 3 Gemdraught of Intelligence', cap: 461 },   // the 7.2 tier
     intdt2: { name: 'Grade 2 Gemdraught of Intelligence', cap: 392 },   // the 7.05 tier
     intdt4: { name: 'Grade 4 Gemdraught of Intelligence', cap: 541 },   // the 7.4 tier
+    intdt1: { name: 'Grade 1 Gemdraught of Intelligence', cap: 351 },   // 7.0
     mnd4: { name: 'Grade 4 Tincture of Mind', cap: 464 },
+    mnd3: { name: 'Grade 3 Tincture of Mind', cap: 398 },     // the 5.2 tier
+    mnd2: { name: 'Grade 2 Tincture of Mind', cap: 339 },     // 5.05–5.08
+    mnd1: { name: 'Tincture of Mind', cap: 312 },             // 5.0–5.01
     int3sb: { name: 'Grade 3 Infusion of Intelligence', cap: 225 },
     int1sb: { name: 'Infusion of Intelligence', cap: 137 },        // 4.0–4.1x: HQ +10%, max 137   // the 4.4/4.5 tier: HQ +10%, max 225 (wiki, 2018)
     str3sb: { name: 'Grade 3 Infusion of Strength', cap: 225 },
@@ -167,10 +182,15 @@ window.BLM = window.BLM || {};
     // Dawntrail's 7.4 tier: Grade 4 Gemdraughts, HQ +10% up to 541.
     strdt4: { name: 'Grade 4 Gemdraught of Strength', cap: 541 },
     strdt3: { name: 'Grade 3 Gemdraught of Strength', cap: 461 },     // the 7.2 tier
+    strdt2: { name: 'Grade 2 Gemdraught of Strength', cap: 392 },     // the 7.05 tier
+    strdt1: { name: 'Grade 1 Gemdraught of Strength', cap: 351 },     // 7.0
     dexdt4: { name: 'Grade 4 Gemdraught of Dexterity', cap: 541 },
+    dexdt1: { name: 'Grade 1 Gemdraught of Dexterity', cap: 351 },     // 7.0
+    dexdt2: { name: 'Grade 2 Gemdraught of Dexterity', cap: 392 },     // the 7.05 tier
     mnddt4: { name: 'Grade 4 Gemdraught of Mind', cap: 541 },
     mnddt2: { name: 'Grade 2 Gemdraught of Mind', cap: 392 },     // the 7.05 tier
     mnddt3: { name: 'Grade 3 Gemdraught of Mind', cap: 461 },     // the 7.2 tier
+    mnddt1: { name: 'Grade 1 Gemdraught of Mind', cap: 351 },     // 7.0
   };
   // Healers cast like casters (cast bars, spell effects).
   B.isCaster = (job) => job.role === 'caster' || job.role === 'healer';
@@ -221,10 +241,16 @@ window.BLM = window.BLM || {};
   // history names the version's entry in docs/job-versions.md (B.JOB_HISTORY, js/versions.js), for its rating.
   B.JOBS = {};
   B.JOB_ORDER = [];
+  const EXPANSION_RANK = { DT: 0, EW: 1, ShB: 2, SB: 3, HW: 4, ARR: 5 };
   B.registerJob = function (job) {
     if (!B.JOBS[job.id]) B.JOB_ORDER.push(job.id);
     const prev = B.JOBS[job.id];
-    B.JOBS[job.id] = Object.assign({}, job, { versions: (prev ? prev.versions : []).concat(job.versions || []) });
+    // Newest expansion first, whatever order the files load in (a file builds on the class it extends, so it loads
+    // after it); within an expansion, the order the files list them.
+    const all = (prev ? prev.versions : []).concat(job.versions || []);
+    const rank = (v) => { const k = EXPANSION_RANK[String(v.history || '').split(' ')[0]]; return k === undefined ? 9 : k; };
+    const versions = all.map((v, i) => [v, i]).sort((x, y) => rank(x[0]) - rank(y[0]) || x[1] - y[1]).map(x => x[0]);
+    B.JOBS[job.id] = Object.assign({}, job, { versions });
   };
 
   // Make a job version current: fill B.ACTIONS / B.STATUSES and return the job object.

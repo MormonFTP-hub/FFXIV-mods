@@ -343,6 +343,7 @@ ${seq(['reavingFangs', ['serpentsIre'], 'swiftskinsSting', 'vicewinder', ['tinct
     }
   }
 
+  B.ViperDT = ViperDT;
   B.registerJob({
     id: 'vpr', name: 'Viper', abbr: 'VPR', role: 'melee', classJob: 41,
     versions: [{ id: 'dt705', label: 'Dawntrail 7.05–7.57', history: 'DT 7.05–7.57', note: 'Level 100. The reworked Viper: Honed alternation, venom finishers and Death Rattle, Vicewinder into the Coils and Twin bites, Uncoiled Fury, Reawaken into the Generations, Legacies and Ouroboros; 7.5\'s numbers', create: () => new ViperDT() }],

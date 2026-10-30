@@ -97,7 +97,7 @@
     snapshot(a, e) {
       let mult = 1;
       if (e.has('clericStance')) mult *= 1.10;
-      const mind = this.stats.main + (e.has('medicated') ? 154 : 0);
+      const mind = this.stats.main + (e.has('medicated') ? (this.potionCap || 154) : 0);
       return { mult, main: e.has('clericStance') ? mind : this.stats.int, critAdd: 0 };
     }
 
@@ -134,7 +134,7 @@
           this.spendFlow(e);
           // The tooltip gives no number: ARR's 266 at level 50 (with Energy Siphon) scaled to level 60 is about 884.
           const before = e.mp;
-          e.mp = Math.min(e.maxMp, e.mp + 884);
+          e.mp = Math.min(e.maxMp, e.mp + (this.edMp || 884));
           if (e.mp > before) e.emit('mpGain', { amount: e.mp - before, source: 'lucid' });
           e.queueHit(id, a.potency, this.snapshot(a, e), a.delay);
           return;
@@ -179,6 +179,7 @@ ${seq([['clericStance'], 'bio2', 'miasma', ['tincture'], 'bio', 'aero', 'shadowF
     }
   }
 
+  B.ScholarHW = ScholarHW;
   B.registerJob({
     id: 'sch', name: 'Scholar', abbr: 'SCH', role: 'healer', classJob: 28,
     versions: [{ id: 'hw30', label: 'Heavensward 3.0–3.57', history: 'HW 3.0–3.57', note: 'Level 60. Cleric Stance swaps Mind into Intelligence; Broil, Bio, Bio II, Miasma and Shadow Flare, Energy Drain on Aetherflow (20% MP), Dissipation, Selene\'s Fey Wind, with Heavensward\'s damage formula', create: () => new ScholarHW() }],

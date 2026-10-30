@@ -124,17 +124,17 @@
 
     // 2% of the pool a tick, plus the Ewer's Refresh (50) and Luminiferous Aether's (80): 8.84 MP a potency point.
     mpRegen(e) {
-      const ewer = e.has('theEwer') ? Math.round(442 * (e.statuses.theEwer.mag || 1)) : 0;
+      const ewer = e.has('theEwer') ? Math.round((this.ewerMp || 442) * (e.statuses.theEwer.mag || 1)) : 0;
       const la = e.has('luminiferousAether') ? 707 : 0;
       return Math.round(this.maxMp * 0.02) + ewer + la;
     }
 
     snapshot(a, e) {
       let mult = 1;
-      if (e.has('theBalance')) mult *= 1 + 0.20 * (e.statuses.theBalance.mag || 1);
+      if (e.has('theBalance')) mult *= 1 + (this.balanceMag || 0.20) * (e.statuses.theBalance.mag || 1);
       if (e.has('clericStance')) mult *= 1.10;
       if (e.has('lightspeed')) mult *= 0.75;
-      const mind = this.stats.main + (e.has('medicated') ? 154 : 0);
+      const mind = this.stats.main + (e.has('medicated') ? (this.potionCap || 154) : 0);
       return { mult, main: e.has('clericStance') ? mind : this.stats.int, critAdd: 0 };
     }
 
@@ -150,7 +150,7 @@
           if (e.has('clericStance')) e.removeStatus('clericStance');
           else e.addStatus('clericStance', 1e9, { permanent: true });
           return;
-        case 'luminiferousAether': e.addStatus('luminiferousAether', 24); return;
+        case 'luminiferousAether': e.addStatus('luminiferousAether', this.laDur || 24); return;
         case 'disable': case 'protect': case 'stoneskin': return;
       }
       super.ability(id, e);
@@ -177,6 +177,7 @@ ${seq([['diurnalSect'], ['clericStance'], ['spreadBalance'], 'combust', 'combust
     }
   }
 
+  B.AstrologianHW = AstrologianHW;
   B.registerJob({
     id: 'ast', name: 'Astrologian', abbr: 'AST', role: 'healer', classJob: 33,
     versions: [{ id: 'hw34', label: 'Heavensward 3.4–3.57', history: 'HW 3.4–3.57', note: 'Level 60. Cleric Stance swaps Mind into Intelligence; Malefic II, Combust and Combust II; the Balance 20%, the Spear −20% ability recast, Spread and Royal Road; Luminiferous Aether, with Heavensward\'s damage formula', create: () => new AstrologianHW() }],

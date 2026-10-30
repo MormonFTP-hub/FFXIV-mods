@@ -45,6 +45,10 @@ ACTIONS = {
     "fire2": (147, "Fire II"), "blizzard2": (146, "Blizzard II"), "highFire2": (25794, "High Fire II"),
     "highBlizzard2": (25795, "High Blizzard II"), "freeze": (159, "Freeze"), "flare": (162, "Flare"),
     "thunder4": (7420, "Thunder IV"),
+    # Heavensward: Thunder and Thunder II as single-target DoTs, Raging Strikes cross-class.
+    "thunder": (144, "Thunder"), "thunder2": (148, "Thunder II"), "ragingStrikes": (101, "Raging Strikes"),
+    # Dawntrail.
+    "highThunder": (36986, "High Thunder"), "highThunder2": (36987, "High Thunder II"), "flareStar": (36989, "Flare Star"), "retrace": (36988, "Retrace"),
 }
 BLM_STATUSES = {
     "firestarter": "Firestarter", "thundercloud": "Thundercloud", "sharpcast": "Sharpcast",
@@ -52,6 +56,8 @@ BLM_STATUSES = {
     "circleOfPower": "Circle of Power", "lucidDreaming": "Lucid Dreaming", "manaward": "Manaward",
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated", "thunder3": "Thunder III",
     "addle": "Addle", "enochian": "Enochian", "thunder4": "Thunder IV",
+    "thunder": "Thunder", "thunder2": "Thunder II", "ragingStrikes": "Raging Strikes",
+    "thunderhead": 3870, "highThunder": "High Thunder", "highThunder2": "High Thunder II",
 }
 SAM_ACTIONS = {
     "hakaze": (7477, "Hakaze"), "jinpu": (7478, "Jinpu"), "shifu": (7479, "Shifu"), "yukikaze": (7480, "Yukikaze"),
@@ -69,6 +75,8 @@ SAM_ACTIONS = {
     "fuga": (7483, "Fuga"), "fuko": (25780, "Fuko"), "mangetsu": (7484, "Mangetsu"), "oka": (7485, "Oka"),
     "invigorate": (7544, "Invigorate"),
     "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    "tendoGoken": (36965, "Tendo Goken"), "tendoSetsugekka": (36966, "Tendo Setsugekka"), "tendoKaeshiGoken": (36967, "Tendo Kaeshi Goken"),
+    "tendoKaeshiSetsugekka": (36968, "Tendo Kaeshi Setsugekka"), "zanshin": (36964, "Zanshin"),
 }
 # Dawntrail renamed some of these, so they go by row (1298 Fugetsu, 1299 Fuka).
 SAM_STATUSES = {
@@ -92,6 +100,9 @@ GNB_ACTIONS = {
     "interject": (7538, "Interject"), "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"),
     "armsLength": (7548, "Arm's Length"), "sprint": (3, "Sprint"), "auto": (7, "attack"),
     "demonSlice": (16141, "Demon Slice"), "demonSlaughter": (16149, "Demon Slaughter"), "fatedCircle": (16163, "Fated Circle"),
+    # Dawntrail.
+    "fatedBrand": (36936, "Fated Brand"), "reignOfBeasts": (36937, "Reign of Beasts"), "nobleBlood": (36938, "Noble Blood"),
+    "lionHeart": (36939, "Lion Heart"), "trajectory": (36934, "Trajectory"), "greatNebula": (36935, "Great Nebula"),
 }
 GNB_STATUSES = {
     "noMercy": "No Mercy", "brutalShell": "Brutal Shell", "royalGuard": "Royal Guard", "camouflage": "Camouflage",
@@ -100,6 +111,8 @@ GNB_STATUSES = {
     "readyToGouge": "Ready to Gouge", "readyToBlast": "Ready to Blast", "heartOfCorundum": "Heart of Corundum",
     "heartOfLight": "Heart of Light", "heartOfStone": "Heart of Stone", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
     "sprint": "Sprint", "medicated": "Medicated",
+    "readyToBreak": 3886, "readyToReign": 3840, "readyToRaze": 3839, "greatNebula": "Great Nebula",
+    "bloodfest": 5051,
 }
 
 # Summoner (Stormblood 4.x): the summoner's own actions, then the pets' (Garuda-Egi, Ifrit-Egi, Demi-Bahamut).
@@ -121,12 +134,34 @@ SMN_ACTIONS = {
     # Heavensward: the three DoTs, Spur and the Archer cross-class Raging Strikes.
     "bio": (17864, "Bio"), "bio2": (17865, "Bio II"), "miasma": (168, "Miasma"), "spur": (183, "Spur"),
     "ragingStrikes": (101, "Raging Strikes"),
+    # Dawntrail (keys with a 2 are Dawntrail rows of names the Stormblood kit already uses).
+    "triDisaster2": (25826, "Tri-disaster"), "energyDrain2": (16508, "Energy Drain"), "energySiphon": (16510, "Energy Siphon"),
+    "necrotize": (36990, "Necrotize"), "searingLight": (25801, "Searing Light"), "searingFlash": (36991, "Searing Flash"),
+    "summonSolarBahamut": (36992, "Summon Solar Bahamut"), "umbralImpulse": (36994, "Umbral Impulse"), "umbralFlare": (36995, "Umbral Flare"),
+    "sunflare": (36996, "Sunflare"), "luxSolaris": (36997, "Lux Solaris"), "enkindleSolarBahamut": (36998, "Enkindle Solar Bahamut"),
+    "exodus": (36999, "Exodus"), "luxwave": (36993, "Luxwave"),
+    "astralImpulse": (25820, "Astral Impulse"), "astralFlare": (25821, "Astral Flare"), "astralFlow": (25822, "Astral Flow"),
+    "summonPhoenix": (25831, "Summon Phoenix"), "fountainOfFire": (16514, "Fountain of Fire"), "brandOfPurgatory": (16515, "Brand of Purgatory"),
+    "enkindlePhoenix": (16516, "Enkindle Phoenix"), "rekindle": (25830, "Rekindle"), "revelation": (16518, "Revelation"),
+    "scarletFlame": (16519, "Scarlet Flame"), "gemshine": (25883, "Gemshine"), "preciousBrilliance": (25884, "Precious Brilliance"),
+    "rubyRite": (25823, "Ruby Rite"), "topazRite": (25824, "Topaz Rite"), "emeraldRite": (25825, "Emerald Rite"),
+    "rubyCatastrophe": (25832, "Ruby Catastrophe"), "topazCatastrophe": (25833, "Topaz Catastrophe"), "emeraldCatastrophe": (25834, "Emerald Catastrophe"),
+    "crimsonCyclone2": (25835, "Crimson Cyclone"), "mountainBuster": (25836, "Mountain Buster"), "slipstream": (25837, "Slipstream"),
+    "crimsonStrike": (25885, "Crimson Strike"), "summonIfrit2": (25838, "Summon Ifrit II"), "summonTitan2": (25839, "Summon Titan II"),
+    "summonGaruda2": (25840, "Summon Garuda II"), "radiantAegis": (25799, "Radiant Aegis"),
+    # Shadowbringers.
+    "egiAssault": (16509, "Egi Assault"), "egiAssault2": (16512, "Egi Assault II"), "firebirdTrance": (16549, "Firebird Trance"),
+    # A Realm Reborn 2.0: Thunder from Thaumaturge.
+    "thunder": (144, "Thunder"),
 }
 SMN_STATUSES = {
     "bio3": "Bio III", "miasma3": "Miasma III", "dreadwyrmTrance": "Dreadwyrm Trance", "furtherRuin": "Further Ruin",
     "rouse": "Rouse", "devotion": "Devotion", "shadowFlare": "Shadow Flare", "swiftcast": "Swiftcast",
     "lucidDreaming": "Lucid Dreaming", "addle": "Addle", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
     "bio": "Bio", "bio2": "Bio II", "miasma": "Miasma", "spur": "Spur", "ragingStrikes": "Raging Strikes",
+    "searingLight": 2703, "rubysGlimmer": 3873, "refulgentLux": 3874, "ifritsFavor": 2724, "garudasFavor": 2725, "titansFavor": 2853,
+    "firebirdTrance": "Firebird Trance", "hellishConduit": 1867, "ruination": "Ruination", "crimsonStrikeReady": 4403, "slipstream": 3225, "radiantAegis": 2702, "furtherRuinDt": 2701,
+    "thunder": "Thunder",
 }
 
 # Astrologian (Stormblood 4.x): the cards are their own actions ("the Balance" ...), played from Draw.
@@ -150,6 +185,18 @@ AST_ACTIONS = {
     "malefic": (3596, "Malefic"), "malefic2": (3598, "Malefic II"), "combust": (3599, "Combust"),
     "luminiferousAether": (3607, "Luminiferous Aether"), "disable": (3609, "Disable"), "aero": (121, "Aero"),
     "protect": (123, "Protect"), "stoneskin": (129, "Stoneskin"),
+    # Endwalker and Dawntrail.
+    "fallMalefic": (25871, "Fall Malefic"), "combust3": (16554, "Combust III"), "gravity2": (25872, "Gravity II"),
+    "macrocosmos": (25874, "Macrocosmos"), "microcosmos": (25875, "Microcosmos"), "divination": (16552, "Divination"),
+    "play": (17055, "Play"), "astrodyne": (25870, "Astrodyne"), "astralDraw": (37017, "Astral Draw"), "umbralDraw": (37018, "Umbral Draw"),
+    "play1": (37019, "Play I"), "play2": (37020, "Play II"), "play3": (37021, "Play III"), "minorArcanaDt": (37022, "Minor Arcana"),
+    "balanceDt": (37023, "the Balance"), "arrowDt": (37024, "the Arrow"), "spireDt": (37025, "the Spire"),
+    "spearDt": (37026, "the Spear"), "boleDt": (37027, "the Bole"), "ewerDt": (37028, "the Ewer"), "oracle": (37029, "Oracle"),
+    "heliosConjunction": (37030, "Helios Conjunction"), "malefic4": (16555, "Malefic IV"), "sunSign": (37031, "Sun Sign"),
+    "celestialIntersection": (16556, "Celestial Intersection"), "horoscope": (16557, "Horoscope"), "neutralSect": (16559, "Neutral Sect"),
+    "exaltation": (25873, "Exaltation"), "rescue": (7571, "Rescue"), "esuna": (7568, "Esuna"), "repose": (16560, "Repose"),
+    # Endwalker 6.0–6.18.
+    "crownPlay": (25869, "Crown Play"),
 }
 AST_STATUSES = {
     "theBalance": 829, "theBole": 830, "theArrow": 831, "theSpear": 832, "theEwer": 833, "theSpire": 834,
@@ -158,6 +205,10 @@ AST_STATUSES = {
     "largesse": 1207, "lucidDreaming": "Lucid Dreaming", "swiftcast": "Swiftcast", "surecast": "Surecast",
     "combust": "Combust", "aero": "Aero", "luminiferousAether": "Luminiferous Aether",
     "sprint": "Sprint", "medicated": "Medicated",
+    "divination": 1878, "divining": 3893, "clarifyingDraw": 2713, "harmonyOfSpirit": 2714, "harmonyOfBody": 2715,
+    "harmonyOfMind": 2716, "macrocosmos": 2718, "combust3": 1881, "suntouched": 3895,
+    "ewBalance": 1882, "ewBole": 1883, "ewArrow": 1884, "ewSpear": 1885, "ewEwer": 1886, "ewSpire": 1887,
+    "lordOfCrowns": "Lord of Crowns", "ladyOfCrowns": "Lady of Crowns", "sleeveDraw": "Sleeve Draw", "dtBalance": 3887, "dtArrow": 3888, "dtSpear": 3889, "dtBole": 3890, "dtEwer": 3891, "dtSpire": 3892,
 }
 
 # Scholar (Stormblood 4.x): the summoner-line damage spells, the faerie's actions and the Aetherflow heals.
@@ -177,6 +228,13 @@ SCH_ACTIONS = {
     "broil": (3584, "Broil"), "ruin": (163, "Ruin"), "bio": (17864, "Bio"), "rouse": (176, "Rouse"),
     "eyeForAnEye": (175, "Eye for an Eye"), "virus": (169, "Virus"), "leeches": (187, "Leeches"), "aero": (121, "Aero"),
     "protect": (123, "Protect"), "stoneskin": (129, "Stoneskin"),
+    "broil4": (25865, "Broil IV"), "biolysis": (16540, "Biolysis"), "artOfWar2": (25866, "Art of War II"), "recitation": (16542, "Recitation"),
+    "expedient": (25868, "Expedient"), "protraction": (25867, "Protraction"), "summonSeraph": (16545, "Summon Seraph"), "rescue": (7571, "Rescue"),
+    "banefulImpaction": (37012, "Baneful Impaction"), "seraphism": (37014, "Seraphism"),
+    # A Realm Reborn 2.0: Thunder from Thaumaturge.
+    "thunder": (144, "Thunder"),
+    # Shadowbringers.
+    "broil3": (16541, "Broil III"), "artOfWar": (16539, "Art of War"),
 }
 SCH_STATUSES = {
     "bio2": 189, "miasma": 180, "miasma2": "Miasma II", "chainStratagem": 1221, "feyWind": 799, "dissipation": "Dissipation",
@@ -184,6 +242,9 @@ SCH_STATUSES = {
     "emergencyTactics": "Emergency Tactics", "excogitation": "Excogitation", "lucidDreaming": "Lucid Dreaming",
     "swiftcast": "Swiftcast", "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
     "bio": "Bio", "aero": "Aero", "rouse": "Rouse",
+    "biolysis": "Biolysis", "recitation": "Recitation",
+    "banefulImpaction": "Baneful Impaction", "impactImminent": "Impact Imminent",
+    "thunder": "Thunder",
 }
 
 # Dragoon (Stormblood 4.x). Row 85 is now Lance Charge; in Stormblood it was Blood for Blood.
@@ -202,6 +263,14 @@ DRG_ACTIONS = {
     # Shadowbringers.
     "raidenThrust": (16479, "Raiden Thrust"), "highJump": (16478, "High Jump"), "stardiver": (16480, "Stardiver"),
     "lanceCharge": (85, "Lance Charge"), "coerthanTorment": (16477, "Coerthan Torment"),
+    # Heavensward.
+    "phlebotomize": (91, "Phlebotomize"), "powerSurge": (93, "Power Surge"), "keenFlurry": (77, "Keen Flurry"),
+    "internalRelease": (59, "Internal Release"),
+    "heavensThrust": (25771, "Heavens' Thrust"), "chaoticSpring": (25772, "Chaotic Spring"), "wyrmwindThrust": (25773, "Wyrmwind Thrust"),
+    # Dawntrail.
+    "lanceBarrage": (36954, "Lance Barrage"), "spiralBlow": (36955, "Spiral Blow"), "drakesbane": (36952, "Drakesbane"),
+    "riseOfTheDragon": (36953, "Rise of the Dragon"), "starcross": (36956, "Starcross"), "wingedGlide": (36951, "Winged Glide"),
+    "draconianFury": (25770, "Draconian Fury"),
 }
 DRG_STATUSES = {
     "heavyThrust": 115, "lifeSurge": 116, "chaosThrust": 118, "piercingResDown": 820, "bloodOfTheDragon": 736,
@@ -209,6 +278,9 @@ DRG_STATUSES = {
     "bloodForBlood": "Blood for Blood", "lifeOfTheDragon": "Life of the Dragon",
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
     "disembowel": 1914, "lanceCharge": 1864, "raidenThrustReady": 1863,
+    "phlebotomize": 119, "powerSurge": 120, "internalRelease": 100,
+    "draconianFire": 1863, "nastrondReady": "Nastrond Ready", "starcrossReady": "Starcross Ready", "dragonsFlight": "Dragon's Flight",
+    "enhancedPiercingTalon": "Enhanced Piercing Talon",
 }
 # Monk (Stormblood 4.2–4.58).
 MNK_ACTIONS = {
@@ -234,6 +306,9 @@ MNK_ACTIONS = {
     "fourPointFury": (16473, "Four-point Fury"), "enlightenment": (16474, "Enlightenment"), "masterfulBlitz": (25764, "Masterful Blitz"),
     "celestialRevolution": (25765, "Celestial Revolution"), "risingPhoenix": (25768, "Rising Phoenix"), "phantomRush": (25769, "Phantom Rush"),
     "thunderclap": (25762, "Thunderclap"), "anatman": (16475, "Anatman"),
+    # Dawntrail.
+    "leapingOpo": (36945, "Leaping Opo"), "risingRaptor": (36946, "Rising Raptor"), "pouncingCoeurl": (36947, "Pouncing Coeurl"),
+    "elixirBurst": (36948, "Elixir Burst"), "windsReply": (36949, "Wind's Reply"), "firesReply": (36950, "Fire's Reply"),
 }
 MNK_STATUSES = {
     "gl1": 111, "gl2": 112, "gl3": 113, "opoOpo": 107, "raptor": 108, "coeurl": 109, "perfectBalance": 110,
@@ -242,6 +317,7 @@ MNK_STATUSES = {
     "fistsOfWind": "Fists of Wind", "fistsOfEarth": "Fists of Earth", "riddleOfEarth": "Riddle of Earth", "mantra": "Mantra",
     "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint", "medicated": "Medicated",
     "formlessFist": "Formless Fist", "disciplinedFist": "Disciplined Fist", "leadenFist": "Leaden Fist",
+    "firesRumination": 3843, "windsRumination": 3842,
 }
 
 # Bard (Stormblood 4.06–4.58).
@@ -259,6 +335,10 @@ BRD_ACTIONS = {
     "burstShot": (16495, "Burst Shot"), "apexArrow": (16496, "Apex Arrow"), "blastArrow": (25784, "Blast Arrow"),
     "radiantFinale": (25785, "Radiant Finale"), "ladonsbite": (25783, "Ladonsbite"), "shadowbite": (16494, "Shadowbite"),
     "legGraze": (7554, "Leg Graze"), "footGraze": (7553, "Foot Graze"), "armsLength": (7548, "Arm's Length"),
+    "foeRequiem": (115, "Foe Requiem"),
+    "venomousBite": (100, "Venomous Bite"), "windbite": (113, "Windbite"), "wideVolley": (111, "Wide Volley"),
+    "miserysEnd": (103, "Misery's End"), "bluntArrow": (109, "Blunt Arrow"), "flamingArrow": (102, "Flaming Arrow"), "hawksEye": (99, "Hawk's Eye"),
+    "internalRelease": (59, "Internal Release"), "bloodForBlood": (85, "Lance Charge"), "heartbreakShot": (36975, "Heartbreak Shot"), "resonantArrow": (36976, "Resonant Arrow"), "radiantEncore": (36977, "Radiant Encore"),
 }
 BRD_STATUSES = {
     "straighterShot": 122, "straightShot": "Straight Shot", "causticBite": "Caustic Bite", "stormbite": "Stormbite",
@@ -267,6 +347,9 @@ BRD_STATUSES = {
     "naturesMinne": "Nature's Minne", "criticalUp": "Critical Up", "peloton": "Peloton", "sprint": "Sprint", "medicated": "Medicated",
     "straightShotReady": 122, "radiantFinale": 2722, "blastArrowReady": 2692, "armysMuse": 1932, "armysEthos": 1933,
     "shadowbiteReady": 3002, "armsLength": "Arm's Length",
+    "venomousBite": 124, "windbite": 129, "hawksEye": 123, "internalRelease": 100, "bloodForBlood": 117, "flamingArrow": 249,
+    "foeRequiem": "Foe Requiem",
+    "hawksEye": 3861, "resonantArrowReady": 3862, "radiantEncoreReady": 3863,
 }
 
 # Machinist (Stormblood 4.06–4.58). Row 7410 was Cooldown; Shadowbringers renamed it Heat Blast.
@@ -295,6 +378,8 @@ MCH_ACTIONS = {
     "rollerDash": (17206, "Roller Dash"), "armPunch": (16504, "Arm Punch"), "pileBunker": (16503, "Pile Bunker"),
     "armsLength": (7548, "Arm's Length"),
     "chainSaw": (25788, "Chain Saw"), "scattergun": (25786, "Scattergun"), "crownedCollider": (25787, "Crowned Collider"),
+    "blazingShot": (36978, "Blazing Shot"), "doubleCheck": (36979, "Double Check"), "checkmate": (36980, "Checkmate"),
+    "excavator": (36981, "Excavator"), "fullMetalField": (36982, "Full Metal Field"),
 }
 MCH_STATUSES = {
     "hotShot": 855, "enhancedSlugShot": "Enhanced Slug Shot", "cleanerShot": "Cleaner Shot", "reassembled": "Reassembled",
@@ -303,6 +388,7 @@ MCH_STATUSES = {
     "leadShot": "Lead Shot", "ragingStrikes": "Raging Strikes", "hawksEye": "Hawk's Eye", "bloodForBlood": "Blood for Blood",
     "quellingStrikes": "Quelling Strikes", "keenFlurry": "Keen Flurry", "dismantle": "Dismantle", "hypercharge": "Hypercharge",
     "tactician": 1951, "bioblaster": 1866, "armsLength": "Arm's Length",
+    "hypercharged": 3864, "excavatorReady": 3865, "fullMetalMachinist": 3866,
 }
 
 # Warrior (Heavensward 3.x). Most of its 3.x kit was removed later, so many icons are struck through.
@@ -324,6 +410,8 @@ WAR_ACTIONS = {
     "shakeItOff": (7388, "Shake It Off"), "nascentFlash": (16464, "Nascent Flash"), "rampart": (7531, "Rampart"), "lowBlow": (7540, "Low Blow"), "interject": (7538, "Interject"),
     "reprisal": (7535, "Reprisal"), "shirk": (7537, "Shirk"), "armsLength": (7548, "Arm's Length"),
     "anticipation": (7536, "Anticipation"),
+    # Dawntrail.
+    "primalWrath": (36924, "Primal Wrath"), "primalRuination": (36925, "Primal Ruination"), "damnation": (36923, "Damnation"),
 }
 WAR_STATUSES = {
     "maim": "Maim", "stormsEye": "Storm's Eye", "fracture": "Fracture", "berserk": "Berserk", "pacification": "Pacification",
@@ -333,6 +421,7 @@ WAR_STATUSES = {
     "internalRelease": "Internal Release", "slashingResDown": "Slashing Resistance Down", "sprint": "Sprint", "medicated": "Medicated",
     "surgingTempest": "Surging Tempest", "innerRelease": 1177, "primalRendReady": "Primal Rend Ready", "nascentChaos": "Nascent Chaos",
     "bloodwhetting": "Bloodwhetting", "shakeItOff": "Shake It Off", "nascentFlash": "Nascent Flash", "rampart": "Rampart", "reprisal": "Reprisal", "armsLength": "Arm's Length",
+    "primalRuinationReady": "Primal Ruination Ready", "burgeoningFury": "Burgeoning Fury", "wrathful": "Wrathful", "damnation": "Damnation",
 }
 
 # Ninja (Heavensward 3.x). Much of the 3.x kit was removed later, so many icons are struck through.
@@ -363,6 +452,8 @@ NIN_ACTIONS = {
     "trueNorth": (7546, "True North"), "bloodbath": (7542, "Bloodbath"), "legSweep": (7863, "Leg Sweep"), "armsLength": (7548, "Arm's Length"),
     # Stormblood's role actions (their own rows; Heavensward's cross-class ones keep the plain keys).
     "invigorate2": (7544, "Invigorate"), "feint2": (7549, "Feint"), "secondWind2": (7541, "Second Wind"), "goad2": (7543, "Goad"),
+    "huraijin": (25876, "Huraijin"), "phantomKamaitachi": (25774, "Phantom Kamaitachi"), "forkedRaiju": (25777, "Forked Raiju"), "fleetingRaiju": (25778, "Fleeting Raiju"),
+    "kunaisBane": (36958, "Kunai's Bane"), "dokumori": (36957, "Dokumori"), "zeshoMeppo": (36960, "Zesho Meppo"), "tenriJindo": (36961, "Tenri Jindo"),
 }
 NIN_STATUSES = {
     "huton": "Huton", "suiton": "Suiton", "hidden": "Hidden", "mudra": "Mudra", "kassatsu": "Kassatsu", "duality": "Duality",
@@ -396,6 +487,8 @@ PLD_ACTIONS = {
     "shieldSwipe": (25, "Shield Swipe"), "swordOath": (26, "Sword Oath"), "shieldOath": (28, "Iron Will"),
     "convalescence": (7532, "Convalescence"), "anticipation": (7536, "Anticipation"), "awareness": (7534, "Awareness"),
     "ultimatum": (7539, "Ultimatum"),
+    # Heavensward cross-class (Marauder).
+    "fracture": (33, "Fracture"), "foresight": (32, "Foresight"), "bloodbath": (34, "Bloodbath"),
 }
 PLD_STATUSES = {
     "fightOrFlight": 76, "requiescat": 1368, "confiteorReady": 3019, "goringBladeReady": 3847, "atonementReady": 1902,
@@ -404,7 +497,7 @@ PLD_STATUSES = {
     "divineVeil": "Divine Veil", "passageOfArms": "Passage of Arms", "rampart": "Rampart", "reprisal": "Reprisal", "swordOath": "Sword Oath",
     "sentinel": "Sentinel", "sheltron": "Sheltron", "goringBlade": "Goring Blade",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
-    "shieldOath": 79,
+    "shieldOath": 79, "bladeOfFaithReady": 3019, "bladeOfValor": "Blade of Valor",
 }
 
 # Viper (Dawntrail 7.05+): the current kit.
@@ -437,6 +530,7 @@ VPR_STATUSES = {
     "fellskinsVenom": "Fellskin's Venom", "poisedForTwinfang": "Poised for Twinfang", "poisedForTwinblood": "Poised for Twinblood",
     "reawakened": "Reawakened", "trueNorth": 1250, "bloodbath": 84, "feint": 1195, "armsLength": 1209, "sprint": "Sprint",
     "medicated": "Medicated",
+    "noxiousGnash": 3667,
 }
 
 # White Mage (Dawntrail 7.x): the current kit.
@@ -454,11 +548,22 @@ WHM_ACTIONS = {
     # Shadowbringers.
     "glare": (16533, "Glare"), "holy": (139, "Holy"), "cure": (120, "Cure"), "medica": (124, "Medica"), "medica2": (133, "Medica II"),
     "raise": (125, "Raise"), "fluidAura": (134, "Fluid Aura"),
+    # Heavensward.
+    "stone3": (3568, "Stone III"), "stone2": (127, "Stone II"), "aero": (121, "Aero"), "aero2": (132, "Aero II"),
+    "aero3": (3572, "Aero III"), "clericStance": (122, "Cleric Stance"), "shroudOfSaints": (130, "Shroud of Saints"),
+    "divineSeal": (138, "Divine Seal"),
+    # Stormblood.
+    "stone4": (7431, "Stone IV"), "largesse": (7570, "Largesse"),
+    # A Realm Reborn: Thunder (2.0) and Blizzard II (2.1+) from Thaumaturge.
+    "thunder": (144, "Thunder"), "blizzard2": (146, "Blizzard II"),
 }
 WHM_STATUSES = {
     "presenceOfMind": 157, "sacredSight": 3879, "thinAir": "Thin Air", "temperance": "Temperance", "divineGrace": "Divine Grace",
     "confession": "Confession", "aquaveil": "Aquaveil", "dia": 1871, "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming",
     "surecast": "Surecast", "sprint": "Sprint", "medicated": "Medicated",
+    "clericStance": "Cleric Stance", "shroudOfSaints": "Shroud of Saints", "divineSeal": "Divine Seal", "aero": "Aero",
+    "aero2": "Aero II", "aero3": "Aero III", "freecure": 155, "largesse": 1207,
+    "thunder": "Thunder",
 }
 
 # Reaper (Dawntrail 7.x): the current kit.
@@ -498,6 +603,7 @@ SGE_ACTIONS = {
     "taurochole": (24303, "Taurochole"), "druochole": (24296, "Druochole"), "icarus": (24295, "Icarus"),
     "swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"), "surecast": (7559, "Surecast"), "rescue": (7571, "Rescue"),
     "sprint": (3, "Sprint"), "auto": (7, "attack"),
+    "psyche": (37033, "Psyche"),
 }
 SGE_STATUSES = {
     "eukrasia": "Eukrasia", "kardia": "Kardia", "soteria": "Soteria", "zoe": "Zoe", "swiftcast": "Swiftcast",
@@ -520,13 +626,21 @@ DRK_ACTIONS = {
     # Stormblood 4.x.
     "spinningSlash": (3619, "Spinning Slash"), "powerSlash": (3627, "Power Slash"), "darkside": (3628, "Darkside"),
     "darkArts": (3635, "Dark Arts"), "darkPassenger": (3633, "Dark Passenger"),
+    # Heavensward.
+    "deliriumWs": (3637, "Delirium"), "scourge": (3620, "Scourge"), "lowBlowHw": (3622, "Low Blow"), "fracture": (33, "Fracture"),
+    # Endwalker and Dawntrail.
+    "shadowbringer": (25757, "Shadowbringer"), "saltAndDarkness": (25755, "Salt and Darkness"), "oblation": (25754, "Oblation"),
+    "scarletDelirium": (36928, "Scarlet Delirium"), "comeuppance": (36929, "Comeuppance"), "torcleaver": (36930, "Torcleaver"),
+    "impalement": (36931, "Impalement"), "disesteem": (36932, "Disesteem"), "shadowstride": (36926, "Shadowstride"),
+    "shadowedVigil": (36927, "Shadowed Vigil"),
 }
 DRK_STATUSES = {
     "darkside": "Darkside", "bloodWeapon": 742, "delirium": "Delirium", "blackestNight": "Blackest Night",
     "darkArts": "Dark Arts", "grit": "Grit", "shadowWall": "Shadow Wall", "darkMind": "Dark Mind", "livingDead": "Living Dead",
     "darkMissionary": "Dark Missionary", "saltedEarth": "Salted Earth", "rampart": "Rampart", "reprisal": "Reprisal",
     "armsLength": "Arm's Length", "sprint": "Sprint", "medicated": "Medicated",
-    "theBlackestNight": "Blackest Night",
+    "theBlackestNight": "Blackest Night", "scourge": 741, "fracture": "Fracture",
+    "scorn": 3837, "oblation": "Oblation", "shadowedVigil": "Shadowed Vigil",
 }
 
 # Red Mage (Shadowbringers 5.x).
@@ -568,6 +682,7 @@ DNC_ACTIONS = {
     "peloton": (7557, "Peloton"), "headGraze": (7551, "Head Graze"), "armsLength": (7548, "Arm's Length"),
     "sprint": (3, "Sprint"), "auto": (8, "Shot"),
     "tillana": (25790, "Tillana"), "fanDance4": (25791, "Fan Dance IV"), "starfallDance": (25792, "Starfall Dance"),
+    "lastDance": (36983, "Last Dance"), "finishingMove": (36984, "Finishing Move"), "danceOfTheDawn": (36985, "Dance of the Dawn"),
 }
 DNC_STATUSES = {
     "standardStep": 1818, "technicalStep": 1819, "standardFinish": 1821, "technicalFinish": 1822, "esprit": 1847, "devilment": 1825,
@@ -576,6 +691,7 @@ DNC_STATUSES = {
     "sprint": "Sprint", "medicated": "Medicated",
     "silkenSymmetry": 2693, "silkenFlow": 2694, "flourishSymmetry": 3017, "flourishFlow": 3018, "fourfoldFanDance": 2699,
     "flourishingStarfall": 2700, "flourishingFinish": 2698,
+    "lastDanceReady": 3867, "finishingMoveReady": 3868, "danceOfTheDawnReady": 3869,
 }
 
 # Pictomancer (Dawntrail 7.x).
@@ -603,6 +719,27 @@ PCT_STATUSES = {
     "addle": "Addle", "sprint": "Sprint", "medicated": "Medicated",
 }
 
+# Blue Mage: every spell in js/jobs/blu_spells.js (all caps), keyed as the module keys them.
+def _blu_actions():
+    import json as _json, re as _re
+    from pathlib import Path as _P
+    txt = (_P(__file__).resolve().parent.parent / "js" / "jobs" / "blu_spells.js").read_text(encoding="utf-8")
+    data = _json.loads(_re.search(r"B\.BLU_SPELLS = (\{.*\});", txt, _re.S).group(1))
+    out = {}
+    for spells in data.values():
+        for sp in spells:
+            out.setdefault(sp["key"], (sp["id"], sp["name"]))
+    out.update({"swiftcast": (7561, "Swiftcast"), "lucidDreaming": (7562, "Lucid Dreaming"), "sprint": (3, "Sprint")})
+    return out
+BLU_ACTIONS = _blu_actions()
+BLU_STATUSES = {
+    "waxingNocturne": "Waxing Nocturne", "waningNocturne": "Waning Nocturne", "bristle": "Boost", "whistle": "Harmonized",
+    "tingle": "Tingling", "surpanakhasFury": "Surpanakha's Fury", "phantomFlurry": "Phantom Flurry", "offGuard": "Off-guard",
+    "peculiarLight": "Peculiar Light", "songOfTorment": "Bleeding", "nightbloom": "Bleeding", "featherRain": "Windburn",
+    "swiftcast": "Swiftcast", "lucidDreaming": "Lucid Dreaming", "sprint": "Sprint", "medicated": "Medicated",
+    "wingedReprobation": 3640, "wingedRedemption": 3641, "breathOfMagic": 3712, "mortalFlame": 3643, "apokalypsis": "Apokalypsis",
+}
+
 JOBS = {
     # Sharpcast's Endwalker art is still in the files at 002657, next to the rest of the Black Mage icons.
     "blm": {"actions": ACTIONS, "statuses": BLM_STATUSES, "overrides": {"sharpcast": 2657},
@@ -620,7 +757,8 @@ JOBS = {
     # Stellar blasts use Stellar Detonation's. The Sects, Royal Road, Spread, Sleeve Draw and Time Dilation are struck
     # through, and uncross() recovers them.
     "ast": {"actions": AST_ACTIONS, "statuses": AST_STATUSES,
-            "overrides": {"draw": 3101, "redraw": 3105, "undraw": 3102, "minorArcana": 3106, "stellarBurst": 3144, "stellarExplosion": 3144},
+            "overrides": {"draw": 3101, "redraw": 3105, "undraw": 3102, "minorArcana": 3106, "stellarBurst": 3144, "stellarExplosion": 3144,
+                          "play": 3102, "astrodyne": 3558},
             "uncross": {"diurnalSect": "255,220,120", "nocturnalSect": "140,150,255", "royalRoad": "255,215,130",
                         "spread": "200,210,255", "sleeveDraw": "230,200,255", "timeDilation": "170,210,255",
                         "emptyRoad": "200,190,160", "undrawSpread": "200,210,255", "malefic": "200,170,255",
@@ -649,8 +787,8 @@ JOBS = {
                         "armOfTheDestroyer": "240,170,90", "anatman": "180,200,240", "touchOfDeath": "200,90,220", "fracture": "235,140,90",
                         "featherfoot": "150,220,170"},
             "tincture": "Grade 8 Tincture of Strength", "classjob": 20},
-    "brd": {"actions": BRD_ACTIONS, "statuses": BRD_STATUSES, "overrides": {},
-            "uncross": {"straightShot": "230,200,120", "quickNock": "220,190,140", "repellingShot": "200,220,240",
+    "brd": {"actions": BRD_ACTIONS, "statuses": BRD_STATUSES, "overrides": {"venomousBite": 363, "windbite": 367, "wideVolley": 357, "miserysEnd": 364, "bluntArrow": 369, "flamingArrow": 368, "hawksEye": 354, "internalRelease": 212, "bloodForBlood": 309},
+            "uncross": {"foeRequiem": "200,170,240", "straightShot": "230,200,120", "quickNock": "220,190,140", "repellingShot": "200,220,240",
                         "rainOfDeath": "180,150,230", "pitchPerfect": "240,190,120", "ironJaws": "200,210,170"},
             "tincture": "Grade 8 Tincture of Dexterity", "classjob": 23},
     "mch": {"actions": MCH_ACTIONS, "statuses": MCH_STATUSES, "overrides": {"volleyFire": 3026},
@@ -676,16 +814,23 @@ JOBS = {
     "pct": {"actions": PCT_ACTIONS, "statuses": PCT_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Intelligence", "classjob": 42},
     "whm": {"actions": WHM_ACTIONS, "statuses": WHM_STATUSES, "overrides": {},
+            "uncross": {"stone4": "220,200,150", "largesse": "200,230,170", "stone3": "220,200,150", "stone2": "220,200,150", "aero": "140,220,170", "aero2": "140,220,170", "aero3": "140,220,170",
+                        "clericStance": "230,200,120", "shroudOfSaints": "200,200,235", "divineSeal": "235,220,150", "fluidAura": "120,180,240",
+                        "presenceOfMind": "200,170,240", "tetragrammaton": "150,220,200"},
             "tincture": "Grade 4 Gemdraught of Mind", "classjob": 24},
     "vpr": {"actions": VPR_ACTIONS, "statuses": VPR_STATUSES, "overrides": {},
             "tincture": "Grade 4 Gemdraught of Dexterity", "classjob": 41},
     "drk": {"actions": DRK_ACTIONS, "statuses": DRK_STATUSES, "overrides": {},
             "uncross": {"spinningSlash": "200,120,150", "powerSlash": "210,90,120", "darkside": "170,80,200", "darkArts": "210,70,100",
-                        "darkPassenger": "150,90,210", "plunge": "180,100,210"},
+                        "darkPassenger": "150,90,210", "plunge": "180,100,210", "deliriumWs": "210,80,110", "scourge": "160,90,200",
+                        "lowBlowHw": "200,120,150", "fracture": "235,140,90"},
             "tincture": "Grade 4 Tincture of Strength", "classjob": 32},
+    "blu": {"actions": BLU_ACTIONS, "statuses": BLU_STATUSES, "overrides": {}, "trustRows": True,
+            "tincture": "Grade 6 Tincture of Intelligence", "classjob": 36},
     "pld": {"actions": PLD_ACTIONS, "statuses": PLD_STATUSES, "overrides": {},
             "uncross": {"savageBlade": "200,200,235", "swordOath": "235,200,120", "shieldSwipe": "180,200,235", "convalescence": "140,220,170",
-                        "anticipation": "200,180,140", "awareness": "200,160,225", "ultimatum": "235,120,90"},
+                        "anticipation": "200,180,140", "awareness": "200,160,225", "ultimatum": "235,120,90", "fracture": "235,140,90",
+                        "foresight": "200,200,140", "bloodbath": "220,90,90", "rageOfHalone": "235,160,90", "shieldBash": "200,200,235"},
             "tincture": "Grade 4 Gemdraught of Strength", "classjob": 19},
     "nin": {"actions": NIN_ACTIONS, "statuses": NIN_STATUSES, "overrides": {},
             "uncross": {"spinningEdge": "190,210,200", "gustSlash": "160,210,170", "aeolianEdge": "140,220,200", "armorCrush": "160,200,230",
@@ -875,7 +1020,7 @@ def main():
         acts = cfg["actions"]
         for key, (rid, name) in acts.items():
             got = action.value(rid, ncol)
-            if got != name:
+            if got != name and not cfg.get("trustRows"):       # Blue Mage's rows come straight from the datamine
                 raise RuntimeError(f"Action {rid} is {got!r}, expected {name!r}")
         if icol is None:
             icol = icon_col(action, [r for r, _ in acts.values()])

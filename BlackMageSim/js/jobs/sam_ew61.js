@@ -51,6 +51,7 @@ ${seq(['meikyoShisui', 'gekko', ['tincture'], 'kasha', ['ikishoten'], 'yukikaze'
     }
   }
 
+  B.SamuraiEW61 = SamuraiEW61;
   B.registerJob({
     id: 'sam', name: 'Samurai', abbr: 'SAM', role: 'melee', classJob: 34,
     versions: [{ id: 'ew61', label: 'Endwalker 6.1–6.58', history: 'EW 6.1–6.58', note: 'Level 90: no Kaiten; Midare, Kaeshi: Setsugekka, Ogi and Kaeshi: Namikiri always crit; the 6.4 potencies; Anabaseios gear', create: () => new SamuraiEW61() }],

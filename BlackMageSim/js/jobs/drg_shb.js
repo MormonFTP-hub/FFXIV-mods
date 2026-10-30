@@ -308,6 +308,7 @@ ${seq(['trueThrust', ['lanceCharge'], ['dragonSight'], 'disembowel', ['battleLit
     }
   }
 
+  B.DragoonShB = DragoonShB;
   B.registerJob({
     id: 'drg', name: 'Dragoon', abbr: 'DRG', role: 'melee', classJob: 22,
     versions: ['shb501', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new DragoonShB(v) })),

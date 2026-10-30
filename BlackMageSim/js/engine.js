@@ -379,7 +379,7 @@
       const critRate = Math.floor(200 * (s.crit - L.sub) / L.div + 50) / 1000 + (snap.critAdd || 0);
       const critMult = Math.floor(200 * (s.crit - L.sub) / L.div + 1400) / 1000;
       const dhRate = Math.floor(550 * (s.dh - L.sub) / L.div) / 1000 + (snap.dhAdd || 0);   // snap.dhAdd: Battle Voice
-      const crit = opts.crit || Math.random() < critRate;
+      const crit = !opts.noCrit && (opts.crit || Math.random() < critRate);     // opts.noCrit: Heavensward's Barrage hits
       const dh = opts.dh || Math.random() < dhRate;     // opts.dh: a guaranteed direct hit
       if (crit) d = Math.floor(d * critMult);
       if (dh) d = Math.floor(d * 1.25);
@@ -391,17 +391,20 @@
     // Heavensward's formula (Dervy's fits, 2015–16): weaponskills and spells potency/100 × (WD/25 + 1) × main/9 ×
     // (1 + DET/7290); auto-attacks (WD/3 × delay/34 + 1) × main/6.8 × (1 + DET/6795) per swing; DoT ticks gain
     // 1 + (Skill Speed − 354)/6800. Crit rate (CRT − 354)/4290 + 5% for 1.45× + the same. No Direct Hit before 4.0.
+    // A Realm Reborn (B.LEVELS.arr50) uses the same shape with its own divisors (a refit of the 2013-14 community
+    // formulas), a flat ×1.5 crit and DoTs that speed doesn't touch: the level entry carries those.
     damageHW(potency, snap, isDot, opts) {
-      const s = this.stats;
+      const s = this.stats, L = this.lv;
+      const caster = this.job.role === 'caster' || this.job.role === 'healer';
       let d;
-      if (opts.auto) d = (potency / 100) * (s.wd / 3 * s.delay / 34 + 1) * (snap.main / 6.8) * (1 + s.det / 6795);
-      else d = (potency / 100) * (s.wd / 25 + 1) * (snap.main / 9) * (1 + s.det / 7290);
-      if (isDot) d *= 1 + (s.speed - 354) / 6800;
+      if (opts.auto) d = (potency / 100) * (s.wd / 3 * s.delay / 34 + 1) * (snap.main / (L.autoStrDiv || 6.8)) * (1 + s.det / (L.autoDetDiv || 6795));
+      else d = (potency / 100) * (s.wd / 25 + 1) * (snap.main / ((caster && L.casterStrDiv) || L.strDiv || 9)) * (1 + s.det / ((caster && L.casterDetDiv) || L.detDiv || 7290));
+      if (isDot && L.dotSpeed !== false) d *= 1 + (s.speed - 354) / 6800;
       d *= (s.trait || 100) / 100;
-      const step = (s.crit - 354) / 4290;
-      const crit = opts.crit || Math.random() < 0.05 + step + (snap.critAdd || 0);
+      const step = (s.crit - L.sub) / (L.critDiv || 4290);
+      const crit = !opts.noCrit && (opts.crit || Math.random() < 0.05 + step + (snap.critAdd || 0));
       const dh = Math.random() < (snap.dhAdd || 0);
-      if (crit) d *= 1.45 + step;
+      if (crit) d *= L.critMult || 1.45 + step;
       if (dh) d *= 1.25;
       d *= (95 + Math.random() * 10) / 100;
       d = Math.max(1, Math.floor(d * snap.mult) - 1);
@@ -539,7 +542,10 @@
         this.autoNext = now + delay;
         // job.noAutos: auto-attacks switched off (Heavensward Machinist's Gauss Barrel).
         if (this.targeted && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
-          this.queueHit('auto', au.potency, this.snapshot({ school: 'physical', auto: true }), 0.1, null, { auto: true });
+          // job.autoStrikes: hits per swing (A Realm Reborn's Barrage: three).
+          const snap = this.snapshot({ school: 'physical', auto: true });
+          const n = this.job.autoStrikes ? this.job.autoStrikes(this) : 1;
+          for (let k = 0; k < n; k++) this.queueHit('auto', au.potency, snap, 0.1 + k * 0.15, null, { auto: true });
         }
       }
 

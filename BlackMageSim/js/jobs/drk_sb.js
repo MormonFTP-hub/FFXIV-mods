@@ -146,9 +146,9 @@
 
     snapshot(a, e) {
       let mult = 1;
-      if (e.has('darkside')) mult *= 1.20;
+      if (e.has('darkside')) mult *= this.dsMult || 1.20;
       if (e.has('grit')) mult *= 0.80;
-      const main = this.stats.main + (e.has('medicated') ? B.TINCTURES[this.V.tincture].cap : 0);
+      const main = this.stats.main + (e.has('medicated') ? (this.potionCap || B.TINCTURES[this.V.tincture].cap) : 0);
       return { mult, main };
     }
 
@@ -186,7 +186,7 @@
           if (e.has('bloodWeapon')) e.statuses.bloodWeapon.until += 8;
           return;
         case 'saltedEarth': e.addTStatus('saltedEarth', a.dot.duration, { snap, dot: { potency: a.dot.potency, id } }); return;
-        case 'carveAndSpit': if (!da) this.giveMp(e, 1200); break;
+        case 'carveAndSpit': if (!da) this.giveMp(e, this.casMp || 1200); break;
         case 'quietus': this.giveMp(e, 480 * Math.max(1, e.targets || 1)); break;
         case 'plunge': this.gap(e); break;
         case 'theBlackestNight': e.addStatus('theBlackestNight', this.V.tbn); return;
@@ -268,6 +268,7 @@ ${seq(['hardSlash', ['bloodWeapon'], 'syphonStrike', ['saltedEarth'], 'souleater
     }
   }
 
+  B.DarkKnightSB = DarkKnightSB;
   B.registerJob({
     id: 'drk', name: 'Dark Knight', abbr: 'DRK', role: 'tank', classJob: 32,
     versions: ['sb43', 'sb42', 'sb40'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new DarkKnightSB(v) })),

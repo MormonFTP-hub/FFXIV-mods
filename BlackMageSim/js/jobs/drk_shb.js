@@ -248,6 +248,7 @@ ${seq(['bloodWeapon', 'hardSlash', ['edgeOfShadow'], 'syphonStrike', ['tincture'
     }
   }
 
+  B.DarkKnightShB = DarkKnightShB;
   B.registerJob({
     id: 'drk', name: 'Dark Knight', abbr: 'DRK', role: 'tank', classJob: 32,
     versions: ['shb51', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new DarkKnightShB(v) })),

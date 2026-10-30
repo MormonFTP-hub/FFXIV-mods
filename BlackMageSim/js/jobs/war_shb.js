@@ -1,18 +1,25 @@
-// Warrior, Shadowbringers 5.0–5.21 at level 80, in two versions. Built on the Endwalker class (war_ew.js) for the
+// Warrior, Shadowbringers 5.0–5.58 at level 80, in three versions. Built on the Endwalker class (war_ew.js) for the
 // Beast Gauge, Infuriate and Nascent Chaos, with the 5.x kit: Storm's Eye is a +10% damage buff of its own that the
 // combo refreshes to 30s (5.3 made it stack to 60s), Inner Release lasts 10s on a 90s recast and makes every attack
 // a critical direct hit and every Beast Gauge action free (Fell Cleave, Inner Chaos, Upheaval and Onslaught alike),
 // Upheaval and Onslaught cost 20 gauge, Onslaught has no charges, and there's no Primal Rend, Orogeny or Bloodwhetting.
 //  - 5.0–5.08: Vengeance 10s, Holmgang 6s, Raw Intuition 5s, a single-target 5s Reprisal; Eden's Gate gear.
 //  - 5.1–5.21: Vengeance 15s, Holmgang 8s, Raw Intuition 6s, Reprisal on all nearby enemies for 10s; Eden's Verse gear.
-// The damage numbers didn't change from 5.0 to 5.21 (the game data at each patch; 5.5 later raised the combo). Gear
+//  - 5.3–5.58: Storm's Eye's combo adds 30s up to 60s (Mythril Tempest 30s too), Inner Release adds 15s; 5.5's Maim
+//    320 and Storm's Path / Eye 420; Eden's Promise gear.
+// The damage numbers didn't change from 5.0 to 5.45 (the game data at each patch; 5.5 raised the combo). Gear
 // stats are the 5.58 Item.csv's (pre-6.0), sets without Direct Hit like The Balance's Warrior sets. ref: a scripted bot
-// parses about 10,430 / 8,370 on these.
+// parses about 10,430 / 8,370 on 5.1 / 5.0, and about 12,900 on 5.3.
 (function (B) {
   const EW = B.WarriorEW;
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.55, fx: 'gnbSlash' }, o);
   const ab = (o) => Object.assign({ kind: 'ogcd' }, o);
   const VERSIONS = {
+    shb53: { label: 'Shadowbringers 5.3–5.58', history: 'ShB 5.3–5.58', vengeance: 15, holmgang: 8, raw: 6, reprisal: 10, tincture: 'str4', gcd: 2.38, ref: 13700,
+      maim: 320, path: 420, eyeCap: 60, eyeStack: true, mythrilEye: 30, irEye: 15,
+      stats: { hp: 90000, main: 5526, wd: 134, det: 3113, crit: 4077, dh: 380, speed: 1530, ten: 892 },
+      gear: 'The Balance\'s 5.4 Eden\'s Promise set at 2.38 (Strength 5,526, 134 weapon damage), with a Grade 4 Tincture',
+      note: 'Level 80: Storm\'s Eye stacks to 60s and Inner Release adds 15s to it, 5.5\'s Maim 320 and Storm\'s Path / Eye 420; Eden\'s Promise gear' },
     shb51: { label: 'Shadowbringers 5.1–5.21', history: 'ShB 5.1–5.21', vengeance: 15, holmgang: 8, raw: 6, reprisal: 10, tincture: 'str3', gcd: 2.38, ref: 11050,
       stats: { hp: 86000, main: 4789, wd: 128, det: 2633, crit: 3898, dh: 380, speed: 1538, ten: 1109 },
       gear: 'an Eden\'s Verse set at 2.38 (Strength 4,789, 128 weapon damage), with a Grade 3 Tincture',
@@ -26,14 +33,14 @@
   function buildActions(V) {
     return {
       heavySwing: ws({ name: 'Heavy Swing', potency: 200, comboStart: true, comboNext: true, desc: 'Delivers an attack with a potency of 200.' }),
-      maim: ws({ name: 'Maim', potency: 100, comboPotency: 300, comboFrom: 'heavySwing', comboNext: true, gauge: 10, fx: 'gnbSlash2', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Heavy Swing\nCombo Potency: 300\nCombo Bonus: Increases Beast Gauge by 10' }),
-      stormsPath: ws({ name: 'Storm\'s Path', potency: 100, comboPotency: 380, comboFrom: 'maim', gauge: 20, fx: 'gnbBurst', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Maim\nCombo Potency: 380\nCombo Bonus: Restores own HP\nCure Potency: 250\nCombo Bonus: Increases Beast Gauge by 20' }),
-      stormsEye: ws({ name: 'Storm\'s Eye', potency: 100, comboPotency: 380, comboFrom: 'maim', gauge: 10, eye: 30, fx: 'gnbBurst', desc: 'Delivers an attack with a potency of 100.\nCombo Action: Maim\nCombo Potency: 380\nCombo Bonus: Increases damage dealt by 10%\nDuration: 30s\nCombo Bonus: Increases Beast Gauge by 10' }),
+      maim: ws({ name: 'Maim', potency: 100, comboPotency: V.maim || 300, comboFrom: 'heavySwing', comboNext: true, gauge: 10, fx: 'gnbSlash2', desc: `Delivers an attack with a potency of 100.\nCombo Action: Heavy Swing\nCombo Potency: ${V.maim || 300}\nCombo Bonus: Increases Beast Gauge by 10` }),
+      stormsPath: ws({ name: 'Storm\'s Path', potency: 100, comboPotency: V.path || 380, comboFrom: 'maim', gauge: 20, fx: 'gnbBurst', desc: `Delivers an attack with a potency of 100.\nCombo Action: Maim\nCombo Potency: ${V.path || 380}\nCombo Bonus: Restores own HP\nCure Potency: 250\nCombo Bonus: Increases Beast Gauge by 20` }),
+      stormsEye: ws({ name: 'Storm\'s Eye', potency: 100, comboPotency: V.path || 380, comboFrom: 'maim', gauge: 10, eye: 30, fx: 'gnbBurst', desc: `Delivers an attack with a potency of 100.\nCombo Action: Maim\nCombo Potency: ${V.path || 380}\nCombo Bonus: Increases damage dealt by 10%\n${V.eyeStack ? 'Extends the duration by 30s to a maximum of 60s' : 'Duration: 30s'}\nCombo Bonus: Increases Beast Gauge by 10` }),
       tomahawk: ws({ name: 'Tomahawk', potency: 140, range: 20, delay: 0.7, fx: 'enpi', desc: 'Delivers a ranged attack with a potency of 140.\nAdditional Effect: Increased enmity' }),
       fellCleave: ws({ name: 'Fell Cleave', potency: 590, cost: 50, spends: true, fx: 'gnbDouble', desc: 'Delivers an attack with a potency of 590.\nBeast Gauge Cost: 50\n※Action changes to Inner Chaos while under the effect of Nascent Chaos.' }),
       innerChaos: ws({ name: 'Inner Chaos', potency: 920, cost: 50, chaos: true, fx: 'gnbDouble', desc: 'Delivers a critical direct hit with a potency of 920.\nAdditional Effect: Reduces the recast time of Infuriate by 5 seconds\nBeast Gauge Cost: 50\nCan only be executed while under the effect of Nascent Chaos. Effect fades upon execution.' }),
       overpower: ws({ name: 'Overpower', potency: 130, comboStart: true, comboNext: true, target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack with a potency of 130 to all enemies in a cone before you.' }),
-      mythrilTempest: ws({ name: 'Mythril Tempest', potency: 100, comboPotency: 200, comboFrom: 'overpower', target: false, pbaoe: 5, aoe: true, gauge: 20, eyeAdd: 10, desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Overpower\nCombo Potency: 200\nCombo Bonus: Extends Storm\'s Eye duration by 10s to a maximum of 30s\nCombo Bonus: Increases Beast Gauge by 20' }),
+      mythrilTempest: ws({ name: 'Mythril Tempest', potency: 100, comboPotency: 200, comboFrom: 'overpower', target: false, pbaoe: 5, aoe: true, gauge: 20, eyeAdd: V.mythrilEye || 10, desc: `Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Overpower\nCombo Potency: 200\nCombo Bonus: Extends Storm's Eye duration by ${V.mythrilEye || 10}s to a maximum of ${V.eyeCap || 30}s\nCombo Bonus: Increases Beast Gauge by 20` }),
       decimate: ws({ name: 'Decimate', potency: 250, cost: 50, spends: true, target: false, pbaoe: 5, aoe: true, desc: 'Delivers an attack to all nearby enemies with a potency of 250.\nBeast Gauge Cost: 50' }),
       chaoticCyclone: ws({ name: 'Chaotic Cyclone', potency: 400, cost: 50, chaos: true, target: false, pbaoe: 5, aoe: true, desc: 'Delivers a critical direct hit with a potency of 400 to all nearby enemies.\nAdditional Effect: Reduces the recast time of Infuriate by 5 seconds\nBeast Gauge Cost: 50\nCan only be executed while under the effect of Nascent Chaos.' }),
       infuriate: ab({ name: 'Infuriate', recast: 60, charges: 2, desc: 'Increases Beast Gauge by 50.\nAdditional Effect: Grants Nascent Chaos\nDuration: 30s\nMaximum Charges: 2\nCan only be executed while in combat.\nFell Cleave, Decimate, Inner Chaos and Chaotic Cyclone shorten its recast by 5s.' }),
@@ -119,11 +126,14 @@
       // Enhanced Infuriate: Fell Cleave, Decimate, Inner Chaos and Chaotic Cyclone take 5s off Infuriate.
       if (a.spends || a.chaos) { const c = e.cdOf('infuriate'); if (c && c.nextAt !== null) c.nextAt -= 5; }
       if (a.gauge && e.lastComboHit) this.gauge(e, a.gauge);
-      if (a.eye && e.lastComboHit) e.addStatus('stormsEye', a.eye);
-      if (a.eyeAdd && e.lastComboHit) {
+      // 5.3 on: Storm's Eye (and Mythril Tempest, and Inner Release) add to the buff, up to 60s.
+      const addEye = (n) => {
         const left = e.has('stormsEye') ? e.statuses.stormsEye.until - e.now : 0;
-        e.addStatus('stormsEye', Math.min(30, left + a.eyeAdd));
-      }
+        e.addStatus('stormsEye', Math.min(this.V.eyeCap || 30, left + n));
+      };
+      if (a.eye && e.lastComboHit) { if (this.V.eyeStack) addEye(a.eye); else e.addStatus('stormsEye', a.eye); }
+      if (a.eyeAdd && e.lastComboHit) addEye(a.eyeAdd);
+      if (id === 'innerRelease' && this.V.irEye) addEye(this.V.irEye);
 
       switch (id) {
         case 'infuriate': this.gauge(e, 50); e.addStatus('nascentChaos', 30); break;
@@ -162,17 +172,17 @@
       const V = this.V;
       return `
 <h3>How it plays (${V.label})</h3>
-<p>Level 80 Warrior, one stance. <b>Heavy Swing → Maim → Storm's Eye</b> keeps the <b>Storm's Eye</b> buff up (+10% damage; the combo sets it back to 30s, it doesn't stack yet); otherwise finish with <b>Storm's Path</b> (+20 Beast Gauge). Spend 50 gauge on <b>Fell Cleave</b> (590). <b>Infuriate</b> (two charges, in combat) adds 50 and Nascent Chaos, which turns Fell Cleave into <b>Inner Chaos</b> (920, always a critical direct hit). Fell Cleave and Inner Chaos take 5s off Infuriate.</p>
+<p>Level 80 Warrior, one stance. <b>Heavy Swing → Maim → Storm's Eye</b> keeps the <b>Storm's Eye</b> buff up (+10% damage; ${V.eyeStack ? 'from 5.3 each combo adds 30s up to 60s, and Inner Release adds 15s, so one Storm\'s Eye in every two combos is enough' : 'the combo sets it back to 30s, it doesn\'t stack yet'}); otherwise finish with <b>Storm's Path</b> (+20 Beast Gauge). Spend 50 gauge on <b>Fell Cleave</b> (590). <b>Infuriate</b> (two charges, in combat) adds 50 and Nascent Chaos, which turns Fell Cleave into <b>Inner Chaos</b> (920, always a critical direct hit). Fell Cleave and Inner Chaos take 5s off Infuriate.</p>
 <p><b>Inner Release</b> (90s) gives 10s in which Beast Gauge actions cost nothing and <b>every attack</b> is a critical direct hit, auto-attacks included. Weave it late to fit five Fell Cleaves, plus <b>Upheaval</b> (450) and <b>Onslaught</b> (100), which cost 20 gauge outside it. Don't Infuriate inside it: Nascent Chaos would turn a free Fell Cleave into Inner Chaos.</p>
-<h3>An Inner Release opener</h3>
-${seq(['heavySwing', 'maim', ['tincture'], 'stormsEye', ['innerRelease'], 'fellCleave', ['upheaval'], 'fellCleave', ['onslaught'], 'fellCleave', 'fellCleave', 'fellCleave', ['infuriate'], 'innerChaos', ['infuriate'], 'innerChaos', 'heavySwing', 'maim', 'stormsPath'])}
-<p>The Balance's early-Shadowbringers opener image is lost; this one follows its rules: Inner Release on the third GCD with five Fell Cleaves, Upheaval and Onslaught inside, then both Infuriate charges into Inner Chaos. (The "IC IR IC IC" opener came with 5.3's Storm's Eye changes.)</p>
-<p style="color:#a9a3b4">The 5.0–5.21 numbers: Heavy Swing 200, Maim 300, Storm's Path / Eye 380 in combo, Fell Cleave 590, Inner Chaos 920, Upheaval 450, Onslaught 100, Tomahawk 140, Overpower 130, Mythril Tempest 200, Decimate 250, Chaotic Cyclone 400; auto-attacks 110 at 3.36s. Gear: ${V.gear}, pre-6.0 stats from the 5.58 game data.</p>`;
+<h3>${V.eyeStack ? 'The "IC IR IC IC" opener (The Balance)' : 'An Inner Release opener'}</h3>
+${V.eyeStack ? seq(['tomahawk', ['infuriate'], 'heavySwing', 'maim', ['tincture'], 'stormsEye', 'innerChaos', ['nascentFlash'], ['innerRelease'], 'fellCleave', ['upheaval'], 'fellCleave', ['onslaught'], 'fellCleave', 'fellCleave', 'fellCleave', ['infuriate'], 'innerChaos', 'heavySwing', ['infuriate'], 'innerChaos', 'maim', 'stormsPath', 'fellCleave', 'heavySwing', 'maim', 'stormsEye', ['upheaval']]) : seq(['heavySwing', 'maim', ['tincture'], 'stormsEye', ['innerRelease'], 'fellCleave', ['upheaval'], 'fellCleave', ['onslaught'], 'fellCleave', 'fellCleave', 'fellCleave', ['infuriate'], 'innerChaos', ['infuriate'], 'innerChaos', 'heavySwing', 'maim', 'stormsPath'])}
+<p>${V.eyeStack ? `Tomahawk at -0.7s with Infuriate, Inner Chaos before Inner Release (Nascent Flash pushes Inner Release into the second weave slot), five free Fell Cleaves, then Infuriate into Inner Chaos twice. Inner Release's 15s keeps Storm's Eye up long enough for the extra Fell Cleave.` : `The Balance's early-Shadowbringers opener image is lost; this one follows its rules: Inner Release on the third GCD with five Fell Cleaves, Upheaval and Onslaught inside, then both Infuriate charges into Inner Chaos. (The "IC IR IC IC" opener came with 5.3's Storm's Eye changes.)`}</p>
+<p style="color:#a9a3b4">The ${V.eyeStack ? '5.5–5.58' : '5.0–5.21'} numbers: Heavy Swing 200, Maim ${V.maim || 300}, Storm's Path / Eye ${V.path || 380} in combo${V.eyeStack ? ' (5.3–5.45: 300 and 380)' : ''}, Fell Cleave 590, Inner Chaos 920, Upheaval 450, Onslaught 100, Tomahawk 140, Overpower 130, Mythril Tempest 200, Decimate 250, Chaotic Cyclone 400; auto-attacks 110 at 3.36s. Gear: ${V.gear}, pre-6.0 stats from the 5.58 game data.</p>`;
     }
   }
 
   B.registerJob({
     id: 'war', name: 'Warrior', abbr: 'WAR', role: 'tank', classJob: 21,
-    versions: ['shb51', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WarriorShB(v) })),
+    versions: ['shb53', 'shb51', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WarriorShB(v) })),
   });
 })(window.BLM);

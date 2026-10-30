@@ -145,6 +145,86 @@ JOB_MODELS = {
         "stance": "bt_2rp_emp",
         "attrs": {},
     },
+    # Heavensward Black Mage, Paladin, Dark Knight, Dragoon and White Mage: their 3.x artifact gear (Goetia e0166, Creed
+    # e0160, Chaos e0264, Dragonlancer's e0163, Orison e0165) and the Alexandrian Metal weapons from Alexander: Creator
+    # (3.4): Rod w1010, Blade w210 with the Buckler w104, Guillotine w1508, Spear w515, Cane w809.
+    "blm-hw": {
+        "actionsFrom": "blm",
+        "gear": {s: [166, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1010, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_rod_emp",
+        "attrs": {"top": {"atr_ude": True}},
+    },
+    "pld-hw": {
+        "actionsFrom": "pld",
+        "gear": {s: [160, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 210, "body": 1, "variant": 1}, "n_buki_r"),
+                    ("shield", {"kind": "weapon", "id": 104, "body": 1, "variant": 1}, "n_buki_tate_l")],
+        "stance": "bt_swd_sld",
+        "attrs": {},
+    },
+    "drk-hw": {
+        "actionsFrom": "drk",
+        "gear": {s: [264, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1508, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sw_emp",
+        "attrs": {},
+    },
+    "drg-hw": {
+        "actionsFrom": "drg",
+        "gear": {s: [163, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 515, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sp_emp",
+        "attrs": {},
+    },
+    "whm-hw": {
+        "actionsFrom": "whm",
+        "gear": {s: [165, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 809, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_rod_emp",
+        "attrs": {},
+    },
+    # A Realm Reborn (2.x, level 50): the dyeable level-50 artifact sets (Augmented Temple e0044, Fighter's e0037, Ninja
+    # e0170 v1, Evoker's e0132, Scholar's e0133) and the Zodiac Zeta weapons (variant 2): Kaiser Knuckles w301 / w351 b30,
+    # Ragnarok w401 b39, Sasuke's Blades w1801 / w1851 b30, Apocalypse w1701 b26, Last Resort w1721 b1.
+    "mnk-arr": {
+        "actionsFrom": "mnk",
+        "gear": {s: [44, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 301, "body": 30, "variant": 2}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 351, "body": 30, "variant": 2}, "n_buki_l")],
+        "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
+    "war-arr": {
+        "actionsFrom": "war",
+        "gear": {s: [37, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 401, "body": 39, "variant": 2}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
+    "nin-arr": {
+        "actionsFrom": "nin",
+        "gear": {s: [170, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1801, "body": 30, "variant": 2}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 1851, "body": 30, "variant": 2}, "n_buki_l")],
+        "stance": "bt_dgr_dgr",
+        "run": ("bt_2ff_emp/resident/move_a.pap", "cbbm_02f_lp0"),
+        "attrs": {},
+    },
+    "smn-arr": {
+        "actionsFrom": "smn",
+        "gear": {s: [132, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1701, "body": 26, "variant": 2}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
+    "sch-arr": {
+        "actionsFrom": "sch",
+        "gear": {s: [133, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1721, "body": 1, "variant": 2}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
     # Heavensward Warrior: Ravager's (the 3.x artifact gear) and the Alexandrian Metal Axe (Alexander Savage, 3.4).
     "war-hw": {
         "actionsFrom": "war",
@@ -206,6 +286,38 @@ JOB_MODELS = {
         "stance": "bt_swd_sld",
         "attrs": {},
     },
+    # Dawntrail Warrior: the 7.4 savage set (Grand Champion's of Fending, e0908) and the Grand Champion's War Axe (w419 b21).
+    "war-dt": {
+        "actionsFrom": "war",
+        "gear": {s: [908, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 419, "body": 21, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ax_emp",
+        "attrs": {},
+    },
+    # Endwalker Dark Knight: the 6.4 savage set (Ascension of Fending, e0826) and the Greatsword of Ascension (w1501 b126).
+    "drk-ew": {
+        "actionsFrom": "drk",
+        "gear": {s: [826, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1501, "body": 126, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sw_emp",
+        "attrs": {},
+    },
+    # Dawntrail Dark Knight and Gunbreaker: the 7.4 savage set (Grand Champion's of Fending, e0908), the Grand Champion's
+    # Guillotine (w1519 b18) and Sawback (w2516 b1).
+    "drk-dt": {
+        "actionsFrom": "drk",
+        "gear": {s: [908, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1519, "body": 18, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sw_emp",
+        "attrs": {},
+    },
+    "gnb-dt": {
+        "actionsFrom": "gnb",
+        "gear": {s: [908, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2516, "body": 1, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2gb_emp",
+        "attrs": {},
+    },
     # Dawntrail Reaper: the 7.4 savage set (Grand Champion's of Maiming, e0908 v2) and the Grand Champion's War Scythe (w2804 b3).
     "rpr-dt": {
         "actionsFrom": "rpr",
@@ -220,6 +332,48 @@ JOB_MODELS = {
         "gear": {s: [828, 1] for s in SLOTS},
         "weapons": [("main", {"kind": "weapon", "id": 2701, "body": 25, "variant": 1}, "n_buki_r")],
         "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
+    # Dawntrail Samurai: the 7.4 savage set (Grand Champion's of Striking, e0909 v2) and the Grand Champion's Blade
+    # (w2201 b106) with its sheath (w2251 b119).
+    "sam-dt": {
+        "actionsFrom": "sam",
+        "gear": {s: [909, 2] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2201, "body": 106, "variant": 1}, "n_buki_r"),
+                    ("sheath", {"kind": "weapon", "id": 2251, "body": 119, "variant": 1}, "j_buki_kosi_l")],
+        "stance": "bt_2kt_emp",
+        "attrs": {},
+    },
+    # Dawntrail Sage: the 7.4 savage set (Grand Champion's of Healing, e0910) and the Grand Champion's Syrinxi (w2702 b23).
+    "sge-dt": {
+        "actionsFrom": "sge",
+        "gear": {s: [910, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2702, "body": 23, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2ff_emp",
+        "attrs": {},
+    },
+    # Dawntrail Dragoon: the 7.4 savage set (Grand Champion's of Maiming, e0908 v2) and the Grand Champion's Spear (w528 b15).
+    "drg-dt": {
+        "actionsFrom": "drg",
+        "gear": {s: [908, 2] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 528, "body": 15, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2sp_emp",
+        "attrs": {},
+    },
+    # Dawntrail Summoner: the 7.4 savage set (Grand Champion's of Casting, e0910 v2) and the Grand Champion's Index (w1758 b18).
+    "smn-dt": {
+        "actionsFrom": "smn",
+        "gear": {s: [910, 2] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 1758, "body": 18, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2bk_emp",
+        "attrs": {},
+    },
+    # Dawntrail Astrologian: the 7.4 savage set (Grand Champion's of Healing, e0910) and the Grand Champion's Astrometer (w2146 b3).
+    "ast-dt": {
+        "actionsFrom": "ast",
+        "gear": {s: [910, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2146, "body": 3, "variant": 1}, "n_buki_r")],
+        "stance": "bt_2gl_emp",
         "attrs": {},
     },
     # Dawntrail White Mage: the 7.4 savage set (Grand Champion's of Healing, e0910) and the Grand Champion's Cane (w827 b18).
@@ -406,6 +560,32 @@ JOB_MODELS = {
     # Endwalker Dancer, Machinist and Bard: their artifact gear (Etoile e0694, Pioneer's e0689, Brioso e0682) and the 6.4
     # savage weapons: War Quoits of Ascension w2601 / w2651 b61, Knifelock of Ascension w2001 b104 with its holster,
     # Harp Bow of Ascension w601 b109 with its quiver w698 b123.
+    # Dawntrail Bard, Machinist and Dancer: the 7.4 savage set (Grand Champion's of Aiming, e0911) with the Grand
+    # Champion's Longbow (w634 b18, quiver w698 b147), Pistol (w2027 b11, holster w2099 b1) and War Quoits (w2601 / w2651 b79).
+    "brd-dt": {
+        "actionsFrom": "brd",
+        "gear": {s: [911, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 634, "body": 18, "variant": 1}, "n_buki_l"),
+                    ("quiver", {"kind": "weapon", "id": 698, "body": 147, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2bw_emp",
+        "attrs": {},
+    },
+    "mch-dt": {
+        "actionsFrom": "mch",
+        "gear": {s: [911, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2027, "body": 11, "variant": 1}, "n_buki_r"),
+                    ("holster", {"kind": "weapon", "id": 2099, "body": 1, "variant": 1}, "j_buki_kosi_r")],
+        "stance": "bt_2gn_emp",
+        "attrs": {},
+    },
+    "dnc-dt": {
+        "actionsFrom": "dnc",
+        "gear": {s: [911, 1] for s in SLOTS},
+        "weapons": [("main", {"kind": "weapon", "id": 2601, "body": 79, "variant": 1}, "n_buki_r"),
+                    ("off", {"kind": "weapon", "id": 2651, "body": 79, "variant": 1}, "n_buki_l")],
+        "stance": "bt_chk_chk",
+        "attrs": {},
+    },
     "dnc-ew": {
         "actionsFrom": "dnc",
         "gear": {s: [694, 1] for s in SLOTS},

@@ -60,8 +60,8 @@
       desc: 'Delivers an attack with a potency of 380.\nAdditional Effect: Grants Ready to Rip\nDuration: 10s\nCartridge Cost: 1\nShares a recast timer with weaponskills.\n  Gnashing Fang changes to Savage Claw, then Wicked Talon, as the combo continues.',
     }),
     savageClaw: ws({
-      name: 'Savage Claw', potency: 440, ammoFrom: 'gnashingFang', fx: 'gnbFang2',
-      desc: 'Delivers an attack with a potency of 440.\nCombo Action: Gnashing Fang\nAdditional Effect: Grants Ready to Tear\nDuration: 10s',
+      name: 'Savage Claw', potency: 460, ammoFrom: 'gnashingFang', fx: 'gnbFang2',
+      desc: 'Delivers an attack with a potency of 460.\nCombo Action: Gnashing Fang\nAdditional Effect: Grants Ready to Tear\nDuration: 10s',
     }),
     wickedTalon: ws({
       name: 'Wicked Talon', potency: 540, ammoFrom: 'savageClaw', fx: 'gnbFang3',

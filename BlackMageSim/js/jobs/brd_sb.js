@@ -23,6 +23,9 @@
     rainOfDeath: ab({ name: 'Rain of Death', recast: 15, cdGroup: 'bloodletter', potency: 100, target: true, range: 25, aoe: true, delay: 0.6, desc: 'Deals damage with a potency of 100 to target and all enemies nearby it.\nShares a recast timer with Bloodletter.' }),
     sidewinder: ab({ name: 'Sidewinder', recast: 60, potency: 100, target: true, range: 25, delay: 0.6, fx: 'gnbShot', desc: 'Delivers an attack with a potency of 100.\nPotency increases to 175 when target is afflicted with Caustic Bite or Stormbite, and 260 when afflicted with both.' }),
     pitchPerfect: ab({ name: 'Pitch Perfect', recast: 3, target: true, range: 25, delay: 0.5, fx: 'gnbShot', desc: 'Delivers an attack with a potency of 100 with one Repertoire, 240 with two, and 420 with three.\nCan only be executed while playing the Wanderer\'s Minuet.' }),
+    // A song sung over the fight: +3% damage taken while it lasts, draining 1,680 MP a tick (natural regen is 189), so a
+    // full 9,480 MP bar holds it about 23s. Cast before the pull and again once MP is back (the 4.x Bard guide).
+    foeRequiem: { name: 'Foe Requiem', kind: 'gcd', cast: 1.5, target: false, pbaoe: 20, sound: 'paradox', desc: 'Increases damage taken by nearby enemies by 3%.\nMP is drained while singing. Effect ends when MP runs out or upon reuse.' },
     ragingStrikes: ab({ name: 'Raging Strikes', recast: 80, desc: 'Increases damage dealt by 10%.\nDuration: 20s' }),
     barrage: ab({ name: 'Barrage', recast: 80, desc: 'The next single-target weaponskill strikes three times.\nAdditional effects apply only once.\nDuration: 10s' }),
     magesBallad: song('Mage\'s Ballad'), armysPaeon: song('Army\'s Paeon'), wanderersMinuet: song('the Wanderer\'s Minuet'),
@@ -42,6 +45,7 @@
   };
 
   const STATUSES = {
+    foeRequiem: { name: 'Foe Requiem', self: true, icon: 'st_foe' },
     straighterShot: { name: 'Straighter Shot', self: true, icon: 'st_straighter' },
     straightShot: { name: 'Straight Shot', self: true, icon: 'st_straight' },
     ragingStrikes: { name: 'Raging Strikes', self: true, icon: 'st_raging' },
@@ -79,15 +83,16 @@
       this.selfStatusOrder = ['wanderersMinuet', 'magesBallad', 'armysPaeon', 'straightShot', 'straighterShot', 'ragingStrikes', 'barrage',
         'battleVoice', 'criticalUp', 'medicated', 'troubadour', 'naturesMinne', 'peloton', 'sprint'];
       this.targetStatusOrder = ['causticBite', 'stormbite'];
+      this.maxMp = 9480;     // 12,000 × Bard's 79%
       this.defaultBars = [
         ['heavyShot', 'straightShot', 'causticBite', 'stormbite', 'ironJaws', 'refulgentArrow', 'empyrealArrow', 'bloodletter', 'sidewinder', 'pitchPerfect', 'ragingStrikes', 'barrage'],
         ['wanderersMinuet', 'magesBallad', 'armysPaeon', 'battleVoice', 'tincture', 'invigorate', 'troubadour', 'naturesMinne', 'wardensPaean', 'repellingShot', 'secondWind', 'headGraze'],
-        ['quickNock', 'rainOfDeath', 'peloton', 'sprint', null, null, null, null, null, null, null, null],
+        ['quickNock', 'rainOfDeath', 'peloton', 'sprint', 'foeRequiem', null, null, null, null, null, null, null],
       ];
       this.actionGroups = [
         ['Bard', ['heavyShot', 'straightShot', 'causticBite', 'stormbite', 'ironJaws', 'refulgentArrow', 'quickNock', 'empyrealArrow', 'bloodletter',
           'rainOfDeath', 'sidewinder', 'pitchPerfect', 'ragingStrikes', 'barrage', 'wanderersMinuet', 'magesBallad', 'armysPaeon', 'battleVoice',
-          'troubadour', 'naturesMinne', 'wardensPaean', 'repellingShot']],
+          'troubadour', 'naturesMinne', 'wardensPaean', 'repellingShot', 'foeRequiem']],
         ['Role Actions', ['invigorate', 'secondWind', 'headGraze', 'peloton']],
         ['General', ['sprint', 'tincture']],
       ];
@@ -115,6 +120,7 @@
     snapshot(a, e) {
       let mult = 1, critAdd = 0, dhAdd = 0;
       if (e.has('ragingStrikes')) mult *= 1.10;
+      if (e.has('foeRequiem')) mult *= 1.03;
       if (e.has('straightShot')) critAdd += 0.10;
       if (this.songOn(e)) critAdd += 0.02;            // the song's party Critical Up
       if (e.has('battleVoice')) dhAdd += 0.15;
@@ -133,6 +139,11 @@
     onDotTick(key, e, r) { if ((key === 'causticBite' || key === 'stormbite') && r && r.crit) this.repertoire(e); }
 
     resolve(id, e) {
+      if (id === 'foeRequiem') {
+        if (e.has('foeRequiem')) e.removeStatus('foeRequiem');
+        else e.addStatus('foeRequiem', 1e9, { permanent: true });
+        return;
+      }
       if (this.actions[id].kind === 'gcd') this.weaponskill(id, e);
       else this.ability(id, e);
     }
@@ -210,9 +221,13 @@
     }
 
     // A song running out takes its Repertoire with it.
-    nextEvent(e) { return e.g.song ? e.g.songUntil : Infinity; }
+    nextEvent(e) {
+      if (e.has('foeRequiem') && e.mp <= 0) return e.now;
+      return e.g.song ? e.g.songUntil : Infinity;
+    }
     process(e) {
       const g = e.g;
+      if (e.has('foeRequiem') && e.mp <= 0) e.removeStatus('foeRequiem');
       if (g.song && e.now >= g.songUntil - EPS) { g.song = null; g.rep = 0; e.removeStatus('criticalUp', true); }
     }
 
@@ -224,7 +239,8 @@
       return false;
     }
 
-    mpRegen() { return B.BASE_REGEN; }
+    // 2% of the pool a tick; Foe Requiem drains 1,680.
+    mpRegen(e) { return Math.max(Math.round(this.maxMp * 0.02) - (e.has('foeRequiem') ? 1680 : 0), -e.mp); }
     speedInfo(e) { return `GCD ${e.gcdForSpeed(e.stats.speed).toFixed(2)} · ${e.gcdForSpeed(e.stats.speed, 16).toFixed(2)} at four Army's Paeon stacks`; }
 
     // ---------- the Song Gauge ----------

@@ -150,6 +150,7 @@ ${opener}
     }
   }
 
+  B.MachinistEW = MachinistEW;
   B.registerJob({
     id: 'mch', name: 'Machinist', abbr: 'MCH', role: 'ranged', classJob: 31,
     versions: ['ew63', 'ew62', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new MachinistEW(v) })),

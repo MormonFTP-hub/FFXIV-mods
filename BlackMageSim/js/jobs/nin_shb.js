@@ -386,6 +386,7 @@ ${seq(['jin', 'chi', 'ten', 'huton', 'ten', 'jin', 'chi', 'doton', ['hide'], 'te
     }
   }
 
+  B.NinjaShB = NinjaShB;
   B.registerJob({
     id: 'nin', name: 'Ninja', abbr: 'NIN', role: 'melee', classJob: 30,
     versions: [{ id: 'shb51', label: 'Shadowbringers 5.1–5.58', history: 'ShB 5.1–5.58', note: 'Level 80: mudras on two charges, Kassatsu into Hyosho Ranryu, the reworked Ten Chi Jin, Bunshin, Trick Attack\'s 5%, Shadow Fang on its own 70s recast', create: () => new NinjaShB() }],

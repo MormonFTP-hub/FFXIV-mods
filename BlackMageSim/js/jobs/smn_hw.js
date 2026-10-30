@@ -45,7 +45,7 @@
       set('summon3', { cast: 6, mp: 1768 });
       set('physick', { mp: 530 });
       A.ragingStrikes = { name: 'Raging Strikes', kind: 'ogcd', recast: 180, role: true, desc: 'Increases damage dealt by 20%.\nDuration: 20s' };
-      A.tincture = Object.assign({}, B.tincture('int'), { name: 'X-Potion of Intelligence', dur: 15, desc: 'This diluted brew temporarily increases intelligence.\nIntelligence +16% (Max 81)\nDuration: 15s' });
+      A.tincture = Object.assign({}, B.tincture('int'), { name: 'Supramax-Potion of Intelligence', dur: 15, desc: 'This diluted brew temporarily increases intelligence.\nIntelligence +20% (Max 154)\nDuration: 15s' });
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {
         bio: { name: 'Bio', self: false, icon: 'st_bio' },
@@ -116,7 +116,7 @@
         if (e.has('rouse')) mult *= 1.40;
         if (e.has('spur')) mult *= 1.40;
       }
-      const main = this.stats.main + (e.has('medicated') ? 81 : 0);
+      const main = this.stats.main + (e.has('medicated') ? (this.potionCap || 154) : 0);
       return { mult, main };
     }
 
@@ -216,6 +216,7 @@ ${seq(['ruin3', ['triDisaster'], ['ragingStrikes'], 'ruin2', ['fester'], ['rouse
     }
   }
 
+  B.SummonerHW = SummonerHW;
   B.registerJob({
     id: 'smn', name: 'Summoner', abbr: 'SMN', role: 'caster', classJob: 27,
     versions: [{ id: 'hw30', label: 'Heavensward 3.0–3.57', history: 'HW 3.0–3.57', note: 'Level 60. Bio, Bio II and Miasma with Tri-disaster and Contagion, Fester, a 15s Dreadwyrm Trance and Deathflare, Rouse and Spur, Raging Strikes, with Heavensward\'s formula', create: () => new SummonerHW() }],

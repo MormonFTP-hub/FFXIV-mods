@@ -48,7 +48,7 @@
     tincture: B.tincture('str'),
     auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
   };
-  ACTIONS.tincture = Object.assign({}, ACTIONS.tincture, { name: 'X-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
+  ACTIONS.tincture = Object.assign({}, ACTIONS.tincture, { name: 'Supramax-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +20% (Max 154)\nDuration: 15s' });
 
   const STATUSES = {
     deliverance: { name: 'Deliverance', self: true, icon: 'st_deliverance' },
@@ -152,12 +152,13 @@
       let mult = 1, critAdd = 0;
       const st = this.stance(e);
       if (st === 'deliverance') { mult *= 1.05; critAdd += 0.02 * this.stacks(e); }
+      if (st === 'defiance' && this.wrathCrit) critAdd += 0.02 * this.stacks(e);     // A Realm Reborn: Wrath was +2% crit a stack
       if (st === 'defiance' && !e.has('unchained') && !(a && a.ignoresDefiance)) mult *= 0.75;
       if (e.has('maim')) mult *= 1.20;
       if (e.has('berserk')) mult *= 1.50;
       if (e.tHas('slashingResDown')) mult *= 1.10;
       if (e.has('internalRelease')) critAdd += 0.10;
-      const main = this.stats.main + (e.has('medicated') ? 81 : 0);
+      const main = this.stats.main + (e.has('medicated') ? (this.potionCap || 154) : 0);
       return { mult, main, critAdd };
     }
 
@@ -175,7 +176,7 @@
       if (id === 'fellCleave' || id === 'decimate' || id === 'innerBeast' || id === 'steelCyclone') this.clearStacks(e);
       if (a.stack) this.addStacks(e, 1);
       if (id === 'maim' && combo) e.addStatus('maim', 24);
-      if (id === 'stormsEye' && combo) e.addTStatus('slashingResDown', 20);
+      if (id === 'stormsEye' && combo) e.addTStatus('slashingResDown', this.stormsEyeDur || 20);
       const after = a.dot ? () => e.addTStatus(id, a.dot.duration, { snap, dot: { potency: a.dot.potency, id } }) : null;
       e.queueHit(id, potency, snap, a.delay, after);
     }
@@ -265,10 +266,11 @@
 <h3>The 3.5 opener</h3>
 ${seq(['heavySwing', ['brutalSwing'], 'maim', ['internalRelease'], 'stormsEye', ['tincture'], 'heavySwing', ['berserk'], 'fellCleave', ['infuriate'], 'fellCleave', ['vengeance'], 'maim', 'stormsEye', 'heavySwing', 'maim', ['brutalSwing'], 'stormsEye', 'fellCleave'])}
 <p>From the FFXIV wiki's 3.5 Warrior page: Deliverance and Infuriate a minute before the pull, Raw Intuition about 30s later to refresh Abandon, so you pull Uncontrollable.</p>
-<p style="color:#a9a3b4">The 3.5 numbers: Heavy Swing 150, Skull Sunder combo 200, Butcher's Block combo 280, Maim combo 190 (+20%), Storm's Path combo 250, Storm's Eye combo 270, Fell Cleave 500, Inner Beast 300, Fracture 100 + 20 × 30s, Brutal Swing 100. Heavensward's damage formula is the community fit (Dervy, 2015–16), not an official one; gear is approximate (item level ~270), and the X-Potion of Strength cap is a guess.</p>`;
+<p style="color:#a9a3b4">The 3.5 numbers: Heavy Swing 150, Skull Sunder combo 200, Butcher's Block combo 280, Maim combo 190 (+20%), Storm's Path combo 250, Storm's Eye combo 270, Fell Cleave 500, Inner Beast 300, Fracture 100 + 20 × 30s, Brutal Swing 100. Heavensward's damage formula is the community fit (Dervy, 2015–16), not an official one; gear is approximate (item level ~270), with the 3.4 Supramax-Potion of Strength.</p>`;
     }
   }
 
+  B.WarriorHW = WarriorHW;
   B.registerJob({
     id: 'war', name: 'Warrior', abbr: 'WAR', role: 'tank', classJob: 21,
     versions: [{ id: 'hw30', label: 'Heavensward 3.0–3.57', history: 'HW 3.0–3.57', note: 'Level 60. Deliverance and Abandon, Fell Cleave, Infuriate, Berserk with Pacification, Maim and Storm\'s Eye, on TP, with Heavensward\'s damage formula', create: () => new WarriorHW() }],

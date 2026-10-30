@@ -133,6 +133,7 @@ ${seq(['holySpirit', 'fastBlade', ['tincture'], 'riotBlade', 'royalAuthority', [
     }
   }
 
+  B.PaladinEW = PaladinEW;
   B.registerJob({
     id: 'pld', name: 'Paladin', abbr: 'PLD', role: 'tank', classJob: 19,
     versions: ['ew64', 'ew63'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new PaladinEW(v) })),

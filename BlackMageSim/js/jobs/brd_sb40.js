@@ -1,7 +1,6 @@
 // Bard, Stormblood 4.0–4.05 at level 70. Built on the 4.06–4.58 class (brd_sb.js): the same songs, Repertoire, Pitch
 // Perfect and DoTs, with what 4.06 changed put back: Straight Shot's +10% crit lasts 20s (30s from 4.06) and Barrage
-// recasts in 90s (80s later). Foe Requiem (+3% damage taken, sung before the pull, draining MP) isn't modelled in any
-// Stormblood Bard here. Numbers are 2017's job guide (Wayback), wiki revisions and the 4.06 patch notes. Gear is a rough
+// recasts in 90s (80s later). Foe Requiem (+3% damage taken, draining MP) is in the 4.06 class. Numbers are 2017's job guide (Wayback), wiki revisions and the 4.06 patch notes. Gear is a rough
 // Deltascape Savage set (Genji i340, the i345 bow: 100 weapon damage) with the ungraded Infusion (+10%, max 137).
 // ref: scaled from the 4.06 bot by gear (no bot of its own yet).
 (function (B) {
@@ -23,7 +22,7 @@
 
     helpHtml(seq) {
       return super.helpHtml(seq).replace(/Stormblood 4\.06–4\.58/g, 'Stormblood 4.0–4.05') + `
-<p style="color:#a9a3b4">What's different in 4.0–4.05: Straight Shot's crit buff lasts 20s (30s from 4.06), so refresh it more often; Barrage recasts in 90s (80s from 4.06). Gear is a rough Deltascape Savage set (Dexterity 2,519, 100 weapon damage) with the ungraded Infusion of Dexterity. Foe Requiem isn't modelled.</p>`;
+<p style="color:#a9a3b4">What's different in 4.0–4.05: Straight Shot's crit buff lasts 20s (30s from 4.06), so refresh it more often; Barrage recasts in 90s (80s from 4.06). Gear is a rough Deltascape Savage set (Dexterity 2,519, 100 weapon damage) with the ungraded Infusion of Dexterity.</p>`;
     }
   }
 

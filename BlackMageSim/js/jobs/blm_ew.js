@@ -536,6 +536,8 @@
       const C = 2 * Math.PI * 78;
       this.enoC = C;
       const heart = 'M0 6 C-10 -2 -9 -12 -3 -12 C-1 -12 0 -10 0 -9 C0 -10 1 -12 3 -12 C9 -12 10 -2 0 6 Z';
+      // Two Polyglot crystals, or three from Dawntrail (closer together).
+      const nPoly = this.cfg.polyMax > 2 ? 3 : 2, polyX = (k) => (nPoly === 3 ? 214 + k * 30 : 226 + k * 36);
       const cryst = 'M0 -16 L8 -2 L0 16 L-8 -2 Z';
       root.innerHTML = `
 <svg width="360" height="220" viewBox="0 0 360 220">
@@ -557,7 +559,7 @@
   <g id="g-ice" opacity="0" transform="translate(110 100) scale(1.1)"><path d="M0 -38 L11 -6 L0 26 L-11 -6 Z" fill="#f2fdff" opacity=".9"/><path d="M-20 -14 L-11 -6 L-16 8 Z M20 -14 L11 -6 L16 8 Z" fill="#dff7ff" opacity=".7"/></g>
   <text id="g-time" class="eltime" x="110" y="122" text-anchor="middle"></text>
   ${[0, 1, 2].map(k => `<path id="g-stk${k}" d="M0 -10 L7 0 L0 10 L-7 0 Z" transform="translate(${82 + k * 28} ${k === 1 ? 187 : 182})" fill="#2a2535" stroke="rgba(0,0,0,.8)" stroke-width="1.5"/>`).join('')}
-  ${[0, 1].map(k => `<g transform="translate(${226 + k * 36} 66)"><path id="g-poly${k}" d="${cryst}" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>`).join('')}
+  ${[...Array(nPoly).keys()].map(k => `<g transform="translate(${polyX(k)} 66)"><path id="g-poly${k}" d="${cryst}" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>`).join('')}
   <g transform="translate(314 66)"><rect id="g-para" x="-12" y="-12" width="24" height="24" transform="rotate(45)" fill="#251d33" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></g>
   ${[0, 1, 2].map(k => `<g transform="translate(${226 + k * 34} 152) scale(1.35)"><path id="g-ht${k}" d="${heart}" fill="#1c2233" stroke="rgba(255,255,255,.25)" stroke-width="1.1"/></g>`).join('')}
   <text x="244" y="104" text-anchor="middle" font-family="Noto Sans, sans-serif" font-size="11" font-weight="600" fill="#a9a3b4" letter-spacing="1">POLYGLOT</text>
@@ -567,7 +569,7 @@
       const $ = (s) => root.querySelector(s);
       this.gg = {
         eno: $('#g-eno'), orb: $('#g-orb'), flame: $('#g-flame'), ice: $('#g-ice'), time: $('#g-time'),
-        stk: [0, 1, 2].map(k => $('#g-stk' + k)), poly: [0, 1].map(k => $('#g-poly' + k)), para: $('#g-para'),
+        stk: [0, 1, 2].map(k => $('#g-stk' + k)), poly: [...Array(nPoly).keys()].map(k => $('#g-poly' + k)), para: $('#g-para'),
         ht: [0, 1, 2].map(k => $('#g-ht' + k)), cache: {},
       };
     }
@@ -583,7 +585,7 @@
       put('fl', el > 0 ? 1 : 0, v => G.flame.setAttribute('opacity', v * 0.95));
       put('ic', el < 0 ? 1 : 0, v => G.ice.setAttribute('opacity', v * 0.95));
       const left = el !== 0 ? Math.max(0, g.elementUntil - e.now) : 0;
-      put('t', el !== 0 ? String(Math.ceil(left - 1e-6)) : '', v => { G.time.textContent = v; });
+      put('t', el !== 0 && isFinite(left) ? String(Math.ceil(left - 1e-6)) : '', v => { G.time.textContent = v; });
       put('tc', left > 0 && left < 4 ? 'warn' : 'ok', v => G.time.setAttribute('fill', v === 'warn' ? '#ffd36b' : '#fff'));
       for (let k = 0; k < 3; k++) {
         const on = Math.abs(el) > k;
@@ -593,7 +595,7 @@
         });
         put('h' + k, g.hearts > k, v => { G.ht[k].setAttribute('fill', v ? '#8fd8ff' : '#1c2233'); G.ht[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
       }
-      for (let k = 0; k < 2; k++) put('p' + k, g.polyglot > k, v => { G.poly[k].setAttribute('fill', v ? 'url(#poly)' : '#251d33'); G.poly[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
+      for (let k = 0; k < G.poly.length; k++) put('p' + k, g.polyglot > k, v => { G.poly[k].setAttribute('fill', v ? 'url(#poly)' : '#251d33'); G.poly[k].setAttribute('filter', v ? 'url(#gl)' : ''); });
       put('para', this.markerOn(e), v => { G.para.setAttribute('fill', v ? 'url(#para)' : '#251d33'); G.para.setAttribute('filter', v ? 'url(#gl)' : ''); });
       const prog = g.enoStart !== null ? Math.min(1, (e.now - g.enoStart) / POLYGLOT_TIME) : 0;
       const dash = (prog * this.enoC).toFixed(1);

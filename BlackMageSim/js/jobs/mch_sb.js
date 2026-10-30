@@ -30,7 +30,7 @@
     hypercharge: ab({ name: 'Hypercharge', recast: 120, desc: 'Your Rook Autoturret fires Charged Volley Fire (120), and its hits leave the target taking 5% more damage for 10s.\nDuration: 20s\nCan only be executed while the turret is deployed.' }),
     gaussBarrel: ab({ name: 'Gauss Barrel', recast: 2, desc: 'Attaches the Gauss Barrel: weaponskill damage +5% and weaponskills build Heat. At 100 Heat: Overheated (+20%) for 10s, then the barrel comes off and can\'t be attached for 10s.\nPress again to remove it.' }),
     barrelStabilizer: ab({ name: 'Barrel Stabilizer', recast: 60, desc: 'Sets Heat to 50.\nCan only be executed in combat with the Gauss Barrel attached and not Overheated.' }),
-    flamethrower: ab({ name: 'Flamethrower', recast: 60, desc: 'Channels a cone of flame: 60 potency every second for 10s.\nGauss Barrel Bonus: Heat +20 over the channel\nEnds if you act or move.' }),
+    flamethrower: ab({ name: 'Flamethrower', recast: 60, desc: 'Channels a cone of flame: 60 potency at once and every second for 10s.\nGauss Barrel Bonus: Heat +20 a tick\nEnds if you act or move.' }),
     rookAutoturret: ab({ name: 'Rook Autoturret', recast: 10, desc: 'Deploys a single-target turret that fires Volley Fire (80) every 3s.\nPress again to retrieve it.' }),
     rookOverdrive: ab({ name: 'Rook Overdrive', recast: 120, target: true, range: 25, desc: 'Orders the Rook Autoturret to fire Rook Overload (800); the turret then shuts down for 30s.' }),
     // What the turret fires (not on your hotbars).
@@ -186,7 +186,7 @@
       if (a.cleanProc && (ammo || Math.random() < 0.5)) e.addStatus('cleanerShot', 10);
       if (id === 'hotShot') e.addStatus('hotShot', this.hotShotDur || 60);
       if (id === 'cooldown') this.addHeat(e, -25);
-      else if (!ammo) this.addHeat(e, 5);
+      else if (!ammo) this.addHeat(e, (this.heatOf && this.heatOf[id]) || 5);
       if (g.rapid > 0) { g.rapid--; if (!g.rapid) e.removeStatus('rapidFire'); }
       const crit = e.has('reassembled');
       if (crit) e.removeStatus('reassembled');
@@ -197,7 +197,7 @@
       const a = this.actions[id], g = e.g;
       switch (id) {
         case 'reload': g.ammo = 3; e.addStatus('ammunition', 1e9, { permanent: true }); return;
-        case 'quickReload': g.ammo = Math.min(3, g.ammo + 1); e.addStatus('ammunition', 1e9, { permanent: true }); return;
+        case 'quickReload': g.ammo = Math.min(3, g.ammo + 1); e.addStatus('ammunition', 1e9, { permanent: true }); if (this.quickReloadHeat) this.addHeat(e, this.quickReloadHeat); return;
         case 'reassemble': e.addStatus('reassembled', 20); return;
         case 'rapidFire': g.rapid = 3; e.addStatus('rapidFire', 15); return;
         case 'wildfire': g.wf = 0; e.addTStatus('wildfire', 10); return;
@@ -207,7 +207,12 @@
           else e.addStatus('gaussBarrel', 1e9, { permanent: true });
           return;
         case 'barrelStabilizer': g.heat = 50; return;
-        case 'flamethrower': e.addStatus('flamethrower', 10); g.flameNext = e.now + 1; return;
+        case 'flamethrower':
+          // The first tick comes at once.
+          e.addStatus('flamethrower', 10); g.flameNext = e.now + 1;
+          e.queueHit('flamethrower', 60, this.snapshot(a, e), 0.1);
+          this.addHeat(e, this.flameHeat || 20);
+          return;
         case 'rookAutoturret':
           if (g.turret) { g.turret = false; e.pet = null; }
           else { g.turret = true; e.pet = { kind: 'rook' }; g.turretNext = e.now + 1; }
@@ -261,11 +266,11 @@
         e.removeStatus('gaussBarrel');
         g.barrelLockUntil = now + 10;
       }
-      // Flamethrower: 60 potency a second while channelled, Heat +2 a tick.
-      if (e.has('flamethrower') && now >= g.flameNext - EPS) {
+      // Flamethrower: 60 potency a second while channelled, Heat +20 a tick (10 before 4.06).
+      if (e.has('flamethrower') && now >= g.flameNext - EPS && now < e.statuses.flamethrower.until - EPS) {
         g.flameNext += 1;
         e.queueHit('flamethrower', 60, this.snapshot(this.actions.flamethrower, e), 0.1);
-        this.addHeat(e, this.flameHeat || 2);
+        this.addHeat(e, this.flameHeat || 20);
       }
       // Wildfire goes off.
       const wf = e.tStatuses.wildfire;

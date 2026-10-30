@@ -7,6 +7,8 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      game models go next to it as game-models-0.js, -1.js, ...: the
                      model JSON cut into 10 MB string chunks that the last one joins
                      and parses, so every published file stays under the 16 MB limit.
+                     The icons (work/game-icons.js, ~16 MB) go next to it as game-icons-0.js,
+                     -1.js, ...: whole icons per file, each file under 10 MB.
 """
 import json
 import re
@@ -59,6 +61,31 @@ def model_chunks():
     return names
 
 
+def icon_chunks():
+    """Write work/game-icons.js to build/ as game-icons-N.js files of whole icons; return their names."""
+    src = (ROOT / "work" / "game-icons.js").read_text(encoding="utf-8")
+    icons = json.loads(re.search(r"BLM\.GAME_ICONS = (\{.*\});?\s*$", src, re.S).group(1))
+    for old in list(OUT.glob("game-icons-*.js")) + [OUT / "game-icons.js"]:
+        if old.exists():
+            old.unlink()
+    groups, cur, size = [], {}, 0
+    for k, v in icons.items():
+        if cur and size + len(v) > CHUNK:
+            groups.append(cur)
+            cur, size = {}, 0
+        cur[k] = v
+        size += len(k) + len(v) + 8
+    groups.append(cur)
+    names = []
+    for k, g in enumerate(groups):
+        js = ("window.BLM = window.BLM || {};\nBLM.GAME_ICONS = Object.assign(BLM.GAME_ICONS || {}, "
+              + json.dumps(g, separators=(",", ":")) + ");\n")
+        name = f"game-icons-{k}.js"
+        (OUT / name).write_text(js, encoding="utf-8")
+        names.append(name)
+    return names
+
+
 def fragment(html: str) -> str:
     head = re.search(r"<head>(.*?)</head>", html, re.S).group(1)
     body = re.search(r"<body>(.*?)</body>", html, re.S).group(1)
@@ -73,8 +100,10 @@ def main():
     OUT.mkdir(exist_ok=True)
     (OUT / "BlackMageSim.html").write_text(inline(src), encoding="utf-8")
     chunks = model_chunks()
-    (OUT / "artifact.html").write_text(fragment(inline(src, keep={"work/game-models.js": chunks})), encoding="utf-8")
-    for name in ("BlackMageSim.html", "artifact.html", *chunks):
+    icons = icon_chunks()
+    keep = {"work/game-models.js": chunks, "work/game-icons.js": icons}
+    (OUT / "artifact.html").write_text(fragment(inline(src, keep=keep)), encoding="utf-8")
+    for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks):
         print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
 
 

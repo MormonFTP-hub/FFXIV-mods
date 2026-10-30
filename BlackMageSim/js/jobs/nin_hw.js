@@ -62,7 +62,7 @@
     keenFlurry: ab({ name: 'Keen Flurry', recast: 90, role: true, desc: 'Increases parry rate by 30%.\nDuration: 20s' }),
     feint: ws({ name: 'Feint', potency: 120, tp: 80, role: true, breaksCombo: true, desc: 'Delivers an attack with a potency of 120.\nAdditional Effect: Slow +20%\nDuration: 10s' }),
     ...B.GENERAL_ACTIONS,
-    tincture: Object.assign({}, B.tincture('dex3sb'), { name: 'Draconian Potion of Dexterity', dur: 15, desc: 'This diluted brew temporarily increases dexterity.\nDexterity +20% (Max 105)\nDuration: 15s' }),
+    tincture: Object.assign({}, B.tincture('dex3sb'), { name: 'Supramax-Potion of Dexterity', dur: 15, desc: 'This diluted brew temporarily increases dexterity.\nDexterity +20% (Max 154)\nDuration: 15s' }),
     auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
   };
   const JUTSU = ['fumaShuriken', 'katon', 'raiton', 'hyoton', 'huton', 'doton', 'suiton', 'rabbitMedium'];
@@ -175,7 +175,7 @@
       if (e.tHas('trickAttack')) mult *= 1.10;
       if (e.has('bloodForBlood')) mult *= 1.10;
       if (e.has('internalRelease')) critAdd += 0.10;
-      const main = this.stats.main + (e.has('medicated') ? 105 : 0);
+      const main = this.stats.main + (e.has('medicated') ? (this.potionCap || 154) : 0);
       return { mult, main, critAdd };
     }
 

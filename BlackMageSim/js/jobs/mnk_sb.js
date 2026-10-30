@@ -163,7 +163,7 @@
     autoHaste(e) { return 5 * this.gl(e); }
 
     snapshot(a, e) {
-      let mult = 1 + 0.10 * this.gl(e), critAdd = 0;
+      let mult = 1 + (this.glStep || 0.10) * this.gl(e), critAdd = 0;
       if (e.has('twinSnakes')) mult *= 1.10;
       if (e.has('fistsOfFire')) mult *= this.fofMult;
       if (e.has('riddleOfFire')) mult *= 1.30;

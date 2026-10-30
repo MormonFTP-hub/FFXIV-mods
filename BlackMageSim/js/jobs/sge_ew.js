@@ -1,4 +1,4 @@
-// Sage, Endwalker at level 90, in four versions. Dosis III (330, 1.5s) as filler; Eukrasia (a 1s GCD) turns the next
+// Sage, Endwalker at level 90, in four versions, and Dawntrail 7.0–7.57 at level 100. Dosis III (330, 1.5s) as filler; Eukrasia (a 1s GCD) turns the next
 // Dosis into Eukrasian Dosis III, a 30s DoT; Phlegma III (two charges, instant, 6y) is the burst; Toxikon II spends
 // Addersting; Pneuma (330, 120s) hits and heals. Kardia heals your partner as you deal damage; Addersgall (one every 20s)
 // pays for the oGCD heals and gives MP back.
@@ -6,8 +6,10 @@
 //  - 6.1–6.18: Soteria four stacks at +70%; Addersting starts full (three Toxikons).
 //  - 6.2–6.28: Holos adds a barrier; Phlegma III 600 (6.28); Abyssos gear.
 //  - 6.3–6.58: Phlegma on 40s; your own Eukrasian Prognosis also grants Addersting; Eukrasian Dosis III 75 (6.4).
+//  - DT 7.0–7.57: Psyche (690, 60s); Dosis III, Toxikon II and Pneuma 380, Phlegma III 690, Eukrasian Dosis III 90 (the
+//    7.5 numbers); Soteria 60s, Swiftcast 40s; level 100's MP regen. Eukrasian Dyskrasia is AoE only.
 // Numbers are the game data at each patch (xivapi's datamining) and the Lodestone notes; gear is The Balance's set for
-// each tier. ref: a scripted bot parses about 5,000 / 5,030 / 6,040 / 8,030 on these.
+// each tier. ref: a scripted bot parses about 5,000 / 5,030 / 6,040 / 8,030 on these, and about 24,500 on Dawntrail's.
 (function (B) {
   const spell = (o) => Object.assign({ kind: 'gcd', target: true, range: 25, delay: 0.8, school: 'aether', sound: 'paradox' }, o);
   const heal = (o) => Object.assign({ kind: 'gcd', potency: 0, school: 'aether', sound: 'paradox' }, o);
@@ -26,24 +28,28 @@
     ew63: { label: 'Endwalker 6.3–6.58', history: 'EW 6.3–6.58', phlegma: 600, phlegmaRecast: 40, edosis: 75, soteria: 'four', stingStart: 3, holosBarrier: true,
       tincture: 'mnd', ref: 8510, stats: { hp: 90000, main: 3369, wd: 132, det: 2047, crit: 2502, dh: 1012, speed: 664, piety: 390 },
       note: 'Level 90: Phlegma on 40s, Addersting from your own Eukrasian Prognosis, Eukrasian Dosis III 75; Anabaseios gear' },
+    dt70: { label: 'Dawntrail 7.0–7.57', history: 'DT 7.0–7.57', level: 100, dosis: 380, phlegma: 690, phlegmaRecast: 40, edosis: 90, psyche: 690, soteria: 'four',
+      soteriaRecast: 60, swift: 40, stingStart: 3, holosBarrier: true, tincture: 'mnddt4', ref: 25980,
+      stats: { hp: 204455, main: 6496, wd: 158, det: 3122, crit: 3388, dh: 690, speed: 1305, piety: 440 },
+      note: 'Level 100: Psyche, Dosis III 380, Phlegma III 690, Eukrasian Dosis III 90, Soteria on 60s, Swiftcast 40s; the 7.5 numbers and 7.4 savage gear' },
   };
 
   function buildActions(V) {
     return {
-      dosis3: spell({ name: 'Dosis III', potency: 330, cast: 1.5, mp: 400, orb: true, desc: 'Deals unaspected damage with a potency of 330.\nAdditional Effect: Restores HP of Kardion partner\nUnder Eukrasia, Dosis III becomes Eukrasian Dosis III.' }),
+      dosis3: spell({ name: 'Dosis III', potency: V.dosis || 330, cast: 1.5, mp: 400, orb: true, desc: `Deals unaspected damage with a potency of ${V.dosis || 330}.\nAdditional Effect: Restores HP of Kardion partner\nUnder Eukrasia, Dosis III becomes Eukrasian Dosis III.` }),
       eukrasia: heal({ name: 'Eukrasia', recast: 1, target: false, desc: 'Grants Eukrasia: Dosis, Diagnosis and Prognosis become their Eukrasian versions.\nRecast: 1s' }),
       eukrasianDosis3: spell({ name: 'Eukrasian Dosis III', potency: 0, mp: 400, recast: 1.5, dot: { potency: V.edosis, duration: 30 }, sound: 'dot', desc: `Deals unaspected damage over time.\nPotency: ${V.edosis}\nDuration: 30s\nRecast: 1.5s` }),
       phlegma3: spell({ name: 'Phlegma III', potency: V.phlegma, mp: 400, range: 6, cd: V.phlegmaRecast, charges: 2, aoe: 0.5, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.phlegma} to target and all enemies nearby it, 50% less for all remaining enemies.\nMaximum Charges: 2 (${V.phlegmaRecast}s)` }),
-      toxikon2: spell({ name: 'Toxikon II', potency: 330, mp: 0, aoe: 0.5, sting: true, desc: 'Deals unaspected damage with a potency of 330 to target and all enemies nearby it, 50% less for the rest.\nAddersting Cost: 1' }),
+      toxikon2: spell({ name: 'Toxikon II', potency: V.dosis || 330, mp: 0, aoe: 0.5, sting: true, desc: 'Deals unaspected damage with a potency of 330 to target and all enemies nearby it, 50% less for the rest.\nAddersting Cost: 1' }),
       dyskrasia2: spell({ name: 'Dyskrasia II', potency: 170, mp: 400, target: false, pbaoe: 5, aoe: true, desc: 'Deals unaspected damage with a potency of 170 to all nearby enemies.' }),
-      pneuma: spell({ name: 'Pneuma', potency: 330, cast: 1.5, mp: 700, cd: 120, aoe: 0.6, fx: 'gnbBurst', desc: 'Deals unaspected damage with a potency of 330 to all enemies in a straight line before you, 40% less for all remaining enemies.\nAdditional Effect: Restores own HP and the HP of all nearby party members\nCure Potency: 600' }),
+      pneuma: spell({ name: 'Pneuma', potency: V.dosis || 330, cast: 1.5, mp: 700, cd: 120, aoe: 0.6, fx: 'gnbBurst', desc: 'Deals unaspected damage with a potency of 330 to all enemies in a straight line before you, 40% less for all remaining enemies.\nAdditional Effect: Restores own HP and the HP of all nearby party members\nCure Potency: 600' }),
       diagnosis: heal({ name: 'Diagnosis', cast: 1.5, mp: 400, desc: 'Restores target\'s HP.\nCure Potency: 450' }),
       prognosis: heal({ name: 'Prognosis', cast: 2, mp: 700, desc: 'Restores own HP and the HP of all party members within a radius of 15 yalms.\nCure Potency: 300' }),
       eukrasianDiagnosis: heal({ name: 'Eukrasian Diagnosis', mp: 900, recast: 1.5, desc: 'Restores target\'s HP and erects a barrier.\nCure Potency: 300\nBreaking the barrier grants Addersting.' }),
       eukrasianPrognosis: heal({ name: 'Eukrasian Prognosis', mp: 900, recast: 1.5, desc: 'Restores own HP and the HP of nearby party members and erects a barrier.\nCure Potency: 100' }),
       egeiro: heal({ name: 'Egeiro', cast: 8, mp: 2400, desc: 'Resurrects target to a weakened state.' }),
       kardia: ab({ name: 'Kardia', recast: 5, desc: 'Grants Kardion to a party member: your damage spells restore its HP (Cure Potency 170).' }),
-      soteria: ab({ name: 'Soteria', recast: 90, desc: V.soteria === 'one' ? 'Increases the healing of Kardion by 50%.\nDuration: 15s' : 'Grants 4 stacks of Soteria, each increasing Kardion\'s healing by 70%.\nDuration: 15s' }),
+      soteria: ab({ name: 'Soteria', recast: V.soteriaRecast || 90, desc: V.soteria === 'one' ? 'Increases the healing of Kardion by 50%.\nDuration: 15s' : 'Grants 4 stacks of Soteria, each increasing Kardion\'s healing by 70%.\nDuration: 15s' }),
       zoe: ab({ name: 'Zoe', recast: 90, desc: 'Increases the potency of the next healing spell by 50%.\nDuration: 30s' }),
       holos: ab({ name: 'Holos', recast: 120, desc: `Restores own HP and the HP of nearby party members and reduces damage taken by 10%${V.holosBarrier ? ', with a barrier equal to the HP restored' : ''}.\nCure Potency: 300\nDuration: 20s` }),
       panhaima: ab({ name: 'Panhaima', recast: 120, desc: 'Erects a five-stack barrier around self and nearby party members.\nDuration: 15s' }),
@@ -56,11 +62,12 @@
       taurochole: ab({ name: 'Taurochole', recast: 45, gall: true, desc: 'Restores target\'s HP and reduces damage taken by 10%.\nCure Potency: 700\nAddersgall Cost: 1' }),
       druochole: ab({ name: 'Druochole', recast: 1, gall: true, desc: 'Restores target\'s HP.\nCure Potency: 600\nAddersgall Cost: 1' }),
       icarus: ab({ name: 'Icarus', recast: 45, desc: 'Rush to a target\'s side.' }),
-      swiftcast: ab({ name: 'Swiftcast', recast: 60, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),
+      swiftcast: ab({ name: 'Swiftcast', recast: V.swift || 60, role: true, desc: 'Next spell is cast immediately.\nDuration: 10s' }),
       lucidDreaming: ab({ name: 'Lucid Dreaming', recast: 60, role: true, desc: 'Gradually restores MP.\nPotency: 55\nDuration: 21s' }),
       surecast: ab({ name: 'Surecast', recast: 120, role: true, desc: 'Spells can be cast without interruption.\nDuration: 6s' }),
       rescue: ab({ name: 'Rescue', recast: 120, role: true, desc: 'Instantly draws target party member to your side.' }),
       ...B.GENERAL_ACTIONS,
+      ...(V.psyche ? { psyche: ab({ name: 'Psyche', recast: 60, potency: V.psyche, target: true, range: 25, aoe: 0.5, delay: 0.6, fx: 'gnbZone', desc: `Deals unaspected damage with a potency of ${V.psyche} to target and all enemies nearby it, 50% less for all remaining enemies.\nRecast: 60s` }) } : {}),
       tincture: B.tincture(V.tincture),
       auto: { name: 'Attack', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
     };
@@ -84,9 +91,9 @@
       this.name = 'Sage';
       this.abbr = 'SGE';
       this.role = 'healer';
-      this.level = 90;
-      this.levelKey = 90;
-      this.model = 'sge-ew';
+      this.level = V.level || 90;
+      this.levelKey = V.level || 90;
+      this.model = V.level === 100 ? 'sge-dt' : 'sge-ew';
       this.maxMp = 10000;
       this.actions = buildActions(V);
       this.statuses = STATUSES;
@@ -108,6 +115,10 @@
         ['Role Actions', ['swiftcast', 'lucidDreaming', 'surecast', 'rescue']],
         ['General', ['sprint', 'tincture']],
       ];
+      if (V.psyche) {
+        this.defaultBars[0][this.defaultBars[0].indexOf('dyskrasia2')] = 'psyche';
+        this.actionGroups[0][1] = ['psyche'].concat(this.actionGroups[0][1]);
+      }
       this.referenceDps = V.ref;
       this.referenceGcd = 2.45;
       this.startDistance = 6;
@@ -142,7 +153,7 @@
     consumeInstant(id, e) { if (this.actions[id].cast && e.has('swiftcast')) e.removeStatus('swiftcast'); }
 
     mpCost(id) { return this.actions[id].mp || 0; }
-    mpRegen() { return 200 + Math.floor(150 * (this.stats.piety - 390) / 1900); }
+    mpRegen() { return this.level === 100 ? 200 + Math.floor(150 * (this.stats.piety - 440) / 2780) : 200 + Math.floor(150 * (this.stats.piety - 390) / 1900); }
     lucidGain() { return B.LUCID_REGEN; }
 
     snapshot(a, e) {
@@ -225,16 +236,16 @@
       const V = this.V;
       return `
 <h3>How it plays (${V.label})</h3>
-<p>Level 90 Sage on a dummy. Fill with <b>Dosis III</b> (330, a 1.5s cast); keep <b>Eukrasian Dosis III</b> up (press <b>Eukrasia</b>, a 1s GCD, then Dosis: ${V.edosis} a tick for 30s). Spend <b>Phlegma III</b>'s two charges (${V.phlegma}, ${V.phlegmaRecast}s each, 6 yalms) at the two-minute marks and never let them overcap. <b>Toxikon II</b> spends Addersting${V.stingStart ? ' (three to start with)' : ' (none on a dummy: it comes from broken Eukrasian Diagnosis barriers)'}; it and <b>Pneuma</b> match Dosis III, so they're for moving or healing. Kardia heals your partner whenever you deal damage; Addersgall (one every 20s) pays for the oGCD heals and gives 700 MP back.</p>
+<p>Level ${this.level} Sage on a dummy. Fill with <b>Dosis III</b> (${V.dosis || 330}, a 1.5s cast); keep <b>Eukrasian Dosis III</b> up (press <b>Eukrasia</b>, a 1s GCD, then Dosis: ${V.edosis} a tick for 30s). Spend <b>Phlegma III</b>'s two charges (${V.phlegma}, ${V.phlegmaRecast}s each, 6 yalms) at the two-minute marks and never let them overcap. <b>Toxikon II</b> spends Addersting${V.stingStart ? ' (three to start with)' : ' (none on a dummy: it comes from broken Eukrasian Diagnosis barriers)'}; it and <b>Pneuma</b> match Dosis III, so they're for moving or healing. Kardia heals your partner whenever you deal damage; Addersgall (one every 20s) pays for the oGCD heals and gives 700 MP back.</p>
 <h3>The opener (The Balance)</h3>
-${seq(['dosis3', ['tincture'], 'eukrasia', 'eukrasianDosis3', 'dosis3', 'dosis3', 'phlegma3', 'phlegma3', 'dosis3', 'dosis3'])}
-<p>The tincture at −3s, Dosis III precast at −1.5s. Then E. Dosis every 30s, Dosis as filler, the third Phlegma about 60s in.</p>
-<p style="color:#a9a3b4">${V.label} numbers: Dosis III 330, Eukrasian Dosis III ${V.edosis} × 30s, Phlegma III ${V.phlegma} (${V.phlegmaRecast}s, 2 charges), Toxikon II 330, Dyskrasia II 170, Pneuma 330, Maim and Mend II +30%. Gear: The Balance's set for the tier (Mind ${V.stats.main.toLocaleString()}).</p>`;
+${V.psyche ? seq([['eukrasia'], ['tincture'], 'toxikon2', 'eukrasianDosis3', 'dosis3', 'dosis3', 'dosis3', 'phlegma3', ['psyche'], 'phlegma3', 'dosis3', 'dosis3', 'dosis3', 'dosis3']) : seq(['dosis3', ['tincture'], 'eukrasia', 'eukrasianDosis3', 'dosis3', 'dosis3', 'phlegma3', 'phlegma3', 'dosis3', 'dosis3'])}
+<p>${V.psyche ? 'Eukrasia at −5s, the tincture at −2s and Toxikon II at −1.5s (The Balance\'s Toxikon opener); Psyche with the second Phlegma.' : 'The tincture at −3s, Dosis III precast at −1.5s.'} Then E. Dosis every 30s, Dosis as filler, the third Phlegma about 60s in.</p>
+<p style="color:#a9a3b4">${V.label} numbers: Dosis III ${V.dosis || 330}, Eukrasian Dosis III ${V.edosis} × 30s,${V.psyche ? ` Psyche ${V.psyche} (60s),` : ''} Phlegma III ${V.phlegma} (${V.phlegmaRecast}s, 2 charges), Toxikon II ${V.dosis || 330}, Dyskrasia II 170, Pneuma ${V.dosis || 330}, Maim and Mend II +30%. Gear: The Balance's set for the tier (Mind ${V.stats.main.toLocaleString()}).</p>`;
     }
   }
 
   B.registerJob({
     id: 'sge', name: 'Sage', abbr: 'SGE', role: 'healer', classJob: 40,
-    versions: ['ew63', 'ew62', 'ew61', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new SageEW(v) })),
+    versions: ['dt70', 'ew63', 'ew62', 'ew61', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new SageEW(v) })),
   });
 })(window.BLM);

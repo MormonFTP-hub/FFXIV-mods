@@ -169,7 +169,7 @@
         const crit = e.has('kassatsu');
         if (crit && a.potency) e.removeStatus('kassatsu');
         const snap = this.snapshot(a, e);
-        snap.mult *= 2;
+        snap.mult *= this.tcjMult || 2;
         if (jutsu === 'huton') e.addStatus('huton', 70);
         else if (jutsu === 'doton') {
           if (e.distToTarget() - B.DUMMY_RADIUS <= a.pbaoe) e.addTStatus('doton', a.dot.duration, { snap, dot: { potency: a.dot.potency, id: jutsu } });
@@ -242,6 +242,7 @@ ${seq([['jin'], ['chi'], ['ten'], ['huton'], ['hide'], ['ten'], ['chi'], ['jin']
     }
   }
 
+  B.NinjaSB = NinjaSB;
   B.registerJob({
     id: 'nin', name: 'Ninja', abbr: 'NIN', role: 'melee', classJob: 30,
     versions: [{ id: 'sb40', label: 'Stormblood 4.0–4.58', history: 'SB 4.0–4.58', note: 'Level 70. The Ninki Gauge from auto-attacks and Mug for Bhavacakra and Ten Chi Jin, Huton, Suiton into Trick Attack, Kassatsu, Duality, Shadow Fang\'s slashing debuff; the 4.1 numbers and Alphascape gear', create: () => new NinjaSB() }],

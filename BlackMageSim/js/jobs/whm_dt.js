@@ -268,6 +268,7 @@ ${opener}
     }
   }
 
+  B.WhiteMageDT = WhiteMageDT;
   B.registerJob({
     id: 'whm', name: 'White Mage', abbr: 'WHM', role: 'healer', classJob: 24,
     versions: ['dt74', 'dt71', 'dt70'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new WhiteMageDT(v) })),

@@ -307,6 +307,7 @@ ${seq(['stormbite', ['wanderersMinuet'], ['ragingStrikes'], 'causticBite', ['emp
     }
   }
 
+  B.BardEW = BardEW;
   B.registerJob({
     id: 'brd', name: 'Bard', abbr: 'BRD', role: 'ranged', classJob: 23,
     versions: [{ id: 'ew60', label: 'Endwalker 6.0–6.58', history: 'EW 6.0–6.58', note: 'Level 90: songs as abilities with an 80% Repertoire roll every 3s, Pitch Perfect, Army\'s Muse, Radiant Finale, Apex and Blast Arrow, Iron Jaws; the 6.58 numbers and Anabaseios gear', create: () => new BardEW() }],

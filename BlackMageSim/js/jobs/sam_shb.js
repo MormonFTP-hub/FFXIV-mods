@@ -1,15 +1,17 @@
-// Samurai, Shadowbringers at level 80, in two versions. Built on the Endwalker 6.08 class (sam_ew.js) with the 5.x kit:
+// Samurai, Shadowbringers at level 80, in three versions. Built on the Endwalker 6.08 class (sam_ew.js) with the 5.x kit:
 // Jinpu (+13% damage) and Shifu (13% haste) for 40s, positionals that add 5 Kenki instead of potency, Hissatsu: Kaiten
 // (+50% to the next weaponskill), one Tsubame-gaeshi charge on a 60s recast, Meikyo Shisui on 55s, Ikishoten (+50
 // Kenki, 60s), Senei and Guren at 50 Kenki, Fuga for the AoE combo (Mangetsu and Oka extend Jinpu and Shifu by 15s),
 // and no Ogi Namikiri.
+//  - 5.0–5.01: the launch numbers (Hakaze 170, Jinpu / Shifu 320, Gekko / Kasha 470), Kaiten on a 5s recast, Meikyo
+//    Shisui on 60s, the Kaeshi with a 1.8s cast, Meditation lasting 30s and a weaker Shoha (50–500). Otherwise as 5.05.
 //  - 5.05–5.08: the 5.08 potencies (Jinpu / Shifu 340, Yukikaze 400). Meditation comes only from Meditate (an ability
 //    here), up to five stacks for 45s, and Shoha's potency grows with them (100–500, 1s recast); Hagakure gives 5 Kenki
 //    per Sen; Tsubame-gaeshi's 2.5s lock ignores skill speed. Eden's Gate gear.
 //  - 5.1–5.58: Jinpu / Shifu 320, Yukikaze 360; Iaijutsu, Kaeshi and Meditate ticks each add a Meditation stack (max
 //    3, no timer), Shoha is 400 on a 15s recast, Meditate takes the GCD, Hagakure gives 10 per Sen. The Balance's set.
-// Numbers are the game data at 5.08 and 5.58 and the Lodestone notes; gear stats are the 5.58 Item.csv's (pre-6.0).
-// ref: a scripted bot parses about 21,560 / 14,500 on these.
+// Numbers are the game data at 5.0, 5.01, 5.05, 5.08 and 5.58 and the Lodestone notes; gear stats are the 5.58 Item.csv's (pre-6.0).
+// ref: a scripted bot parses about 21,560 / 14,200 / 14,050 on these.
 (function (B) {
   const EW = B.SamuraiEW608;
   const EPS = 1e-6;
@@ -20,10 +22,16 @@
       gear: 'The Balance\'s 5.58 "2.14 slowSam" set (Strength 5,549, 134 weapon damage)',
       note: 'Level 80: Kaiten, one Tsubame-gaeshi, Meditation from Iaijutsu and Kaeshi into Shoha, Senei, Jinpu and Shifu; Eden\'s Promise gear' },
     shb505: { label: 'Shadowbringers 5.05–5.08', history: 'ShB 5.05–5.08', jinpu: 340, yukikaze: 400, higanDot: 40, kaeshiDot: 60, hagakure: 5,
-      oldMeditation: true, tsubameFixed: true, kaiten: 1, tincture: 'str2', ref: 15370,
+      oldMeditation: true, tsubameFixed: true, kaiten: 1, tincture: 'str2', ref: 15060,
       stats: { hp: 62000, main: 4182, wd: 122, det: 2172, crit: 2858, dh: 3072, speed: 685 },
       gear: 'an Eden\'s Gate set at 2.14 with Shifu (Strength 4,182, 122 weapon damage), with a Grade 2 Tincture',
       note: 'Level 80: instant Kaeshi, Meikyo on 55s, Kaiten on a 1s recast (5.08), Shoha only from Meditate; Eden\'s Gate gear' },
+    shb50: { label: 'Shadowbringers 5.0–5.01', history: 'ShB 5.0–5.01', jinpu: 320, yukikaze: 400, higanDot: 40, kaeshiDot: 60, hagakure: 5,
+      oldMeditation: true, tsubameFixed: true, kaiten: 5, hakaze: 170, gekko: 470, kaeshiCast: 1.8, meikyo: 60, medDur: 30, shoha: [0, 50, 100, 200, 300, 500],
+      tincture: 'str1', ref: 14920,
+      stats: { hp: 62000, main: 4182, wd: 122, det: 2172, crit: 2858, dh: 3072, speed: 685 },
+      gear: 'the 5.05 Eden\'s Gate set at 2.14 with Shifu (Strength 4,182, 122 weapon damage; no launch-week set survives), with 5.0\'s Tincture of Strength',
+      note: 'The launch Samurai: Tsubame-gaeshi\'s Kaeshi with a 1.5s cast, Kaiten on 5s, Meikyo on 60s, Meditation 30s and a weaker Shoha' },
   };
   const ws = (o) => Object.assign({ kind: 'gcd', target: true, range: B.MELEE_RANGE, delay: 0.45 }, o);
   const set = (A, id, o) => { A[id] = Object.assign({}, A[id], o); };
@@ -40,11 +48,12 @@
       this.model = 'sam-shb';
       const A = Object.assign({}, this.actions);
       for (const k of ['ogiNamikiri', 'kaeshiNamikiri', 'fuko']) delete A[k];
-      set(A, 'hakaze', { potency: 200, desc: 'Delivers an attack with a potency of 200.\nAdditional Effect: Increases Kenki Gauge by 5' });
+      const hk = V.hakaze || 200, gk = V.gekko || 480;
+      set(A, 'hakaze', { potency: hk, desc: `Delivers an attack with a potency of ${hk}.\nAdditional Effect: Increases Kenki Gauge by 5` });
       set(A, 'jinpu', { comboPotency: V.jinpu, desc: `Delivers an attack with a potency of 100.\nCombo Action: Hakaze\nCombo Potency: ${V.jinpu}\nCombo Bonus: Increases damage dealt by 13%\nDuration: 40s\nCombo Bonus: Increases Kenki Gauge by 5` });
       set(A, 'shifu', { comboPotency: V.jinpu, desc: `Delivers an attack with a potency of 100.\nCombo Action: Hakaze\nCombo Potency: ${V.jinpu}\nCombo Bonus: Reduces weaponskill cast time and recast time, spell cast time and recast time, and auto-attack delay by 13%\nDuration: 40s\nCombo Bonus: Increases Kenki Gauge by 5` });
-      set(A, 'gekko', { comboPotency: 480, kenki: 5, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Jinpu\nCombo Potency: 480\nRear Combo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Grants Getsu' });
-      set(A, 'kasha', { comboPotency: 480, kenki: 5, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Shifu\nCombo Potency: 480\nFlank Combo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Grants Ka' });
+      set(A, 'gekko', { comboPotency: gk, kenki: 5, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Jinpu\nCombo Potency: ' + gk + '\nRear Combo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Grants Getsu' });
+      set(A, 'kasha', { comboPotency: gk, kenki: 5, desc: 'Delivers an attack with a potency of 100.\nCombo Action: Shifu\nCombo Potency: ' + gk + '\nFlank Combo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Increases Kenki Gauge by 5\nCombo Bonus: Grants Ka' });
       set(A, 'yukikaze', { comboPotency: V.yukikaze, desc: `Delivers an attack with a potency of 100.\nCombo Action: Hakaze\nCombo Potency: ${V.yukikaze}\nCombo Bonus: Increases Kenki Gauge by 15\nCombo Bonus: Grants Setsu` });
       set(A, 'enpi', { enhancedPotency: 320, desc: 'Delivers a ranged attack with a potency of 100.\nEnhanced Enpi Bonus Potency: 320\nAdditional Effect: Increases Kenki Gauge by 10' });
       A.fuga = ws({ name: 'Fuga', potency: 100, comboStart: true, comboNext: true, kenki: 5, range: 8, aoe: true, fx: 'slash',
@@ -52,11 +61,11 @@
       set(A, 'mangetsu', { comboPotency: 160, comboFrom: 'fuga', desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Fuga\nCombo Potency: 160\nCombo Bonus: Extends Jinpu duration by 15s to a maximum of 40s\nCombo Bonus: Increases Kenki Gauge by 10\nCombo Bonus: Grants Getsu' });
       set(A, 'oka', { comboPotency: 160, comboFrom: 'fuga', desc: 'Delivers an attack with a potency of 100 to all nearby enemies.\nCombo Action: Fuga\nCombo Potency: 160\nCombo Bonus: Extends Shifu duration by 15s to a maximum of 40s\nCombo Bonus: Increases Kenki Gauge by 10\nCombo Bonus: Grants Ka' });
       const med = V.oldMeditation ? '' : '\nAdditional Effect: Grants a stack of Meditation, up to a maximum of 3';
-      set(A, 'higanbana', { potency: 250, dot: { potency: V.higanDot, duration: 60 }, desc: `Delivers an attack with a potency of 250.\nAdditional Effect: Damage over time\nPotency: ${V.higanDot}\nDuration: 60s${med}\nCan only be executed when under the effect of one of the following: Setsu, Getsu, or Ka.` });
-      set(A, 'tenkaGoken', { potency: 360, desc: `Delivers an attack with a potency of 360 to all enemies in a cone before you.${med}\nCan only be executed when under the effect of two of the following: Setsu, Getsu, or Ka.` });
-      set(A, 'midareSetsugekka', { potency: 800, desc: `Delivers an attack with a potency of 800.${med}\nCan only be executed when under the effect of Setsu, Getsu, and Ka.` });
-      const fixed = V.tsubameFixed ? { fixedRecast: 2.5 } : {};
-      const lock = V.tsubameFixed ? '\nTriggers the cooldown of weaponskills upon execution (2.5s, not affected by skill speed).' : '\nTriggers the cooldown of weaponskills upon execution.';
+      set(A, 'higanbana', { cast: 1.8, potency: 250, dot: { potency: V.higanDot, duration: 60 }, desc: `Delivers an attack with a potency of 250.\nAdditional Effect: Damage over time\nPotency: ${V.higanDot}\nDuration: 60s${med}\nCan only be executed when under the effect of one of the following: Setsu, Getsu, or Ka.` });
+      set(A, 'tenkaGoken', { cast: 1.8, potency: 360, desc: `Delivers an attack with a potency of 360 to all enemies in a cone before you.${med}\nCan only be executed when under the effect of two of the following: Setsu, Getsu, or Ka.` });
+      set(A, 'midareSetsugekka', { cast: 1.8, potency: 800, desc: `Delivers an attack with a potency of 800.${med}\nCan only be executed when under the effect of Setsu, Getsu, and Ka.` });
+      const fixed = Object.assign(V.tsubameFixed ? { fixedRecast: 2.5 } : {}, V.kaeshiCast ? { cast: V.kaeshiCast } : {});
+      const lock = (V.kaeshiCast ? `\nCast: ${V.kaeshiCast}s` : '') + (V.tsubameFixed ? '\nTriggers the cooldown of weaponskills upon execution (2.5s, not affected by skill speed).' : '\nTriggers the cooldown of weaponskills upon execution.');
       set(A, 'tsubameGaeshi', Object.assign({ charges: undefined, desc: `Repeats the previously executed iaijutsu with increased potency.\nCan only be executed immediately following Iaijutsu.${lock}` }, fixed));
       set(A, 'kaeshiHiganbana', Object.assign({ potency: 375, charges: undefined, dot: { potency: V.kaeshiDot, duration: 60 }, desc: `Delivers an attack with a potency of 375.\nAdditional Effect: Damage over time\nPotency: ${V.kaeshiDot}\nDuration: 60s${med}\nEffect cannot be stacked with Higanbana.${lock}` }, fixed));
       set(A, 'kaeshiGoken', Object.assign({ potency: 540, charges: undefined, desc: `Delivers an attack with a potency of 540 to all enemies in a cone before you.${med}${lock}` }, fixed));
@@ -67,11 +76,11 @@
       set(A, 'guren', { potency: 850, kenkiCost: 50, aoe: true, desc: 'Delivers an attack with a potency of 850 to all enemies in a straight line before you.\nKenki Gauge Cost: 50\nShares a recast timer with Hissatsu: Senei.' });
       set(A, 'kaiten', { recast: V.kaiten });
       set(A, 'ikishoten', { recast: 60, desc: 'Increases Kenki Gauge by 50.\nCan only be executed while in combat.' });
-      set(A, 'meikyoShisui', { recast: 55, charges: undefined, desc: 'Execute up to 3 weaponskill combos without meeting combo prerequisites. Does not affect Iaijutsu.\nDuration: 15s' });
+      set(A, 'meikyoShisui', { recast: V.meikyo || 55, charges: undefined, desc: 'Execute up to 3 weaponskill combos without meeting combo prerequisites. Does not affect Iaijutsu.\nDuration: 15s' });
       set(A, 'hagakure', { desc: `Converts Setsu, Getsu, and Ka into Kenki. Each Sen converted increases your Kenki Gauge by ${V.hagakure}.\nCan only be executed if under the effect of at least one of the three statuses.` });
       if (V.oldMeditation) {
-        A.meditate = { name: 'Meditate', kind: 'ogcd', recast: 60, fx: 'meditate', desc: 'Gradually increases your Kenki Gauge.\nDuration: 15s\nAdditional Effect: Grants stacks of Meditation when used in combat, up to a maximum of 5\nMeditation Duration: 45s\nEffect ends upon using another action or moving (including facing a different direction).' };
-        set(A, 'shoha', { recast: 1, potency: 0, desc: 'Delivers an attack with a potency of 100 for one stack of Meditation, 300 for two, 400 for three, 450 for four and 500 for five.\nCan only be executed while under the effect of Meditation. Meditation effect fades upon execution.' });
+        A.meditate = { name: 'Meditate', kind: 'ogcd', recast: 60, fx: 'meditate', desc: `Gradually increases your Kenki Gauge.\nDuration: 15s\nAdditional Effect: Grants stacks of Meditation when used in combat, up to a maximum of 5\nMeditation Duration: ${V.medDur || 45}s\nEffect ends upon using another action or moving (including facing a different direction).` };
+        set(A, 'shoha', { recast: 1, potency: 0, desc: (V.shoha ? `Delivers an attack with a potency of ${V.shoha[1]} for one stack of Meditation, ${V.shoha[2]} for two, ${V.shoha[3]} for three, ${V.shoha[4]} for four and ${V.shoha[5]} for five.` : 'Delivers an attack with a potency of 100 for one stack of Meditation, 300 for two, 400 for three, 450 for four and 500 for five.') + '\nCan only be executed while under the effect of Meditation. Meditation effect fades upon execution.' });
       } else {
         set(A, 'meditate', { desc: 'Gradually increases your Kenki Gauge.\nDuration: 15s\nAdditional Effect: Grants stacks of Meditation when used in combat, up to a maximum of 3\nEffect ends upon using another action or moving (including facing a different direction).\nTriggers the cooldown of weaponskills upon execution.' });
         set(A, 'shoha', { potency: 400, desc: 'Delivers an attack with a potency of 400.\nCan only be executed after accumulating three stacks of Meditation by executing Iaijutsu, Tsubame-gaeshi, or Meditate while in combat.\nMeditation effect fades upon execution.' });
@@ -149,7 +158,7 @@
           if (this.V.oldMeditation) {
             const n = e.statuses.meditation.stacks || 1;
             e.removeStatus('meditation');
-            e.queueHit('shoha', SHOHA_OLD[n], this.snapshot(null, e), this.actions.shoha.delay);
+            e.queueHit('shoha', (this.V.shoha || SHOHA_OLD)[n], this.snapshot(null, e), this.actions.shoha.delay);
             return;
           }
           break;
@@ -167,7 +176,7 @@
         g.medNext += 3;
         this.addKenki(e, 10);
         const n = e.has('meditation') ? Math.min(5, (e.statuses.meditation.stacks || 0) + 1) : 1;
-        e.addStatus('meditation', 45, { stacks: n });
+        e.addStatus('meditation', this.V.medDur || 45, { stacks: n });
       }
     }
 
@@ -177,7 +186,7 @@
     }
 
     speedInfo(e) {
-      return `GCD ${e.gcdForSpeed(e.stats.speed).toFixed(2)} without Shifu · ${e.gcdForSpeed(e.stats.speed, 13).toFixed(2)} with · Iaijutsu ${e.speedScale(1.3, 13).toFixed(2)}s cast with Shifu`;
+      return `GCD ${e.gcdForSpeed(e.stats.speed).toFixed(2)} without Shifu · ${e.gcdForSpeed(e.stats.speed, 13).toFixed(2)} with · Iaijutsu ${e.speedScale(1.8, 13).toFixed(2)}s cast with Shifu`;
     }
 
     helpHtml(seq) {
@@ -187,18 +196,18 @@
         : 'Every Iaijutsu, Kaeshi and Meditate tick adds a <b>Meditation</b> stack (max 3); at three, <b>Shoha</b> (400, 15s). Meditate takes the GCD now, so it\'s a downtime tool.';
       return `
 <h3>How it plays (${V.label})</h3>
-<p>Level 80 Samurai. Build Sen with the three combos and spend them with Iaijutsu (1.3s cast): one Sen is Higanbana (250 + ${V.higanDot} × 60s), two Tenka Goken, three <b>Midare Setsugekka</b> (800). <b>Tsubame-gaeshi</b> (60s, one charge) repeats it straight after as a Kaeshi; always <b>Kaeshi: Setsugekka</b> (1,200), never Kaeshi: Higanbana.${V.tsubameFixed ? ' Its GCD lock is a flat 2.5s in 5.0x, skill speed doesn\'t shorten it.' : ''}</p>
-<p>Keep <b>Jinpu</b> (+13% damage) and <b>Shifu</b> (13% haste) up, 40s each. Gekko (rear) and Kasha (flank) give 5 more Kenki from the right side, not more potency. <b>Hissatsu: Kaiten</b> (20 Kenki, +50% to the next weaponskill, its DoT too) goes before every Midare and Higanbana. Kenki also buys <b>Senei</b> (1,100, 50 Kenki, 120s, shared with Guren) and <b>Shinten</b> (320, 25). <b>Ikishoten</b> gives 50 every 60s, <b>Meikyo Shisui</b> (55s) skips three combo steps, and <b>Hagakure</b> turns leftover Sen into ${V.hagakure} Kenki each.</p>
+<p>Level 80 Samurai. Build Sen with the three combos and spend them with Iaijutsu (1.8s cast; 6.0 cut it to 1.3s): one Sen is Higanbana (250 + ${V.higanDot} × 60s), two Tenka Goken, three <b>Midare Setsugekka</b> (800). <b>Tsubame-gaeshi</b> (60s, one charge) repeats it straight after as a Kaeshi; always <b>Kaeshi: Setsugekka</b> (1,200), never Kaeshi: Higanbana.${V.tsubameFixed ? ' Its GCD lock is a flat 2.5s in 5.0x, skill speed doesn\'t shorten it.' : ''}${V.kaeshiCast ? ` At launch the Kaeshi also had a ${V.kaeshiCast}s cast (5.05 made them instant).` : ''}</p>
+<p>Keep <b>Jinpu</b> (+13% damage) and <b>Shifu</b> (13% haste) up, 40s each. Gekko (rear) and Kasha (flank) give 5 more Kenki from the right side, not more potency. <b>Hissatsu: Kaiten</b> (20 Kenki, +50% to the next weaponskill, its DoT too) goes before every Midare and Higanbana. Kenki also buys <b>Senei</b> (1,100, 50 Kenki, 120s, shared with Guren) and <b>Shinten</b> (320, 25). <b>Ikishoten</b> gives 50 every 60s, <b>Meikyo Shisui</b> (${V.meikyo || 55}s) skips three combo steps, and <b>Hagakure</b> turns leftover Sen into ${V.hagakure} Kenki each.</p>
 <p>${shoha}</p>
 <h3>The opener (Higanbana first)</h3>
 ${seq(['hakaze', ['ikishoten'], 'shifu', 'kasha', 'hakaze', ['tincture'], 'jinpu', ['kaiten'], 'higanbana', ['senei'], 'gekko', ['meikyoShisui'], 'kasha', ['shinten'], 'yukikaze', ['kaiten'], 'midareSetsugekka', 'kaeshiSetsugekka', ...(V.oldMeditation ? [] : [['shoha']]), 'gekko'])}
 <p>${V.oldMeditation ? 'No 2019 Balance opener survives. This is the 5.25 one, which follows the same 60s loop, without its Shoha.' : 'From The Balance\'s "Bushido" guide and Jahaudant\'s 5.3 cheat sheet.'} After it, a 60s loop of 28 GCDs at 2.14: Kaiten Midare twice, a Kaiten Higanbana, Tsubame and Meikyo every minute, Senei every two, with Yukikaze + Hagakure as filler to keep the loop on time.</p>
-<p style="color:#a9a3b4">The ${V.oldMeditation ? '5.08' : '5.1–5.58'} numbers: Hakaze 200; Jinpu and Shifu ${V.jinpu}, Gekko and Kasha 480, Yukikaze ${V.yukikaze} in combo; Higanbana 250 + ${V.higanDot}; Tenka Goken 360; Midare 800; Kaeshi: Higanbana 375 + ${V.kaeshiDot}, Goken 540, Setsugekka 1,200; Shinten 320; Kyuten 150; Senei 1,100; Guren 850; Shoha ${V.oldMeditation ? '100–500' : '400'}; Enpi 100 (320 Enhanced); Fuga 100, Mangetsu / Oka 160; auto-attacks 110 at 2.64s. Gear: ${V.gear}, pre-6.0 stats from the 5.58 game data.</p>`;
+<p style="color:#a9a3b4">The ${V.kaeshiCast ? '5.0–5.01' : V.oldMeditation ? '5.08' : '5.1–5.58'} numbers: Hakaze ${V.hakaze || 200}; Jinpu and Shifu ${V.jinpu}, Gekko and Kasha ${V.gekko || 480}, Yukikaze ${V.yukikaze} in combo; Higanbana 250 + ${V.higanDot}; Tenka Goken 360; Midare 800; Kaeshi: Higanbana 375 + ${V.kaeshiDot}, Goken 540, Setsugekka 1,200; Shinten 320; Kyuten 150; Senei 1,100; Guren 850; Shoha ${V.oldMeditation ? '100–500' : '400'}; Enpi 100 (320 Enhanced); Fuga 100, Mangetsu / Oka 160; auto-attacks 110 at 2.64s. Gear: ${V.gear}, pre-6.0 stats from the 5.58 game data.</p>`;
     }
   }
 
   B.registerJob({
     id: 'sam', name: 'Samurai', abbr: 'SAM', role: 'melee', classJob: 34,
-    versions: ['shb51', 'shb505'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new SamuraiShB(v) })),
+    versions: ['shb51', 'shb505', 'shb50'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new SamuraiShB(v) })),
   });
 })(window.BLM);

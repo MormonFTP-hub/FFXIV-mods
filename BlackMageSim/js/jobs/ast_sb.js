@@ -305,8 +305,8 @@
         return;
       }
       switch (id) {
-        case 'draw': g.card = this.randomCard(); g.cardUntil = e.now + 30; e.emit('card', {}); return;
-        case 'redraw': g.card = this.randomCard(g.card); e.emit('card', {}); return;
+        case 'draw': g.card = this.randomCard(); g.cardUntil = e.now + (this.cardHold || 30); e.emit('card', {}); return;
+        case 'redraw': g.card = this.randomCard(this.shuffle ? undefined : g.card); e.emit('card', {}); return;     // Shuffle (to 3.15) could give the same card
         case 'undraw': this.discard(e); return;
         case 'royalRoad':
           g.road = CARD[g.card].road;
@@ -323,7 +323,7 @@
           if (!g.road) { g.road = CARD[this.randomCard()].road; e.addStatus(ROAD_STATUS[g.road], 1e9, { permanent: true }); }
           if (!g.spread) g.spread = this.randomCard();
           if (!g.arcana) g.arcana = Math.random() < 0.5 ? 'lord' : 'lady';
-          if (!g.card) { g.card = this.randomCard(); g.cardUntil = e.now + 30; }
+          if (!g.card) { g.card = this.randomCard(); g.cardUntil = e.now + (this.cardHold || 30); }
           for (const k of ['draw', 'spread', 'minorArcana']) { const c = e.cds[k]; if (c) { c.charges = c.max; c.nextAt = null; } }
           e.emit('card', {});
           return;
@@ -333,7 +333,7 @@
           return;
         }
         case 'celestialOpposition':
-          for (const [k, s] of Object.entries(e.statuses)) if (!s.permanent && s.until > e.now && k !== 'medicated') s.until += 10;
+          for (const [k, s] of Object.entries(e.statuses)) if (!s.permanent && s.until > e.now && k !== 'medicated') s.until += this.coExt || 10;
           return;
         case 'earthlyStar':
           g.star = { placed: e.now };

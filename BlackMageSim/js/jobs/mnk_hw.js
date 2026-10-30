@@ -45,7 +45,8 @@
       A.invigorate = { name: 'Invigorate', kind: 'ogcd', recast: 120, role: true, desc: 'Instantly restores 400 TP.' };
       A.bloodbath = { name: 'Bloodbath', kind: 'ogcd', recast: 90, role: true, desc: 'Converts 25% of physical damage dealt into HP.\nDuration: 15s' };
       A.featherfoot = { name: 'Featherfoot', kind: 'ogcd', recast: 90, desc: 'Increases evasion by 12%.\nDuration: 10s' };
-      A.tincture = Object.assign({}, B.tincture('str'), { name: 'X-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +16% (Max 81)\nDuration: 15s' });
+      A.tincture = Object.assign({}, B.tincture('str'), { name: 'Supramax-Potion of Strength', dur: 15, desc: 'This diluted brew temporarily increases strength.\nStrength +20% (Max 154)\nDuration: 15s' });
+      this.potionCap = 154;     // the 3.4 potion (Draconian 105 in 3.0x, Max-Potion 127 in 3.2x)
       this.actions = A;
       this.statuses = Object.assign({}, this.statuses, {
         touchOfDeath: { name: 'Touch of Death', self: false, icon: 'st_tod' },
@@ -91,7 +92,7 @@
     snapshot(a, e) {
       const s = super.snapshot(a, e);
       if (e.has('bloodForBlood')) s.mult *= 1.10;
-      s.main = this.stats.main + (e.has('medicated') ? 81 : 0);
+      s.main = this.stats.main + (e.has('medicated') ? this.potionCap : 0);
       return s;
     }
 
@@ -116,6 +117,7 @@ ${seq(['demolish', ['perfectBalance'], 'snapPunch', ['bloodForBlood'], 'snapPunc
     }
   }
 
+  B.MonkHW = MonkHW;
   B.registerJob({
     id: 'mnk', name: 'Monk', abbr: 'MNK', role: 'melee', classJob: 20,
     versions: [{ id: 'hw307', label: 'Heavensward 3.07–3.57', history: 'HW 3.07–3.57', note: 'Level 60. Greased Lightning III on a 14s timer, Tornado Kick every 40s, Touch of Death, The Forbidden Chakra 320, Blood for Blood, with Heavensward\'s damage formula', create: () => new MonkHW() }],

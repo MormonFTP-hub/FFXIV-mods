@@ -55,7 +55,7 @@
     keenFlurry: ab({ name: 'Keen Flurry', recast: 90, role: true, desc: 'Increases parry rate by 30%.\nDuration: 20s' }),
     feint: ws({ name: 'Feint', potency: 120, tp: 80, role: true, range: B.MELEE_RANGE, cast: 0, shot: false, breaksCombo: true, fx: 'slash', desc: 'Delivers an attack with a potency of 120.\nAdditional Effect: Slow +20%\nDuration: 10s' }),
     ...B.GENERAL_ACTIONS,
-    tincture: Object.assign({}, B.tincture('dex3sb'), { name: 'Draconian Potion of Dexterity', dur: 15, desc: 'This diluted brew temporarily increases dexterity.\nDexterity +20% (Max 105)\nDuration: 15s' }),
+    tincture: Object.assign({}, B.tincture('dex3sb'), { name: 'Supramax-Potion of Dexterity', dur: 15, desc: 'This diluted brew temporarily increases dexterity.\nDexterity +20% (Max 154)\nDuration: 15s' }),
     auto: { name: 'Shot', kind: 'auto', fx: 'auto', desc: 'Auto-attack.' },
   };
 
@@ -162,14 +162,14 @@
       const pet = !!(a && a.pet);
       let main = this.stats.main;
       if (!pet) {
-        if (this.barrel(e)) mult *= 1.30;
+        if (this.barrel(e)) mult *= this.barrelMult || 1.30;
         if (e.has('hotShot')) mult *= 1.05;
         if (e.has('ragingStrikes')) mult *= 1.20;
         if (e.has('bloodForBlood')) mult *= 1.10;
         if (e.has('hawksEye')) main = Math.floor(main * 1.15);
-        if (e.has('medicated')) main += 105;
+        if (e.has('medicated')) main += this.potionCap || 154;
       }
-      if (e.tHas('vulnerabilityUp')) mult *= 1.10;
+      if (e.tHas('vulnerabilityUp')) mult *= this.vulnMult || 1.10;
       return { mult, main, critAdd: 0 };
     }
 
@@ -212,12 +212,12 @@
         case 'quickReload':
           g.ammo = Math.min(5, g.ammo + 1);
           e.addStatus('ammunition', 1e9, { permanent: true, stacks: g.ammo });
-          e.tp = Math.min(this.tp.max, e.tp + 30);
+          e.tp = Math.min(this.tp.max, e.tp + (this.qrTp || 30));
           return;
         case 'reassemble': e.addStatus('reassembled', 20); return;
         case 'rapidFire': g.rapid = 3; e.addStatus('rapidFire', 15); return;
         case 'wildfire': g.wf = 0; e.addTStatus('wildfire', 15); return;
-        case 'hypercharge': e.addStatus('hypercharge', 20); return;
+        case 'hypercharge': e.addStatus('hypercharge', this.hcDur || 20); return;
         case 'gaussBarrel':
           if (this.barrel(e)) e.removeStatus('gaussBarrel');
           else e.addStatus('gaussBarrel', 1e9, { permanent: true });
@@ -229,8 +229,8 @@
           return;
         case 'turretRetrieval': g.turret = null; e.pet = null; e.removeStatus('hypercharge'); return;
         case 'ricochet': {
-          // 100 to the target, and 200 shared between it and everything nearby.
-          const n = e.targets, share = 200 / n;
+          // 100 to the target, and 200 shared between it and everything nearby (300 in 3.0).
+          const n = e.targets, share = (this.ricochetShare || 200) / n;
           e.queueHit(id, 100 + share, this.snapshot(a, e), a.delay, null, n > 1 ? { aoe: [1, share / (100 + share)] } : null);
           return;
         }
@@ -333,6 +333,7 @@ ${seq([['gaussBarrel'], ['hawksEye'], ['bloodForBlood'], ['ragingStrikes'], 'hot
     }
   }
 
+  B.MachinistHW = MachinistHW;
   B.registerJob({
     id: 'mch', name: 'Machinist', abbr: 'MCH', role: 'ranged', classJob: 31,
     versions: [{ id: 'hw34', label: 'Heavensward 3.4–3.57', history: 'HW 3.4–3.57', note: 'Level 60. The Gauss Barrel (+30%, weaponskills cast, no auto-attacks), five-round ammunition, Hot Shot and Lead Shot, Wildfire, Rapid Fire, Rook Autoturret with Hypercharge, on TP, with Heavensward\'s damage formula', create: () => new MachinistHW() }],

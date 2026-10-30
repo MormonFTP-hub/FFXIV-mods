@@ -279,6 +279,7 @@ ${seq(['dragonKick', ['tincture'], 'trueStrike', ['riddleOfFire'], 'demolish', [
     }
   }
 
+  B.MonkEW = MonkEW;
   B.registerJob({
     id: 'mnk', name: 'Monk', abbr: 'MNK', role: 'melee', classJob: 20,
     versions: ['ew63', 'ew61', 'ew60'].map(v => ({ id: v, label: VERSIONS[v].label, history: VERSIONS[v].history, note: VERSIONS[v].note, create: () => new MonkEW(v) })),
