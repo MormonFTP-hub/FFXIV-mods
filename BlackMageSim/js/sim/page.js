@@ -15,7 +15,7 @@
     fight: { style: 'patchwerk', duration: 300, variance: 10, targets: 1, iterations: 1000, ping: 50, latencyComp: false, positionals: 100, moveEvery: 30, moveFor: 3 },
     partyPreset: 'standard', party: B.PARTY_PRESETS.standard.slice(), weights: false, sets: '',
     rank: { iterations: 300, duration: 300, partyPreset: 'standard', targets: 1 },
-    search: { time: 120, width: 8 },
+    search: { time: 120, width: '1024' },
   };
   let state;
   try { state = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { state = null; }
@@ -101,10 +101,10 @@
         <details><summary>This job's actions and statuses</summary><div id="ids" class="ids"></div></details>
       </section>
       <section class="block searchonly"><h2>Search</h2>
-        <p class="muted small">Tries every GCD that could go at each GCD of the fight, plays the rest of the fight out with the action list to judge it, and keeps the best lines. It can't do worse than the list. Abilities between GCDs still come from the list.</p>
+        <p class="muted small">Every GCD order can't be tried past a few GCDs (a minute is already billions), so it tries every order for the first few, then a beam: at each GCD every GCD that could go, each judged by playing the rest of the fight out, keeping the best lines. The beam is widened 4× at a time until a wider one finds nothing more. It can't do worse than the action list, which still picks the abilities between GCDs.</p>
         <div class="fields">
           <label>Time limit (s)<input id="q-time" type="number" min="10" max="900" step="10"></label>
-          <label>Lines kept<select id="q-width"><option value="4">4: quick</option><option value="8">8</option><option value="16">16</option><option value="32">32: thorough</option><option value="64">64: slow</option></select></label>
+          <label>How hard to look<select id="q-width"><option value="1024">Until it settles (up to 1,024 lines)</option><option value="256">Until it settles, up to 256 lines</option><option value="16">Quick: 16 lines</option><option value="exact">Every order (a few GCDs only)</option></select></label>
         </div>
       </section>
       <div class="runbar simonly"><button id="run" class="primary" type="button">Simulate</button><button id="stop" class="ghost" type="button" hidden>Stop</button>
@@ -507,10 +507,11 @@
   // ---------- the best GCD order ----------
   function drawSearchFields() {
     $('#q-time').value = state.search.time;
+    if (!['1024', '256', '16', 'exact'].includes(String(state.search.width))) state.search.width = '1024';
     $('#q-width').value = String(state.search.width);
   }
   $('#q-time').addEventListener('input', (ev) => { state.search.time = +ev.target.value; save(); });
-  $('#q-width').addEventListener('change', (ev) => { state.search.width = +ev.target.value; save(); });
+  $('#q-width').addEventListener('change', (ev) => { state.search.width = ev.target.value; save(); });
   let searchStop = false;
   async function runSearch() {
     if (busy) return;
@@ -534,9 +535,19 @@
       return [].concat(...parts);
     };
     try {
-      const res = await B.Sim.search(cfg, {
-        width: state.search.width, exec, shouldStop: () => searchStop,
-        onProgress: (p) => bar(Math.min(1, p.depth / Math.max(1, p.total)), `GCD ${p.depth} of about ${p.total} · ${p.tried.toLocaleString()} fights played · ${p.best > p.guide + 0.5 ? 'best so far +' + ((p.best - p.guide) / p.guide * 100).toFixed(2) + '%' : 'nothing better than the list yet'}`),
+      const how = String(state.search.width);
+      const gainTxt = (p) => (p.best > guide0 + 0.5 && guide0 ? `best so far +${((p.best - guide0) / guide0 * 100).toFixed(2)}%` : 'nothing better than the list yet');
+      let guide0 = 0;
+      const res = await B.Sim.optimize(cfg, {
+        exec, shouldStop: () => searchStop,
+        mode: how === 'exact' ? 'exact' : 'auto', maxNodes: 400000,
+        width: how === '16' ? 16 : undefined, maxWidth: how === '256' ? 256 : 1024,
+        onProgress: (p) => {
+          if (p.guide) guide0 = p.guide;
+          if (p.phase === 'exact') bar(Math.min(1, p.depth / Math.max(1, p.total)), `Every order: GCD ${p.depth} · ${p.open.toLocaleString()} positions open · ${p.tried.toLocaleString()} tried · ${gainTxt(p)}`);
+          else if (p.phase === 'beam') bar(Math.min(1, p.depth / Math.max(1, p.total)), `${p.width} lines: GCD ${p.depth} of about ${p.total} · ${p.tried.toLocaleString()} fights played · ${gainTxt(p)}`);
+          else bar(Math.min(1, p.at / Math.max(1, p.total)), `Polishing: GCD ${p.at} of ${p.total} · sweep ${p.sweep}`);
+        },
       });
       const rep = B.Sim.searchReport(res);
       $('#search-report').innerHTML = R().search(res, rep);
@@ -605,7 +616,7 @@
   drawAll();
   drawRankFields();
   drawSearchFields();
-  $('#search-report').innerHTML = '<section class="card placeholder"><h2>Best rotation</h2><p class="muted">Pick a job and a time limit, then press “Find the best GCD order”. A two-minute window takes a few seconds, a full five-minute fight about half a minute.</p></section>';
+  $('#search-report').innerHTML = '<section class="card placeholder"><h2>Best rotation</h2><p class="muted">Pick a job and a time limit, then press “Find the best GCD order”. A minute or two of fight settles in about ten seconds; a full five minutes in about a minute.</p></section>';
   $('#report').innerHTML = '<section class="card placeholder"><h2>Simulating…</h2><p class="muted">A first run of the selected job is on its way.</p></section>';
   $('#rank-report').innerHTML = '<section class="card placeholder"><h2>Every job</h2><p class="muted">Press “Simulate every job” to rank all 21 jobs on the same fight.</p></section>';
   showTab(['rank', 'search'].includes(state.tab) ? state.tab : 'sim');

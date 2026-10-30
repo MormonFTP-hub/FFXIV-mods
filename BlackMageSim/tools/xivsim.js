@@ -9,7 +9,8 @@
 // latency_comp, positionals (0–1), party (none | standard | all | comma-separated buff ids), style
 // (patchwerk | movement), weights, apl (a file with an action list), main / wd / det / crit / dh / speed / ten
 // (stat overrides), seed, json (write the full report there), rank (every job), seq (print the sample sequence),
-// search=1 (the best GCD order for time=, width= lines wide: see B.Sim.search).
+// search=1 (the best GCD order for time=: every order when that is few enough, else a beam widened until it settles;
+// width= fixes the width, max_width= caps it (default 1024), mode=exact|beam forces one: see B.Sim.optimize).
 // Loads the same files the page does (index.html's order), with `window` standing in for the page.
 const fs = require('fs');
 const path = require('path');
@@ -74,15 +75,18 @@ async function main() {
   if (o.apl) cfg.apl = fs.readFileSync(o.apl, 'utf8');
 
   if (o.search === '1') {
-    // The best GCD order for the fight length (time=), searched `width` lines wide.
-    const res = await B.Sim.search(cfg, {
-      width: +(o.width || 12),
-      onProgress: (p) => process.stderr.write(`\rGCD ${p.depth} of ~${p.total}, ${p.tried} rollouts, best ${fmt(p.best / cfg.duration, 1)} vs ${fmt(p.guide / cfg.duration, 1)}   `),
+    // The best GCD order for the fight length (time=): see B.Sim.optimize.
+    const res = await B.Sim.optimize(cfg, {
+      mode: o.mode || 'auto', width: o.width ? +o.width : undefined, maxWidth: +(o.max_width || 1024),
+      onProgress: (p) => process.stderr.write(`\r${p.phase}${p.width ? ' ' + p.width : ''}: GCD ${p.depth || p.at} of ~${p.total}, ${p.tried} tried, best ${fmt(p.best / cfg.duration, 1)}   `),
     });
-    process.stderr.write('\r' + ' '.repeat(70) + '\r');
+    process.stderr.write('\r' + ' '.repeat(80) + '\r');
     const rep = B.Sim.searchReport(res);
     const D = cfg.duration, gain = res.best.score - res.guide.score;
-    console.log(`${rep.best.jobName} — best GCD order for ${D}s (live ${B.SIM_PATCH}), ${res.width} lines wide, ${res.tried} rollouts in ${(res.ms / 1000).toFixed(1)}s${res.seeds.length > 1 ? ', procs averaged over 3 seeds' : ''}`);
+    const how = res.mode === 'exact' ? `every order tried (${res.tried} states, ${res.merged} merged)` :
+      `beam ${res.steps.map(x => x.width).join(' → ')}${res.converged ? ', settled' : ', not settled'}${res.polished ? `, polish ${res.polished.changes} change(s)` : ''}, ${res.tried} fights played`;
+    console.log(`${rep.best.jobName} — best GCD order for ${D}s (live ${B.SIM_PATCH}): ${how}, ${(res.ms / 1000).toFixed(1)}s${res.seeds.length > 1 ? ', procs averaged over 3 seeds' : ''}`);
+    if (res.steps) console.log('  ' + res.steps.map(x => `width ${x.width}: +${((x.score / res.guide.score - 1) * 100).toFixed(2)}%`).join('   '));
     console.log(`  action list ${fmt(res.guide.score / D, 1)} DPS   best found ${fmt(res.best.score / D, 1)} DPS   ${gain >= 0 ? '+' : ''}${fmt(gain / D, 1)} (${(gain / res.guide.score * 100).toFixed(2)}%)`);
     const nm = (id) => (rep.best.seq.find(q => q.id === id) || rep.guide.seq.find(q => q.id === id) || { name: id }).name;
     const bg = rep.best.seq.filter(q => q.gcd && q.t >= -1e-6), gg = rep.guide.seq.filter(q => q.gcd && q.t >= -1e-6);

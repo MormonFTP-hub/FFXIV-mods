@@ -230,6 +230,15 @@
     const e = ctx.e, now = e.now;
     if (e.casting || e.lockUntil > now + EPS) return null;
     const gcdReady = e.gcdEnd <= now + EPS;
+    // Too late in the GCD for even the quickest ability (and no line may clip): nothing to pick, so skip the list.
+    if (!gcdReady) {
+      if (compiled.minLock === undefined) {
+        const locks = Object.values(ctx.A).filter(a => a && a.kind && a.kind !== 'gcd' && a.kind !== 'auto').map(a => a.lock || B.BASE_LOCK);
+        compiled.minLock = locks.length ? Math.min(...locks) : B.BASE_LOCK;
+        compiled.anyClip = Object.values(compiled.lists).some(l => l.some(x => x.clip));
+      }
+      if (!compiled.anyClip && now + e.animLock(compiled.minLock, true) > e.gcdEnd + 0.01) return null;
+    }
     const moveIn = ctx.sim.moveIn ? ctx.sim.moveIn() : Infinity;
     // Can any GCD on the list go? If not, abilities needn't wait for one (e.g. during movement).
     let pass = 0;

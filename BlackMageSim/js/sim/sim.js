@@ -180,8 +180,11 @@
 
   // Run iteration `it` of a prepared sim. Returns its totals; fills `agg` when given.
   // ctl (the rotation search): { plan: GCD ids to press in order, choices: the GCD buttons the search may use, seed,
-  // collectAt: record the GCDs that could go at that GCD }. With ctl the run is on average luck (expected damage, no
-  // ping jitter, the fight exactly cfg.duration long); after the plan the action list carries on.
+  // collectAt: record the GCDs that could go at that GCD, collectAll: record them at every GCD (out.candsAt),
+  // lenient: a planned GCD that can't go hands the rest to the action list (out.diverged) instead of failing,
+  // stopAtEnd: stop at the GCD after the plan with the state's fingerprint (out.key) and the damage so far }.
+  // With ctl the run is on average luck (expected damage, no ping jitter, the fight exactly cfg.duration long);
+  // after the plan the action list carries on.
   function iterate(P, it, agg, overrideStats, ctl) {
     const cfg = P.cfg;
     const seed = ctl ? ctl.seed >>> 0 : ((cfg.seed || 12345) + it * 7919) >>> 0;
@@ -297,9 +300,26 @@
         for (const b of ctl.choices) { const id = e.resolve(b); if (!ids.includes(id) && gcdOk(id)) ids.push(id); }
         return ids;
       };
+      // Everything that decides what happens next, as text, so two GCD orders that end up in the same place can be
+      // told apart from two that only look alike (keys sorted, numbers to 0.1 ms, functions left out).
+      const canon = (v) => {
+        if (v === null || v === undefined) return 'n';
+        if (typeof v === 'number') return String(Math.round(v * 1e4) / 1e4);
+        if (typeof v === 'function') return 'f';
+        if (typeof v !== 'object') return JSON.stringify(v);
+        if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+        return '{' + Object.keys(v).sort().map(k => k + ':' + canon(v[k])).join(',') + '}';
+      };
+      const stateKey = () => canon([e.now, e.gcdEnd, e.lockUntil, e.casting, e.combo, e.mp, e.tp, e.autoNext, e.mpTickNext,
+        e.dotTickNext, e.statuses, e.tStatuses, e.cds, e.g, e.pet, e.leyLines, sim.lastAction, sim.lastGcd, sim.vars,
+        e.hits.map(h => [h.at, h.id, h.potency, h.snap, h.crit, h.dh, h.auto, h.aoe, h.expires]).sort(),
+        Object.values(P.compiled.lists).map(l => l.filter(x => x.lineCd).map(x => x.last))]);
       const press = (id, ent) => {
         const inFight = job.actions[id].kind === 'gcd' && e.now >= T0 - EPS;
-        if (inFight && ctl && ctl.collectAt === out.gcdSeq.length && !out.cands) out.cands = choicesNow();
+        if (inFight && ctl) {
+          if (ctl.collectAll) (out.candsAt || (out.candsAt = []))[out.gcdSeq.length] = choicesNow();
+          else if (ctl.collectAt === out.gcdSeq.length && !out.cands) { out.cands = choicesNow(); if (ctl.wantKey) out.key = stateKey(); }
+        }
         const ok = e.execute(id);
         if (!ok) return false;
         if (ent) ent.last = e.now;
@@ -333,13 +353,21 @@
         if (moveOn) { const m = movingAt(e.now); if (m !== e.moving) e.setMoving(m); }
         e.frame();
         // The search's plan: its GCDs in order (after any `pre=1` ability the list would put first).
-        if (ctl && e.now >= T0 - EPS && out.gcdSeq.length < ctl.plan.length && !e.casting &&
-            e.lockUntil <= e.now + EPS && e.gcdEnd <= e.now + EPS) {
-          const first = B.SimAPL.choose(P.compiled, ctx, { abilitiesOnly: true });
-          if (first && first.id) { if (!press(first.id, first.entry)) step(e.now + 0.01); continue; }
-          const id = ctl.plan[out.gcdSeq.length];
-          if (!gcdOk(id) || !press(id, null)) { out.invalid = out.gcdSeq.length; break; }
-          continue;
+        if (ctl && e.now >= T0 - EPS && !e.casting && e.lockUntil <= e.now + EPS && e.gcdEnd <= e.now + EPS) {
+          const k = out.gcdSeq.length;
+          // The exhaustive search stops here: the state after its plan, and what could go next.
+          if (ctl.stopAtEnd && k === ctl.plan.length && !out.stopped) {
+            const cands = choicesNow();
+            if (cands.length) { out.cands = cands; out.key = stateKey(); out.stopped = true; break; }
+          }
+          if (k < ctl.plan.length && out.diverged === undefined) {
+            const first = B.SimAPL.choose(P.compiled, ctx, { abilitiesOnly: true });
+            if (first && first.id) { if (!press(first.id, first.entry)) step(e.now + 0.01); continue; }
+            const id = ctl.plan[k];
+            if (gcdOk(id) && press(id, null)) continue;
+            if (!ctl.lenient) { out.invalid = k; break; }
+            out.diverged = k;
+          }
         }
         const pick = e.now >= T0 - EPS ? B.SimAPL.choose(P.compiled, ctx) : null;
         if (pick && pick.id) {
@@ -599,19 +627,26 @@
     if (prepCache.key !== key) { prepCache.key = key; prepCache.P = prepare(cfg); }
     return prepCache.P;
   }
-  // items: [{ plan, seeds }] → [{ score (damage, the seeds' average), cands (GCDs possible after the plan), gcdSeq }].
+  // items: [{ plan, seeds, lenient, collectAll, state }] → [{ score (damage, the seeds' average), cands (GCDs possible
+  // after the plan), gcdSeq (every GCD played), candsAt, diverged }]. state: stop after the plan (the exhaustive
+  // search) and return the damage landed so far, the state's key, and final when the fight ended first.
   function rollouts(cfg, items) {
     const P = prepared(cfg);
     const choices = gcdChoices(P);
     return items.map(item => {
       let score = 0, first = null;
       for (const seed of item.seeds) {
-        const out = iterate(P, 0, null, null, { plan: item.plan, choices, seed, collectAt: item.plan.length });
+        const out = iterate(P, 0, null, null, { plan: item.plan, choices, seed, collectAt: item.plan.length,
+          lenient: !!item.lenient, collectAll: !!item.collectAll, stopAtEnd: !!item.state, wantKey: !!item.key });
         if (out.invalid !== undefined) return { invalid: true };
         score += out.dmg;
         if (!first) first = out;
       }
-      return { score: score / item.seeds.length, cands: first.cands || [], gcdSeq: first.gcdSeq };
+      const r = { score: score / item.seeds.length, cands: first.cands || [], gcdSeq: first.gcdSeq };
+      if (item.collectAll) r.candsAt = first.candsAt || [];
+      if (first.diverged !== undefined) r.diverged = first.diverged;
+      if (item.state) { r.key = first.key; r.final = !first.stopped; } else if (item.key) r.key = first.key;
+      return r;
     });
   }
 
@@ -636,25 +671,143 @@
       for (const node of beam) for (const c of node.cands || []) kids.push(node.plan.concat([c]));
       if (!kids.length) break;
       if (opts.shouldStop && opts.shouldStop()) { stopped = true; break; }
-      const res = await exec(kids.map(plan => ({ plan, seeds })));
+      const res = await exec(kids.map(plan => ({ plan, seeds, key: true })));
       tried += kids.length;
       const scored = [];
-      res.forEach((r, i) => { if (r && !r.invalid) scored.push({ plan: kids[i], score: r.score, cands: r.cands, gcdSeq: r.gcdSeq }); });
+      res.forEach((r, i) => { if (r && !r.invalid) scored.push({ plan: kids[i], score: r.score, cands: r.cands, gcdSeq: r.gcdSeq, key: r.key }); });
       for (const r of scored) if (r.score > best.score + 1e-6) best = { score: r.score, plan: r.gcdSeq, at: depth };
-      // Keep the best lines, one of each distinct position (two orders that end up in the same place score alike).
+      // Keep the best lines, one per outcome: two lines whose played-out fights score the same with the same GCDs open
+      // next almost always lead the same way, and two that reach exactly the same state certainly do. Spending the
+      // slots on different lines is what lets a wider beam find more.
       scored.sort((a, b) => b.score - a.score);
       beam = [];
       const seen = new Set();
       for (const r of scored) {
         const key = r.score.toFixed(1) + '|' + (r.cands || []).join(',');
-        if (seen.has(key)) continue;
+        if (seen.has(key) || (r.key && seen.has(r.key))) continue;
         seen.add(key);
+        if (r.key) seen.add(r.key);
         beam.push(r);
         if (beam.length >= width) break;
       }
       if (opts.onProgress) opts.onProgress({ depth: depth + 1, total, tried, best: best.score, guide: guide.score });
     }
     return { cfg, seeds, width, guide, best, tried, depth, total, stopped, ms: clock() - t0 };
+  }
+
+  // Every GCD order, for real: grow all orders one GCD at a time, and whenever two orders reach exactly the same state
+  // (same time, buffs, gauge, recasts, pending hits; stateKey) keep only the one that has dealt more damage, since
+  // their futures are identical. That makes it exact, and fast enough for openers and burst windows; past `maxNodes`
+  // states it gives up and says so. opts: { exec, maxNodes, onProgress, shouldStop }.
+  async function exhaustive(cfg, opts) {
+    opts = opts || {};
+    const t0 = clock();
+    cfg = Object.assign({}, cfg, { variance: 0, iterations: 1, weights: false });
+    const exec = opts.exec || (async (items) => rollouts(cfg, items));
+    const maxNodes = opts.maxNodes || 400000;
+    const seeds = [1];
+    const guide = (await exec([{ plan: [], seeds }]))[0];
+    let best = { score: guide.score, plan: guide.gcdSeq };
+    let frontier = (await exec([{ plan: [], seeds, state: true }])).map(r => Object.assign({ plan: [] }, r));
+    let tried = 2, merged = 0, depth = 0, gaveUp = false, stopped = false, widest = 1;
+    while (frontier.length) {
+      const kids = [];
+      for (const node of frontier) for (const c of node.cands || []) kids.push(node.plan.concat([c]));
+      if (!kids.length) break;
+      if (tried + kids.length > maxNodes) { gaveUp = true; break; }
+      if (opts.shouldStop && opts.shouldStop()) { stopped = true; break; }
+      const res = await exec(kids.map(plan => ({ plan, seeds, state: true })));
+      tried += kids.length;
+      depth++;
+      const byKey = new Map();
+      res.forEach((r, i) => {
+        if (!r || r.invalid) return;
+        if (r.final) { if (r.score > best.score + 1e-6) best = { score: r.score, plan: r.gcdSeq }; return; }
+        const had = byKey.get(r.key);
+        if (had) { merged++; if (r.score <= had.score) return; }
+        byKey.set(r.key, Object.assign({ plan: kids[i] }, r));
+      });
+      frontier = [...byKey.values()];
+      widest = Math.max(widest, frontier.length);
+      if (opts.onProgress) opts.onProgress({ depth, total: guide.gcdSeq.length, tried, open: frontier.length, merged, best: best.score, guide: guide.score });
+    }
+    return { cfg, seeds, width: widest, guide, best, tried, merged, depth, total: guide.gcdSeq.length, stopped, gaveUp,
+      exact: !gaveUp && !stopped, mode: 'exact', ms: clock() - t0 };
+  }
+
+  // Polish a whole fight's order: at each GCD try every other GCD that could go there, swapping it with the next,
+  // slipping one in and dropping it, each played out to the end (a change that makes a later GCD impossible hands
+  // the rest to the action list). Keep any change that gains and sweep again until a sweep finds nothing.
+  async function polish(cfg, start, opts) {
+    opts = opts || {};
+    const exec = opts.exec || (async (items) => rollouts(cfg, items));
+    const seeds = opts.seeds || [1];
+    let cur = (await exec([{ plan: start.plan, seeds, lenient: true, collectAll: true }]))[0];
+    let plan = cur.gcdSeq, score = Math.max(cur.score, start.score), candsAt = cur.candsAt;
+    if (cur.score < start.score - 1e-6) return { plan: start.plan, score: start.score, sweeps: 0, tried: 1, gains: 0 };
+    let tried = 1, sweeps = 0, gains = 0;
+    for (; sweeps < (opts.maxSweeps || 8); sweeps++) {
+      let better = false;
+      for (let i = 0; i < plan.length; i++) {
+        if (opts.shouldStop && opts.shouldStop()) return { plan, score, sweeps, tried, gains, stopped: true };
+        const here = (candsAt && candsAt[i]) || [];
+        const moves = [];
+        for (const c of here) if (c !== plan[i]) moves.push(plan.slice(0, i).concat([c], plan.slice(i + 1)));
+        if (i + 1 < plan.length && plan[i + 1] !== plan[i]) moves.push(plan.slice(0, i).concat([plan[i + 1], plan[i]], plan.slice(i + 2)));
+        for (const c of here) moves.push(plan.slice(0, i).concat([c], plan.slice(i)));
+        moves.push(plan.slice(0, i).concat(plan.slice(i + 1)));
+        if (!moves.length) continue;
+        const res = await exec(moves.map(m => ({ plan: m, seeds, lenient: true, collectAll: true })));
+        tried += moves.length;
+        let top = null;
+        for (const r of res) if (r && !r.invalid && r.score > score + 0.5 && (!top || r.score > top.score)) top = r;
+        if (top) { plan = top.gcdSeq; score = top.score; candsAt = top.candsAt; better = true; gains++; }
+        if (opts.onProgress) opts.onProgress({ sweep: sweeps + 1, at: i + 1, total: plan.length, tried, best: score });
+      }
+      if (!better) { sweeps++; break; }
+    }
+    return { plan, score, sweeps, tried, gains };
+  }
+
+  // The best order for a time limit. First every order (exhaustive), which settles windows of a few GCDs exactly; if
+  // that's too many, the beam search, widened 4× at a time until a wider beam stops finding anything better (or
+  // opts.width fixes one width, or opts.maxWidth is reached), then a polish. opts.mode: 'auto', 'exact' or 'beam'.
+  async function optimize(cfg, opts) {
+    opts = opts || {};
+    const t0 = clock();
+    const mode = opts.mode || 'auto';
+    const say = (phase, p) => opts.onProgress && opts.onProgress(Object.assign({ phase }, p));
+    if (mode !== 'beam') {
+      const ex = await exhaustive(cfg, Object.assign({}, opts, { maxNodes: mode === 'exact' ? opts.maxNodes : 30000, onProgress: (p) => say('exact', p) }));
+      if (ex.exact || mode === 'exact' || ex.stopped) return ex;
+    }
+    const widths = opts.width ? [opts.width] : [16, 64, 256, 1024, 4096].filter(w => w <= (opts.maxWidth || 1024));
+    const steps = [];
+    let res = null, converged = false;
+    for (const w of widths) {
+      if (opts.shouldStop && opts.shouldStop()) break;
+      const r = await search(cfg, Object.assign({}, opts, { width: w, onProgress: (p) => say('beam', Object.assign({ width: w }, p)) }));
+      steps.push({ width: w, score: r.best.score, tried: r.tried, stopped: r.stopped });
+      const prev = res;
+      if (!res || r.best.score > res.best.score) { const tried = (res ? res.tried : 0) + r.tried; res = r; res.tried = tried; } else res.tried += r.tried;
+      if (r.stopped) { res.stopped = true; break; }
+      if (prev && r.best.score - prev.best.score < 2e-4 * res.guide.score) { converged = true; break; }
+      if (prev && r.best.score <= prev.best.score) { converged = true; break; }
+    }
+    res.mode = 'beam';
+    res.steps = steps;
+    res.converged = converged;
+    res.width = steps.length ? steps[steps.length - 1].width : res.width;
+    if (opts.polish !== false && !res.stopped) {
+      const before = res.best.score;
+      const pol = await polish(res.cfg, res.best, Object.assign({}, opts, { seeds: res.seeds,
+        onProgress: (p) => opts.onProgress && opts.onProgress(Object.assign({ phase: 'polish' }, p)) }));
+      res.polished = { gain: pol.score - before, sweeps: pol.sweeps, tried: pol.tried, changes: pol.gains };
+      res.tried += pol.tried;
+      if (pol.score > before) res.best = { score: pol.score, plan: pol.plan };
+    }
+    res.ms = clock() - t0;
+    return res;
   }
 
   // The search's answer as two reports (js/sim/report.js's shape): the best order found and the action list's own,
@@ -671,6 +824,7 @@
   }
 
   B.Sim = { prepare, iterate, newAgg, run, rankAll, summarize, raidAt, raidQuery, rng, gcdChoices, rollouts, search, searchReport,
+    exhaustive, polish, optimize,
     runRange, mergeAggs, compare, weightRow, weightStats, finish, rankRow, gcdFor: (cfg) => gcdOf(prepare(cfg)) };
   B.SIM_APLS = B.SIM_APLS || {};
 })(window.BLM);

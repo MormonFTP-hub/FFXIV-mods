@@ -294,6 +294,19 @@ ${uptimes(R)}
     return s + '</svg>';
   }
 
+  // How the answer was found, and how sure it is.
+  function method(res) {
+    const secs = `${(res.ms / 1000).toFixed(1)}s`;
+    if (res.mode === 'exact') {
+      return res.exact ? `Every GCD order tried: ${fmt(res.tried)} positions (${fmt(res.merged)} merged as identical), in ${secs}. No GCD order does better here (with the list's abilities, on average luck).`
+        : `Every GCD order, stopped after ${fmt(res.tried)} positions at GCD ${res.depth}: the best so far, not proven.`;
+    }
+    const ladder = (res.steps || []).map(x => `${x.width}: +${((x.score / res.guide.score - 1) * 100).toFixed(2)}%`).join(' · ');
+    const sure = res.stopped ? 'stopped early, so not settled' : res.converged ? 'settled: the widest beam found nothing more' : 'not settled at the widest beam allowed; a wider one may find more';
+    const pol = res.polished ? `; a final polish ${res.polished.changes ? `changed ${res.polished.changes} GCD${res.polished.changes > 1 ? 's' : ''}` : 'found no single-GCD change that gains'}` : '';
+    return `Beam widened by lines kept (${ladder}), ${sure}${pol}. ${fmt(res.tried)} fights played out in ${secs}.`;
+  }
+
   function search(res, rep, extra) {
     extra = extra || {};
     const B1 = rep.best, G = rep.guide;
@@ -323,7 +336,7 @@ ${uptimes(R)}
   <div class="dpsfig stack"><div><span class="big">${fmt(res.best.score / D)}</span> <span class="unit">DPS</span></div>
     <span class="err ${gain > 0.5 ? 'good' : ''}">${gain > 0.5 ? `+${fmt(gain / D)} DPS (+${(gain / res.guide.score * 100).toFixed(2)}%) over the action list's ${fmt(res.guide.score / D)}` : `The action list's own order (${fmt(res.guide.score / D)}) is the best found`}</span></div>
   <dl class="facts">
-    <div><dt>Searched</dt><dd>${fmt(res.tried)} fights played out, ${res.width} lines kept at each of ${fmt(res.depth)} GCDs, in ${(res.ms / 1000).toFixed(1)}s${res.stopped ? ' (stopped early)' : ''}</dd></div>
+    <div><dt>Searched</dt><dd>${method(res)}</dd></div>
     <div><dt>Changes</dt><dd>${changed ? `${changed} of ${n} GCDs differ from the action list${first >= 0 ? `, the first at GCD ${first + 1} (${bg[first].t.toFixed(2)}s)` : ''}` : 'None: the action list already plays the best order found'}</dd></div>
     <div><dt>Party</dt><dd>${esc(party)}</dd></div>
     <div><dt>Luck</dt><dd>Average: crits and direct hits at their rates, no damage roll, steady ping${res.seeds.length > 1 ? '; procs averaged over three seeds' : ''}</dd></div>
