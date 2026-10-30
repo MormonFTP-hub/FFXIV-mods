@@ -55,7 +55,9 @@
     }
 
     frame(dt) {
-      if (dt > 0) { this.frames.push(dt); if (this.frames.length > 300) this.frames.shift(); }
+      if (!(dt > 0 && dt < 0.5)) return;       // not the gap while the tab was hidden
+      this.frames.push(dt);
+      if (this.frames.length > 300) this.frames.shift();
     }
 
     // ---------- the report ----------
@@ -81,9 +83,11 @@
       const G = B.GAME_MODELS, M = B.GAME_MAP, map = app.map, models = app.models;
       L.push(`Loaded: three.js ${window.THREE ? 'r' + THREE.REVISION : 'no'} · icons ${B.GAME_ICONS ? Object.keys(B.GAME_ICONS).length : 'no'} · models ${G ? `yes (${Object.keys(G.jobs || {}).length} characters, ${!models || !models.ok ? 'failed' : !models.ready ? 'loading' : models.active() ? 'on' : models.ch ? 'off' : 'none for this job'})` : 'no'}`
         + ` · map ${M ? `${M.name} (${map && map.active() ? 'on' : map && map.ok ? (map.ready ? 'off' : 'loading') : 'failed'}${map && map.world ? `, ${n0(map.world.t.length / 9)} collision triangles` : ''})` : 'no'}`);
-      if (map && map.renderer && map.active()) {
-        const r = map.renderer.info.render;
-        L.push(`Map render: ${n0(r.calls)} draw calls, ${n0(r.triangles)} triangles`);
+      const shared = map && map.active() && map.shared;
+      const rend = shared ? models.renderer : map && map.active() ? map.renderer : null;
+      if (rend) {
+        const r = rend.info.render;
+        L.push(`Map drawn ${shared ? 'with the models in one canvas' : 'on its own canvas'}: ${n0(r.calls)} draw calls, ${n0(r.triangles)} triangles a frame`);
       }
 
       // Right now.

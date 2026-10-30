@@ -73,6 +73,8 @@
       this.renderer = new T.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true });
       this.renderer.setClearColor(0x000000, 0);
       this.renderer.outputEncoding = T.sRGBEncoding;
+      this.renderer.shadowMap.enabled = true;          // the game's map, drawn here too, has the sun's shadows
+      this.renderer.shadowMap.type = T.PCFSoftShadowMap;
       if (this.sc.W) this.resize(this.sc.W, this.sc.H, this.sc.dpr);
       this.scene3 = new T.Scene();
       this.camera = new T.PerspectiveCamera(55, 1, 0.1, 300);
@@ -425,7 +427,46 @@
       this.key.target.position.set(e.pos.x, 1, e.pos.z);
       this.warm.position.set(c.pos.x + c.r.x * 6 + c.f.x * 20, 3, c.pos.z + c.r.z * 6 + c.f.z * 20);
       this.warm.target.position.set(e.pos.x, 1, e.pos.z);
-      this.renderer.render(this.scene3, this.camera);
+      const r = this.renderer, map = sc.mapOn() ? sc.map : null;
+      if (map) {
+        // The game's map, then the 2D scene's ground marks, then the figures, all in this one canvas: as separate
+        // canvases they could show different frames, and the dummy seemed to float over the deck as the camera
+        // turned. The map's depth stays, so posts and walls hide whatever's behind them.
+        this.camera.far = 5000;
+        this.camera.updateProjectionMatrix();
+        r.autoClear = false;
+        r.info.autoReset = false;       // count the whole frame (the debug log shows it)
+        r.info.reset();
+        r.clear();
+        map.drawInto(r, this.camera);
+        this.groundMarks();
+        r.render(this.scene3, this.camera);
+      } else {
+        if (this.camera.far !== 300) { this.camera.far = 300; this.camera.updateProjectionMatrix(); }
+        r.autoClear = true;
+        r.info.autoReset = true;
+        r.render(this.scene3, this.camera);
+      }
+    }
+
+    // The 2D scene's canvas (the ground marks, when the map is on) as a full-screen layer over the map.
+    groundMarks() {
+      const T = THREE;
+      if (!this.marks) {
+        const tex = new T.CanvasTexture(this.sc.c);
+        tex.encoding = T.sRGBEncoding;
+        tex.minFilter = T.LinearFilter;
+        tex.generateMipmaps = false;
+        const quad = new T.Mesh(new T.PlaneGeometry(2, 2), new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false }));
+        quad.frustumCulled = false;
+        const scene = new T.Scene();
+        scene.add(quad);
+        const cam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 2);
+        cam.position.z = 1;
+        this.marks = { tex, scene, cam };
+      }
+      this.marks.tex.needsUpdate = true;
+      this.renderer.render(this.marks.scene, this.marks.cam);
     }
 
     // The map's sun and sky on the figures, or the dusk lights.

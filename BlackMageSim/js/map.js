@@ -1,7 +1,10 @@
-// The game's own map under everything: Wolves' Den Pier, from work/game-map.js (tools/export_map.py), drawn with
-// three.js on the bottom canvas through the 2D scene's camera, under a daytime sky and over the open sea. The 2D scene
-// then leaves out its own sky, ground and decor and draws only what lies on the ground (the target ring, Ley Lines,
-// cast circles, shadows) over it. Off in Settings, or without three.js or the map file, the dusk training ground stays.
+// The game's own map under everything: Wolves' Den Pier, from work/game-map.js (tools/export_map.py), under a
+// daytime sky and over the open sea. The 2D scene then leaves out its own sky, ground and decor and draws only what
+// lies on the ground (the target ring, Ley Lines, cast circles, shadows). With the game's models on, the model layer
+// draws the map, those ground marks and the figures into its one canvas, in that order (drawInto): two WebGL
+// canvases can show different frames when the GPU falls behind, and the dummy then seemed to float over the deck as
+// the camera turned. Without the models, the map draws itself on the bottom canvas. Off in Settings, or without
+// three.js or the map file, the dusk training ground stays.
 (function (B) {
   // The sun: high, behind and to the left of where you start, so shadows fall across the deck toward the dummy.
   B.MAP_SUN = { x: -0.42, y: 0.8, z: -0.43 };
@@ -21,7 +24,11 @@
 
     active() { return this.ok && this.ready && this.settings.gameMap !== false; }
 
-    setEnabled() { this.canvas.style.display = this.active() ? '' : 'none'; }
+    // Its own canvas only shows when it draws the map itself (the game's models off).
+    setEnabled() {
+      this.shared = !!(this.sc.models && this.sc.models.active());
+      this.canvas.style.display = this.active() && !this.shared ? '' : 'none';
+    }
 
     async load() {
       const G = B.GAME_MAP;
@@ -44,13 +51,7 @@
     // ---------- building ----------
     build() {
       const T = THREE, G = B.GAME_MAP;
-      const r = this.renderer = new T.WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
-      r.outputEncoding = T.sRGBEncoding;
-      r.shadowMap.enabled = true;
-      r.shadowMap.type = T.PCFSoftShadowMap;
-      if (this.sc.W) this.resize(this.sc.W, this.sc.H, this.sc.dpr);
       const s = this.scene3 = new T.Scene();
-      this.camera = new T.PerspectiveCamera(55, 1, 0.1, 5000);
       s.fog = new T.Fog(SKY.horizon, 180, 1800);
       this.sunDir = new T.Vector3(B.MAP_SUN.x, B.MAP_SUN.y, B.MAP_SUN.z).normalize();
 
@@ -69,25 +70,52 @@
       this.buildSky();
       if (G.sea) this.buildSea(G.sea);
       const mats = G.materials.map(m => (m.water ? null : this.material(m)));
-      const m4 = new T.Matrix4();
+      // One instanced mesh per model mesh, with bounds around all of its copies, so a model wholly off screen (or
+      // outside the sun's shadow box) isn't drawn. (Split finer, the extra draw calls cost more than culling saved.)
+      const m4 = new T.Matrix4(), one = new T.Sphere();
+      const union = (a, b) => {
+        const d = a.center.distanceTo(b.center);
+        if (d + b.radius <= a.radius) return;
+        if (d + a.radius <= b.radius) { a.copy(b); return; }
+        const r = (d + a.radius + b.radius) / 2;
+        a.center.lerp(b.center, (r - a.radius) / d);
+        a.radius = r;
+      };
       for (const md of G.models) {
         const inst = this.view(md.instances), n = inst.length / 12;
         for (const me of md.meshes) {
           const mat = mats[me.material];
           if (!mat) continue;
-          const im = new T.InstancedMesh(this.geometry(me), mat, n);
+          const g = this.geometry(me);
+          g.computeBoundingSphere();
+          const im = new T.InstancedMesh(g, mat, n), bounds = new T.Sphere();
           for (let i = 0; i < n; i++) {
             const o = i * 12;
             m4.set(inst[o], inst[o + 3], inst[o + 6], inst[o + 9], inst[o + 1], inst[o + 4], inst[o + 7], inst[o + 10],
               inst[o + 2], inst[o + 5], inst[o + 8], inst[o + 11], 0, 0, 0, 1);
             im.setMatrixAt(i, m4);
+            one.copy(g.boundingSphere).applyMatrix4(m4);
+            if (i === 0) bounds.copy(one); else union(bounds, one);
           }
-          im.frustumCulled = false;     // the instances spread far beyond the mesh's own bounds
+          g.boundingSphere = bounds;
           im.castShadow = !mat.transparent;
           im.receiveShadow = true;
           s.add(im);
         }
       }
+    }
+
+    // Its own renderer, made the first time it draws itself.
+    ownRenderer() {
+      if (this.renderer) return this.renderer;
+      const T = THREE;
+      const r = this.renderer = new T.WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
+      r.outputEncoding = T.sRGBEncoding;
+      r.shadowMap.enabled = true;
+      r.shadowMap.type = T.PCFSoftShadowMap;
+      this.camera = new T.PerspectiveCamera(55, 1, 0.1, 5000);
+      if (this.sc.W) this.resize(this.sc.W, this.sc.H, this.sc.dpr);
+      return r;
     }
 
     texture(index, srgb) {
@@ -219,21 +247,39 @@
     }
 
     // ---------- per frame ----------
+    // The sea moves; with the game's models off, the map draws itself through the 2D scene's camera (with them on,
+    // the model layer calls drawInto).
     render(dt) {
       if (!this.active()) return;
-      const sc = this.sc, c = sc.cam, p = this.e.pos, cam = this.camera;
+      if (this.water) this.water.uniforms.time.value += dt;
+      if (this.shared !== !!(this.sc.models && this.sc.models.active())) this.setEnabled();
+      if (this.shared) return;
+      const r = this.ownRenderer(), sc = this.sc, c = sc.cam, cam = this.camera;
       cam.position.set(c.pos.x, c.pos.y, c.pos.z);
       cam.up.set(0, 1, 0);
       cam.lookAt(c.look.x, c.look.y, c.look.z);
       cam.fov = 2 * Math.atan(sc.H / 2 / sc.F) * 180 / Math.PI;
       cam.aspect = sc.W / sc.H;
       cam.updateProjectionMatrix();
+      this.drawInto(r, cam);
+    }
+
+    // The map through `cam` into renderer `r`: the sky around the camera, the sun's shadow box around you. Nothing in
+    // the map moves, so its shadows are drawn again only when the box (on an 8-yalm grid) moves with you: that pass
+    // is about half the frame's draw calls.
+    drawInto(r, cam) {
+      const p = this.e.pos, x = Math.round(p.x / 8) * 8, z = Math.round(p.z / 8) * 8, key = x + ',' + z;
       this.sky.position.copy(cam.position);
-      // The sun's shadow box follows you.
-      this.sun.target.position.set(p.x, 0, p.z);
-      this.sun.position.set(p.x + this.sunDir.x * 150, this.sunDir.y * 150, p.z + this.sunDir.z * 150);
-      if (this.water) this.water.uniforms.time.value += dt;
-      this.renderer.render(this.scene3, cam);
+      r.shadowMap.autoUpdate = false;
+      if (r.mapShadowKey !== key) {
+        r.mapShadowKey = key;
+        this.sun.target.position.set(x, 0, z);
+        this.sun.position.set(x + this.sunDir.x * 150, this.sunDir.y * 150, z + this.sunDir.z * 150);
+        this.sun.updateMatrixWorld();
+        this.sun.target.updateMatrixWorld();
+        r.shadowMap.needsUpdate = true;
+      }
+      r.render(this.scene3, cam);
     }
   }
 
