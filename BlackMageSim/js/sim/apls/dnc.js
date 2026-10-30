@@ -3,7 +3,8 @@
 // behind Technical Finish, then Tillana, Flourish, Dance of the Dawn, Fan Dance IV, Last Dance, Finishing Move and
 // Starfall Dance inside the window. Steps are pressed in the order the dance asks (proc.<step>). Standard Step and
 // Finishing Move on their shared 30s, Flourish every 60s, Esprit and feathers spent before they overcap and pooled
-// for the two-minute window. The tincture can't be used while dancing in this module, so it goes after Technical Finish.
+// for the two-minute window. The tincture can't be used while dancing in this module, so it goes after Technical Finish;
+// Standard Step goes at −14.5 because pressed at −15 its 15s dance would end exactly on the pull.
 BLM.SIM_APLS.dnc = `
 # Dancer — Dawntrail 7.0–7.57
 actions.precombat=standardStep,at=-14.5

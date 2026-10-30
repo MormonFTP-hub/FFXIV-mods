@@ -22,12 +22,12 @@ actions+=/reavingFangs,if=time<1
 actions+=/swiftskinsSting,if=time<4
 
 # A combo about to run out (30s) is finished first. (Engine time is fight time + 6: the pull is at 6.)
-actions+=/flankstingStrike,if=gauge.dw.until-time-6<7&buff.flankstungVenom.up
-actions+=/flanksbaneFang,if=gauge.dw.until-time-6<7&buff.flanksbaneVenom.up
-actions+=/hindstingStrike,if=gauge.dw.until-time-6<7&buff.hindstungVenom.up
-actions+=/hindsbaneFang,if=gauge.dw.until-time-6<7&buff.hindsbaneVenom.up
-actions+=/hindstingStrike,if=gauge.dw.until-time-6<7
-actions+=/flankstingStrike,if=gauge.dw.until-time-6<7
+actions+=/flankstingStrike,if=gauge.dw.until-now<7&buff.flankstungVenom.up
+actions+=/flanksbaneFang,if=gauge.dw.until-now<7&buff.flanksbaneVenom.up
+actions+=/hindstingStrike,if=gauge.dw.until-now<7&buff.hindstungVenom.up
+actions+=/hindsbaneFang,if=gauge.dw.until-now<7&buff.hindsbaneVenom.up
+actions+=/hindstingStrike,if=gauge.dw.until-now<7
+actions+=/flankstingStrike,if=gauge.dw.until-now<7
 
 # Reawakened: the Generations in order, then Ouroboros.
 actions+=/firstGeneration,if=gauge.tribute=5
