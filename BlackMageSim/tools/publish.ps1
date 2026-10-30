@@ -54,9 +54,16 @@ Write-Host "live: $Url ($got bytes, matches the build)"
 
 if (-not $NoGitHub) {
   Step python @("$Repo\tools\autobackup_hook.py", '--run')
-  $status = "$Repo\.git\autobackup.json"
-  if (-not (Test-Path $status)) { Write-Host 'GitHub: no backup status (another backup may be running; it will push these changes)'; exit 1 }
-  $s = Get-Content $status -Raw | ConvertFrom-Json
-  if (-not $s.ok) { Write-Host "GitHub backup failed: $($s.message) (log: .git/autobackup.log)"; exit 1 }
-  Write-Host "GitHub: $($s.message) ($($s.time))"
+  # What matters here is that the sim is committed and pushed. The backup also refreshes the mod and app
+  # releases; a failure there is reported, but it doesn't fail the publish.
+  git -C $Repo fetch -q origin
+  $dirty = git -C $Repo status --porcelain -- BlackMageSim
+  $head = git -C $Repo rev-parse HEAD
+  $remote = git -C $Repo rev-parse '@{u}'
+  if ($dirty -or $head -ne $remote) {
+    Write-Host "GitHub: the sim isn't pushed yet (another backup may still be running; log: .git/autobackup.log)"; exit 1
+  }
+  Write-Host "GitHub: pushed ($($head.Substring(0, 7)))"
+  $s = Get-Content "$Repo\.git\autobackup.json" -Raw -ErrorAction SilentlyContinue | ConvertFrom-Json
+  if ($s -and -not $s.ok) { Write-Host "note: the backup's release upload failed, the sim is unaffected: see .git/autobackup.log" }
 }
