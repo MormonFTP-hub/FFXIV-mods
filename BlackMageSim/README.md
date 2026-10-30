@@ -4,7 +4,7 @@ A browser game: play a job the way it was in an older patch, on a striking dummy
 
 ## Play it
 
-- **In your browser:** https://claude.ai/artifact/L442ej3EBeukr669nEVkzi. Nothing to install, and it has the game's own icons and 3D models.
+- **In your browser:** https://striking-dummy.lack-age-im.workers.dev. Nothing to install, and it has the game's own icons and 3D models. (The same game is also at https://claude.ai/artifact/L442ej3EBeukr669nEVkzi.)
 - **From your own copy:** download this repo (the green **Code** button, then **Download ZIP**, or `git clone`), unzip it and open `BlackMageSim/index.html` in Chrome, Edge or Firefox. The game's icons and models aren't in the repo (about 90 MB, made from your own install), so this copy uses the sim's own drawn icons and has no 3D characters. To add the game's, you need FFXIV installed: see [Game icons and models](#game-icons-and-models).
 
 Then press `J` to pick a job and a patch, `Tab` to target the dummy, and `F1` for the job's opener. The controls are under [Playing](#playing).
@@ -191,12 +191,15 @@ python BlackMageSim/tools/build_single.py
 
 ### Putting it on a website
 
-The build script also writes `build/site/`: the page as `index.html` with its icon and model files beside it (11 files, about 92 MB, none over 12 MB). Any free static host can serve that folder as it is. On Cloudflare Pages (free, no traffic limit, files up to 25 MB):
+The build script also writes `build/site/`: the page as `index.html` with its icon and model files beside it (11 files, about 92 MB, none over 12 MB). Any free static host can serve that folder as it is.
 
-1. Make a free account at https://dash.cloudflare.com.
-2. Open **Workers & Pages**, create a **Pages** project and choose to upload your files yourself (direct upload) rather than connect Git.
-3. Name the project (the site becomes `name.pages.dev`) and drag in the `build/site` folder.
-4. To update it, run the build script again and upload the folder again to the same project.
+The sim's own site, https://striking-dummy.lack-age-im.workers.dev, is that folder on Cloudflare (free, files up to 25 MB). To update it after a build, from the repo root, with Node.js installed and `npx wrangler login` done once:
+
+```
+npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc
+```
+
+`tools/wrangler.jsonc` names the site, points it at `build/site` and turns off Cloudflare's per-version preview addresses, so only the current upload is reachable. Wrangler keeps a cache (with your account name) in a `.wrangler` folder where it runs; it's git-ignored, and the build writes a `.assetsignore` into `build/site` so it's never uploaded.
 
 The folder holds Square Enix's icons and models, so keep the site free: no ads or paywalls. `build/` is git-ignored, like `work/`.
 
@@ -475,6 +478,7 @@ Some things are reconstructed rather than read off a 6.x source:
 | `tools/export_models.py` | Pulls each job's character, weapons and animations, and the dummies, into `work/game-models.js` |
 | `tools/build_versions.py` | Turns `docs/job-versions.md` into `js/versions.js` |
 | `tools/build_single.py` | Bundles everything for sharing: one HTML file, the claude.ai page with its icon and model files, and `build/site/`, a folder ready to upload to a static host |
+| `tools/wrangler.jsonc` | Cloudflare settings for the sim's website: `npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc` uploads `build/site` |
 | `js/audio.js` | Web Audio sound effects |
 
 ## Changelog

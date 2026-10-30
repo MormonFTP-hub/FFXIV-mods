@@ -110,6 +110,8 @@ def site(page: str, files) -> None:
     (SITE / "index.html").write_text(page, encoding="utf-8")
     for name in files:
         shutil.copyfile(OUT / name, SITE / name)
+    # Cloudflare's wrangler leaves its cache (account name included) in the folder it runs from: never upload it.
+    (SITE / ".assetsignore").write_text(".wrangler\n", encoding="utf-8")
 
 
 def main():

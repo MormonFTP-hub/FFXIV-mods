@@ -1,0 +1,10 @@
+// Cloudflare settings for the sim's website: https://striking-dummy.lack-age-im.workers.dev
+// After tools/build_single.py, from the repo root: npx wrangler deploy --config BlackMageSim/tools/wrangler.jsonc
+{
+  "name": "striking-dummy",
+  "compatibility_date": "2026-10-23",
+  "assets": { "directory": "../build/site" },
+  "workers_dev": true,
+  // No per-version preview addresses: only the current upload is reachable.
+  "preview_urls": false
+}
