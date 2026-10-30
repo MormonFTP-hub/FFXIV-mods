@@ -52,9 +52,6 @@ actions+=/tillana
 actions+=/lastDance
 actions+=/saberDance,if=gauge.esprit>=50&(cd.technicalStep.remains>20|gauge.esprit>=80)&!buff.danceOfTheDawnReady.up
 
-# Technical Step is about to come back: hold the GCD for it rather than drift it.
-actions+=/wait,sec=cd.technicalStep.remains,if=cd.technicalStep.remains>0&cd.technicalStep.remains<0.6
-
 # Procs (oldest first) and the combo; AoE versions on three or more targets.
 actions+=/bloodshower,if=targets>=3
 actions+=/risingWindmill,if=targets>=3
