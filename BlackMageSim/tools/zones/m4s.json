@@ -22,8 +22,7 @@
       "p2": {
         "kind": "monster", "id": 889, "body": 1, "variant": 1, "scale": 3.0,
         "pap": "chara/monster/m0889/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
-        "specials": "chara/monster/m0889/animation/a0001/bt_common/mon_sp/m0889/"
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"}
       }
     },
     "statuses": {
