@@ -292,7 +292,7 @@
     const pat1 = pick(['NE', 'NW']), pat3 = pick(['NE', 'NW']), pw1 = pick(SPORE), pw3 = pick(SPORE);
     const w1 = pick(['NE', 'SW']), w2 = w1 === 'NE' ? 'SW' : 'NE', w3 = pick([w1, 'N']);
     const flares = shuffle(TANKS);
-    let stored = null, stored2 = null, n2 = 0, nBlink = 0, wallNow = 'N', nRing3 = 0, ring3 = null, nSwing3 = 0, nSlam = 0, sporeEnd = 0;
+    let stored = null, stored2 = null, n2 = 0, nBlink = 0, nRing3 = 0, ring3 = null, nSwing3 = 0, nSlam = 0, sporeEnd = 0;
 
     // ---- P1/P3 (the boss in the middle) ----
     const smash = (i, ev) => {
@@ -338,10 +338,10 @@
         const t0 = pe.t - 3, pts = [];
         for (const s of L.baiters) { const p = L.paths[s][k]; if (!pts.some(q => same(q, p))) pts.push(p); }
         pts.forEach(p => { hz({ t: pe.t, tell: t0, shape: 'circle', at: p, r: 7, dmg: 1.2, name: 'Sinister Seeds' }); all16.push(p); });
-        if (k < 3) pref(t0 + 0.05, Object.fromEntries(L.baiters.map(s => [s, L.paths[s][k + 1]])));
+        if (k < 3) pref(t0 + (k ? 0.05 : 0.2), Object.fromEntries(L.baiters.map(s => [s, L.paths[s][k + 1]])));
       });
       const seedT = drop ? drop.t : ev.t + 8;
-      pref(puds[0] ? puds[0].t - 2.9 : seedT - 6.9, Object.fromEntries(L.seeders.map(s => [s, L.seeds[s]])));
+      pref(puds[0] ? puds[0].t - 2.75 : seedT - 6.75, Object.fromEntries(L.seeders.map(s => [s, L.seeds[s]])));
       check({ t: seedT, kind: 'spread', slots: L.seeders, r: 6, dmg: 0.2, fail: 0.8, name: 'Sinister Seeds' });
       for (const s of L.seeders) deb(s, null, 'Sinister Seed', 'drop it on your spot, clear of everyone', castOf(drop || ev, 7), seedT);
       callEach(castOf(drop || ev, 7), L.seeders, 'Drop seed', { dur: 6 });
@@ -422,7 +422,8 @@
       P.labels.set(ev, `Brutish Swing (${inn ? 'in' : 'out'}, ${WALLNAME[wk]})`);
       if (inn) inDisc(W.at, 21.712 * K, t, cs, 'Brutish Swing');
       else hz({ t, tell: cs, shape: 'circle', at: W.at, r: 25 * K, dmg: 1.4, name: 'Brutish Swing' });
-      bossAt(W.at, 19.7 * K, cs + 4, t + 60);
+      const nx = find(i, e => e.name === 'Brutish Swing', 90);
+      bossAt(W.at, 19.7 * K, cs + 4, nx ? nx.t - 4.1 : 352.1);
       const canon = wk === 'N' ? SPREAD2N[V2] : SPREAD2[V2], lay = wk === 'N' ? canon : flipAll(canon, W.flip);
       pref(Math.max(cs + 0.3, sporeEnd + 0.1), preSwing2(wk, inn, canon));
       call(cs, `${inn ? 'In at' : 'Out from'} tethered wall (${WALLNAME[wk]})`, { alert: true, dur: 7 });
@@ -436,7 +437,6 @@
       }
       pref(t + 0.1, lay);
       if (ef) check({ t: ef.t, kind: 'spread', r: 6 * K, dmg: 0.25, fail: 0.8, name: 'Electrogenetic Force' });
-      wallNow = wk;
       pref((ef ? ef.t : t + 5) + 0.3, up2(wk));
     };
 
@@ -449,7 +449,6 @@
       const spots = Object.assign(flipAll(L.rest, f), { [tank]: mul(L.flare, f), [other]: mul(L.other, f) });
       // The wall tethers' holders stay on their tethers.
       if (nBlink === 2) for (const [k, s] of Object.entries(TETHER2[V2])) spots[s] = mul(SEEDS2[k], w2 === 'SW' ? 1 : -1);
-      delete spots.undefined;
       P.labels.set(ev, `Abominable Blink (flare on ${tank})`);
       pref(cs, spots);
       check({ t, kind: 'spread', slots: [tank], r: 23 * K, dmg: 0.5, fail: 1.2, name: 'Abominable Blink' });
@@ -554,7 +553,7 @@
         P.labels.set(lar, `Lashing Lariat (get ${side})`);
         call(lc, side === 'left' ? '<== Get Left' : 'Get Right ==>', { alert: true, dur: 4 });
         pref(t + (R.n === 1 ? 0.2 : (R.tend[0] ? R.tend[0].t - t + 0.1 : 0.4)), lariatSpots(side, wb));
-        R.hold[1] = lar.t + 0.2;
+        R.hold[1] = Math.max(R.hold[1] || 0, lar.t + 0.2);
       }
     };
 
@@ -593,8 +592,9 @@
       [spore, pol, ks, tend, quarry].forEach(e => e && used.add(e));
       if (spore) { pw3.forEach(p => hz({ t: spore.t, tell: castOf(spore, 4), shape: 'circle', at: p, r: 8, dmg: 1.3, name: 'Spore Sac' })); }
       // Pollen: the tethered to the outer safe corner by their wall, the rest to the inner one by their partner's.
-      const near = (b, list) => list.slice().sort((p, q) => Math.abs(((brg(p) - b + 540) % 360) - 180) - Math.abs(((brg(q) - b + 540) % 360) - 180)).reverse()[0];
-      const outer = [pt.outS, pt.outN], inner = [pt.inS, pt.inW[0] === pt.inS[0] && pt.inW[1] === pt.inS[1] ? pt.inE : pt.inW];
+      const angd = (a, b) => Math.abs((((a - b) % 360) + 540) % 360 - 180);
+      const near = (b, list) => list.reduce((p, q) => (angd(brg(q), b) < angd(brg(p), b) ? q : p));
+      const outer = [pt.outW, pt.outE], inner = [pt.inW, pt.inE];
       const polSpots = {};
       for (const s of HR) polSpots[s] = mul(near(WALL3[s], outer), 0.97);
       for (const s of TM) polSpots[s] = mul(near(WALL3[PAIR3[s]], inner), 0.9);
@@ -780,7 +780,7 @@
         ring3 = { n: nRing3, first, walls, hands: { sword: swordLeft ? 'left' : 'right', club: swordLeft ? 'right' : 'left' }, hold: [], tend: [] };
         nSwing3 = 0;
         P.labels.set(ev, `Stoneringers (sword ${swordLeft ? 'left' : 'right'}, club ${swordLeft ? 'right' : 'left'})`);
-      } else if (name === 'Brutish Swing' && t > 360 && ring3 && nSwing3 < 2 && (!stored || t > 580)) {
+      } else if (name === 'Brutish Swing' && t > 360 && ring3 && nSwing3 < 2) {
         swing3(i, ev);
         if (ring3.n === 1 && nSwing3 === 2) {
           const end = glower3(i, ev, ring3.walls[1]);
