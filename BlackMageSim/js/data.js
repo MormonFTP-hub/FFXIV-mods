@@ -353,7 +353,7 @@ window.BLM = window.BLM || {};
     ['KeyQ', 'KeyE', 'KeyR', 'KeyF', 'KeyT', 'KeyG', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyY'],
   ];
 
-  B.SIM_VERSION = '2.48.0';      // the README changelog's newest entry (shown in the debug log)
+  B.SIM_VERSION = '2.49.0';      // the README changelog's newest entry (shown in the debug log)
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
@@ -375,6 +375,10 @@ window.BLM = window.BLM || {};
     dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)
     lockCursor: true,     // the cursor stays put while you turn the camera (pointer lock)
+    strats: {},           // fight key -> the strat its party plays (js/fights/<key>.js; each has a default)
+    partySlot: 'auto',    // your spot in a fight's party (MT OT H1 H2 M1 M2 R1 R2), or 'auto' from your job
+    takeDamage: true,     // a fight's attacks hurt you (off: they only show where they'd have hit)
+    showSpot: true,       // a ring on the floor where your strat wants you
     mouseSpeed: 1,        // camera turn speed for mouse drags
     jobView: 'expanded',  // the Job window: 'expanded' cards, or 'condensed' (every version on one grid)
   };

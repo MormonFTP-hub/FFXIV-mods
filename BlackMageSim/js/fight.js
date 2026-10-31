@@ -1,8 +1,9 @@
-// A fight to test against (Settings → Location, or /fight): its arena, its boss standing in for the dummy, and the
-// boss's timeline from cactbot (both from tools/export_map.py). The fight's clock starts with the pull: the boss casts
-// on time (its cast bar under its name, its abilities in the log), the next ones show in a list at the left, it can't
-// be targeted in its untargetable windows, and at the enrage the pull ends. For testing: the boss has the dummy's HP,
-// and nothing it does hurts you or moves you yet.
+// A fight (Settings → Location, or /fight): its arena, its boss where the dummy stood, and the boss's timeline from
+// cactbot (both from tools/export_map.py). The fight's clock starts with the pull: the boss casts on time (its cast
+// bar under its name, its abilities in the log), the next ones show in a list at the left, it can't be targeted in
+// its untargetable windows, and at the enrage the pull ends. A fight with a script (js/fights/<key>.js) also has its
+// mechanics (js/mech.js), a party of bots playing the chosen strat with you (js/party.js) and the boss's own HP: kill
+// it and the pull ends there. Without one, the boss has the dummy's HP and nothing it does lands.
 (function (B) {
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -15,6 +16,9 @@
       this.data = data;
       this.events = data.events;
       this.hitbox = data.hitbox || 5;
+      this.script = (B.FIGHT_SCRIPTS || {})[key] || null;
+      this.maxHp = this.script ? this.script.hp : null;
+      this.mech = this.script ? new B.Mechanics(app, this, this.script) : null;
       this.reset();
     }
     get name() { return this.data.boss; }
@@ -25,11 +29,16 @@
       this.over = false;
       this.picks = {};
       this.t = null;
+      this.hp = this.maxHp;
       this.app.engine.untargetable = false;
+      if (this.mech) this.mech.reset();          // the next pull's picks
+      if (this.app.party) this.app.party.reset();
     }
 
     // "A/B": the boss does one or the other, picked once a pull; a later "B/A" is then the other one.
     label(ev) {
+      const own = this.mech && this.mech.plan.labels.get(ev);     // the script's pick for this pull
+      if (own) return own;
       const parts = ev.name.split('/');
       if (parts.length < 2) return ev.name;
       const key = parts.slice().sort().join('/');
@@ -49,6 +58,17 @@
       while (this.next < this.events.length && this.events[this.next].t <= t) this.fire(this.events[this.next++]);
       this.casting = this.events.find((ev) => ev.cast && t >= ev.t - ev.cast && t < ev.t) || null;
       e.untargetable = this.data.untargetable.some(([a, b]) => t >= a && t < b);
+      if (this.mech) this.mech.update(t);
+      if (this.maxHp) {
+        this.hp = Math.max(0, this.maxHp - enc.total - app.party.botDamage);
+        if (!this.over && this.hp <= 0) {
+          this.over = true;
+          app.ui.log(`${this.name} is defeated!`, 'gain', 'battle');
+          app.ui.count('CLEAR', true);
+          app.endEncounter(e.now, 'kill');
+          return;
+        }
+      }
       if (!this.over && t >= this.data.enrage) {
         this.over = true;
         app.ui.log(`Enrage at ${mmss(this.data.enrage)}: the pull is over.`, 'lose', 'battle');
@@ -85,7 +105,12 @@
       }
       const tl = $('#fight-tl');
       tl.classList.add('show');
+      // With a script: the strat, your spot, and your debuff's timer.
+      const party = this.app.party, me = party && party.playerSlot();
+      const deb = this.mech && t !== null && this.mech.plan.debuffs.find(d => d.slot === me && t >= d.t0 && t < d.t1);
       tl.innerHTML = `<div class="hd"><span>${esc(this.data.duty)}</span><b>${t === null ? 'Pull to start' : `${mmss(t)} / ${mmss(this.data.enrage)}`}</b></div>`
+        + (this.mech ? `<div class="sub">${esc(this.script.strats[this.mech.strat].label)} · you're ${me}</div>` : '')
+        + (deb ? `<div class="ev deb"><b>${Math.ceil(deb.t1 - t)}</b>${esc(deb.name)}: be in a spotlight when it ends</div>` : '')
         + up.map((ev) => `<div class="ev${ev.kind === 'enrage' ? ' enr' : ''}"><b>${Math.ceil(ev.t - now)}</b>${esc(this.label(ev))}</div>`).join('')
         + (this.app.engine.untargetable ? '<div class="ev unt">Untargetable</div>' : '');
     }

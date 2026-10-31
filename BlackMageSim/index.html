@@ -30,13 +30,14 @@
       <div class="member">
         <img id="party-job" alt="">
         <div>
-          <div class="nm outline"><span id="party-lv">Lv90</span><em id="party-name" style="font-style:normal"></em><small id="party-ver"></small></div>
+          <div class="nm outline"><span id="party-lv">Lv90</span><b id="party-slot"></b><em id="party-name" style="font-style:normal"></em><small id="party-ver"></small></div>
           <div class="bars2">
             <div><div class="minibar hp"><i id="party-hp"></i></div><div class="barnum outline" id="party-hpn"></div></div>
             <div><div class="minibar mp"><i id="party-mp"></i></div><div class="barnum outline" id="party-mpn"></div></div>
           </div>
         </div>
       </div>
+      <div id="party-bots"></div>
     </div>
 
     <div id="target" class="ia">
@@ -86,6 +87,7 @@
     <div id="fly"></div>
     <div id="error" class="outline"></div>
     <div id="count"></div>
+    <div id="callout" class="outline"></div>
     <div id="banner" class="panel"></div>
     <div id="tip" class="panel"></div>
 
@@ -117,7 +119,15 @@
           <label for="s-models">Models</label>
           <div class="row2"><label><input id="s-models" type="checkbox"> Use the game's own models (made by tools/export_models.py)</label></div>
           <label for="s-loc">Location</label>
-          <div class="row2"><select id="s-loc"></select><span class="hint">Fights are for testing: the boss casts on cactbot's timeline. Also /fight in chat</span></div>
+          <div class="row2"><select id="s-loc"></select><span class="hint">M5S has a party and its mechanics; M2S is the boss and her timeline. Also /fight in chat</span></div>
+          <label for="s-strat">Strat</label>
+          <div class="row2"><select id="s-strat"></select><span class="hint">From wtfdig.info: the seven bots play it, and the ring on the floor shows your spot. Also /strat</span></div>
+          <label for="s-slot">Your spot</label>
+          <div class="row2"><select id="s-slot"><option value="auto">From your job</option><option>MT</option><option>OT</option><option>H1</option><option>H2</option><option>M1</option><option>M2</option><option>R1</option><option>R2</option></select><span class="hint">Bots take the other seven</span></div>
+          <label>Fight</label>
+          <div class="row2"><label><input id="s-dmg" type="checkbox"> Take damage (off: attacks only show where they'd have hit you). Also /damage</label></div>
+          <label></label>
+          <div class="row2"><label><input id="s-spot" type="checkbox"> Show my spot (a ring where the strat wants you)</label></div>
           <label for="s-map">Map</label>
           <div class="row2"><label><input id="s-map" type="checkbox"> The game's Wolves' Den Pier (made by tools/export_map.py); off for the dusk training ground</label></div>
           <label for="s-dummy">Striking dummy</label>
@@ -187,6 +197,7 @@
   <script src="work/game-models.js"></script>
   <script src="work/game-map.js"></script>
   <script src="work/game-map-m2s.js"></script>
+  <script src="work/game-map-m5s.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/jobs/blm_ew.js"></script>
@@ -297,6 +308,9 @@
   <script src="js/models.js"></script>
   <script src="js/map.js"></script>
   <script src="js/fight.js"></script>
+  <script src="js/mech.js"></script>
+  <script src="js/party.js"></script>
+  <script src="js/fights/m5s.js"></script>
   <script src="js/physics.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>

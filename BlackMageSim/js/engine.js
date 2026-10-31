@@ -63,6 +63,8 @@
       this.leyLines = null;
       this.targeted = true;
       this.untargetable = false;   // a fight's boss in one of its untargetable windows
+      this.ko = false;             // KO'd by a fight's attack (js/party.js raises you)
+      this.facing = Math.PI;       // which way the target faces (the sim's yaw): the dummy faces you, a boss its tank
       this.moving = false;
       this.jumpUntil = 0;
       this.pet = null;             // a summoner's pet: { kind } (the job sets it; the scene draws it)
@@ -96,9 +98,13 @@
         Math.hypot(this.pos.x - this.leyLines.x, this.pos.z - this.leyLines.z) <= 3);
     }
 
-    // The dummy faces -Z, toward where you start. Rear is the 90° behind it, flanks the 90° to each side.
+    // The dummy faces -Z, toward where you start (a fight's boss faces its main tank). Rear is the 90° behind it,
+    // flanks the 90° to each side.
     side() {
-      const a = Math.abs(Math.atan2(this.pos.x, -this.pos.z)) * 180 / Math.PI;   // 0 = in front, 180 = behind
+      let r = Math.atan2(this.pos.x, this.pos.z) - this.facing;
+      while (r > Math.PI) r -= 2 * Math.PI;
+      while (r < -Math.PI) r += 2 * Math.PI;
+      const a = Math.abs(r) * 180 / Math.PI;   // 0 = in front, 180 = behind
       return a > 135 ? 'rear' : a > 45 ? 'flank' : 'front';
     }
     positionalHit(a) {
@@ -215,6 +221,7 @@
     // forHotbar skips target, range and movement, which the hotbar shows another way.
     checkConditions(id, forHotbar) {
       const a = A[id];
+      if (this.ko) return 'You cannot act while KO\'d.';
       if (a.target && !forHotbar) {
         if (!this.targeted || this.untargetable) return 'Invalid target.';
         if (this.distToTarget() - B.DUMMY_RADIUS > (a.range || B.RANGE)) return 'Target not in range.';
@@ -543,7 +550,7 @@
         const delay = au.delay * (100 - (this.job.autoHaste ? this.job.autoHaste(this) : 0)) / 100;
         this.autoNext = now + delay;
         // job.noAutos: auto-attacks switched off (Heavensward Machinist's Gauss Barrel).
-        if (this.targeted && !this.untargetable && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
+        if (this.targeted && !this.untargetable && !this.ko && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
           // job.autoStrikes: hits per swing (A Realm Reborn's Barrage: three).
           const snap = this.snapshot({ school: 'physical', auto: true });
           const n = this.job.autoStrikes ? this.job.autoStrikes(this) : 1;
@@ -564,6 +571,7 @@
     // speedMul: below 1 for backpedalling. On the game's map you walk through its collision (stairs, walls, ledges);
     // without it, a flat floor 38 yalms around the dummy.
     move(dx, dz, dt, speedMul) {
+      if (this.ko) { dx = 0; dz = 0; }
       const moving = dx !== 0 || dz !== 0, w = this.world;
       if (moving) {
         const speed = 6 * (this.has('sprint') ? 1.3 : 1) * (speedMul || 1);
@@ -571,8 +579,8 @@
         const sx = dx / len * speed * dt, sz = dz / len * speed * dt;
         if (w) w.walk(this.pos, sx, sz);
         else { this.pos.x += sx; this.pos.z += sz; }
-        // Keep a little space from the dummy's hitbox.
-        const d = Math.hypot(this.pos.x, this.pos.z), keep = B.DUMMY_RADIUS + 0.6;
+        // Keep a little space from the dummy's hitbox (a fight's boss you can walk under: B.DUMMY_KEEP).
+        const d = Math.hypot(this.pos.x, this.pos.z), keep = B.DUMMY_KEEP || B.DUMMY_RADIUS + 0.6;
         if (d < keep && Math.abs(this.pos.y) < 1.5) { this.pos.x *= keep / d; this.pos.z *= keep / d; }
         const lim = w ? 150 : 38;
         const r = Math.hypot(this.pos.x, this.pos.z);

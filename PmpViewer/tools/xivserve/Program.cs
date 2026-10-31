@@ -10,6 +10,9 @@ using Penumbra.GameData.Files.MaterialStructs;
 //   {"op":"extract","dir":D,"paths":[...]}  -> {"files":{path: local path | null}}
 //   {"op":"exists","paths":[...]}           -> {"exists":{path: bool}} (no file data read)
 //   {"op":"mdl","file":F,"out":B}            -> header JSON; LOD0 vertex/index arrays written to B (little endian)
+//                                               ("extra":true also adds LOD0's water and vertical-fog meshes and,
+//                                               for a one-LOD model, the meshes after its own (its extra LOD: the
+//                                               light shafts and glows a map draws); each mesh says its "kind")
 //   {"op":"mtrl","file":F}                   -> shader, keys, constants, samplers, textures, colour table
 //   {"op":"tex","file":F|"path":P,"out":B}   -> top mip as RGBA bytes in B, {"w","h","format"}
 //   {"op":"items","out":J}                   -> every equippable item to J
@@ -111,8 +114,29 @@ JsonNode Mdl(JsonObject req)
 
     long Pos() => bin.BaseStream.Position;
 
-    for (var mi = mdl.Lods[0].MeshIndex; mi < mdl.Lods[0].MeshIndex + mdl.Lods[0].MeshCount; mi++)
+    var lod = mdl.Lods[0];
+    var ranges = new List<(int Start, int Count, string Kind)> { (lod.MeshIndex, lod.MeshCount, "main") };
+    if (req["extra"]?.GetValue<bool>() == true)
     {
+        ranges.Add((lod.WaterMeshIndex, lod.WaterMeshCount, "water"));
+        ranges.Add((lod.VerticalFogMeshIndex, lod.VerticalFogMeshCount, "fog"));
+        if (mdl.LodCount == 1)
+        {
+            var end = lod.MeshIndex + lod.MeshCount;
+            ranges.Add((end, mdl.Meshes.Length - end, "extra"));
+        }
+    }
+    var shadow = new HashSet<int>();
+    for (var k = 0; k < lod.ShadowMeshCount; k++) shadow.Add(lod.ShadowMeshIndex + k);
+    for (var k = 0; k < lod.TerrainShadowMeshCount; k++) shadow.Add(lod.TerrainShadowMeshIndex + k);
+    var done = new HashSet<int>();
+    foreach (var (start, count, kind) in ranges)
+    for (var mi = start; mi < start + count && mi < mdl.Meshes.Length; mi++)
+    {
+        if (kind != "main" && (shadow.Contains(mi) || !done.Add(mi)))
+            continue;
+        if (kind == "main")
+            done.Add(mi);
         var mesh  = mdl.Meshes[mi];
         var decl  = mdl.VertexDeclarations[mi];
         var table = mesh.BoneTableIndex != 255 && mesh.BoneTableIndex < mdl.BoneTables.Length ? mdl.BoneTables[mesh.BoneTableIndex].BoneIndex : null;
@@ -177,7 +201,7 @@ JsonNode Mdl(JsonObject req)
         {
             ["material"] = mdl.Materials[mesh.MaterialIndex], ["vertexCount"] = n, ["indexCount"] = (int)mesh.IndexCount,
             ["hasUv1"] = hasUv1, ["hasWeights"] = hasWeights, ["hasColor"] = hasColor, ["badBoneRefs"] = badBone,
-            ["startIndex"] = (int)mesh.StartIndex,
+            ["startIndex"] = (int)mesh.StartIndex, ["kind"] = kind,
             ["colorMeans"] = new JsonObject(colorSum.Select(kv => new KeyValuePair<string, JsonNode?>(kv.Key.ToString(),
                 new JsonArray(kv.Value.Select(x => (JsonNode)JsonValue.Create(Math.Round(x / Math.Max(1, n), 3))!).ToArray())))),
         };
@@ -240,6 +264,10 @@ JsonNode Mdl(JsonObject req)
         ["bones"] = new JsonArray(mdl.Bones.Select(x => (JsonNode)JsonValue.Create(x)!).ToArray()),
         ["bbox"] = new JsonArray(mdl.BoundingBoxes.Min.Concat(mdl.BoundingBoxes.Max).Select(x => (JsonNode)JsonValue.Create(x)!).ToArray()),
         ["meshes"] = meshes, ["shapes"] = shapes,
+        ["meshTotal"] = mdl.Meshes.Length,
+        ["lod0"] = new JsonArray(new[] { lod.MeshIndex, lod.MeshCount, lod.WaterMeshIndex, lod.WaterMeshCount, lod.ShadowMeshIndex,
+            lod.ShadowMeshCount, lod.TerrainShadowMeshIndex, lod.TerrainShadowMeshCount, lod.VerticalFogMeshIndex,
+            lod.VerticalFogMeshCount }.Select(x => (JsonNode)JsonValue.Create((int)x)!).ToArray()),
     };
 }
 

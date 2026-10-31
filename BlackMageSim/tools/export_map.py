@@ -61,14 +61,31 @@ ZONES = {
                                 "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_a_1", "cast": "cbbm_sp_a_2lp",
                                           "run": "cbbm_02f_lp0"},
                                 "specials": "chara/monster/m0906/animation/a0001/bt_common/mon_sp/m0906/"}}},
+    # M5S, AAC Cruiserweight M1 (Savage): Dancing Green in the middle of the dance floor (100, 0, 100), the party south.
+    "m5s": {"name": "Dancing Green's floor", "label": "M5S · Dancing Green", "bg": "bg/ex5/01_xkt_x6/rad/x6r5/",
+            "out": "game-map-m5s.js", "sky": "club", "dummy": (100.0, 0.0, 100.0), "facing": 0.0,
+            "fight": {"duty": "AAC Cruiserweight M1 (Savage)", "boss": "Dancing Green", "timeline": "07-dt/raid/r5s",
+                      "hitbox": 5.0,
+                      # Monster m0934 (ModelChara 4412, BNpcBase 18358 at scale 3.5): the Dawntrail model with every
+                      # animation his abilities name (mon_sp001-045). Mechanics, strats and HP: js/fights/m5s.js.
+                      "model": {"kind": "monster", "id": 934, "body": 1, "variant": 1, "scale": 3.5,
+                                "pap": "chara/monster/m0934/animation/a0001/bt_common/resident/monster.pap",
+                                "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp",
+                                          "run": "cbbm_02f_lp0"},
+                                "specials": "chara/monster/m0934/animation/a0001/bt_common/mon_sp/m0934/"}}},
 }
 ZONE = ZONES["pier"]        # the one being exported
 LAYOUTS = ("level/bg.lgb",)
+# PMP Viewer's model helper leaves out a model's water and vertical-fog meshes, where the light shafts and the glow
+# over M5S's dance floor live; a helper built with the "extra" option (tools/xivserve, PMPVIEWER_XIVSERVE) has them.
+EXTRA_MESHES = bool(__import__("os").environ.get("PMPVIEWER_XIVSERVE"))
 TYPE_BG, TYPE_SG = 1, 6
 
 # bg.shpk's samplers by layer: colour, normal, specular.
 LAYER_SAMPLERS = ((0x1E6FEF9C, 0xAAB4D9E9, 0x1BBC2F12), (0x6968DF0A, 0xDDB3E97F, 0x6CBB1F84))
 WATER_COLOR = 0xBA163700       # water.shpk's colour constant (linear RGB)
+BG_DIFFUSE, BG_EMISSIVE = 0x2C2A34DD, 0x38A64362        # bg.shpk's g_DiffuseColor and g_EmissiveColor
+SHAFT_COLOR, SHAFT_ALPHA = 0xD27C58B9, 0x17A52926       # lightshaft.shpk's colour and strength
 
 
 # ---------- layout files ----------
@@ -265,6 +282,18 @@ def raw_texture(local, limit):
     return len(X.TEXTURES) - 1
 
 
+def glow_texture(local, limit):
+    """A light shaft's texture with its alpha multiplied in (it's added over the scene, so dark = no light)."""
+    px = game.texture(local).astype(np.float32)
+    rgb = px[..., :3] * (px[..., 3:4] / 255.0 if px.shape[-1] > 3 else 1.0)
+    img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
+    img.thumbnail((limit, limit), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, "WEBP", quality=85, method=6)
+    X.TEXTURES.append("data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode())
+    return len(X.TEXTURES) - 1
+
+
 def layer_view(mt, k):
     """The material with only layer k's samplers, so the bake picks that layer's textures."""
     ids = LAYER_SAMPLERS[k]
@@ -285,17 +314,28 @@ def material(name):
         col = (consts.get(WATER_COLOR) or [0.1, 0.34, 0.36])[:3]
         return {"water": True, "tint": [round(c, 4) for c in col], "normal": nrm}
     texs = {i: game.game_file(t["path"]) for i, t in enumerate(mt["textures"])}
+    consts = {c["id"]: c["values"] for c in mt["constants"]}
+    rgb = lambda v: [round(float(c), 4) for c in v[:3]]     # noqa: E731
     if mt["shader"] == "lightshaft.shpk":
-        # Light shafts, neon and pools of light: glow added over what's behind, not a surface.
-        b = shade.bake(mt, texs, {}, max_size=256)
-        out = X.material_out(b, opaque=True)
-        return dict(out, glow=True, normal=None) if out else None
+        # Light shafts, the glow over the dance floor's tiles, pools of light: its texture added over what's behind,
+        # in its colour, at its strength.
+        if not texs.get(0) or "_nul" in mt["textures"][0]["path"]:      # "nul": a placeholder the game doesn't draw
+            return None
+        return {"glow": True, "color": glow_texture(texs[0], 256), "normal": None,
+                "tint": rgb(consts.get(SHAFT_COLOR) or [1, 1, 1]), "opacity": round(float((consts.get(SHAFT_ALPHA) or [1])[0]), 4)}
     v0 = layer_view(mt, 0) or mt
     b0 = shade.bake(v0, texs, {}, max_size=X.COLOR_MAX)
     alpha = (b0.get("alphaTest") or 0) > 0
     out = X.material_out(b0, opaque=not alpha)
     if not out:
         return None
+    if mt["shader"] == "bg.shpk":
+        # Its colour constants: the texture's tint, and light of its own (the neon signs: black, lit in a colour).
+        dif, emi = consts.get(BG_DIFFUSE), consts.get(BG_EMISSIVE)
+        if dif and any(abs(c - 1) > 1e-3 for c in dif[:3]):
+            out["diffuse"] = rgb(dif)
+        if emi and any(c > 1e-3 for c in emi[:3]):
+            out["emissive"] = rgb(emi)
     # A second layer with its own colour map, blended in by the vertices' alpha.
     v1 = layer_view(mt, 1)
     c0 = next((s["tex"] for s in v0["samplers"] if s["id"] == LAYER_SAMPLERS[0][0]), None)
@@ -313,7 +353,7 @@ def model_out(pack, path, mats, mat_index):
     local = game.game_file(path)
     if not local:
         return None
-    mdl = game.model(local)
+    mdl = game.model(local, extra=EXTRA_MESHES)        # with its light shafts and glows, where the helper has them
     meshes = []
     for me in mdl["meshes"]:
         name = me["material"]
@@ -323,7 +363,7 @@ def model_out(pack, path, mats, mat_index):
             if m:
                 mats.append(m)
         mi = mat_index[name]
-        if mi < 0 or not len(me["idx"]):
+        if mi < 0 or not len(me["idx"]) or mats[mi].get("water"):      # the sea is drawn as one plane (main())
             continue
         out = X.mesh_out(pack, me["pos"], me["nrm"], me["uv"], me["idx"], mi)
         m = mats[mi]

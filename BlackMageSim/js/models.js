@@ -381,6 +381,7 @@
       this.applyPose();
 
       this.updateBoss(dt);
+      this.updateParty(dt);
 
       // The extra dummies of an AoE pack: copies of the chosen dummy, each turned to face you.
       if (this.dummy && !this.boss) {
@@ -500,7 +501,8 @@
       const e = this.e, an = b.anims;
       b.group.visible = this.texturesLoaded(b);
       b.group.position.set(0, 0, 0);
-      b.group.rotation.y = Math.atan2(e.pos.x, e.pos.z);
+      const party = this.sc.app.party;
+      b.group.rotation.y = party && party.active ? e.facing : Math.atan2(e.pos.x, e.pos.z);     // her tank, or you
       // Casting: the wind-up, then its loop; each ability as it goes off plays its own motion; otherwise idle.
       const casting = !!fight.casting, idle = () => this.play(an.idle, true, null, b);
       if (fight.motionSeq !== b.motionSeq) {
@@ -514,6 +516,42 @@
         if (f) f(); else this.play(an.idle, true, null, b);
       }
       this.applyPose(b);
+    }
+
+    // The party's bots (js/party.js): each its job's character, running to its spot and turning to the boss.
+    updateParty(dt) {
+      const party = this.sc.app && this.sc.app.party, G = B.GAME_MODELS;
+      const bots = party && party.active && this.sc.mapOn() ? party.bots : [];
+      this.botChars = this.botChars || {};
+      const shown = new Set();
+      for (const b of bots) {
+        const id = B.BOT_MODEL(b.job);
+        if (!id) continue;
+        const key = b.slot + ':' + id;
+        let ch = this.botChars[key];
+        if (!ch) {
+          try {
+            ch = this.botChars[key] = this.buildCharacter(G.jobs[id]);
+            ch.facing = b.facing;
+            this.play(ch.anims.basic.idle, true, null, ch);
+          } catch (err) { console.error(`Bot model ${id} failed:`, err); this.botChars[key] = null; continue; }
+        }
+        if (!ch) continue;
+        shown.add(ch);
+        const s = B.toSim(b.pos);
+        ch.group.position.set(s.x, 0, s.z);
+        let diff = b.facing - ch.facing;
+        while (diff > Math.PI) diff -= 2 * Math.PI;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        ch.facing += diff * Math.min(1, dt * 12);
+        ch.group.rotation.y = ch.facing;
+        ch.group.visible = this.texturesLoaded(ch);
+        const basic = ch.anims.basic;
+        if (b.moving && ch.cur.anim !== basic.run) this.play(basic.run, true, null, ch);
+        else if (!b.moving && ch.cur.anim === basic.run) this.play(basic.idle, true, null, ch);
+        this.applyPose(ch);
+      }
+      for (const ch of Object.values(this.botChars)) if (ch && !shown.has(ch)) ch.group.visible = false;
     }
 
     // The map's sun and sky on the figures, or the dusk lights.

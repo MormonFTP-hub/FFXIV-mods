@@ -239,9 +239,10 @@ def _cache(name):
 _models = {}
 
 
-def model(local):
-    """LOD0 of a .mdl: header dict plus per-mesh numpy arrays."""
-    h = file_hash(local)
+def model(local, extra=False):
+    """LOD0 of a .mdl: header dict plus per-mesh numpy arrays. extra: also its water and vertical-fog meshes (a map's
+    light shafts and glows; each mesh's "kind" says which), from a helper that has the option."""
+    h = file_hash(local) + ("x" if extra else "")
     if h in _models:
         return _models[h]
     binp, jsp = _cache(h + ".mdl2.bin"), _cache(h + ".mdl2.json")      # mdl2: with per-set vertex colour means
@@ -253,7 +254,7 @@ def model(local):
         hdr = read_json(jsp) if os.path.exists(binp) else None
         if hdr is None:
             part = f"{binp}.{os.getpid()}.{threading.get_ident()}.part"
-            hdr = SERVE.call("mdl", file=os.path.abspath(local), out=part)
+            hdr = SERVE.call("mdl", file=os.path.abspath(local), out=part, **({"extra": True} if extra else {}))
             for _ in range(40):
                 try:
                     os.replace(part, binp)

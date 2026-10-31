@@ -173,6 +173,7 @@
       this.scene.map = this.map;
       this.scene.app = this;
       this.fight = null;
+      this.party = new B.Party(this);
       this.map.onChange = () => this.onMap();
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
@@ -242,6 +243,7 @@
       const fresh = !this.hasBars();          // before anything draws the bars (which fills in the defaults)
       this.engine.setJob(this.job);
       this.placeStart();
+      this.party.setup();                     // your spot and HP follow the job
       this.cd = null; this.cdEndedAt = null; this.recentUses = [];
       this.ui.setJob();
       this.models.setJob();
@@ -401,12 +403,13 @@
       // The dummy resets out of combat.
       for (const k of Object.keys(this.engine.tStatuses)) delete this.engine.tStatuses[k];
       // A cast finishing after the buzzer still lands up to ~4s later; don't let it open a new pull.
-      this.noNewUntil = this.engine.now + (reason === 'time' ? 5 : 0);
+      this.noNewUntil = this.engine.now + (reason === 'time' || reason === 'kill' ? 5 : 0);
       const dur = enc.duration();
       const dps = enc.total / dur;
       if (this.debug) this.debug.add(`pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'} (${reason}): ${Math.round(dps)} DPS over ${dur.toFixed(1)}s`);
       const mm = Math.floor(dur / 60) + ':' + String(Math.floor(dur % 60)).padStart(2, '0');
-      this.ui.log(`Pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'}: ${fmt(dps)} DPS over ${mm}.`, 'sys', 'system');
+      if (reason === 'kill') this.ui.log(`Pull ${enc.n}: ${this.fight ? this.fight.name : 'the boss'} defeated in ${mm}. Your DPS: ${fmt(dps)}.`, 'sys', 'system');
+      else this.ui.log(`Pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'}: ${fmt(dps)} DPS over ${mm}.`, 'sys', 'system');
       if (reason === 'time') this.ui.count('TIME', true);
       if (dur >= 15 && !this.ui.anyWindow()) this.ui.showResults(enc);
       this.ui.updateMeter(true);
@@ -440,12 +443,38 @@
       const f = this.map.fight();
       this.fight = f ? new B.Fight(this, this.map.key, f) : null;
       B.DUMMY_RADIUS = this.fight ? this.fight.hitbox : BASE_RADIUS;
+      B.DUMMY_KEEP = this.fight ? 1 : null;          // a boss you can walk under
       if (!this.fight) B.Fight.clear();
+      this.engine.facing = Math.PI;
+      this.party.setup();
       this.placeStart();
       if (this.fight) {
-        const enr = this.fight.data.enrage;
-        this.ui.log(`${this.fight.data.duty}: ${this.fight.name}. Her timeline runs from your first hit; enrage at ${Math.floor(enr / 60)}:${String(Math.floor(enr % 60)).padStart(2, '0')}. For testing: she has the dummy's HP and her attacks don't hit you yet.`, 'sys', 'system');
+        const F = this.fight, enr = F.data.enrage, at = `${Math.floor(enr / 60)}:${String(Math.floor(enr % 60)).padStart(2, '0')}`;
+        if (F.mech) {
+          this.ui.log(`${F.data.duty}: ${F.name}, with a party of seven bots playing ${F.script.strats[F.mech.strat].label} (wtfdig.info). You're ${this.party.playerSlot()}; the ring on the floor is where your strat wants you. The timeline runs from your first hit; enrage at ${at}. Settings (or /strat, /damage) changes the strat, your spot and whether her attacks hurt.`, 'sys', 'system');
+        } else this.ui.log(`${F.data.duty}: ${F.name}. Her timeline runs from your first hit; enrage at ${at}. For testing: she has the dummy's HP and her attacks don't hit you yet.`, 'sys', 'system');
       }
+    },
+
+    // Settings → Strat or Your spot changed: a fresh pull with them.
+    onPartySettings() {
+      if (this.enc) this.endEncounter(this.engine.now, 'idle');
+      if (this.fight) this.fight.reset();
+      this.party.setup();
+      this.placeStart();
+    },
+
+    stratCommand(arg) {
+      const F = this.fight;
+      if (!F || !F.mech) { this.ui.log('Strats are for a fight with a party (/fight m5s).', 'err', 'system'); return; }
+      const all = F.script.strats;
+      if (!arg) { this.ui.log(`Strats: ${Object.entries(all).map(([k, s]) => `${k} (${s.label})`).join(', ')}. Now: ${F.mech.strat}.`, 'sys', 'system'); return; }
+      const key = Object.keys(all).find(k => k === arg || all[k].label.toLowerCase().startsWith(arg));
+      if (!key) { this.ui.log(`There's no strat "${arg}". /strat lists them.`, 'err', 'system'); return; }
+      (this.store.settings.strats = this.store.settings.strats || {})[F.key] = key;
+      this.save();
+      this.onPartySettings();
+      this.ui.log(`The party plays ${all[key].label}.`, 'sys', 'system');
     },
 
     // In front of the dummy (or boss), as far from its edge as the job usually stands.
@@ -458,6 +487,8 @@
 
     fullReset() {
       this.engine.reset();
+      if (this.fight) this.fight.reset();
+      this.party.setup();
       this.placeStart();
       this.enc = null;
       this.cd = null;
@@ -512,6 +543,14 @@
         case '/echo': case '/e': this.ui.log(arg, 'echo', 'system'); break;
         case '/debug': this.debug.copy(); break;
         case '/fight': this.fightCommand(arg.trim().toLowerCase()); break;
+        case '/strat': this.stratCommand(arg.trim().toLowerCase()); break;
+        case '/damage': {
+          const v = arg.trim().toLowerCase(), st = this.store.settings;
+          st.takeDamage = v === 'on' ? true : v === 'off' ? false : !st.takeDamage;
+          this.save();
+          this.ui.log(`Take damage: ${st.takeDamage ? 'on (the fight\'s attacks hurt you)' : 'off (they only show where they\'d hit)'}.`, 'sys', 'system');
+          break;
+        }
         default:
           if (t.startsWith('/')) this.ui.log(`The command "${cmd}" does not exist.`, 'err', 'system');
           else this.ui.log(`${this.store.settings.name}: ${t}`, 'act', 'system');
@@ -712,15 +751,17 @@
       if (this.enc) {
         const lim = this.fight ? 0 : this.store.settings.pullLength;      // a fight ends at its enrage
         if (lim && e.now >= this.enc.start + lim) this.endEncounter(this.enc.start + lim, 'time');
-        else if (e.now - this.enc.lastActivity > 10) this.endEncounter(this.enc.lastDamage, 'idle');
+        else if (e.now - this.enc.lastActivity > (this.party.active ? 60 : 10)) this.endEncounter(this.enc.lastDamage, 'idle');
       }
 
       this.scene.update(dt, dx !== 0 || dz !== 0);
       this.map.render(dt);
       if (this.fight) this.fight.update();
+      this.party.update(dt);
       this.scene.draw();
       this.models.update(dt);
-      const hpK = this.enc ? Math.max(1, DUMMY_HP - this.enc.total) / DUMMY_HP : 1;
+      const F = this.fight;
+      const hpK = F && F.maxHp ? F.hp / F.maxHp : this.enc ? Math.max(1, DUMMY_HP - this.enc.total) / DUMMY_HP : 1;
       this.ui.update(hpK);
       requestAnimationFrame(tt => this.frame(tt));
     },

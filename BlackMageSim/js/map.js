@@ -13,6 +13,8 @@
   const LOOKS = {
     day: { zenith: 0x3d7bc6, horizon: 0xcde0ec, sun: 0xfff2dc, fog: [180, 1800], hemi: [0xd2e6ff, 0x8a7656, 0.95], light: [0xfff0d6, 1.85] },
     arena: { zenith: 0x150b2b, horizon: 0x5b3a72, sun: 0xffd9f2, fog: [140, 1100], hemi: [0xeadcff, 0x4a3656, 1.05], light: [0xfff0fa, 1.55] },
+    // A club: the room dark, the floor, neon and stage lights doing the lighting.
+    club: { zenith: 0x05030c, horizon: 0x1a0e2c, sun: 0xffd0ec, fog: [120, 900], hemi: [0xa08cdc, 0x2a1838, 0.75], light: [0xffe6f4, 1.15] },
   };
 
   // The maps there are: BLM.GAME_MAPS by key (an older file's BLM.GAME_MAP is the pier).
@@ -182,12 +184,35 @@
 
     material(m, E) {
       const T = THREE;
-      if (m.glow) {       // lightshaft.shpk: light added over whatever's behind
-        return new T.MeshBasicMaterial({ map: this.texture(m.color, true, E), transparent: true, opacity: 0.6,
-          blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: true });
+      if (m.glow) {
+        // lightshaft.shpk: light added over whatever's behind, in its colour and strength, fading as you look along
+        // its surface (as the game's soft beams do: a cone of light is bright through its middle, not at its rim).
+        const tint = m.tint || [1, 1, 1];
+        return new T.ShaderMaterial({
+          uniforms: { map: { value: this.texture(m.color, false, E) }, color: { value: new T.Color(tint[0], tint[1], tint[2]) },
+            opacity: { value: m.opacity ?? 0.6 } },
+          vertexShader: [
+            'varying vec2 vUv;', 'varying float vFace;',
+            'void main() {',
+            '  vUv = uv;',
+            '  vec4 p = vec4(position, 1.0); vec3 n = normal;',
+            '  #ifdef USE_INSTANCING', '  p = instanceMatrix * p; n = mat3(instanceMatrix) * n;', '  #endif',
+            '  vec4 mv = modelViewMatrix * p;',
+            '  vFace = abs(dot(normalize(normalMatrix * n), normalize(-mv.xyz)));',
+            '  gl_Position = projectionMatrix * mv;',
+            '}'].join('\n'),
+          fragmentShader: [
+            'uniform sampler2D map;', 'uniform vec3 color;', 'uniform float opacity;',
+            'varying vec2 vUv;', 'varying float vFace;',
+            'void main() { gl_FragColor = vec4(texture2D(map, vUv).rgb * color * opacity * vFace * vFace, 1.0); }'].join('\n'),
+          transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide,
+        });
       }
       const mat = new T.MeshStandardMaterial({ map: this.texture(m.color, true, E), roughness: 0.86, metalness: 0,
         side: m.doubleSided ? T.DoubleSide : T.FrontSide });
+      // bg.shpk's colour constants: a tint on the texture, and light of its own (neon: black, lit in a colour).
+      if (m.diffuse) mat.color.setRGB(m.diffuse[0], m.diffuse[1], m.diffuse[2]);
+      if (m.emissive) mat.emissive.setRGB(m.emissive[0], m.emissive[1], m.emissive[2]);
       if (m.normal !== null && m.normal !== undefined) { mat.normalMap = this.texture(m.normal, false, E); mat.normalScale = new T.Vector2(1, -1); }
       if (m.alpha) mat.alphaTest = m.alphaTest > 0 ? Math.max(0.3, m.alphaTest) : 0.5;      // nets, ropes, leaves
       if (m.color1 !== undefined && m.color1 !== null) this.blendLayers(mat, this.texture(m.color1, true, E));

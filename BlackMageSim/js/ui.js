@@ -390,6 +390,16 @@
       this.errT = setTimeout(() => el.classList.remove('show'), 900);
     }
 
+    // A fight's callout over the middle of the screen, as cactbot shows them (alert: in gold).
+    callout(text, dur, alert) {
+      const el = $('#callout');
+      el.textContent = text;
+      el.classList.toggle('alert', !!alert);
+      el.classList.add('show');
+      clearTimeout(this.calloutT);
+      this.calloutT = setTimeout(() => el.classList.remove('show'), (dur || 5) * 1000);
+    }
+
     count(text, engage) {
       const el = $('#count');
       el.textContent = text;
@@ -722,7 +732,7 @@
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
 <tr><td>Camera</td><td>Hold the right mouse button and drag to turn the camera and your character: while it's held, <kbd>A</kbd> <kbd>D</kbd> strafe and <kbd>S</kbd> backpedals at walking pace. Drag with the left button to turn just the camera. Hold both buttons to run forward. The wheel zooms.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>
-<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>, <code>/debug</code> (copies a debug log to paste to Claude), <code>/fight</code> (lists the fights; <code>/fight m2s</code> goes to one, <code>/fight off</code> back to the pier).</td></tr>
+<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>, <code>/debug</code> (copies a debug log to paste to Claude), <code>/fight</code> (lists the fights; <code>/fight m5s</code> goes to one, <code>/fight off</code> back to the pier), <code>/strat</code> (lists a fight's strats; <code>/strat game8</code> picks one), <code>/damage on</code> or <code>off</code>.</td></tr>
 <tr><td>Windows</td><td><kbd>J</kbd> Job, <kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
 </table>
 <h3>Timing</h3>
@@ -809,6 +819,17 @@ ${job.helpHtml(seq, ic)}
       $('#s-loc').innerHTML = Object.entries(maps).map(([k, m]) => `<option value="${k}">${esc(m.label || m.name)}</option>`).join('')
         || '<option value="pier">The dusk training ground</option>';
       $('#s-loc').addEventListener('change', () => this.app.setLocation($('#s-loc').value));
+      // A fight's party: the strat it plays (kept per fight), your spot in it, and whether its attacks hurt you.
+      $('#s-strat').addEventListener('change', () => {
+        const F = this.app.fight;
+        if (!F || !F.mech) return;
+        (st().strats = st().strats || {})[F.key] = $('#s-strat').value;
+        this.app.save();
+        this.app.onPartySettings();
+      });
+      $('#s-slot').addEventListener('change', () => { st().partySlot = $('#s-slot').value; this.app.save(); this.app.onPartySettings(); });
+      bind('#s-dmg', 'takeDamage', el => el.checked);
+      bind('#s-spot', 'showSpot', el => el.checked);
       bind('#s-follow', 'cameraFollow', el => el.checked);
       bind('#s-lock', 'lockCursor', el => el.checked);
       bind('#s-mouse', 'mouseSpeed', el => parseFloat(el.value), 'input');
@@ -841,6 +862,14 @@ ${job.helpHtml(seq, ic)}
       $('#s-map').checked = s.gameMap;
       $('#s-map').disabled = !(window.THREE && B.gameMaps && B.gameMaps().pier);
       $('#s-loc').value = s.location || 'pier';
+      const F = this.app.fight, strats = F && F.mech ? F.script.strats : null;
+      $('#s-strat').innerHTML = strats ? Object.entries(strats).map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join('')
+        : '<option value="">No party here (M5S has one)</option>';
+      $('#s-strat').disabled = !strats;
+      if (strats) $('#s-strat').value = F.mech.strat;
+      $('#s-slot').value = s.partySlot || 'auto';
+      $('#s-dmg').checked = s.takeDamage !== false;
+      $('#s-spot').checked = s.showSpot !== false;
       $('#s-follow').checked = s.cameraFollow;
       $('#s-lock').checked = s.lockCursor;
       $('#s-mouse').value = String(s.mouseSpeed);

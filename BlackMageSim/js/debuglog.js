@@ -74,6 +74,11 @@
       L.push(`Stats: main ${s.main} · WD ${s.wd} · det ${s.det} · crit ${s.crit} · DH ${s.dh} · speed ${s.speed} (GCD ${e.gcdForSpeed(s.speed).toFixed(2)})${job.speedInfo ? ' · ' + job.speedInfo(e) : ''}`);
       const fight = app.fight;
       L.push(`Location: ${st.location || 'pier'}${fight ? ` · fight ${fight.data.duty} (${fight.name}) · ${fight.t === null ? 'not pulled' : `t=${fight.t.toFixed(1)}s of ${fight.data.enrage}s`}${fight.casting ? ` · casting ${fight.label(fight.casting)}` : ''} · hitbox ${B.DUMMY_RADIUS}y${app.engine.untargetable ? ' · untargetable' : ''}` : ''}`);
+      if (fight && fight.mech) {
+        const party = app.party;
+        L.push(`Party: strat ${fight.mech.strat} · you ${party.playerSlot()} · take damage ${st.takeDamage ? 'on' : 'off'}${app.engine.ko ? ' · KO' : ''} · HP ${Math.round(app.engine.hp)}/${app.engine.maxHp} · boss ${Math.round(fight.hp)}/${fight.maxHp} (bots ${Math.round(party.botDamage)})`);
+        L.push(`Bots: ${party.bots.map(b => `${b.slot} ${b.job} [${b.pos.map(v => v.toFixed(1)).join(',')}]${b.moving ? ' moving' : ''}`).join(' · ')}`);
+      }
       L.push(`Ping ${st.ping} ms · NoClippy ${st.latencyComp ? 'on' : 'off'} · dummies ${e.targets} · pull length ${st.pullLength ? st.pullLength + 's' : 'until you stop'}`);
       const changed = Object.keys(B.DEFAULT_SETTINGS).filter(k => !['name', 'versions', 'speed', 'job'].includes(k) && JSON.stringify(st[k]) !== JSON.stringify(B.DEFAULT_SETTINGS[k]));
       L.push(`Settings changed from default: ${changed.length ? changed.map(k => `${k}=${safeJson(st[k], 40)}`).join(', ') : 'none'}`);

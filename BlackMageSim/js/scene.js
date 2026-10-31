@@ -739,6 +739,7 @@
       front.sort((a, b) => b.z - a.z).forEach(it => it.draw());
       this.drawFx();
       this.drawParticles();
+      if (this.app && this.app.party && this.mapOn()) this.app.party.drawLabels(this);
 
       if (this.screenFlash > 0) {
         ctx.fillStyle = `rgba(255,250,220,${this.screenFlash * 1.2})`;
@@ -843,6 +844,9 @@
     }
 
     drawGroundMarks() {
+      // A fight's waymarks, attacks on their way and your spot (js/mech.js), and the bots' markers (js/party.js).
+      const f = this.app && this.app.fight;
+      if (f && f.mech && this.mapOn()) { f.mech.draw(this, f.t); this.app.party.drawGround(this); }
       this.drawLeyLines();
       this.drawCastCircle();
       this.drawTargetRing();
@@ -869,11 +873,11 @@
           open = true;
         }
       };
-      const d = Math.PI / 180;
+      const d = Math.PI / 180, turn = Math.PI - e.facing;     // the quarters turn with the target
       const inRange = e.distToTarget() - B.DUMMY_RADIUS <= B.MELEE_RANGE;
       for (const [k, a0, a1] of [['rear', 45, 135], ['flank', -45, 45], ['flank', 135, 225], ['front', 225, 315]]) {
         const on = k !== 'front' && (tn || side === k);
-        arc((a0 + 3) * d, (a1 - 3) * d, R);
+        arc((a0 + 3) * d + turn, (a1 - 3) * d + turn, R);
         ctx.strokeStyle = on ? (inRange ? 'rgba(255,214,110,0.85)' : 'rgba(255,214,110,0.4)') : k === 'front' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.22)';
         ctx.lineWidth = on ? 3 : 1.5;
         ctx.stroke();
@@ -962,15 +966,16 @@
       const ctx = this.ctx;
       ctx.save();
       if (this.e.job.role === 'melee') this.drawPositionals();
-      if (this.groundPath(0, 0, 1.6, 48, 0.02)) { ctx.strokeStyle = 'rgba(255,90,60,0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); }
-      if (this.groundPath(0, 0, 1.75, 48, 0.02)) { ctx.strokeStyle = 'rgba(255,170,120,0.35)'; ctx.lineWidth = 1; ctx.stroke(); }
+      const k = this.fightOn() ? B.DUMMY_RADIUS / 1.6 : 1;     // a boss's ring is its hitbox
+      if (this.groundPath(0, 0, 1.6 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,90,60,0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); }
+      if (this.groundPath(0, 0, 1.75 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,170,120,0.35)'; ctx.lineWidth = 1; ctx.stroke(); }
       const rot = this.time * 0.6;
       ctx.fillStyle = 'rgba(255,120,80,0.95)';
       for (let i = 0; i < 4; i++) {
-        const ang = rot + i * Math.PI / 2;
-        const tip = this.project(Math.cos(ang) * 1.85, 0.02, Math.sin(ang) * 1.85);
-        const l = this.project(Math.cos(ang - 0.13) * 2.2, 0.02, Math.sin(ang - 0.13) * 2.2);
-        const r = this.project(Math.cos(ang + 0.13) * 2.2, 0.02, Math.sin(ang + 0.13) * 2.2);
+        const ang = rot + i * Math.PI / 2, w = 0.13 / Math.sqrt(k);
+        const tip = this.project(Math.cos(ang) * 1.85 * k, 0.02, Math.sin(ang) * 1.85 * k);
+        const l = this.project(Math.cos(ang - w) * (1.85 * k + 0.35), 0.02, Math.sin(ang - w) * (1.85 * k + 0.35));
+        const r = this.project(Math.cos(ang + w) * (1.85 * k + 0.35), 0.02, Math.sin(ang + w) * (1.85 * k + 0.35));
         if (tip && l && r) { ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(l.x, l.y); ctx.lineTo(r.x, r.y); ctx.closePath(); ctx.fill(); }
       }
       ctx.restore();
