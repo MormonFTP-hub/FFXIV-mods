@@ -536,6 +536,8 @@
         }
         return best;
       };
+      // Plan every wave's drops first (each clear of the wave before's stars).
+      const plans = [];
       let prev = [];
       waves.forEach((w, k) => {
         if (!w) return;
@@ -546,17 +548,43 @@
         const order = pair.slice().sort((x, y) => (tk(y) ? 1 : 0) - (tk(x) ? 1 : 0));
         const free = dots.slice();
         order.forEach((s) => {
-          if (tk(s)) { drop[s] = dropAt(mul(tetherSpot(V2, tk(s)), f), s, prev, taken); taken.push(drop[s]); return; }
-          free.sort((p, q) => Math.min(...taken.map(t => Math.hypot(q[0] - t[0], q[1] - t[1])), 99) - Math.min(...taken.map(t => Math.hypot(p[0] - t[0], p[1] - t[1])), 99));
-          drop[s] = free.shift(); taken.push(drop[s]);
+          let want;
+          if (tk(s)) want = mul(tetherSpot(V2, tk(s)), f);
+          else {
+            free.sort((p, q) => Math.min(...taken.map(t => Math.hypot(q[0] - t[0], q[1] - t[1])), 99) - Math.min(...taken.map(t => Math.hypot(p[0] - t[0], p[1] - t[1])), 99));
+            want = free.shift();
+          }
+          drop[s] = dropAt(want, s, prev, taken);
+          taken.push(drop[s]);
         });
         prev = Object.values(drop);
+        plans.push({ k, w, pair, drop, te: tends[k] });
+      });
+      // Where each waits: by the boss, on its tether, or (after the last wave) on its Killer Seeds spot; and, while
+      // a wave's stars cross that, the nearest ground clear of them and of the next wave's drops.
+      const homeOf = (s, k) => (k === 3 && pairSpots ? pairSpots[s] : home[s]);
+      const escape = (q, starsAt, avoid) => {
+        const ok = (p) => Math.abs(p[0]) < 11.5 && Math.abs(p[1]) < 24 && !starsAt.some(c => onStar(c, p, 1.3)) && avoid.every(a => Math.hypot(p[0] - a[0], p[1] - a[1]) > 6.8);
+        if (ok(q)) return null;
+        for (let r = 0.5; r <= 14; r += 0.5) {
+          const n = Math.max(1, Math.round(r * 6));
+          for (let j = 0; j < n; j++) { const c = add(q, at(j / n * 360, r)); if (ok(c)) return c; }
+        }
+        return null;
+      };
+      plans.forEach(({ k, w, pair, drop, te }) => {
         pref(w.t - 4.6, drop);
         pair.forEach(s => deb(s, null, `Strange Seed (wave ${k + 1})`, 'drop it on your dot, then back to the boss', w.t - 5, w.t));
         callEach(w.t - 5, pair, 'Drop seed', { alert: true, dur: 5 });
-        // Back by the boss (or to the tether); after the last wave, out to the Killer Seeds pairs' spots.
-        pref(w.t + 0.15, Object.fromEntries(pair.map(s => [s, k === 3 && pairSpots ? pairSpots[s] : home[s]])));
-        const te = tends[k];
+        const next = plans.find(p => p.k === k + 1), starsAt = Object.values(drop), avoid = next ? Object.values(next.drop) : [];
+        for (const s of S) {
+          if (next && next.pair.includes(s)) continue;             // on its next dot by then
+          const h = homeOf(s, k), e = te ? escape(h, starsAt, avoid) : null;
+          if (pair.includes(s)) pref(w.t + 0.15, { [s]: e || h });
+          else if (e) pref(te.t - 3, { [s]: e });
+          if (e) pref(te.t + 0.1, { [s]: h });
+        }
+        if (k === 3 && pairSpots) pref(w.t + 0.15, Object.fromEntries(S.filter(s => !pair.includes(s) && !escape(pairSpots[s], te ? starsAt : [], [])).map(s => [s, pairSpots[s]])));
         for (const s of pair) {
           const seed = hz({ t: w.t, tell: w.t - 5, effect: 'bait', shape: 'circle', r: 6, from: 'target', targets: [s], dmg: 0.8, own: 0.2, name: 'Strange Seeds' });
           if (te) star(drop[s]).forEach(c => {
@@ -564,7 +592,6 @@
             guard(c, te.t, te.t - 3);
           });
         }
-        if (k === 3 && pairSpots) pref(w.t + 0.15, Object.fromEntries(S.filter(s => !pair.includes(s)).map(s => [s, pairSpots[s]])));
       });
       if (tends[0]) call(tends[0].t - 3, 'Avoid line AoEs', { dur: 3 });
       // Killer Seeds: partner stacks on the supports or the DPS, each sprouting a star.
