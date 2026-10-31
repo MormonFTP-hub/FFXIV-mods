@@ -19,6 +19,14 @@
       "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
       "specials": "chara/monster/m0971/animation/a0001/bt_common/mon_sp/m0971/"
     },
+    "extra": {
+      "p2": {
+        "kind": "monster", "id": 972, "body": 1, "variant": 1, "scale": 1.0,
+        "pap": "chara/monster/m0972/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0972/animation/a0001/bt_common/mon_sp/m0972/"
+      }
+    },
     "statuses": {
       "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44, "bind": 2518,
       "sustainedDamage": 2935, "poisonResDown": 3935,

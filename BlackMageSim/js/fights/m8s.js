@@ -210,7 +210,8 @@
   function plan(events, strat) {
     const st = STRATS[strat] || STRATS.toxic;
     const P = { start: Object.assign({}, UP), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [],
-      boss: [{ t: 0, at: [0, 0] }], hitbox: [{ t: 0, r: 5 }, { t: 605, r: 19 }], looks: [{ t: 0, show: ['a1'] }, { t: 627.9, show: ['a2'], lift: 150 }] };
+      boss: [{ t: 0, at: [0, 0] }], hitbox: [{ t: 0, r: 5 }, { t: 605, r: 19 }], looks: [{ t: 0, show: ['a1'] }, { t: 627.9, show: ['a2'], lift: 150 }],
+      form: [{ t: 627.9, model: 'p2' }] };     // phase 2's giant form (the zone's extra model), with the platforms
     let id = 0, hold = -1, p2 = false, reignEnd = -1;
     const drops = [];                     // phase 2's platforms gone: {k, from, to}
     const hz = (o) => { const h = Object.assign({ id: ++id, react: 3 }, o); P.hazards.push(h); return h.id; };

@@ -180,6 +180,8 @@
     const check = (o) => P.checks.push(o);
     const debuff = (slot, key, name, hint, t0, t1) => P.debuffs.push({ slot, key, name, hint, t0, t1 });
     const bossTo = (t, p, move) => P.boss.push({ t, at: p, move });
+    // Deep Blue (the zone's `blue` model, beside Red Hot: plan.others), where she stands, the same spots her attacks come from.
+    const BP = [{ t: 0, at: [0, 0] }], blueTo = (t, p, move) => BP.push({ t, at: p, move });
     const E = (name) => events.filter(e => e.name === name);
     const T = (name, k, def) => { const e = E(name)[k || 0]; return e ? e.t : def; };
     const label = (name, k, text) => { const e = E(name)[k || 0]; if (e) P.labels.set(e, text); };
@@ -393,6 +395,7 @@
 
     // ======================================================== Xtreme Spectacular ====================================
     bossTo(150.6, [5, 0]);
+    blueTo(149.6, [-5, 0]);
     pref(151, hug([5, 0], 0));
     const tXS = T('Xtreme Spectacular (line)', 0, 168.7), band = { shape: 'rect', a: [-25, -15], b: [25, 15] };
     hz(Object.assign({ t: tXS, tell: tXS - 7.4, dmg: 1.3, name: 'Xtreme Spectacular' }, band));
@@ -526,11 +529,14 @@
     const ia1Mech = { red: fourMechs(), blue: fourMechs() };
     pref(178.9, Object.assign(assign(G1, clump([], [-11, 11], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [11, -11], 4, onSq, { gap: 0.8 }))));
     bossTo(186, [13, -13]);
+    blueTo(186, [-13, 13]);
     const ia1 = insaneAir({ hits: airHits.slice(0, 4), baits: airBaits.slice(0, 4), tells: airHits.slice(0, 4).map(t => t - 8.6), end: ia1End,
       mech: (k, c) => ia1Mech[c][k], group: (k, c) => (c === 'red' ? G2 : G1), target: (k, c, m, g) => ofRole(g, m === 'TB' ? 'T' : 'H') });
     call(airHits[0] - 12, 'G1 north-west with Deep Blue, G2 south-east with Red Hot', { dur: 5 });
     const gp1 = airGather(airHits[3], ia1End, [0, 0], ia1.last, 13);
     bossTo(airHits[3] + 1.5, gp1, 3);
+    ia1.bp.forEach((p, k) => blueTo(airBaits[k], p, 0.5));
+    blueTo(airHits[3] + 1.5, add(gp1, [-4, 0]), 3);
     divers(0);
 
 
@@ -543,12 +549,14 @@
     label('Firesnaking/Watersnaking', 0, 'Firesnaking + Watersnaking');
     call(tSn - 5, 'Raidwide; G1 by Deep Blue (west), G2 by Red Hot (east)', { dur: 5 });
     bossTo(236.5, [5, 0]);
+    blueTo(236.5, [-5, 0]);
     pref(236.6, Object.assign(assign(G1, clump([], [-9, 0], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [9, 0], 4, onSq, { gap: 0.8 }))));
     const FIRE = Math.random() < 0.5 ? G2 : G1, WATER = FIRE === G1 ? G2 : G1;
     const [fT, fH, fM, fR] = ['T', 'H', 'M', 'R'].map(r => ofRole(FIRE, r)), [wT, wH] = ['T', 'H'].map(r => ofRole(WATER, r));
     for (const s of FIRE) { debuff(s, 'firesnaking', 'Firesnaking', "Red Hot's target: go to her (east)", tSn, snEnd + 0.4); call(tSn, "Red's target (fire): east", { slot: s, alert: true, dur: 4 }); }
     for (const s of WATER) { debuff(s, 'watersnaking', 'Watersnaking', "Deep Blue's target: go to her (west)", tSn, snEnd + 0.4); call(tSn, "Blue's target (water): west", { slot: s, alert: true, dur: 4 }); }
     const sW = pick([1, -1]), My = (p) => [p[0], p[1] * sW], Bw = [-20, pick([10, -10])];
+    blueTo(T('Firesnaking/Watersnaking', 0, 244.8) + 5.2, Bw);
     bossTo(T('Firesnaking/Watersnaking', 0, 244.8) + 5.2, [10, 0]);
     // ----- Alley-oop Inferno on fire (a box on the east wall) and Deep Blue's proteans on water (either side of her
     // along the wall, the tank and healer toward the middle: their cones and Reverse's gaps all miss the box); then
@@ -582,6 +590,7 @@
     const tTether = T('Sick Swell', 2, 262.6), from2 = sW > 0 ? 0 : 180;
     call(tTether, `Wave ${dirName(from2)} / cone ${dirName(from2 + 180)}`, { dur: 6 });
     const tDV = T('Deep Varial', 1, 276.8), Bv = My([0, -20]), varial = { shape: 'cone', at: Bv, deg: from2, half: 60, r: 60 };
+    blueTo(tDV - 6.8, Bv, 1);
     hz(Object.assign({ t: tDV, tell: tDV - 6.8, dmg: 1.4, name: 'Deep Varial' }, varial));
     steam(tDV, [varial]);
     const tSp2 = T('Awesome Splash/Awesome Slab', 1, 280), tInfB = T('Alley-oop Inferno', 5, 280.1), splash2 = Math.random() < 0.5;
@@ -659,7 +668,9 @@
     puddle({ shape: 'cone', from: 'boss', aim: 'target', targets: [cutTarget], half: 165, r: 60 }, tCut2, snEnd, 'Cutback Blaze (fire)');
     const cone2 = { shape: 'cone', at: Rc2, deg: cutDir, half: 165, r: 60 };
     fire(cone2, tCut2 + 2.4, snEnd);
-    const Bd = add(Rc2, at(cutDir, 5)), wTank = clump(fireIn(tCut2, snEnd), add(Rc2, at(slice2, 16.5)), 1, onSq, { m: 1.3 })[0];
+    const Bd = add(Rc2, at(cutDir, 5));
+    blueTo(T('Sickest Take-off', 3, 301.3) + 2, Bd);
+    const wTank = clump(fireIn(tCut2, snEnd), add(Rc2, at(slice2, 16.5)), 1, onSq, { m: 1.3 })[0];
     const inSlice = assign(S.filter(s => s !== wT), clump(fireIn(tCut2, snEnd).concat([{ shape: 'circle', at: wTank, r: 6.4 }]), add(Rc2, at(slice2, 8.5)), 7, onSq, { gap: 0.5, m: 1.2 }));
     pref(tCut2 + 0.05, Object.assign(inSlice, { [wT]: wTank }));
     buster(tDI2, wT, 6, 'Deep Impact', { tell: tDI2 - 5.1 });
@@ -688,6 +699,8 @@
     const s0 = pick([1, -1]), order6 = shuffle(FREE);
     let redSrc = [14, 14 * s0], blueSrc = [-14, 14 * s0], lastFire = redSrc;
     bossTo(T('Xtreme Wave 1', 0, 345.7) - 7.8, redSrc);
+    blueTo(tDAc, [0, 0], 1);
+    blueTo(T('Xtreme Wave 1', 0, 345.7) - 7.8, blueSrc);
     for (let k = 0; k < 6; k++) {
       const tW = T(`Xtreme Wave ${k + 1}`, 0, 345.7 + 8.5 * k), th = tW + 0.3, tTeth = tW - 5, f = order6[k], w = order6[(k + 3) % 6];
       const ys = k % 2 ? 1 : -1, fireSpot = k ? [1.5, 18.4 * s0 * ys] : [0.5, -18.4 * s0], waterSpot = k ? [-9, 16.2 * s0 * ys] : [-8, -16.5 * s0];
@@ -698,6 +711,7 @@
       hz({ t: th, tell: tTeth, effect: 'bait', shape: 'line', from: blueSrc, aim: 'target', targets: [w], len: 60, w: 8, dmg: 1, own: 0.15, tether: blueSrc, stretch: 28, name: 'Xtreme Wave' });
       check({ t: th, kind: 'spot', slots: [f], spots: { [f]: fireSpot }, r: 4, fail: 0.6, name: 'Xtreme Wave (aim it through the bubble)' });
       bossTo(th + 0.05, fireSpot, 0.4);
+      blueTo(th + 0.05, waterSpot, 0.4);
       raid(T(`Scathing Steam ${k + 1}`, 0, tW + 2.1), 0.2, 'Scathing Steam', 1);
       call(tTeth, `Red tether: stretch it to the ${dirName(brg(fireSpot))} wall, through the bubble`, { slot: f, alert: true, dur: 5 });
       call(tTeth, `Blue tether: stretch it to the ${dirName(brg(waterSpot))}, parallel, clear of the bubble`, { slot: w, alert: true, dur: 5 });
@@ -705,6 +719,7 @@
     }
     const bEnd = [lastFire[0], lastFire[1] > 0 ? 14 : -14];
     bossTo(freed - 1.7, bEnd, 1);
+    blueTo(freed - 1.7, add(bEnd, [-4, 0]), 1);
     pref(freed - 1.6, hug(bEnd, lastFire[1] > 0 ? 0 : 180));
     divers(2);
     P.arena = [{ t: 0, shape: 'square', half: 20 }, { t: 339.5, shape: 'circle', at: [0, 0], r: 20 }, { t: freed + 0.2, shape: 'square', half: 20 }];
@@ -717,6 +732,7 @@
     // by the markers; the wave across the split, and light-party stacks.
     const tSF = T('Flame Floater', 0, 414.3), spEnd = T("Divers' Dare x2", 3, 451.8);
     bossTo(T("Divers' Dare x2", 2, 398.7) + 8.2, [0, 19.5]);
+    blueTo(T("Divers' Dare x2", 2, 398.7) + 8.2, [-1, 14.3]);
     const fromS = pick([90, 270]), splitLine = { shape: 'line', at: [0, 19.5], deg: 180, len: 60, w: 8 };
     call(T('Sick Swell', 4, 409.9), `Wave from the ${dirName(fromS)} (later)`, { dur: 5 });
     hz(Object.assign({ t: tSF, tell: tSF - 5, dmg: 1.3, name: 'Flame Floater' }, splitLine));
@@ -736,7 +752,9 @@
     }
     call(tInfS - 5, 'Spread in the corners', { dur: 4 });
     // ----- Proteans from Deep Blue on one side (drawn for the east) -----
-    const bs = pick([1, -1]), Bs = [12 * bs, 0], NEAR = bs > 0 ? G2 : G1, FAR = bs > 0 ? G1 : G2, Mx = (p) => [p[0] * bs, p[1]];
+    const bs = pick([1, -1]), Bs = [12 * bs, 0];
+    blueTo(T('Alley-oop Inferno', 6, 423.6) - 2.5, Bs);
+    const NEAR = bs > 0 ? G2 : G1, FAR = bs > 0 ? G1 : G2, Mx = (p) => [p[0] * bs, p[1]];
     const ray = (deg, d) => add(Bs, at(bs > 0 ? deg : 360 - deg, d));
     const PNEAR = { R: [12, 7.5], T: [17.2, 3], M: [17.2, -3], H: [12, -7.5] }, PFAR = { H: [-5.3, -18.7], M: [-5.6, -3.7], T: [-5.6, 3.7], R: [-5.3, 18.7] };
     const pSpot = Object.assign({}, ...NEAR.map(s => ({ [s]: Mx(PNEAR[ROLE(s)]) })), ...FAR.map(s => ({ [s]: Mx(PFAR[ROLE(s)]) })));
@@ -783,6 +801,7 @@
     raid(tXS2, 0.45, 'Xtreme Firesnaking + Xtreme Watersnaking', 5);
     label('Xtreme Firesnaking/Xtreme Watersnaking', 0, 'Xtreme Firesnaking + Xtreme Watersnaking');
     bossTo(T('Epic Brotherhood x2', 4, 460.3) - 1, [5, 0], 1);
+    blueTo(T('Epic Brotherhood x2', 4, 460.3) - 1, [-5, 0], 1);
     pref(T('Epic Brotherhood x2', 4, 460.3), Object.assign(assign(G1, clump([], [-9, 0], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [9, 0], 4, onSq, { gap: 0.8 }))));
     call(tXS2 - 5, 'Raidwide; G1 by Deep Blue (west), G2 by Red Hot (east)', { dur: 5 });
     const FIRE2 = Math.random() < 0.5 ? G2 : G1, colour = (s) => (FIRE2.includes(s) ? 'red' : 'blue'), other = (c) => (c === 'red' ? 'blue' : 'red');
@@ -804,6 +823,7 @@
     pref(tXS2 + 0.1, Object.assign(assign(S.filter(s => startPos[s] === 'blue'), clump([], [-11, 11], 4, onSq, { gap: 0.8 })),
       assign(S.filter(s => startPos[s] === 'red'), clump([], [11, -11], 4, onSq, { gap: 0.8 }))));
     bossTo(T('Xtreme Firesnaking/Xtreme Watersnaking', 0, 467.4) + 5.2, [13, -13]);
+    blueTo(T('Xtreme Firesnaking/Xtreme Watersnaking', 0, 467.4) + 5.2, [-13, 13]);
     const ia2 = insaneAir({ hits: hits2, baits: baits2, tells: hits2.map((t, k) => t - (k ? 10.4 : 9.6)), end: ia2End, bails,
       mech: (k) => m2[k], group: (k, c) => S.filter(s => posAt[k][s] === c),
       target: (k, c, m, g) => g.find(s => ROLE(s) === turn[k]),
@@ -814,6 +834,8 @@
     });
     const gp2 = airGather(bails[3] || hits2[3] + 1.5, ia2End, [0, 0], ia2.last, 0);
     bossTo(hits2[3] + 1.5, gp2, 3);
+    ia2.bp.forEach((p, k) => blueTo(baits2[k], p, 0.5));
+    blueTo(hits2[3] + 1.5, add(gp2, [-4, 0]), 3);
     divers(4);
 
 
@@ -839,7 +861,10 @@
     call(aF[0] - 5.6, `Proteans on the markers + spreads => ${dblF ? 'dodge clockwise' : 'stay'}`, { alert: true, dur: 6 });
     // ----- Pyrotation and Deep Impact -----
     const tPyF = T('Pyrotation x3', 1, 552.3), phF = [0.9, 2.9, 4.9].map(d => tPyF + d), tDIF = T('Deep Impact', 2, 553.4);
-    const tbF = st.lastTB, Bp2 = [0, 5.5], tri = [0, 120, 240].map(d => at(d, 5.5));
+    blueTo(T('Epic Brotherhood x2', 5, 532.2) + 2.1, Bf);
+    const tbF = st.lastTB, Bp2 = [0, 5.5];
+    blueTo(tInfF + 1, Bp2, 3);
+    const tri = [0, 120, 240].map(d => at(d, 5.5));
     const bis = [0, 1, 2, 3, 4, 5, 6, 7].map(i => at(i * 45 + (dblF ? 0 : 22.5), 18.5)).filter(p => onSq(p) && dist(p, Bp2) >= 13);
     const tbSpot = bis.reduce((a, b) => (dist(b, drop[tbF]) < dist(a, drop[tbF]) ? b : a));
     pref(aF[1] + 0.05, { [tbF]: tbSpot });
@@ -861,6 +886,12 @@
     divers(5);
     divers(6);
     label('Over the Falls', 0, 'Over the Falls (enrage)');
+    // Deep Blue beside Red Hot: out from Red Hot's return till the end, but for her Sickest Take-offs and the
+    // transition's flight; while she's out alone (88.8-150.6) the boss itself is her (the target is hers then).
+    BP.sort((a, b) => a.t - b.t);
+    P.form = [{ t: p1End, model: 'blue' }, { t: 150.6, model: null }];
+    const gone = [[T('Sickest Take-off', 2, 292.1), T('Sickest Take-off', 3, 301.3) + 2], [T('Sickest Take-off', 4, 435.8), T('Sickest Take-off', 5, 444.7) + 2]];
+    P.others = [{ model: 'blue', path: BP, shows: [[150.6, 161.7], [177.4, gone[0][0]], [gone[0][1], gone[1][0]], [gone[1][1], 700]] }];
     return P;
   }
 

@@ -518,6 +518,10 @@
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
+    //   form     [{t, model}]: the boss's model by phase, a name from the zone's `extra` models (a second form)
+    //   others   [{model, path: [{t, at, move}], shows: [[t0, t1], ...], face}]: other bosses beside it (a zone `extra`
+    //            model each), out in their windows; attacks can come `from` one by its model name; `face`: a point
+    //            or 'party' (the party's middle, the default) to turn to
     //   looks    [{t, show: ['a1_flo', 'a3_flo02'], lift}]: the arena's look by phase. Its models are named
     //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
     //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
@@ -539,6 +543,8 @@
       if (Array.isArray(spec)) return spec;
       if (spec === 'boss') return this.bossAt(this.t);
       if (typeof spec === 'string' && B.SLOT_ROLE[spec]) return this.app.party.compassOf(spec);
+      const other = typeof spec === 'string' && ((this.plan && this.plan.others) || []).find(o => o.model === spec);
+      if (other) return this.pathAt(other.path, this.t);      // another boss (plan.others), where it stands now
       return [0, 0];
     }
 
@@ -591,14 +597,31 @@
     // Where the boss stands at second t (the plan's `boss`: [{t, at, move}], walking `move` seconds to each spot,
     // or jumping there), and which way it faces (a compass bearing: toward its main tank).
     bossAt(t) {
-      const path = this.plan && this.plan.boss;
+      return this.pathAt(this.plan && this.plan.boss, t);
+    }
+    // Where something on a path ([{t, at, move}]) stands at second t: walking `move` seconds to each spot, or leaping.
+    pathAt(path, t) {
       if (!path || !path.length) return [0, 0];
       if (t === null || t === undefined) t = 0;              // before the pull: where it starts
-      let prev = [0, 0], cur = null;
+      let prev = path[0].at, cur = null;
       for (const k of path) { if (k.t > t) break; if (cur) prev = cur.at; cur = k; }
-      if (!cur) return [0, 0];
+      if (!cur) return path[0].at;
       const f = cur.move ? Math.min(1, (t - cur.t) / cur.move) : 1;
       return [prev[0] + (cur.at[0] - prev[0]) * f, prev[1] + (cur.at[1] - prev[1]) * f];
+    }
+    // The boss's form at second t (the plan's `form`: [{t, model}], a name from the zone's extra models; none: its
+    // own).
+    formAt(t) {
+      let m = null;
+      for (const k of (this.plan && this.plan.form) || []) if (k.t <= (t ?? 0)) m = k.model;
+      return m;
+    }
+    // The other bosses out at second t (the plan's `others`: [{model, path, shows: [[t0, t1]], face}]), each where
+    // it stands then.
+    othersAt(t) {
+      const now = t ?? 0;
+      return ((this.plan && this.plan.others) || []).filter(o => !o.shows || o.shows.some(([a, b]) => now >= a && now < b))
+        .map(o => ({ o, at: this.pathAt(o.path, now) }));
     }
     bossFacing() {
       return -this.app.engine.facing * 180 / Math.PI;

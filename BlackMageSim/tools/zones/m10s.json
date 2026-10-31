@@ -19,6 +19,14 @@
       "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
       "specials": "chara/monster/m0982/animation/a0001/bt_common/mon_sp/m0982/"
     },
+    "extra": {
+      "blue": {
+        "kind": "monster", "id": 982, "body": 1, "variant": 1, "scale": 3.2,
+        "pap": "chara/monster/m0982/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0982/animation/a0001/bt_common/mon_sp/m0982/"
+      }
+    },
     "statuses": {
       "magicVuln": 2941, "physVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
       "firstInLine": 3004, "secondInLine": 3005, "thirdInLine": 3006, "fourthInLine": 3451, "fireResDown": 2937,

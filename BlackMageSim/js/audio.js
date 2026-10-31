@@ -266,7 +266,11 @@
     }
 
     async part(p) {
-      if (!p.buf) p.buf = this.sfx.ctx.decodeAudioData(bytes(p.src)).catch(() => null);
+      if (!p.buf) {
+        // Its bytes: inside the page (data URL), or an .mp3 beside it (the website and the artifact), fetched now.
+        const got = p.src ? Promise.resolve(bytes(p.src)) : fetch(B.ASSET_BASE + p.url).then(r => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)));
+        p.buf = got.then(b => this.sfx.ctx.decodeAudioData(b)).catch(() => null);
+      }
       return p.buf;
     }
 

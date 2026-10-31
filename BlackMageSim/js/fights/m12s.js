@@ -593,10 +593,13 @@
     // The transition: Refreshing Overkill, the floor round to a circle; phase 2 from Arcadia Aflame's cast.
     const tP2 = tOf(events.find(e => e.name === 'Refreshing Overkill' && e.kind !== 'enrage'), 538.3) + 3;
     const AA = events.find(e => e.name === 'Arcadia Aflame'), p2 = AA ? AA.t - 15.2 : tP2 + 960;
-    P.hitbox.push({ t: tP2, r: 5 });
+    // The first form lies down (Down for the Count) and the second (BNpcBase 19202: m0972) takes its place.
+    const down = events.find(e => e.name === 'Down for the Count'), tForm = down ? down.t + (down.dur || 42) : tP2 + 76;
+    P.form = [{ t: tForm, model: 'p2' }];
+    P.hitbox.push({ t: tForm, r: 5 });
     P.looks.push({ t: tP2, show: ['a2'] });
     arena.push({ t: tP2, ...CIRCLE });
-    P.boss.push({ t: tP2, at: [0, 7.5] });
+    P.boss.push({ t: tForm, at: [0, 7.5] });
     pref(tP2, shift(UP2, [0, 7.5]));
 
     // ===== phase 2 =====

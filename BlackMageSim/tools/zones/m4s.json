@@ -1,0 +1,36 @@
+{
+  "name": "The Thundering",
+  "label": "M4S · Wicked Thunder",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6r4/",
+  "out": "game-map-m4s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "AAC Light-heavyweight M4 (Savage)",
+    "boss": "Wicked Thunder",
+    "timeline": "07-dt/raid/r4s",
+    "branches": "main",
+    "hitbox": 4.9,
+    "model": {
+      "kind": "monster", "id": 888, "body": 1, "variant": 1, "scale": 0.7,
+      "pap": "chara/monster/m0888/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0888/animation/a0001/bt_common/mon_sp/m0888/"
+    },
+    "extra": {
+      "p2": {
+        "kind": "monster", "id": 889, "body": 1, "variant": 1, "scale": 3.0,
+        "pap": "chara/monster/m0889/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+        "specials": "chara/monster/m0889/animation/a0001/bt_common/mon_sp/m0889/"
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "forkedLightning": 587, "electricalCondenser": 3999, "positron": 4000, "negatron": 4001,
+      "remoteCurrent": 4002, "proximateCurrent": 4003, "spinningConductor": 4004, "roundhouseConductor": 4005,
+      "colliderConductor": 4006, "mustardBomb": 4007, "mustardBombproof": 4008
+    }
+  }
+}

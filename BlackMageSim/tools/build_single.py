@@ -23,6 +23,7 @@ And a folder:
                      beside it, every file under 25 MB (Cloudflare Pages' limit), and the simulator as
                      sim.html.
 """
+import base64
 import json
 import re
 import shutil
@@ -149,8 +150,10 @@ AUDIO_TAG = '<script src="js/audio.js"></script>'
 
 
 def audio_files():
-    """work/sounds/*.js and work/music/*.js copied to build/ as sounds/<name>.js, music/<name>.js; their names."""
-    names = []
+    """work/sounds/*.js copied to build/sounds/, and each work/music/*.js written to build/music/ as its tracks'
+    .mp3 files (a third smaller than base64; the page fetches one when you go there) with a small .js listing them.
+    Returns (the work files, for the one-file page; the build files, for the website and the artifact)."""
+    inline, names = [], []
     for d in ("sounds", "music"):
         if (OUT / d).exists():
             shutil.rmtree(OUT / d)
@@ -159,9 +162,22 @@ def audio_files():
             continue
         (OUT / d).mkdir()
         for f in sorted(src.glob("*.js")):
-            shutil.copyfile(f, OUT / d / f.name)
+            inline.append(f"{d}/{f.name}")
+            if d == "sounds":
+                shutil.copyfile(f, OUT / d / f.name)
+                names.append(f"{d}/{f.name}")
+                continue
+            text = f.read_text(encoding="utf-8")
+            head, body = text.split(".push(", 1)
+            track = json.loads(body.rsplit(");", 1)[0])
+            for k, part in enumerate(track["parts"]):
+                mp3 = f"{f.stem}-{k}.mp3"
+                (OUT / d / mp3).write_bytes(base64.b64decode(part.pop("src").split(",", 1)[1]))
+                part["url"] = f"{d}/{mp3}"
+                names.append(f"{d}/{mp3}")
+            (OUT / d / f.name).write_text(head + ".push(" + json.dumps(track, separators=(",", ":")) + ");\n", encoding="utf-8")
             names.append(f"{d}/{f.name}")
-    return names
+    return inline, names
 
 
 def with_audio(src: str, names, inside: bool) -> str:
@@ -211,8 +227,8 @@ def main():
     src = (ROOT / "index.html").read_text(encoding="utf-8")
     assert AUDIO_TAG in src, "index.html has no js/audio.js tag"
     OUT.mkdir(exist_ok=True)
-    audio = audio_files()
-    (OUT / "BlackMageSim.html").write_text(inline(with_audio(src, audio, True)), encoding="utf-8")
+    inside, audio = audio_files()
+    (OUT / "BlackMageSim.html").write_text(inline(with_audio(src, inside, True)), encoding="utf-8")
     src = with_audio(src, audio, False)
     chunks = model_chunks()
     map_files = map_chunks()

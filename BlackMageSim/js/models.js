@@ -476,7 +476,9 @@
     // its size, turned to you, idling, and casting while the fight's cast bar runs.
     updateBoss() {
       const fight = this.sc.fightOn && this.sc.fightOn() ? this.sc.app.fight : null;
-      const data = fight && fight.data.model;
+      const form = fight && fight.mech && fight.mech.formAt(fight.t);
+      const data = fight && ((form && fight.data.extra && fight.data.extra[form]) || fight.data.model);
+      this.updateOthers(fight);
       if (data !== this.bossData) {
         if (this.boss) this.boss.group.visible = false;
         this.boss = null;
@@ -516,6 +518,42 @@
         if (f) f(); else this.play(an.idle, true, null, b);
       }
       this.applyPose(b);
+    }
+
+    // A fight's other bosses (the plan's `others`, the map's extra models): out in their windows, where the plan has
+    // them, turned to the party (or their `face`), idling, and casting with the fight's cast bar.
+    updateOthers(fight) {
+      const out = fight && fight.mech && fight.data.extra ? fight.mech.othersAt(fight.t) : [];
+      this.others = this.others || new Map();
+      const shown = new Set();
+      for (const { o, at } of out) {
+        const data = fight.data.extra[o.model];
+        if (!data) continue;
+        let ch = this.others.get(data);
+        if (!ch) {
+          const src = this.sc.map.source();
+          for (const a of Object.values(data.anims)) a.src = src;
+          ch = this.buildCharacter(data, src);
+          ch.group.scale.setScalar(data.scale || 1);
+          this.others.set(data, ch);
+          this.play(ch.anims.idle, true, null, ch);
+        }
+        shown.add(ch);
+        const p = B.toSim(at), party = this.sc.app.party;
+        let look = o.face && o.face !== 'party' ? B.toSim(fight.mech.pointAt(o.face)) : null;
+        if (!look && party && party.active) {
+          const ms = party.members().map(m => party.compassOf(m.slot));
+          look = B.toSim([ms.reduce((s, q) => s + q[0], 0) / ms.length, ms.reduce((s, q) => s + q[1], 0) / ms.length]);
+        }
+        ch.group.position.set(p.x, 0, p.z);
+        if (look) ch.group.rotation.y = Math.atan2(look.x - p.x, look.z - p.z);
+        ch.group.visible = this.texturesLoaded(ch);
+        const an = ch.anims, casting = !!fight.casting;
+        if (casting && ch.cur.anim !== an.cast && an.cast) this.play(an.cast, true, null, ch);
+        else if (!casting && ch.cur.anim === an.cast) this.play(an.idle, true, null, ch);
+        this.applyPose(ch);
+      }
+      for (const ch of this.others.values()) if (!shown.has(ch)) ch.group.visible = false;
     }
 
     // The party's bots (js/party.js): each its job's character, running to its spot and turning to the boss.
