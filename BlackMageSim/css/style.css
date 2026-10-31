@@ -72,6 +72,19 @@ canvas#map { position: fixed; inset: 0; display: block; pointer-events: none; }
 #target .hpbar > i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(180deg, #ffb2a0, #e0502e 55%, #a52a17); }
 #target .hpbar > b { position: absolute; inset: 0; transform-origin: 0 50%; background: rgba(255, 220, 160, 0.6); }
 #target.none { opacity: 0; }
+#t-cast { margin-top: 4px; opacity: 0; transition: opacity 0.1s; }
+#t-cast.show { opacity: 1; }
+#t-cast span { display: block; text-align: right; font: 600 16px var(--ui); color: #ffd7b0; text-shadow: 0 0 3px #000, 0 0 2px #000; }
+#t-cast .track { position: relative; height: 10px; background: #0b0a10; border: 1px solid #000; border-radius: 5px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2); }
+#t-cast .track i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(180deg, #ffd9a8, #f08a3c 55%, #b5521d); }
+#fight-tl { position: absolute; left: 18px; top: 300px; width: 330px; padding: 8px 12px; display: none; }
+#fight-tl.show { display: block; }
+#fight-tl .hd { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
+#fight-tl .hd b { font: 600 15px var(--num); color: #fff; white-space: nowrap; }
+#fight-tl .ev { display: flex; gap: 10px; font-size: 15px; line-height: 1.5; }
+#fight-tl .ev b { width: 34px; flex: none; text-align: right; font: 600 15px var(--num); color: #ffd7b0; }
+#fight-tl .ev.enr { color: #ff8a8a; }
+#fight-tl .ev.unt { color: var(--muted); font-style: italic; }
 #tdebuffs { display: flex; gap: 4px; margin-top: 6px; min-height: 52px; }
 
 .status { width: 32px; text-align: center; position: relative; }

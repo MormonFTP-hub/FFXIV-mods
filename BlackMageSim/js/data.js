@@ -353,7 +353,7 @@ window.BLM = window.BLM || {};
     ['KeyQ', 'KeyE', 'KeyR', 'KeyF', 'KeyT', 'KeyG', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyY'],
   ];
 
-  B.SIM_VERSION = '2.47.0';      // the README changelog's newest entry (shown in the debug log)
+  B.SIM_VERSION = '2.48.0';      // the README changelog's newest entry (shown in the debug log)
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
@@ -370,6 +370,7 @@ window.BLM = window.BLM || {};
     showTimeline: true,
     gameModels: true,     // use work/game-models.js when it's there
     gameMap: true,        // and work/game-map.js (Wolves' Den Pier)
+    location: 'pier',     // which map: the pier's dummy or a fight (work/game-map-<key>.js)
     dummy: 'thavnair',
     dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)

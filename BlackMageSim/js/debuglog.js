@@ -72,6 +72,8 @@
       L.push(`Job: ${def.name} (${job.abbr}) · ${job.versionLabel} [${job.id}:${job.version}] · level ${e.level}`);
       const s = e.stats;
       L.push(`Stats: main ${s.main} · WD ${s.wd} · det ${s.det} · crit ${s.crit} · DH ${s.dh} · speed ${s.speed} (GCD ${e.gcdForSpeed(s.speed).toFixed(2)})${job.speedInfo ? ' · ' + job.speedInfo(e) : ''}`);
+      const fight = app.fight;
+      L.push(`Location: ${st.location || 'pier'}${fight ? ` · fight ${fight.data.duty} (${fight.name}) · ${fight.t === null ? 'not pulled' : `t=${fight.t.toFixed(1)}s of ${fight.data.enrage}s`}${fight.casting ? ` · casting ${fight.label(fight.casting)}` : ''} · hitbox ${B.DUMMY_RADIUS}y${app.engine.untargetable ? ' · untargetable' : ''}` : ''}`);
       L.push(`Ping ${st.ping} ms · NoClippy ${st.latencyComp ? 'on' : 'off'} · dummies ${e.targets} · pull length ${st.pullLength ? st.pullLength + 's' : 'until you stop'}`);
       const changed = Object.keys(B.DEFAULT_SETTINGS).filter(k => !['name', 'versions', 'speed', 'job'].includes(k) && JSON.stringify(st[k]) !== JSON.stringify(B.DEFAULT_SETTINGS[k]));
       L.push(`Settings changed from default: ${changed.length ? changed.map(k => `${k}=${safeJson(st[k], 40)}`).join(', ') : 'none'}`);

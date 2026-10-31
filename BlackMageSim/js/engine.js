@@ -62,6 +62,7 @@
       this.dotTickNext = this.now + 0.5 + Math.random() * 2.5;
       this.leyLines = null;
       this.targeted = true;
+      this.untargetable = false;   // a fight's boss in one of its untargetable windows
       this.moving = false;
       this.jumpUntil = 0;
       this.pet = null;             // a summoner's pet: { kind } (the job sets it; the scene draws it)
@@ -215,7 +216,7 @@
     checkConditions(id, forHotbar) {
       const a = A[id];
       if (a.target && !forHotbar) {
-        if (!this.targeted) return 'Invalid target.';
+        if (!this.targeted || this.untargetable) return 'Invalid target.';
         if (this.distToTarget() - B.DUMMY_RADIUS > (a.range || B.RANGE)) return 'Target not in range.';
       }
       const err = this.job.check ? this.job.check(id, this, forHotbar) : null;
@@ -542,7 +543,7 @@
         const delay = au.delay * (100 - (this.job.autoHaste ? this.job.autoHaste(this) : 0)) / 100;
         this.autoNext = now + delay;
         // job.noAutos: auto-attacks switched off (Heavensward Machinist's Gauss Barrel).
-        if (this.targeted && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
+        if (this.targeted && !this.untargetable && this.distToTarget() - B.DUMMY_RADIUS <= au.range && !(this.job.noAutos && this.job.noAutos(this))) {
           // job.autoStrikes: hits per swing (A Realm Reborn's Barrage: three).
           const snap = this.snapshot({ school: 'physical', auto: true });
           const n = this.job.autoStrikes ? this.job.autoStrikes(this) : 1;
@@ -571,8 +572,8 @@
         if (w) w.walk(this.pos, sx, sz);
         else { this.pos.x += sx; this.pos.z += sz; }
         // Keep a little space from the dummy's hitbox.
-        const d = Math.hypot(this.pos.x, this.pos.z);
-        if (d < 1.4 && Math.abs(this.pos.y) < 1.5) { this.pos.x *= 1.4 / d; this.pos.z *= 1.4 / d; }
+        const d = Math.hypot(this.pos.x, this.pos.z), keep = B.DUMMY_RADIUS + 0.6;
+        if (d < keep && Math.abs(this.pos.y) < 1.5) { this.pos.x *= keep / d; this.pos.z *= keep / d; }
         const lim = w ? 150 : 38;
         const r = Math.hypot(this.pos.x, this.pos.z);
         if (r > lim) { this.pos.x *= lim / r; this.pos.z *= lim / r; }

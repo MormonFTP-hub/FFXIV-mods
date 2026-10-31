@@ -40,12 +40,15 @@
     </div>
 
     <div id="target" class="ia">
-      <div class="row outline"><div><span class="lv" id="t-lv">Lv90</span>Striking Dummy</div><div class="pct" id="t-pct">100%</div></div>
+      <div class="row outline"><div><span class="lv" id="t-lv">Lv90</span><span id="t-name">Striking Dummy</span></div><div class="pct" id="t-pct">100%</div></div>
       <div class="hpbar"><b id="t-lag"></b><i id="t-hp"></i></div>
+      <div id="t-cast"><span id="t-cast-name"></span><div class="track"><i id="t-cast-fill"></i></div></div>
       <div id="tdebuffs"></div>
     </div>
 
     <div id="meter" class="panel ia"></div>
+
+    <div id="fight-tl" class="panel"></div>
 
     <div id="buffs"></div>
 
@@ -113,6 +116,8 @@
           <label for="s-vol">Sound volume</label><input id="s-vol" type="range" min="0" max="1" step="0.05">
           <label for="s-models">Models</label>
           <div class="row2"><label><input id="s-models" type="checkbox"> Use the game's own models (made by tools/export_models.py)</label></div>
+          <label for="s-loc">Location</label>
+          <div class="row2"><select id="s-loc"></select><span class="hint">Fights are for testing: the boss casts on cactbot's timeline. Also /fight in chat</span></div>
           <label for="s-map">Map</label>
           <div class="row2"><label><input id="s-map" type="checkbox"> The game's Wolves' Den Pier (made by tools/export_map.py); off for the dusk training ground</label></div>
           <label for="s-dummy">Striking dummy</label>
@@ -181,6 +186,7 @@
   <script src="work/game-icons.js"></script>
   <script src="work/game-models.js"></script>
   <script src="work/game-map.js"></script>
+  <script src="work/game-map-m2s.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/jobs/blm_ew.js"></script>
@@ -290,6 +296,7 @@
   <script src="js/scene.js"></script>
   <script src="js/models.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/fight.js"></script>
   <script src="js/physics.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>

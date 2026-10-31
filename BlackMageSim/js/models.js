@@ -61,7 +61,9 @@
       if (this.ok && this.ready) this.showDummy(this.settings.dummy);
     }
 
-    view(spec) {
+    // src: another file's data (a fight's boss lives in its map's file: B.MapLayer.source()).
+    view(spec, src) {
+      if (src) return src.view(spec);
       const [kind, off, n] = spec;
       const C = { f32: Float32Array, i16: Int16Array, u16: Uint16Array, u32: Uint32Array, u8: Uint8Array }[kind];
       return new C(this.buf, off, n);
@@ -109,10 +111,10 @@
     }
 
     // Textures are shared between materials and characters (G.textures holds each once).
-    texture(index, srgb) {
-      const key = index + (srgb ? 's' : 'l');
+    texture(index, srgb, src) {
+      const key = (src ? src.key + ':' : '') + index + (srgb ? 's' : 'l');
       if (this.textures[key]) return this.textures[key];
-      const t = this.texLoader.load(B.GAME_MODELS.textures[index]);
+      const t = this.texLoader.load((src ? src.textures : B.GAME_MODELS.textures)[index]);
       // The game's UVs count from the top of the image (as PMP Viewer loads them); three.js would flip it.
       t.flipY = false;
       t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
@@ -121,13 +123,13 @@
       return (this.textures[key] = t);
     }
 
-    material(m, skinning) {
+    material(m, skinning, src) {
       const T = THREE;
       const mat = new T.MeshStandardMaterial({
-        map: this.texture(m.color, true), roughness: 0.78, metalness: 0, skinning,
+        map: this.texture(m.color, true, src), roughness: 0.78, metalness: 0, skinning,
         side: m.doubleSided ? T.DoubleSide : T.FrontSide,
       });
-      if (m.normal !== null && m.normal !== undefined) { mat.normalMap = this.texture(m.normal, false); mat.normalScale = new T.Vector2(1, -1); }
+      if (m.normal !== null && m.normal !== undefined) { mat.normalMap = this.texture(m.normal, false, src); mat.normalScale = new T.Vector2(1, -1); }
       if (m.alpha) {              // as PMP Viewer's preview treats the game's alpha
         if (m.transparent) { mat.transparent = true; mat.depthWrite = !m.alphaTest; mat.alphaTest = Math.min(m.alphaTest || 0.02, 0.5); }
         else mat.alphaTest = m.alphaTest > 0 ? m.alphaTest : 0.5;
@@ -135,20 +137,20 @@
       return mat;
     }
 
-    geometry(me, skinned) {
-      const T = THREE, g = new T.BufferGeometry();
-      g.setAttribute('position', new T.BufferAttribute(this.view(me.pos), 3));
-      g.setAttribute('normal', new T.BufferAttribute(this.view(me.nrm), 3, true));
-      g.setAttribute('uv', new T.BufferAttribute(this.view(me.uv), 2));
+    geometry(me, skinned, src) {
+      const T = THREE, g = new T.BufferGeometry(), v = (s) => this.view(s, src);
+      g.setAttribute('position', new T.BufferAttribute(v(me.pos), 3));
+      g.setAttribute('normal', new T.BufferAttribute(v(me.nrm), 3, true));
+      g.setAttribute('uv', new T.BufferAttribute(v(me.uv), 2));
       if (skinned) {
-        g.setAttribute('skinIndex', new T.BufferAttribute(this.view(me.skinIndex), 4));
-        g.setAttribute('skinWeight', new T.BufferAttribute(this.view(me.skinWeight), 4, true));
+        g.setAttribute('skinIndex', new T.BufferAttribute(v(me.skinIndex), 4));
+        g.setAttribute('skinWeight', new T.BufferAttribute(v(me.skinWeight), 4, true));
       }
-      g.setIndex(new T.BufferAttribute(this.view(me.idx), 1));
+      g.setIndex(new T.BufferAttribute(v(me.idx), 1));
       return g;
     }
 
-    buildCharacter(J) {
+    buildCharacter(J, src) {
       const T = THREE, sk = J.skeleton;
       const ch = { group: new T.Group(), anims: J.anims, cur: null, prev: null, after: null, fade0: 0 };
       this.scene3.add(ch.group);
@@ -169,15 +171,15 @@
         (p >= 0 ? ch.bones[p] : ch.group).add(ch.bones[i]);
       });
       ch.skeleton = new T.Skeleton(ch.bones, inv);
-      const mats = J.materials.map((m) => this.material(m, true));
+      const mats = J.materials.map((m) => this.material(m, true, src));
       for (const me of J.meshes) {
-        const mesh = new T.SkinnedMesh(this.geometry(me, true), mats[me.material]);
+        const mesh = new T.SkinnedMesh(this.geometry(me, true, src), mats[me.material]);
         mesh.frustumCulled = false;
         ch.group.add(mesh);
         mesh.bind(ch.skeleton, new T.Matrix4());
       }
       // Weapons ride their bones (the staff or katana in the right hand, the scabbard at the left hip).
-      ch.weapons = J.weapons.map((w) => {
+      ch.weapons = (J.weapons || []).map((w) => {
         const grp = new T.Group();
         const wm = w.materials.map((m) => this.material(m, false));
         for (const me of w.meshes) {
@@ -217,7 +219,7 @@
     // it doesn't change.
     prep(a) {
       if (a._prep) return a;
-      const d = this.view(a.data), tracks = [];
+      const d = this.view(a.data, a.src), tracks = [];
       let off = 0;
       a.tracks.forEach((name, k) => {
         const tc = !!a.tConst[k], qc = !!a.qConst[k];
@@ -239,8 +241,7 @@
       return bi;
     }
 
-    play(anim, loop, after) {
-      const ch = this.ch;
+    play(anim, loop, after, ch = this.ch) {
       if (!anim || !ch) return;
       if (ch.cur && ch.cur.anim === anim && loop && ch.cur.loop) return;
       ch.prev = ch.cur;
@@ -249,8 +250,7 @@
       ch.after = after || null;
     }
 
-    sample(state, pose) {
-      const ch = this.ch;
+    sample(state, pose, ch = this.ch) {
       pose.p.set(ch.bindP);
       pose.q.set(ch.bindQ);
       const a = state.anim, { d, tracks } = a._prep, ts = a.tScale, qs = 1 / 32767;
@@ -279,12 +279,12 @@
       });
     }
 
-    applyPose() {
-      const ch = this.ch, A = ch.poseA, Bp = ch.poseB;
-      this.sample(ch.cur, Bp);
+    applyPose(ch = this.ch) {
+      const A = ch.poseA, Bp = ch.poseB;
+      this.sample(ch.cur, Bp, ch);
       let w = 1;
       if (ch.prev && this.e.now - ch.fade0 < FADE) {
-        this.sample(ch.prev, A);
+        this.sample(ch.prev, A, ch);
         w = (this.e.now - ch.fade0) / FADE;
       }
       for (let i = 0; i < ch.nb; i++) {
@@ -380,8 +380,10 @@
       this.stateMachine();
       this.applyPose();
 
+      this.updateBoss(dt);
+
       // The extra dummies of an AoE pack: copies of the chosen dummy, each turned to face you.
-      if (this.dummy) {
+      if (this.dummy && !this.boss) {
         if (this.extrasOf !== this.dummy) {
           for (const x of this.extras || []) this.scene3.remove(x);
           this.extras = B.EXTRA_DUMMIES.map(() => { const c = this.dummy.clone(); this.scene3.add(c); return c; });
@@ -395,7 +397,7 @@
         });
       }
       // The dummy turns to face you and rocks when hit.
-      if (this.dummy) {
+      if (this.dummy && !this.boss) {
         this.dummy.rotation.y = Math.atan2(e.pos.x, e.pos.z);
         this.dummy.rotation.x = Math.sin(sc.time * 28) * sc.dummyWobble * 0.035;
         const flash = sc.dummyFlash * 2.2;
@@ -467,6 +469,51 @@
       }
       this.marks.tex.needsUpdate = true;
       this.renderer.render(this.marks.scene, this.marks.cam);
+    }
+
+    // A fight's boss stands where the dummy does (which hides, with its pack): its own model from the map's file at
+    // its size, turned to you, idling, and casting while the fight's cast bar runs.
+    updateBoss() {
+      const fight = this.sc.fightOn && this.sc.fightOn() ? this.sc.app.fight : null;
+      const data = fight && fight.data.model;
+      if (data !== this.bossData) {
+        if (this.boss) this.boss.group.visible = false;
+        this.boss = null;
+        this.bossData = data;
+        if (data) {
+          this.bosses = this.bosses || new Map();
+          if (!this.bosses.has(data)) {
+            const src = this.sc.map.source();
+            for (const a of Object.values(data.anims)) a.src = src;
+            const ch = this.buildCharacter(data, src);
+            ch.group.scale.setScalar(data.scale || 1);
+            this.bosses.set(data, ch);
+          }
+          this.boss = this.bosses.get(data);
+          this.play(this.boss.anims.idle, true, null, this.boss);
+        }
+        if (this.dummies) for (const k of Object.keys(this.dummies)) this.dummies[k].visible = !this.boss && this.dummies[k] === this.dummy;
+        for (const x of this.extras || []) x.visible = false;
+      }
+      const b = this.boss;
+      if (!b) return;
+      const e = this.e, an = b.anims;
+      b.group.visible = this.texturesLoaded(b);
+      b.group.position.set(0, 0, 0);
+      b.group.rotation.y = Math.atan2(e.pos.x, e.pos.z);
+      // Casting: the wind-up, then its loop; each ability as it goes off plays its own motion; otherwise idle.
+      const casting = !!fight.casting, idle = () => this.play(an.idle, true, null, b);
+      if (fight.motionSeq !== b.motionSeq) {
+        b.motionSeq = fight.motionSeq;
+        if (an[fight.motion]) this.play(an[fight.motion], false, idle, b);
+      } else if (casting && b.cur.anim !== an.cast && b.cur.anim !== an.castStart) {
+        this.play(an.castStart || an.cast, !an.castStart, an.castStart ? () => this.play(an.cast, true, null, b) : null, b);
+      } else if (!casting && (b.cur.anim === an.cast || b.cur.anim === an.castStart)) idle();
+      else if (!b.cur.loop && e.now - b.cur.t0 >= b.cur.anim.seconds) {
+        const f = b.after; b.after = null;
+        if (f) f(); else this.play(an.idle, true, null, b);
+      }
+      this.applyPose(b);
     }
 
     // The map's sun and sky on the figures, or the dusk lights.

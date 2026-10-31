@@ -1,5 +1,5 @@
 """Export an in-game map for the sim's 3D scene from your FFXIV install: Wolves' Den Pier (La Noscea), the pier
-outside the Wolves' Den with its striking dummies.
+outside the Wolves' Den with its striking dummies, and the fights in ZONES (the first: M2S's arena, Lovely Lovering).
 
 Reads the zone's layout (level/bg.lgb: every placed model, and the shared groups (.sgb) it places, recursively), its
 terrain (bgplate/terrain.tera and its plates) and the striking dummies on level/planmap.lgb, then writes each model
@@ -9,14 +9,21 @@ tiles (collision/list.pcb), as one list of triangles near the pier (the flat til
 walking on the water). The map is moved so one of the pier's striking dummies stands at the sim's origin, turned to face the sim's
 player (who starts on -Z), with its deck at y = 0; that dummy itself is left out, since the sim draws its own there.
 
-Writes BlackMageSim/work/game-map.js (BLM.GAME_MAP), which index.html loads and build_single.py publishes in chunks.
-Run with the Python that runs PMP Viewer (numpy + Pillow):  python -P -E BlackMageSim/tools/export_map.py
+A fight's map also carries the boss (its model on its skeleton, resolved by PMP Viewer, with its animations) and the
+fight's timeline: cactbot's (github.com/OverlayPlugin/cactbot, Apache-2.0), each boss ability with the second it goes
+off, with its cast time from the game's Action sheet, the untargetable windows and the enrage.
+
+Writes BlackMageSim/work/<out> (BLM.GAME_MAPS[key]), which index.html loads and build_single.py publishes in chunks.
+Run with the Python that runs PMP Viewer (numpy + Pillow):  python -P -E BlackMageSim/tools/export_map.py [zone ...]
+(every zone without one).
 """
 import base64
 import io
 import json
+import re
 import struct
 import sys
+import urllib.request
 from pathlib import Path
 
 import numpy as np
@@ -24,18 +31,39 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import export_models as X       # noqa: E402  (its Pack, textures and mesh packing; it also sets up PMP Viewer's path)
-from export_models import game, shade      # noqa: E402
+from export_models import game, shade, resolve, S      # noqa: E402
+from extract_icons import Sheet     # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "work"
 
-ZONE = {"name": "Wolves' Den Pier", "bg": "bg/ffxiv/sea_s1/pvp/s1p1/",
-        # The dummy the sim's own stands in for: one of the four on the lower deck, the pair that faces the pier's
-        # far end, so you look past it to the ships and the open sea. Its feet are at y 2.25.
-        "dummy": (96.13, 2.25, -4.63)}
+ZONES = {
+    "pier": {"name": "Wolves' Den Pier", "label": "Wolves' Den Pier · striking dummy", "bg": "bg/ffxiv/sea_s1/pvp/s1p1/",
+             "out": "game-map.js", "sky": "day",
+             # The dummy the sim's own stands in for: one of the four on the lower deck, the pair that faces the pier's
+             # far end, so you look past it to the ships and the open sea. Its feet are at y 2.25.
+             "dummy": (96.13, 2.25, -4.63),
+             "dummy_layer": ("level/planmap.lgb", "LVD_kakashi_01"),
+             "extra_layers": ("LVD_aetheryte_01",)},         # planmap's aetheryte crystal
+    # M2S, AAC Light-heavyweight M2 (Savage): the boss at the arena's middle (100, 0, 100) facing south (+Z), where
+    # the party starts.
+    "m2s": {"name": "Lovely Lovering", "label": "M2S · Honey B. Lovely (testing)", "bg": "bg/ex5/01_xkt_x6/rad/x6r2/",
+            "out": "game-map-m2s.js", "sky": "arena", "dummy": (100.0, 0.0, 100.0), "facing": 0.0,
+            # The stage has three looks (a1-a3: floor, neon, lights), switched at the Honey B. Live beats; the pull
+            # starts on a1, so the other two are left out (drawn together, their floors flickered through each other).
+            "exclude": r"_a[23]_",
+            "fight": {"duty": "AAC Light-heavyweight M2 (Savage)", "boss": "Honey B. Lovely", "timeline": "07-dt/raid/r2s",
+                      "hitbox": 5.0,
+                      # Monster m0906 (ModelChara 4159, BNpcBase 16938 at scale 1.2): the one model that has every
+                      # animation her abilities name (mon_sp001-023), picked from the Dawntrail candidates by looking.
+                      "model": {"kind": "monster", "id": 906, "body": 1, "variant": 1, "scale": 1.2,
+                                "pap": "chara/monster/m0906/animation/a0001/bt_common/resident/monster.pap",
+                                "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_a_1", "cast": "cbbm_sp_a_2lp",
+                                          "run": "cbbm_02f_lp0"},
+                                "specials": "chara/monster/m0906/animation/a0001/bt_common/mon_sp/m0906/"}}},
+}
+ZONE = ZONES["pier"]        # the one being exported
 LAYOUTS = ("level/bg.lgb",)
-DUMMY_LAYER = ("level/planmap.lgb", "LVD_kakashi_01")
-EXTRA_LAYERS = ("LVD_aetheryte_01",)       # planmap's aetheryte crystal
 TYPE_BG, TYPE_SG = 1, 6
 
 # bg.shpk's samplers by layer: colour, normal, specular.
@@ -108,7 +136,10 @@ COLLIDERS = []       # (.pcb path, world matrix)
 
 def walk(insts, parent, out, depth=0):
     """Every model the instances place, with its world matrix; shared groups open into their own layers."""
+    ex = ZONE.get("exclude")
     for i in insts:
+        if ex and i["path"] and re.search(ex, i["path"]):
+            continue
         w = parent @ matrix(i["t"], i["r"], i["s"])
         if i["type"] == TYPE_BG and i["col"]:
             COLLIDERS.append((i["col"], w))
@@ -129,19 +160,22 @@ def placements():
         for layer in read_lgb(open(game.game_file(base + name), "rb").read()):
             walk(layer["insts"], np.eye(4), out)
     k = np.array(ZONE["dummy"])
-    for layer in read_lgb(open(game.game_file(base + DUMMY_LAYER[0]), "rb").read()):
-        if layer["name"] == DUMMY_LAYER[1]:
-            others = [i for i in layer["insts"] if np.linalg.norm(np.array(i["t"]) - k) > 0.5]
-            mine = [i for i in layer["insts"] if i not in others]
-            print(f"  striking dummies: {len(layer['insts'])}, {len(mine)} left for the sim's own")
-            if mine:        # which way it faces (its +Z)
-                f = matrix(mine[0]["t"], mine[0]["r"], mine[0]["s"])[:3, 2]
-                ZONE["facing"] = float(np.arctan2(f[0], f[2]))
-            walk(others, np.eye(4), out)
-        elif layer["name"] in EXTRA_LAYERS:
-            walk(layer["insts"], np.eye(4), out)
+    if ZONE.get("dummy_layer"):
+        lgb, name = ZONE["dummy_layer"]
+        for layer in read_lgb(open(game.game_file(base + lgb), "rb").read()):
+            if layer["name"] == name:
+                others = [i for i in layer["insts"] if np.linalg.norm(np.array(i["t"]) - k) > 0.5]
+                mine = [i for i in layer["insts"] if i not in others]
+                print(f"  striking dummies: {len(layer['insts'])}, {len(mine)} left for the sim's own")
+                if mine:        # which way it faces (its +Z)
+                    f = matrix(mine[0]["t"], mine[0]["r"], mine[0]["s"])[:3, 2]
+                    ZONE["facing"] = float(np.arctan2(f[0], f[2]))
+                walk(others, np.eye(4), out)
+            elif layer["name"] in ZONE.get("extra_layers", ()):
+                walk(layer["insts"], np.eye(4), out)
     # Terrain: one model per plate, placed by terrain.tera.
-    tera = open(game.game_file(base + "bgplate/terrain.tera"), "rb").read()
+    local = game.game_file(base + "bgplate/terrain.tera")
+    tera = open(local, "rb").read() if local else b"\0" * 12
     count, size = struct.unpack_from("<II", tera, 4)
     for i in range(count):
         x, z = struct.unpack_from("<hh", tera, 0x34 + i * 4)
@@ -149,7 +183,8 @@ def placements():
         m[0, 3], m[2, 3] = size * (x + 0.5), size * (z + 0.5)
         out.append((f"{base}bgplate/{i:04d}.mdl", m))
     # The terrain's collision tiles, already in world space.
-    lst = open(game.game_file(base + "collision/list.pcb"), "rb").read()
+    local = game.game_file(base + "collision/list.pcb")
+    lst = open(local, "rb").read() if local else b"\0" * 4
     for i in range(struct.unpack_from("<I", lst, 0)[0]):
         COLLIDERS.append((f"{base}collision/tr{struct.unpack_from('<I', lst, 32 + i * 32)[0]:04d}.pcb", np.eye(4)))
     return out
@@ -203,8 +238,8 @@ def collision(sim, reach=160.0):
         n = np.cross(v[:, 1] - v[:, 0], v[:, 2] - v[:, 0])
         keep &= np.linalg.norm(n, axis=1) > 1e-6
         out.append(v[keep])
-    tris = np.concatenate(out).astype(np.float32)
-    print(f"  collision: {len(COLLIDERS)} colliders, {len(cache)} files, {len(tris)} triangles near the pier")
+    tris = (np.concatenate(out) if out else np.zeros((0, 3, 3))).astype(np.float32)
+    print(f"  collision: {len(COLLIDERS)} colliders, {len(cache)} files, {len(tris)} triangles near the dummy")
     return tris.reshape(-1)
 
 
@@ -250,6 +285,11 @@ def material(name):
         col = (consts.get(WATER_COLOR) or [0.1, 0.34, 0.36])[:3]
         return {"water": True, "tint": [round(c, 4) for c in col], "normal": nrm}
     texs = {i: game.game_file(t["path"]) for i, t in enumerate(mt["textures"])}
+    if mt["shader"] == "lightshaft.shpk":
+        # Light shafts, neon and pools of light: glow added over what's behind, not a surface.
+        b = shade.bake(mt, texs, {}, max_size=256)
+        out = X.material_out(b, opaque=True)
+        return dict(out, glow=True, normal=None) if out else None
     v0 = layer_view(mt, 0) or mt
     b0 = shade.bake(v0, texs, {}, max_size=X.COLOR_MAX)
     alpha = (b0.get("alphaTest") or 0) > 0
@@ -298,7 +338,90 @@ def model_out(pack, path, mats, mat_index):
     return {"meshes": meshes, "lo": pts.min(0).round(3).tolist(), "hi": pts.max(0).round(3).tolist()}
 
 
-def main():
+# ---------- fights ----------
+def boss_out(pack, m, events):
+    """The boss: its model on its own skeleton (resolve.creature), its idle, run and cast animations, the one each of
+    its abilities plays (mon_spNNN, by the events' "anim"), and its size."""
+    sc, blob = resolve.creature(None, {k: m[k] for k in ("kind", "id", "body", "variant")})
+    out = X.skinned_out(pack, sc, blob, {}, "  boss")
+    letter = {"monster": "m", "demihuman": "d"}[m["kind"]]
+    skel = f"chara/{m['kind']}/{letter}{m['id']:04d}/skeleton/base/b0001/skl_{letter}{m['id']:04d}b0001.sklb"
+    base = [n for n, _, _ in S.load_sklb(game.game_file(skel))]
+    out["anims"] = {k: X.anim_out(pack, m["pap"], name, base) for k, name in m["anims"].items()}
+    for key in sorted({e["anim"] for e in events if e.get("anim")}):
+        path = m.get("specials", "") + key + ".pap"
+        if not game.game_file(path):
+            continue
+        names = X.pap(path)[0]
+        out["anims"][key] = X.anim_out(pack, path, names[0], base)
+    print(f"  boss animations: {', '.join(out['anims'])}")
+    out["weapons"] = []
+    out["scale"] = m.get("scale", 1.0)
+    return out
+
+
+def timeline(f):
+    """cactbot's timeline for the fight, as the boss's abilities in order: the second each goes off, its name (the
+    alternatives a random pick chooses between, "A/B"), its cast (from the Action sheet; the cast bar ends at the
+    second), how long a lasting one lasts, and the windows the boss can't be targeted; plus the enrage."""
+    cache = OUT / "timelines" / (f["timeline"].replace("/", "_") + ".txt")
+    if not cache.exists():
+        cache.parent.mkdir(exist_ok=True)
+        url = f"https://raw.githubusercontent.com/OverlayPlugin/cactbot/main/ui/raidboss/data/{f['timeline']}.txt"
+        cache.write_bytes(urllib.request.urlopen(url, timeout=30).read())
+    action, tl = Sheet("Action"), Sheet("ActionTimeline")
+    key_col = tl.string_cols()[0]
+    CAST = 38           # Action's Cast<100ms> column (Fire III 35, Call Me Honey 50)
+    events, untarget, start = [], [], None
+    for line in cache.read_text(encoding="utf-8").splitlines():
+        m = re.match(r'^(\d+(?:\.\d+)?)\s+"([^"]+)"(.*)$', line)
+        if not m:
+            continue
+        t, name, rest = float(m.group(1)), m.group(2), m.group(3)
+        low = name.lower()
+        if "untargetable" in low:
+            start = t
+            continue
+        if low.strip("-") == "targetable" and start is not None:
+            untarget.append([start, t])
+            start = None
+            continue
+        if name.startswith("--"):
+            continue
+        ids = [int(x, 16) for x in re.findall(r'"([0-9A-Fa-f]{3,5})"', rest.split("}")[0])] if "id:" in rest else []
+        cast, anim = 0.0, None
+        for i in ids:
+            try:
+                cast = max(cast, (action.value(i, CAST) or 0) / 10)
+                key = tl.value(action.value(i, 7), key_col) if action.value(i, 7) else ""      # the motion it plays
+                if not anim and key.startswith("mon_sp/[SKL_ID]/"):
+                    anim = key.split("/")[-1]
+            except Exception:       # noqa: BLE001  (an id the sheet doesn't have)
+                pass
+        dur = re.search(r"\bduration\s+(\d+(?:\.\d+)?)", rest)
+        kind = "cast" if "(cast)" in low else "enrage" if "enrage" in low else "hit"
+        show = re.sub(r"\s*\((cast|damage|enrage)\)", "", name)
+        ev = {"t": t, "name": show, "kind": kind}
+        if cast and "(damage)" not in low:          # the "(damage)" half of a split pair follows its "(cast)"
+            ev["cast"] = cast
+        if dur:
+            ev["dur"] = float(dur.group(1))
+        if anim:
+            ev["anim"] = anim
+        events.append(ev)
+    # A "(damage)" that just finishes the cast before it says nothing new: keep it, quietly.
+    enrage = next((e["t"] for e in reversed(events) if e["kind"] == "enrage"), events[-1]["t"] if events else 600)
+    print(f"  timeline: {len(events)} events, {len(untarget)} untargetable windows, enrage at {enrage:.1f}s "
+          f"({sum(1 for e in events if e.get('cast'))} with a cast)")
+    return {"events": events, "untargetable": untarget, "enrage": enrage}
+
+
+def main(key):
+    global ZONE
+    ZONE = ZONES[key]
+    COLLIDERS.clear()
+    X.TEXTURES.clear()
+    X._tex_index.clear()
     OUT.mkdir(exist_ok=True)
     pack = X.Pack()
     print(ZONE["name"])
@@ -326,21 +449,29 @@ def main():
                 sea = dict(material(water[0]), y=round(float((sim @ w @ [0, mdl["bbox"][5], 0, 1])[1]), 3))
     for m in models:
         m["instances"] = pack.put(np.array(m.pop("inst"), np.float32), "f32")
-    data = {"version": 1, "name": ZONE["name"], "zone": ZONE["bg"], "dummy": ZONE["dummy"], "sea": sea,
-            "collision": pack.put(collision(sim), "f32"),
-            "models": models, "materials": mats, "textures": X.TEXTURES, "bin": pack.b64(), "binEncoding": "gzip"}
+    data = {"version": 1, "key": key, "name": ZONE["name"], "label": ZONE["label"], "zone": ZONE["bg"],
+            "dummy": ZONE["dummy"], "sky": ZONE.get("sky", "day"), "sea": sea, "collision": pack.put(collision(sim), "f32"),
+            "models": models, "materials": mats}
+    f = ZONE.get("fight")
+    if f:
+        tl = timeline(f)
+        data["fight"] = dict({k: f[k] for k in ("duty", "boss", "hitbox")}, **tl, model=boss_out(pack, f["model"], tl["events"]),
+                             source="cactbot (github.com/OverlayPlugin/cactbot), Apache-2.0")
+    data.update(textures=X.TEXTURES, bin=pack.b64(), binEncoding="gzip")
     js = ("// Generated by tools/export_map.py from your FFXIV install. FINAL FANTASY XIV (c) SQUARE ENIX.\n"
-          "window.BLM = window.BLM || {};\nBLM.GAME_MAP = " + json.dumps(data, separators=(",", ":")) + ";\n")
-    (OUT / "game-map.js").write_text(js, encoding="utf-8")
+          "window.BLM = window.BLM || {};\nBLM.GAME_MAPS = BLM.GAME_MAPS || {};\n"
+          f"BLM.GAME_MAPS[{json.dumps(key)}] = " + json.dumps(data, separators=(",", ":")) + ";\n")
+    (OUT / ZONE["out"]).write_text(js, encoding="utf-8")
     verts = sum(me["count"] for m in models for me in m["meshes"])
     tex = sum(len(t) for t in X.TEXTURES)
     print(f"{len(places)} placements, {len(models)} models ({verts} vertices), {len(mats)} materials, "
           f"{len(X.TEXTURES)} textures {tex / 1048576:.1f} MB, binary {len(pack.buf) / 1048576:.1f} MB, "
-          f"file {len(js) / 1048576:.1f} MB -> {OUT / 'game-map.js'}")
+          f"file {len(js) / 1048576:.1f} MB -> {OUT / ZONE['out']}")
 
 
 if __name__ == "__main__":
     try:
-        main()
+        for k in sys.argv[1:] or list(ZONES):
+            main(k)
     finally:
         game.SERVE.close()

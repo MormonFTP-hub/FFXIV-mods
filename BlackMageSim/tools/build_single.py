@@ -76,6 +76,33 @@ def model_chunks(stem="game-models", var="GAME_MODELS"):
     return names
 
 
+def map_chunks():
+    """Each work/game-map*.js (BLM.GAME_MAPS[key] = {...}) as build/<stem>-N.js chunks; {source path: names}."""
+    for old in OUT.glob("game-map*-*.js"):
+        old.unlink()
+    out = {}
+    for path in sorted((ROOT / "work").glob("game-map*.js")):
+        src = path.read_text(encoding="utf-8")
+        m = re.search(r'BLM\.GAME_MAPS\[("[^"]+")\] = (\{.*\});\s*$', src, re.S)
+        if not m:
+            print(f"skipping {path.name} (not a GAME_MAPS file: export it again)")
+            continue
+        key, text = m.group(1), m.group(2)
+        acc = "window.__" + path.stem.replace("-", "_")
+        parts = [text[i:i + CHUNK] for i in range(0, len(text), CHUNK)]
+        names = []
+        for k, part in enumerate(parts):
+            js = f"({acc} = {acc} || []).push(" + json.dumps(part) + ");\n"
+            if k == len(parts) - 1:
+                js += (f"window.BLM = window.BLM || {{}};\nBLM.GAME_MAPS = BLM.GAME_MAPS || {{}};\n"
+                       f"BLM.GAME_MAPS[{key}] = JSON.parse({acc}.join(''));\ndelete {acc};\n")
+            name = f"{path.stem}-{k}.js"
+            (OUT / name).write_text(js, encoding="utf-8")
+            names.append(name)
+        out[f"work/{path.name}"] = names
+    return out
+
+
 def icon_chunks():
     """Write work/game-icons.js to build/ as game-icons-N.js files of whole icons; return their names."""
     src = (ROOT / "work" / "game-icons.js").read_text(encoding="utf-8")
@@ -137,9 +164,10 @@ def main():
     OUT.mkdir(exist_ok=True)
     (OUT / "BlackMageSim.html").write_text(inline(src), encoding="utf-8")
     chunks = model_chunks()
-    maps = model_chunks("game-map", "GAME_MAP")
+    map_files = map_chunks()
+    maps = [n for names in map_files.values() for n in names]
     icons = icon_chunks()
-    keep = {"work/game-models.js": chunks, "work/game-map.js": maps, "work/game-icons.js": icons}
+    keep = {"work/game-models.js": chunks, "work/game-icons.js": icons, **map_files}
     page = inline(src, keep=keep)
     (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
     site(page, [*icons, *chunks, *maps])

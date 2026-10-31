@@ -1,6 +1,7 @@
 // Wires the engine, scene, sound and HUD together: input, keybinds, drag and
 // drop, countdown, chat commands, parse tracking and the frame loop.
 (function (B) {
+  const BASE_RADIUS = B.DUMMY_RADIUS;       // the striking dummy's; a fight's boss sets its own
   const A = B.ACTIONS;
   const STORE_KEY = 'blm-ew-sim.v1';
   const DUMMY_HP = 25000000;
@@ -170,6 +171,9 @@
       this.scene.models = this.models;
       this.map = new B.MapLayer(document.getElementById('map'), this.engine, this.scene, this.store.settings);
       this.scene.map = this.map;
+      this.scene.app = this;
+      this.fight = null;
+      this.map.onChange = () => this.onMap();
       this.drag = new Drag(this);
       this.ui = new B.UI(this);
       this.ui.setJob();
@@ -237,8 +241,7 @@
       this.job = B.setJob(jobId, st.versions[jobId]);
       const fresh = !this.hasBars();          // before anything draws the bars (which fills in the defaults)
       this.engine.setJob(this.job);
-      this.engine.pos.x = 0; this.engine.pos.y = 0; this.engine.pos.z = -this.job.startDistance;
-      this.scene.resetCamera();
+      this.placeStart();
       this.cd = null; this.cdEndedAt = null; this.recentUses = [];
       this.ui.setJob();
       this.models.setJob();
@@ -281,6 +284,7 @@
     wireEngine() {
       const e = this.engine, ui = this.ui, sc = this.scene, sfx = this.sfx;
       const name = () => this.store.settings.name;
+      const target = () => (this.fight ? this.fight.name : 'The striking dummy');
       const dummyAt = () => sc.dummyHead();
       const mageAt = () => sc.mageHead();
       let flyN = 0;
@@ -319,7 +323,7 @@
         // Count it for the parse.
         if (!this.enc && e.now >= this.noNewUntil) this.startEncounter(ev.t);
         if (this.enc) {
-          const lim = this.store.settings.pullLength;
+          const lim = this.fight ? 0 : this.store.settings.pullLength;
           if (!lim || ev.t <= this.enc.start + lim) this.enc.addHit(ev);
         }
         const a = A[ev.id];
@@ -339,7 +343,7 @@
         });
         const lead = ev.dot ? '' : '⇒ ';
         const what = ev.crit && ev.dh ? 'Critical direct hit! ' : ev.crit ? 'Critical! ' : ev.dh ? 'Direct hit! ' : '';
-        ui.log(`${lead}${what}The striking dummy takes ${fmt(ev.amount)} damage.`, 'dmg');
+        ui.log(`${lead}${what}${target()} takes ${fmt(ev.amount)} damage.`, 'dmg');
         sc.onHit(ev);
         if (ev.dot) sfx.play('dot');
         else {
@@ -354,14 +358,14 @@
           ui.log(`You gain the effect of ${st.name}.`, 'gain');
           ui.fly({ at: mageAt(), text: '+ ' + st.name, cls: 'self', icon: B.statusIcon(ev.key), dx: 80 });
         } else {
-          ui.log(`The striking dummy suffers the effect of ${st.name}.`, 'gain');
+          ui.log(`${target()} suffers the effect of ${st.name}.`, 'gain');
         }
       });
       e.on('statusLose', ev => {
         const st = B.STATUSES[ev.key];
         if (!st) return;
         if (ev.self) ui.log(`You lose the effect of ${st.name}.`, 'lose');
-        else ui.log(`The striking dummy recovers from the effect of ${st.name}.`, 'lose');
+        else ui.log(`${target()} recovers from the effect of ${st.name}.`, 'lose');
       });
       e.on('mpGain', ev => {
         if (ev.source === 'manafont') ui.fly({ at: mageAt(), text: `${fmt(ev.amount)} MP`, cls: 'mp', dx: -70 });
@@ -408,10 +412,53 @@
       this.ui.updateMeter(true);
     },
 
+    // ---------- locations and fights ----------
+    // Go to a map (Settings → Location, /fight): the pier's striking dummy or a fight's arena and boss.
+    setLocation(key) {
+      const maps = B.gameMaps();
+      if (!maps[key]) return;
+      this.store.settings.location = key;
+      this.save();
+      if (this.enc) this.endEncounter(this.engine.now, 'idle');
+      this.fullReset();
+      this.map.want();
+      this.ui.log(`You head to ${maps[key].label || maps[key].name}.`, 'sys', 'system');
+    },
+
+    fightCommand(arg) {
+      const maps = B.gameMaps();
+      const fights = Object.entries(maps).filter(([, m]) => m.fight);
+      if (!arg) {
+        this.ui.log(`Fights: ${fights.map(([k, m]) => `${k} (${m.label})`).join(', ') || 'none exported'}. /fight <name> to go there, /fight off for the pier.`, 'sys', 'system');
+      } else if (arg === 'off' || arg === 'pier') this.setLocation('pier');
+      else if (maps[arg] && maps[arg].fight) this.setLocation(arg);
+      else this.ui.log(`There's no fight "${arg}". /fight lists them.`, 'err', 'system');
+    },
+
+    // The map has loaded: its fight, if it has one, whose boss's hitbox sets the ranges; then back to the start.
+    onMap() {
+      const f = this.map.fight();
+      this.fight = f ? new B.Fight(this, this.map.key, f) : null;
+      B.DUMMY_RADIUS = this.fight ? this.fight.hitbox : BASE_RADIUS;
+      if (!this.fight) B.Fight.clear();
+      this.placeStart();
+      if (this.fight) {
+        const enr = this.fight.data.enrage;
+        this.ui.log(`${this.fight.data.duty}: ${this.fight.name}. Her timeline runs from your first hit; enrage at ${Math.floor(enr / 60)}:${String(Math.floor(enr % 60)).padStart(2, '0')}. For testing: she has the dummy's HP and her attacks don't hit you yet.`, 'sys', 'system');
+      }
+    },
+
+    // In front of the dummy (or boss), as far from its edge as the job usually stands.
+    placeStart() {
+      const e = this.engine;
+      e.pos.x = 0; e.pos.y = 0; e.pos.z = -(this.job.startDistance - BASE_RADIUS + B.DUMMY_RADIUS);
+      if (e.world) { e.world.good = null; e.world.vy = 0; }
+      this.scene.resetCamera();
+    },
+
     fullReset() {
       this.engine.reset();
-      this.engine.pos.x = 0; this.engine.pos.y = 0; this.engine.pos.z = -this.job.startDistance;
-      this.scene.resetCamera();
+      this.placeStart();
       this.enc = null;
       this.cd = null;
       this.cdEndedAt = null;
@@ -464,6 +511,7 @@
         case '/help': this.ui.openWindow('win-help'); break;
         case '/echo': case '/e': this.ui.log(arg, 'echo', 'system'); break;
         case '/debug': this.debug.copy(); break;
+        case '/fight': this.fightCommand(arg.trim().toLowerCase()); break;
         default:
           if (t.startsWith('/')) this.ui.log(`The command "${cmd}" does not exist.`, 'err', 'system');
           else this.ui.log(`${this.store.settings.name}: ${t}`, 'act', 'system');
@@ -662,13 +710,14 @@
       this.updateCountdown();
 
       if (this.enc) {
-        const lim = this.store.settings.pullLength;
+        const lim = this.fight ? 0 : this.store.settings.pullLength;      // a fight ends at its enrage
         if (lim && e.now >= this.enc.start + lim) this.endEncounter(this.enc.start + lim, 'time');
         else if (e.now - this.enc.lastActivity > 10) this.endEncounter(this.enc.lastDamage, 'idle');
       }
 
       this.scene.update(dt, dx !== 0 || dz !== 0);
       this.map.render(dt);
+      if (this.fight) this.fight.update();
       this.scene.draw();
       this.models.update(dt);
       const hpK = this.enc ? Math.max(1, DUMMY_HP - this.enc.total) / DUMMY_HP : 1;

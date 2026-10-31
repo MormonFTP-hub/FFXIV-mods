@@ -161,6 +161,7 @@
 
     modelsOn() { return !!(this.models && this.models.active()); }
     mapOn() { return !!(this.map && this.map.active()); }
+    fightOn() { return !!(this.app && this.app.fight && this.mapOn()); }
 
     toCam(x, y, z) {
       const d = { x: x - this.cam.pos.x, y: y - this.cam.pos.y, z: z - this.cam.pos.z };

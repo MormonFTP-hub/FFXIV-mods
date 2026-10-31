@@ -750,6 +750,11 @@ def visible_triangles(m, me, blob):
 def export_character(pack, job, cfg):
     spec = {"subject": "character", "race": RACE, "face": 1, "hair": 1, "gear": cfg["gear"], "collection": False}
     sc, blob = resolve.character(None, spec)
+    return skinned_out(pack, sc, blob, cfg["attrs"], job)
+
+
+def skinned_out(pack, sc, blob, attrs, label):
+    """A resolved character or creature (resolve.character / resolve.creature) as skinned meshes on its skeleton."""
     sk = sc["skeleton"]
     mats_in = sc["materials"]
     mat_index, materials, meshes = {}, [], []
@@ -757,7 +762,7 @@ def export_character(pack, job, cfg):
     for m in sc["models"]:
         if m["hidden"]:
             continue
-        for a, show in cfg["attrs"].get(m["slot"], {}).items():
+        for a, show in attrs.get(m["slot"], {}).items():
             m["attrs"].setdefault(a, {})["show"] = show
         nb = len(m["bones"])
         gidx = np.array(m["bones"] + [-1], np.int64)
@@ -795,7 +800,7 @@ def export_character(pack, job, cfg):
             gb = gidx[bi]
             meshes.append(mesh_out(pack, pos, nrm, uv, idx, mat_index[mi], gb, bw.astype(np.float32)))
             verts += meshes[-1]["count"]
-    print(f"{job}: {len(meshes)} meshes, {verts} vertices, {len(materials)} materials, {len(sk['names'])} bones")
+    print(f"{label}: {len(meshes)} meshes, {verts} vertices, {len(materials)} materials, {len(sk['names'])} bones")
     return {"skeleton": {"names": sk["names"], "parents": sk["parents"], "world": sk["world"]},
             "meshes": meshes, "materials": materials}
 

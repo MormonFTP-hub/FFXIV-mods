@@ -349,6 +349,8 @@
     filterLog() {
       for (const d of $('#log').children) d.style.display = this.logTab === 'all' || d.dataset.cat === this.logTab ? '' : 'none';
     }
+    targetName() { return this.app.fight ? this.app.fight.name : 'Striking Dummy'; }
+
     log(text, cls, cat) {
       const log = $('#log');
       const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 30;
@@ -414,7 +416,7 @@
       const m = $('#meter');
       const name = esc(app.store.settings.name);
       if (!enc) {
-        m.innerHTML = `<div class="hd"><span>Striking Dummy</span><b>00:00</b></div>` +
+        m.innerHTML = `<div class="hd"><span>${esc(this.targetName())}</span><b>00:00</b></div>` +
           `<div class="row"><i style="transform:scaleX(0)"></i><div class="in"><img src="${B.jobIcon()}" alt=""><div class="who">${name}<small>${esc(this.e.job.abbr)}</small></div><div class="dps outline">0</div></div></div>` +
           `<div class="maxhit">Hit the dummy to start a parse. Use <b>/countdown</b> for a pull.</div>` + this.histHtml() + this.meterActs();
         this.bindMeter();
@@ -427,7 +429,7 @@
       const crit = enc.hits ? (enc.crits / enc.hits * 100).toFixed(1) : '0.0';
       const dh = enc.hits ? (enc.dhs / enc.hits * 100).toFixed(1) : '0.0';
       const max = enc.maxHit;
-      m.innerHTML = `<div class="hd"><span>${enc.end ? 'Last pull' : 'Striking Dummy'}</span><b>${mm}:${ss}</b></div>` +
+      m.innerHTML = `<div class="hd"><span>${enc.end ? 'Last pull' : esc(this.targetName())}</span><b>${mm}:${ss}</b></div>` +
         `<div class="row"><i style="transform:scaleX(1)"></i><div class="in"><img src="${B.jobIcon(enc.jobId)}" alt=""><div class="who">${name}<small>${esc(enc.abbr || '')} · ${fmt(enc.total)} dmg</small></div><div class="dps outline" style="color:${color}">${fmt(dps)}</div></div></div>` +
         `<div class="sub"><div>Crit<b>${crit}%</b></div><div>Direct hit<b>${dh}%</b></div><div>GCD uptime<b>${enc.uptime(now).toFixed(1)}%</b></div></div>` +
         (max ? `<div class="maxhit">Max hit: ${esc(((enc.actions || A)[max.id] || {}).name || max.id)} <b>${fmt(max.amount)}${max.crit ? '!' : ''}${max.dh ? '!' : ''}</b></div>` : '') +
@@ -474,7 +476,7 @@
       const dur = enc.duration(now);
       const dps = enc.total / dur;
       const mm = Math.floor(dur / 60) + ':' + String(Math.floor(dur % 60)).padStart(2, '0');
-      $('#res-title').textContent = `Pull ${enc.n} · Striking Dummy`;
+      $('#res-title').textContent = `Pull ${enc.n} · ${this.targetName()}`;
       const rows = Object.entries(enc.byAction).sort((a, b) => b[1].total - a[1].total);
       const casts = {};
       enc.uses.forEach(u => { if (!u.interrupted) casts[u.id] = (casts[u.id] || 0) + 1; });
@@ -720,7 +722,7 @@
 <tr><td>Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> (or arrow keys). <kbd>Space</kbd> jumps. Moving or jumping cancels a cast, except in the last 0.5s (the blue line on the cast bar): that's slidecasting.</td></tr>
 <tr><td>Camera</td><td>Hold the right mouse button and drag to turn the camera and your character: while it's held, <kbd>A</kbd> <kbd>D</kbd> strafe and <kbd>S</kbd> backpedals at walking pace. Drag with the left button to turn just the camera. Hold both buttons to run forward. The wheel zooms.</td></tr>
 <tr><td>Target</td><td><kbd>Tab</kbd> or click the dummy. <kbd>Esc</kbd> closes windows, then clears your target.</td></tr>
-<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>, <code>/debug</code> (copies a debug log to paste to Claude).</td></tr>
+<tr><td>Chat</td><td><kbd>Enter</kbd> to type. <code>/countdown 15</code> (or <code>/cd</code>), <code>/reset</code>, <code>/help</code>, <code>/debug</code> (copies a debug log to paste to Claude), <code>/fight</code> (lists the fights; <code>/fight m2s</code> goes to one, <code>/fight off</code> back to the pier).</td></tr>
 <tr><td>Windows</td><td><kbd>J</kbd> Job, <kbd>P</kbd> Actions &amp; Traits, <kbd>K</kbd> keybind mode, <kbd>F1</kbd> this help.</td></tr>
 </table>
 <h3>Timing</h3>
@@ -803,6 +805,10 @@ ${job.helpHtml(seq, ic)}
       bind('#s-timeline', 'showTimeline', el => el.checked);
       bind('#s-models', 'gameModels', el => el.checked);
       bind('#s-map', 'gameMap', el => el.checked);
+      const maps = B.gameMaps ? B.gameMaps() : {};
+      $('#s-loc').innerHTML = Object.entries(maps).map(([k, m]) => `<option value="${k}">${esc(m.label || m.name)}</option>`).join('')
+        || '<option value="pier">The dusk training ground</option>';
+      $('#s-loc').addEventListener('change', () => this.app.setLocation($('#s-loc').value));
       bind('#s-follow', 'cameraFollow', el => el.checked);
       bind('#s-lock', 'lockCursor', el => el.checked);
       bind('#s-mouse', 'mouseSpeed', el => parseFloat(el.value), 'input');
@@ -833,7 +839,8 @@ ${job.helpHtml(seq, ic)}
       $('#s-timeline').checked = s.showTimeline;
       $('#s-models').checked = s.gameModels;
       $('#s-map').checked = s.gameMap;
-      $('#s-map').disabled = !(window.THREE && B.GAME_MAP);
+      $('#s-map').disabled = !(window.THREE && B.gameMaps && B.gameMaps().pier);
+      $('#s-loc').value = s.location || 'pier';
       $('#s-follow').checked = s.cameraFollow;
       $('#s-lock').checked = s.lockCursor;
       $('#s-mouse').value = String(s.mouseSpeed);
