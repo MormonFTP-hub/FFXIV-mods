@@ -17,6 +17,7 @@ window.BLM = window.BLM || {};
   B.MELEE_RANGE = 3;
   B.AUTO_RANGE = 2.1;
   B.DUMMY_RADIUS = 0.8;
+  B.BOSS = { x: 0, z: 0 };       // where the target stands (the sim's floor): the dummy's spot, or a fight's moving boss
   B.COMBO_TIME = 30;
   // Extra striking dummies for practising AoE (Settings → Dummies): a pack behind the main dummy, which faces -Z.
   B.EXTRA_DUMMIES = [{ x: -2.1, z: 1.6 }, { x: 2.1, z: 1.6 }, { x: -1.1, z: 3.4 }, { x: 1.1, z: 3.4 }];

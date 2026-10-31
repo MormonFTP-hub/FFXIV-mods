@@ -108,9 +108,9 @@
     // dummy" is on in Settings, which swings it round behind you toward the dummy.
     updateCamera(dt) {
       const p = this.e.pos;
-      const d = Math.hypot(p.x, p.z);
+      const d = Math.hypot(p.x - B.BOSS.x, p.z - B.BOSS.z);
       if (this.e.settings.cameraFollow && !this.dragging && d > 2.2) {
-        const want = Math.atan2(-p.x, -p.z);
+        const want = Math.atan2(B.BOSS.x - p.x, B.BOSS.z - p.z);
         let diff = want - this.camYaw;
         while (diff > Math.PI) diff -= Math.PI * 2;
         while (diff < -Math.PI) diff += Math.PI * 2;
@@ -147,7 +147,7 @@
     // Behind you, looking at the dummy, at the default tilt and zoom.
     resetCamera() {
       const p = this.e.pos;
-      this.camYaw = Math.atan2(-p.x, -p.z);
+      this.camYaw = Math.atan2(B.BOSS.x - p.x, B.BOSS.z - p.z);
       this.camPitch = 0.33;
       this.camZoom = 1;
       this.updateCamera(0);
@@ -723,7 +723,7 @@
         if (kc.z > 0.5) (models && kc.z < pc.z - 0.3 ? front : back).push({ z: kc.z, draw: () => this.drawPet(this.petKind, this.petPos) });
       }
       if (!models) {
-        const dc = this.toCam(0, 0, 0);
+        const dc = this.toCam(B.BOSS.x, 0, B.BOSS.z);
         if (dc.z > 0.5) back.push({ z: dc.z, draw: () => this.drawDummy(this.fromCam(dc)) });
         for (let k = 1; k < this.e.targets; k++) {
           const d = B.EXTRA_DUMMIES[k - 1], xc = this.toCam(d.x, 0, d.z);
@@ -867,7 +867,7 @@
         ctx.beginPath();
         for (let i = 0; i <= 24; i++) {
           const a = a0 + (a1 - a0) * i / 24;
-          const q = this.project(Math.cos(a) * r, 0.02, Math.sin(a) * r);
+          const q = this.project(B.BOSS.x + Math.cos(a) * r, 0.02, B.BOSS.z + Math.sin(a) * r);
           if (!q) { open = false; continue; }
           if (open) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y);
           open = true;
@@ -967,8 +967,8 @@
       ctx.save();
       if (this.e.job.role === 'melee') this.drawPositionals();
       const k = this.fightOn() ? B.DUMMY_RADIUS / 1.6 : 1;     // a boss's ring is its hitbox
-      if (this.groundPath(0, 0, 1.6 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,90,60,0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); }
-      if (this.groundPath(0, 0, 1.75 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,170,120,0.35)'; ctx.lineWidth = 1; ctx.stroke(); }
+      if (this.groundPath(B.BOSS.x, B.BOSS.z, 1.6 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,90,60,0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); }
+      if (this.groundPath(B.BOSS.x, B.BOSS.z, 1.75 * k, 64, 0.02)) { ctx.strokeStyle = 'rgba(255,170,120,0.35)'; ctx.lineWidth = 1; ctx.stroke(); }
       const rot = this.time * 0.6;
       ctx.fillStyle = 'rgba(255,120,80,0.95)';
       for (let i = 0; i < 4; i++) {
@@ -1481,12 +1481,12 @@
     // Screen point where flytext for the dummy starts.
     dummyHead(k) {
       const d = k ? B.EXTRA_DUMMIES[k - 1] : null;
-      return d ? this.project(d.x, 2.5, d.z) : this.project(0, 2.7, 0);
+      return d ? this.project(d.x, 2.5, d.z) : this.project(B.BOSS.x, 2.7, B.BOSS.z);
     }
     mageHead() { const p = this.e.pos; return this.project(p.x, (p.y || 0) + (this.modelsOn() ? 2.4 : 2.9) + this.jumpY(), p.z); }
 
     hitDummy(x, y) {
-      const b = this.project(0, 0, 0), t = this.project(0, 2.5, 0);
+      const b = this.project(B.BOSS.x, 0, B.BOSS.z), t = this.project(B.BOSS.x, 2.5, B.BOSS.z);
       if (!b || !t) return false;
       const w = Math.max(30, b.s * 1.1);
       return x > b.x - w && x < b.x + w && y > t.y - 10 && y < b.y + 10;

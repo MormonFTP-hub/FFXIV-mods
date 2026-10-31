@@ -31,6 +31,7 @@
       this.picks = {};
       this.t = null;
       this.hp = this.maxHp;
+      B.BOSS.x = 0; B.BOSS.z = 0;                 // back to the middle for the next pull
       this.dealt = 0;                            // all the party's damage this pull, and what the adds took of it
       this.soaked = 0;
       this.addsTaken = (this.script && this.script.adds || []).map(() => 0);
@@ -66,7 +67,11 @@
         if (app.sfx && app.sfx.boss) app.sfx.boss(this.key, this.label(this.casting), 'cast');
       }
       e.untargetable = this.data.untargetable.some(([a, b]) => t >= a && t < b);
-      if (this.mech) this.mech.update(t);
+      if (this.mech) {
+        this.mech.update(t);
+        const at = B.toSim(this.mech.bossAt(t));             // the boss walks or leaps where the plan has it
+        B.BOSS.x = at.x; B.BOSS.z = at.z;
+      }
       if (this.maxHp) {
         // Adds that soak damage (script.adds: [{from, to, hp, share, name}]): in each window that share of what the
         // party deals goes to them, not the boss, until their HP is gone (the fight's own adds, fought beside her).

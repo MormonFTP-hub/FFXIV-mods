@@ -93,7 +93,7 @@
       this.emit('statusGain', { key, self: false, refreshed: had });
     }
 
-    distToTarget() { return Math.hypot(this.pos.x, this.pos.z); }
+    distToTarget() { return Math.hypot(this.pos.x - B.BOSS.x, this.pos.z - B.BOSS.z); }
     inCircle() {
       return !!(this.leyLines && this.leyLines.until > this.now &&
         Math.hypot(this.pos.x - this.leyLines.x, this.pos.z - this.leyLines.z) <= 3);
@@ -102,7 +102,7 @@
     // The dummy faces -Z, toward where you start (a fight's boss faces its main tank). Rear is the 90° behind it,
     // flanks the 90° to each side.
     side() {
-      let r = Math.atan2(this.pos.x, this.pos.z) - this.facing;
+      let r = Math.atan2(this.pos.x - B.BOSS.x, this.pos.z - B.BOSS.z) - this.facing;
       while (r > Math.PI) r -= 2 * Math.PI;
       while (r < -Math.PI) r += 2 * Math.PI;
       const a = Math.abs(r) * 180 / Math.PI;   // 0 = in front, 180 = behind
@@ -572,17 +572,19 @@
     // speedMul: below 1 for backpedalling. On the game's map you walk through its collision (stairs, walls, ledges);
     // without it, a flat floor 38 yalms around the dummy.
     move(dx, dz, dt, speedMul) {
-      if (this.ko) { dx = 0; dz = 0; }
+      if (this.ko || this.knocked) { dx = 0; dz = 0; }       // a knockback carries you; no walking out of it
       const moving = dx !== 0 || dz !== 0, w = this.world;
       if (moving) {
         const speed = 6 * (this.has('sprint') ? 1.3 : 1) * (speedMul || 1);
         const len = Math.hypot(dx, dz);
         const sx = dx / len * speed * dt, sz = dz / len * speed * dt;
+        this.faceYaw = Math.atan2(sx, sz);                   // the way you run (for a fight's gazes)
         if (w) w.walk(this.pos, sx, sz);
         else { this.pos.x += sx; this.pos.z += sz; }
         // Keep a little space from the dummy's hitbox (a fight's boss you can walk under: B.DUMMY_KEEP).
-        const d = Math.hypot(this.pos.x, this.pos.z), keep = B.DUMMY_KEEP || B.DUMMY_RADIUS + 0.6;
-        if (d < keep && Math.abs(this.pos.y) < 1.5) { this.pos.x *= keep / d; this.pos.z *= keep / d; }
+        const bx = this.pos.x - B.BOSS.x, bz = this.pos.z - B.BOSS.z;
+        const d = Math.hypot(bx, bz), keep = B.DUMMY_KEEP || B.DUMMY_RADIUS + 0.6;
+        if (d < keep && Math.abs(this.pos.y) < 1.5) { this.pos.x = B.BOSS.x + bx * keep / d; this.pos.z = B.BOSS.z + bz * keep / d; }
         const lim = w ? 150 : 38;
         const r = Math.hypot(this.pos.x, this.pos.z);
         if (r > lim) { this.pos.x *= lim / r; this.pos.z *= lim / r; }

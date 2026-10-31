@@ -26,6 +26,7 @@
       this.botDamage = 0;
       this.koUntil = null;
       this.st = {};                 // slot -> { status key -> { start, until } } (the fight's statuses: B.fightStatus)
+      this.pushes = {};             // slot -> a knockback in flight
     }
 
     get fight() { return this.app.fight; }
@@ -53,6 +54,7 @@
       this.bots = [];
       this.botDamage = 0;
       this.st = {};
+      this.pushes = {};             // slot -> a knockback in flight
       if (this.active) {
         const me = this.playerSlot(), mine = this.app.engine.job.id;
         const start = f.mech.plan.start;
@@ -86,6 +88,7 @@
       this.app.engine.ko = false;
       this.koUntil = null;
       this.st = {};
+      this.pushes = {};             // slot -> a knockback in flight
     }
 
     // ---------- the fight's statuses (Burn Baby Burn, Wavelength, Magic Vulnerability Up, Damage Down...) ----------
@@ -99,6 +102,14 @@
     }
     removeStatus(slot, key) { if (this.st[slot]) delete this.st[slot][key]; }
     hasStatus(slot, key) { const s = this.st[slot] && this.st[slot][key]; return !!(s && s.until > this.app.engine.now); }
+
+    // A knockback or draw-in: the spot slides to `to` ([E, N]) over dur seconds, unable to move meanwhile.
+    push(slot, to, dur) {
+      const from = this.compassOf(slot).slice();
+      this.pushes[slot] = { from, to: to.slice(), u: 0, dur: dur || 0.5 };
+      if (slot === this.playerSlot()) this.app.engine.knocked = true;
+    }
+    knocked(slot) { return !!this.pushes[slot]; }
     statusesOf(slot) {
       const now = this.app.engine.now;
       return Object.entries(this.st[slot] || {}).filter(([k, s]) => s.until > now && B.fightStatus(k)).map(([key, s]) => ({ key, s }));
@@ -121,7 +132,17 @@
     update(dt) {
       if (!this.active) return;
       const app = this.app, e = app.engine, f = this.fight, t = f.t;
+      const bc = B.toCompass(B.BOSS);                       // where the boss stands
+      // Knockbacks in flight: each slides to where it was thrown (an ease-out, as the game's do).
+      for (const [slot, k] of Object.entries(this.pushes)) {
+        const u = k.u = Math.min(1, k.u + dt / k.dur), s = 1 - (1 - u) * (1 - u);
+        const p = [k.from[0] + (k.to[0] - k.from[0]) * s, k.from[1] + (k.to[1] - k.from[1]) * s];
+        if (slot === this.playerSlot()) { const q = B.toSim(p); e.pos.x = q.x; e.pos.z = q.z; }
+        else { const b = this.bot(slot); if (b) b.pos = p; }
+        if (u >= 1) { delete this.pushes[slot]; if (slot === this.playerSlot()) e.knocked = false; }
+      }
       for (const b of this.bots) {
+        if (this.pushes[b.slot]) continue;
         const want = this.mech.target(b.slot, t, b.pos);
         const dx = want[0] - b.pos[0], dy = want[1] - b.pos[1], d = Math.hypot(dx, dy);
         const step = Math.min(d, RUN * dt);
@@ -129,11 +150,11 @@
         if (b.moving) {
           b.pos[0] += dx / d * step; b.pos[1] += dy / d * step;
           b.facing = Math.atan2(-dx, dy);                 // the sim's yaw (x is west)
-        } else b.facing = Math.atan2(b.pos[0], -b.pos[1]);    // toward the boss
+        } else b.facing = Math.atan2(b.pos[0] - bc[0], bc[1] - b.pos[1]);    // toward the boss
       }
       // The boss faces the main tank.
       const mt = this.compassOf('MT');
-      e.facing = Math.atan2(-mt[0], mt[1]);
+      e.facing = Math.atan2(bc[0] - mt[0], mt[1] - bc[1]);
       // Healing: whatever got hurt is topped back up a few seconds later.
       const heal = (now, last, max) => (now - last > 2 ? max * 0.07 * dt : 0);
       for (const b of this.bots) b.hp = Math.min(b.maxHp, b.hp + heal(e.now, b.lastHit, b.maxHp));

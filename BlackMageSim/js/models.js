@@ -362,7 +362,7 @@
       // standing still keeps whatever way you were facing.
       const vx = e.pos.x - ch.lastPos.x, vz = e.pos.z - ch.lastPos.z;
       ch.lastPos.x = e.pos.x; ch.lastPos.z = e.pos.z;
-      const toDummy = Math.atan2(-e.pos.x, -e.pos.z);
+      const toDummy = Math.atan2(B.BOSS.x - e.pos.x, B.BOSS.z - e.pos.z);
       const step = Math.hypot(vx, vz);
       let want = ch.facing, rate = 14;
       if (sc.mouselook) { want = sc.camYaw; rate = 30; }
@@ -500,9 +500,9 @@
       if (!b) return;
       const e = this.e, an = b.anims;
       b.group.visible = this.texturesLoaded(b);
-      b.group.position.set(0, 0, 0);
+      b.group.position.set(B.BOSS.x, 0, B.BOSS.z);           // where the fight has it standing
       const party = this.sc.app.party;
-      b.group.rotation.y = party && party.active ? e.facing : Math.atan2(e.pos.x, e.pos.z);     // her tank, or you
+      b.group.rotation.y = party && party.active ? e.facing : Math.atan2(e.pos.x - B.BOSS.x, e.pos.z - B.BOSS.z);     // her tank, or you
       // Casting: the wind-up, then its loop; each ability as it goes off plays its own motion; otherwise idle.
       const casting = !!fight.casting, idle = () => this.play(an.idle, true, null, b);
       if (fight.motionSeq !== b.motionSeq) {
