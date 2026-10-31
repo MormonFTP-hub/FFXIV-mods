@@ -524,15 +524,16 @@
       // (they land just before) to the nearest ground clear of them whose own star misses the spot by the boss.
       const onStar = (c, p, m) => star(c).some(h => B.mechInside(h, p, m));
       const near = (p, q, r) => Math.hypot(p[0] - q[0], p[1] - q[1]) < r;
-      const faults = (p, owner, prev, taken) => (Math.abs(p[0]) > 11.5 || Math.abs(p[1]) > 23.5 ? 9 : 0)
+      const faults = (p, owner, prev, taken, ahead = []) => (Math.abs(p[0]) > 11.5 || Math.abs(p[1]) > 23.5 ? 9 : 0)
+        + ahead.filter(q => onStar(p, q, 1.3)).length * 4
         + prev.filter(c => onStar(c, p, 1.3)).length * 5 + Object.values(safe).filter(q => onStar(p, q, 1.15)).length * 0.2
         + Object.values(safe).filter(q => near(p, q, 6.8)).length * 3 + tspots.filter(([s, q]) => s !== owner && near(p, q, 6.5)).length * 2
         + taken.filter(q => near(p, q, 6.5)).length * 3;
-      const dropAt = (want, owner, prev, taken) => {
-        let best = want, bf = faults(want, owner, prev, taken);
+      const dropAt = (want, owner, prev, taken, ahead) => {
+        let best = want, bf = faults(want, owner, prev, taken, ahead);
         for (let r = 0.5; r <= 12 && bf >= 1; r += 0.5) {
           const n = Math.max(1, Math.round(r * 6));
-          for (let k = 0; k < n; k++) { const c = add(want, at(k / n * 360, r)), fc = faults(c, owner, prev, taken); if (fc < bf) { bf = fc; best = c; } }
+          for (let k = 0; k < n; k++) { const c = add(want, at(k / n * 360, r)), fc = faults(c, owner, prev, taken, ahead); if (fc < bf) { bf = fc; best = c; } }
         }
         if (bf >= 1 && B.m7sDbg) B.m7sDbg.push({ want, best, bf, owner, prev, taken });
         return best;
@@ -547,15 +548,18 @@
         // (A tether holder drops on its spot; the other holder takes the dot further from it.)
         const tk = (s) => Object.keys(tet).find(x => tet[x] === s);
         const order = pair.slice().sort((x, y) => (tk(y) ? 1 : 0) - (tk(x) ? 1 : 0));
-        const free = dots.slice();
+        const free = dots.slice(), wants = {};
         order.forEach((s) => {
-          let want;
-          if (tk(s)) want = mul(tetherSpot(V2, tk(s)), f);
-          else {
-            free.sort((p, q) => Math.min(...taken.map(t => Math.hypot(q[0] - t[0], q[1] - t[1])), 99) - Math.min(...taken.map(t => Math.hypot(p[0] - t[0], p[1] - t[1])), 99));
-            want = free.shift();
-          }
-          drop[s] = dropAt(want, s, prev, taken);
+          if (tk(s)) { wants[s] = mul(tetherSpot(V2, tk(s)), f); return; }
+          const placed = Object.values(wants);
+          free.sort((p, q) => Math.min(...placed.map(t => Math.hypot(q[0] - t[0], q[1] - t[1])), 99) - Math.min(...placed.map(t => Math.hypot(p[0] - t[0], p[1] - t[1])), 99));
+          wants[s] = free.shift();
+        });
+        // (Each keeps clear of the other's spot, placed or still to place.)
+        order.forEach((s) => {
+          // (and its star off the next wave's dots, so they needn't move)
+          const ahead = k < 3 ? ((k + 1) % 2 ? SEEDS2.dotsB : SEEDS2.dotsA).map(p => mul(p, f)) : [];
+          drop[s] = dropAt(wants[s], s, prev, order.filter(x => x !== s).map(x => drop[x] || wants[x]), ahead);
           taken.push(drop[s]);
         });
         prev = Object.values(drop);
