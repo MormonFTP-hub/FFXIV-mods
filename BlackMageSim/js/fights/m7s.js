@@ -29,7 +29,8 @@
 // Simplified (what the engine can't show): the boss stays in the middle (where it really stands, at a wall or after a
 // leap, is drawn as a faint ring); the puddles follow fixed paths rather than chasing whoever baits them; the adds are
 // killed or interrupted as real parties do (their crosses only land for the uptime strat that leaves them alone);
-// tethers are just statuses; P2's walls are drawn but don't stop you.
+// tethers are just statuses; P2's walls are drawn but don't stop you; Sporesplosion's puddles are drawn a little
+// small (7 yalms, not 8) so there's room to stand between them; the lariat leaves a 12-yalm strip (as the logs show).
 (function (B) {
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
@@ -173,8 +174,7 @@
     if (v === 'kindred') {
       const adds = Object.values(L.seeds), r0 = Math.hypot(adds[0][0], adds[0][1]);
       // Behind each add in turn (G1 the west ones); the floor outside the four shadows: the middle and the gaps.
-      const groups = adds.map(a => ({ a, b: brg(a), who: [] }));
-      const order = seedTM ? [['MT', 'H1'], ['M1', 'R1'], ['OT', 'H2'], ['M2', 'R2']] : [['MT', 'H1'], ['M1', 'R1'], ['OT', 'H2'], ['M2', 'R2']];
+      const groups = adds.map(a => ({ a, b: brg(a) })), order = [['MT', 'H1'], ['M1', 'R1'], ['OT', 'H2'], ['M2', 'R2']];
       const westN = groups.filter(g => g.a[0] < -0.5 || (Math.abs(g.a[0]) < 0.5 && g.a[1] > 0)).sort((x, y) => y.a[1] - x.a[1]);
       const eastS = groups.filter(g => !westN.includes(g)).sort((x, y) => y.a[1] - x.a[1]);
       const pairs = [westN[0], westN[1], eastS[0], eastS[1]];
@@ -387,7 +387,7 @@
       const b0 = pick([0, 120, 240]), dir = pick([1, -1]);
       run.forEach((e, k) => {
         const b = b0 + dir * 120 * k, p = at(b, 16);
-        hz({ t: e.t, tell: castOf(e, 9), shape: 'circle', at: p, r: 21, dmg: 1.2, react: 2.6, name: 'Explosion' });
+        hz({ t: e.t, tell: castOf(e, 9), shape: 'circle', at: p, r: 22, dmg: 1.2, react: 2.6, name: 'Explosion' });
         raid(e.t, castOf(e, 9), 0.15, 'Explosion');
         pref(k ? run[k - 1].t + 0.05 : castOf(ev, 9) + 3.5, clump(at(b + 180, 7.5), 1.2));
       });
@@ -468,6 +468,7 @@
       const cols3 = [-8.5 * K, 0, 8.5 * K], rows6 = [-21.2, -12.8, -4.2, 4.2, 12.8, 21.2].map(v => v * K);
       sets.forEach((e, k) => {
         if (!e) return;
+        // (5.6, not 8 x 0.8: the grid is 8.5 apart, and a body needs the gap to stand on a burst point.)
         rows6.forEach((y, r) => hz({ t: e.t, tell: e.t - 5, shape: 'circle', at: [cols3[order[r][k]], y], r: 5.6, dmg: 1.2, react: 2, name: 'Sporesplosion' }));
       });
       sporeEnd = (sets[2] || ev).t;
