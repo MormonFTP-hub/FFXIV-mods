@@ -17,8 +17,9 @@
     club: { zenith: 0x05030c, horizon: 0x1a0e2c, sun: 0xffd0ec, fog: [120, 900], hemi: [0xa08cdc, 0x2a1838, 0.75], light: [0xffe6f4, 1.15] },
   };
 
-  // The maps there are: BLM.GAME_MAPS by key (an older file's BLM.GAME_MAP is the pier).
-  B.gameMaps = () => Object.assign({}, B.GAME_MAP ? { pier: B.GAME_MAP } : {}, B.GAME_MAPS || {});
+  // The maps there are: BLM.GAME_MAPS by key (an older file's BLM.GAME_MAP is the pier), and on the website the
+  // fights listed in BLM.MAP_FILES ({key: {name, label, fight, files, stub}}), loaded the first time you go there.
+  B.gameMaps = () => Object.assign({}, B.MAP_FILES || {}, B.GAME_MAP ? { pier: B.GAME_MAP } : {}, B.GAME_MAPS || {});
 
   class MapLayer {
     constructor(canvas, engine, scene, settings) {
@@ -78,7 +79,13 @@
 
     async load(k) {
       if (this.loaded[k]) return;
-      const G = this.maps[k];
+      let G = B.gameMaps()[k];
+      if (G && G.stub) {              // not here yet: its files, in order (the last one puts it together)
+        for (const f of G.files) if (!(await B.loadAsset(f))) throw new Error(`couldn't load ${f}`);
+        this.maps = B.gameMaps();
+        G = this.maps[k];
+        if (!G || G.stub) throw new Error(`map ${k} didn't load`);
+      }
       const bin = atob(G.bin), bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));

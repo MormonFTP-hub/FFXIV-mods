@@ -6,31 +6,34 @@
 //
 // The mechanics follow BossMod's module for the fight (github.com/awgil/ffxiv_bossmod, RM06SSugarRiot), whose shapes
 // and sizes come from the game's own Action sheet, and the layouts real kills show on FFLogs (the cacti):
-//   - Color Riot: 4-yalm bombs on the closest and the farthest player; a tank hit by ice (Cool Tint) must take fire
-//     next time, so the tanks swap in and out as the boss picks which colour goes close.
-//   - Wingmark + Double Style: everyone flies 34 yalms the way they face when Wingmark runs out; the summons at the
-//     edge (morbols' 100-degree cones, succubi's 30-yalm circles, paint bombs' and winged bombs' 15-yalm circles) leave
-//     one corner safe, and Color Clash's stored stacks (light parties on the healers or partners on the supports,
-//     6 yalms) land there.
+//   - Color Riot: 4-yalm bombs on the closest and the farthest player (aimed as they land); a tank hit by ice (Cool
+//     Tint) must take fire next time, so the tanks swap in and out as the boss picks which colour goes close.
+//   - Wingmark + Double Style: everyone flies 34 yalms the way they face when Wingmark runs out (a knockback toward
+//     the safe corner, from the opposite one); the summons at the edge (morbols' 100-degree cones, succubi's 30-yalm
+//     circles, paint bombs' and winged bombs' 15-yalm circles) leave one corner safe, and Color Clash's stored stacks
+//     (light parties on the healers or partners on the supports, 6 yalms) land there.
 //   - Sticky Mousse: 4-yalm spreads on the six non-tanks, two of whom are rooted and then burst as 4-player stacks.
-//   - Desert: six waves of cacti (10-yalm circles, 3 s apart, the patterns FFLogs kills show), then two 15-yalm
-//     defamations (a tank and a DPS) and a 6-yalm party stack; the quicksand (23 yalms round the middle) with eight
-//     more cacti and the healers' defamations, everyone in a corner; then the bombs: blue tethers (supports) drop
-//     theirs in the second quicksand, pink tethers (DPS) aim theirs into it, 6-yalm spreads, and out before it sinks.
+//   - Desert (the boss north): six waves of cacti (10-yalm circles, 3 s apart, the patterns FFLogs kills show), then
+//     two 15-yalm defamations (a tank and a DPS) and a 6-yalm party stack; the quicksand (23 yalms round the middle,
+//     sinking whoever's in it) with nine more cacti and the healers' defamations, everyone in a corner; then the
+//     bombs: blue tethers (supports) drop theirs in the second quicksand, pink tethers (DPS) aim theirs into it,
+//     6-yalm spreads, and out before it sinks.
 //   - Adds: the four waves' positions (Cleavemaxxing's, wtfdig's NA/EU adds plan, for every strat), the feather rays'
-//     8-yalm Water III drops on the tethered players, the Jabberwock's bind on a healer, Ready Ore Not.
-//   - Single Style, and the river's Double Style: 7-wide arrow lanes from the north and east edges (one of two
+//     8-yalm Water III drops on the tethered players (their puddles stay), the Jabberwock's bind on a healer, Ready
+//     Ore Not; the adds soak most of the party's damage meanwhile (script.adds).
+//   - Single Style, and the river's Double Style: 7-wide arrow lines from the north and east edges (one of two
 //     patterns), with Taste of Thunder's 6-yalm spreads or Taste of Fire's healer stacks in the squares between.
 //   - The storm: everyone baits a 3-yalm puddle, then stands on the bridge across from the cloud (its 21-yalm strike);
+//     the river (BossMod's: a lake in the middle, three curving branches, a bridge over each mouth) is electrified;
 //     Lightning Storm's 8-yalm spreads (a support and a DPS each time) go out to the islands either side; Lightning
 //     Bolts' 4-yalm circles; Pudding Party's five party stacks.
-//   - The lava: Mousse Drip's partner stacks (5 yalms, four drops, each leaving a puddle), Moussacre's 15-degree cones
-//     at the four closest, the 3-yalm bait puddles and the 3-yalm towers; then Wingmark into the second towers (four
-//     on one island and two on each other, or all eight south).
-// Simplified (the engine has no knockbacks, moving boss, arena changes or adds): Wingmark's flight is a run from the
-// launch spot to the landing spot as it goes off; the boss stays in the middle (in the game she moves north for the
-// desert and the river, south for the lava); the river, lava, quicksand and bridges are drawn but only the attacks
-// on them hurt; the adds can't be fought.
+//   - The lava (the boss south; the river and bridges burn): Mousse Drip's partner stacks (5 yalms, four drops, each
+//     leaving a puddle), Moussacre's 15-degree cones at the four closest, the 3-yalm bait puddles and the towers (one
+//     soaker each); then Wingmark flies everyone to the second towers (four on one island and two on each other, or
+//     all eight south).
+// Simplified: the boss is where the logs and diagrams put her, not where the tank drags her; the electrified river
+// and the lava hurt rather than wall you off (the engine's floor can't have a curved hole); the bombs' tethers and
+// the Levin Drop on the islands are checks on where you stand; the adds can't be fought (they soak damage).
 (function (B) {
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
@@ -167,6 +170,24 @@
     4: { MT: [3, 17.2], OT: [-9, -8], M1: [-1.5, 14.7], M2: [1.3, 15.5], R1: [-18.5, -14.5], R2: [17.9, -12.4], H1: [-0.4, -1], H2: [1.5, -2] },
   };
 
+  // The river (BossMod's RiverPoly, which the storm electrifies and the lava fills): a lake in the middle (bounded by
+  // three arcs: about 4 yalms round), its three mouths out to the bridges, and three branches curving out to the
+  // north, south-east and south-west edges (BossMod's ring slices, 28 to 32.9 yalms round points off the arena).
+  const RIVER = [
+    { shape: 'circle', at: [0, 0], r: 4.2 },
+    { shape: 'line', at: [0, 0], deg: 7.5, len: 6.4, w: 5 },
+    { shape: 'line', at: [0, 0], deg: 127.5, len: 6.4, w: 5 },
+    { shape: 'line', at: [0, 0], deg: 247.5, len: 6.4, w: 5 },
+    { shape: 'cone', at: [31.72, 7.56], deg: 310.5, half: 34.5, r: 32.9, r0: 28 },
+    { shape: 'cone', at: [27.77, 17.08], deg: 200, half: 20, r: 32.9, r0: 28 },
+    { shape: 'cone', at: [0.9, -32.59], deg: 315.5, half: 25.5, r: 32.9, r0: 28 },
+  ];
+  // The bridges over the mouths (BossMod's: 7.2 long across the water, 4.95 wide).
+  const BRIDGE_AXIS = { N: 97.5, SE: 37.5, SW: 157.5 };
+  const bridgeShape = (k) => ({ shape: 'line', at: BRIDGE[k], deg: BRIDGE_AXIS[k], len: 3.6, back: 3.6, w: 4.95 });
+  const LAVA = () => RIVER.concat(['N', 'SE', 'SW'].map(bridgeShape));
+  const inZone = (zones, p, m) => zones.some(z => B.mechInside(z, p, m));
+
   // Arrows (Single Style, the river's Double Style): three lanes from the north edge and three from the east, 7 wide,
   // one of two patterns; the squares between them are safe. A square: column c (west to east) and row r (north to south).
   const LANES = { A: { col: [-16.67, -3.33, 10], row: [16.67, 3.33, -10] }, B: { col: [-10, 3.33, 16.67], row: [10, -3.33, -16.67] } };
@@ -189,7 +210,7 @@
 
   // The storm: the three bridges, the cloud's three spots (it strikes 21 yalms round itself) and the bridge across
   // from each; Lightning Storm's targets go to the islands either side of the bridge, supports clockwise.
-  const BRIDGE = { N: [1.2, 9.0], SE: [7.05, -5.8], SW: [-8.4, -3.5] };
+  const BRIDGE = { N: [1.19, 9.04], SE: [7.05, -5.79], SW: [-8.42, -3.49] };
   const CLOUD = { NE: [15, 8], NW: [-13, 8], S: [0, -15] };
   const SAFE_BRIDGE = { NE: 'SW', NW: 'SE', S: 'N' };
   const ISLES = { N: ['NE', 'NW'], SE: ['S', 'NE'], SW: ['NW', 'S'] };       // [clockwise, counter-clockwise]
@@ -205,12 +226,12 @@
     return { MT: T1.sWestWall, OT: T1.sEastWall, M1: T1.sWestNear, M2: T1.sEastNear, H1: T1.nwIn, R1: T1.nwOut, H2: T1.neIn, R2: T1.neOut };
   }
   const DRIPS = [[-16, 17], [-9.5, 17.5], [-15.5, 10.5], [-9, 11]];          // the north-west island's; mirrored for north-east
-  // Moussacre: the tanks and melee bait the four cones (15 degrees each side) south of the boss, 25 degrees apart.
-  const PROTEAN_DEG = { MT: 215, M1: 190, M2: 165, OT: 140 };
+  // The boss in the lava: south, where the tanks and melee bait Moussacre's cones from their towers.
+  const LAVA_BOSS = [-0.5, -11.4];
   // The second towers: four on one island (north-east or north-west) and two on each other, or all eight south.
   const T2 = {
     NE: { four: { far1: [17, 15], near1: [10, 9], near2: [9, 3], far2: [15, -5] }, two: { NW: { close: [-10, 2.5], far: [-17, 12] }, S: { close: [7, -11], far: [-9, -17] } } },
-    NW: { four: { far1: [-17, 12], near1: [-10, 11], near2: [-10, 2.5], far2: [-17, -4] }, two: { NE: { close: [9, 3], far: [17, 8] }, S: { close: [-8, -10], far: [5, -17] } } },
+    NW: { four: { far1: [-17, 12], near1: [-10, 11], near2: [-10, 2.5], far2: [-17, -2] }, two: { NE: { close: [9, 3], far: [17, 8] }, S: { close: [-8, -10], far: [5, -17] } } },
   };
   const S8 = { cN: [0, -8], fW: [-15, -14], cS: [-2, -17], fE: [12, -16], nW: [-8, -10], sW: [-9, -17], nE: [7, -11], sE: [5, -17] };
   function towers2(strat, type) {
@@ -227,16 +248,17 @@
     const out = s === 'game8' ? { MT: four.near1, OT: four.near2, M1: four.far1, M2: four.far2 } : { MT: four.far1, OT: four.far2, M1: four.near1, M2: four.near2 };
     return Object.assign(out, { H1: T.two[g1Isle].close, R1: T.two[g1Isle].far, H2: T.two[g2Isle].close, R2: T.two[g2Isle].far });
   }
-  // A Wingmark launch spot: 34 yalms back from the landing, inside the arena, as near as can be to where you are.
-  function launchTo(land, from) {
+  // A Wingmark launch: the bearing to fly and the spot 34 yalms back from the landing, inside the arena and off the
+  // lava, as near as can be to where you are (and not on top of anyone else's).
+  function launchTo(land, from, taken) {
     let best = null, bd = Infinity;
     for (let d = 0; d < 360; d += 5) {
       const p = add(land, at(d, 1), -FLY);
-      if (Math.abs(p[0]) > 18.5 || Math.abs(p[1]) > 18.5) continue;
+      if (Math.abs(p[0]) > 18.5 || Math.abs(p[1]) > 18.5 || inZone(LAVA(), p, 1.6) || taken.some(q => dist(p, q) < 2.6)) continue;
       const k = dist(p, from);
-      if (k < bd) { bd = k; best = p; }
+      if (k < bd) { bd = k; best = { p, deg: d }; }
     }
-    return best || from;
+    return best;
   }
   // Bait-then-soak: stand at the tower's edge (A) as the 3-yalm puddles are baited, then step across it (B), 4.4
   // yalms off, out of your own puddle and nobody's else's, and out of the puddles (zones) still on the floor.
@@ -251,6 +273,7 @@
           if (Math.abs(a[0]) > 19 || Math.abs(a[1]) > 19 || Math.abs(b[0]) > 19 || Math.abs(b[1]) > 19) continue;
           let score = 99;
           for (const z of zones) score = Math.min(score, dist(a, z) - 6.4, dist(b, z) - 6.4);
+          if (inZone(LAVA(), a, 1.6) || inZone(LAVA(), b, 1.6)) score = Math.min(score, -5);
           for (const o of S) {
             if (o === s || !A[o]) continue;
             score = Math.min(score, dist(b, A[o]) - 4.4, dist(Bs[o], a) - 4.4);

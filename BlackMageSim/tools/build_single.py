@@ -10,7 +10,9 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      The icons (work/game-icons.js, ~18 MB) go next to it as game-icons-0.js,
                      -1.js, ...: whole icons per file, each file under 10 MB. The map
                      (work/game-map.js, from tools/export_map.py) goes next to it the
-                     same way as the models, as game-map-0.js, ...
+                     same way as the models, as game-map-0.js, ...; so do the fights'
+                     maps, which the page lists (BLM.MAP_FILES) and loads only when you
+                     go to that fight.
                      The game's sounds and music (work/sounds/, work/music/, from tools/export_audio.py) go next
                      to it as sounds/<name>.js and music/<name>.js: the page loads a job's or a fight's when it
                      needs them. BlackMageSim.html has them all inside.
@@ -80,10 +82,12 @@ def model_chunks(stem="game-models", var="GAME_MODELS"):
 
 
 def map_chunks():
-    """Each work/game-map*.js (BLM.GAME_MAPS[key] = {...}) as build/<stem>-N.js chunks; {source path: names}."""
+    """Each work/game-map*.js (BLM.GAME_MAPS[key] = {...}) as build/<stem>-N.js chunks; {source path: names}, and
+    each map's listing ({key: {name, label, fight, files, stub}}) for the page to load it when it's wanted."""
     for old in OUT.glob("game-map*-*.js"):
         old.unlink()
     out = {}
+    MAP_INDEX.clear()
     for path in sorted((ROOT / "work").glob("game-map*.js")):
         src = path.read_text(encoding="utf-8")
         m = re.search(r'BLM\.GAME_MAPS\[("[^"]+")\] = (\{.*\});\s*$', src, re.S)
@@ -103,7 +107,15 @@ def map_chunks():
             (OUT / name).write_text(js, encoding="utf-8")
             names.append(name)
         out[f"work/{path.name}"] = names
+        G = json.loads(text)
+        f = G.get("fight")
+        MAP_INDEX[json.loads(key)] = {"name": G.get("name"), "label": G.get("label"), "files": names, "stub": True,
+                                      "fight": {"duty": f.get("duty"), "boss": f.get("boss")} if f else None, "path": f"work/{path.name}"}
     return out
+
+
+MAP_INDEX = {}           # map_chunks' listing of every map
+EAGER_MAPS = ("pier",)   # loaded with the page (where you start); the rest when you go there
 
 
 def icon_chunks():
@@ -205,6 +217,15 @@ def main():
     maps = [n for names in map_files.values() for n in names]
     icons = icon_chunks()
     keep = {"work/game-models.js": chunks, "work/game-icons.js": icons, **map_files}
+    # On the website and the artifact the fights' maps load when you go there: their tags go, a listing comes.
+    lazy = {}
+    for k, m in MAP_INDEX.items():
+        if k in EAGER_MAPS:
+            continue
+        keep[m["path"]] = []
+        lazy[k] = {n: v for n, v in m.items() if n != "path"}
+    listing = json.dumps(lazy, separators=(",", ":"))
+    src = src.replace(AUDIO_TAG, f"<script>BLM.MAP_FILES = {listing};</script>\n  " + AUDIO_TAG)
     page = inline(src, keep=keep)
     (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
     site(page, [*icons, *chunks, *maps, *audio])
