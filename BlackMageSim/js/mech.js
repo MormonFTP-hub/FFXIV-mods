@@ -516,8 +516,9 @@
     //   looks    [{t, show: ['a1_flo', 'a3_flo02'], lift}]: the arena's look by phase. Its models are named
     //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
     //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
-    //            anywhere; models the list never names always show. `lift` raises what it shows that many yalms (a
-    //            phase the game fights lower down)
+    //            anywhere; models the list never names always show. `lift` raises what it shows that many yalms and
+    //            `shift` ([E, N]) moves it (a phase the game fights lower down or elsewhere); meanwhile you walk a
+    //            flat floor (the map's collision stays where the game has it)
     // and the script (B.FIGHT_SCRIPTS[key]):
     //   adds     [{from, to, hp, share, name}]: adds soak `share` of the party's damage in that window until their hp
     //   pushes   [{from, to, dealt | adds, name}]: deal `dealt` to the boss this pull (or kill window `adds`'s adds)

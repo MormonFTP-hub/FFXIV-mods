@@ -44,7 +44,8 @@
       return this.maps[k] ? k : this.maps.pier ? 'pier' : Object.keys(this.maps)[0];
     }
     get G() { return this.cur ? this.cur.G : null; }
-    get world() { return this.cur ? this.cur.world : null; }
+    // Its collision (none, a flat floor, while a fight shows a phase moved from where the game has it).
+    get world() { return this.cur && !this.cur.flat ? this.cur.world : null; }
     // The fight on this map (its boss, timeline and enrage), once it's loaded.
     fight() { return this.ready && this.G && this.G.fight ? this.G.fight : null; }
 
@@ -171,16 +172,18 @@
 
     // The arena's look (a fight's plan: `looks`): of the models the fight switches (all: names like 'a1', 'a1_flo' or
     // 'a3_flo02', each every model whose look-and-name starts so), only those in show; the rest of the room stays.
-    setLooks(show, all, lift) {
-      const E = this.cur, key = show ? show.join(',') + '@' + (lift || 0) : '';
+    setLooks(show, all, lift, shift) {
+      const E = this.cur, key = show ? `${show.join(',')}@${lift || 0}@${shift || ''}` : '';
       if (!E || !E.looked || E.lookKey === key) return;
       E.lookKey = key;
       const hit = (name, list) => list.some(e => name.startsWith(e));
       for (const im of E.looked) {
         const named = show && hit(im.userData.look, show);
         im.visible = !show || !hit(im.userData.look, [...all]) || named;
-        im.position.y = named ? lift || 0 : 0;                    // a lower phase raised to the fight's floor
+        // A phase the game fights elsewhere (lower down, or off to one side) brought to the fight's floor.
+        im.position.set(named && shift ? -shift[0] : 0, named ? lift || 0 : 0, named && shift ? shift[1] : 0);
       }
+      E.flat = !!(show && (lift || shift));        // its collision is where the game has it: walk a flat floor
       if (this.renderer) this.renderer.mapShadowKey = null;          // its shadows drawn again
       if (this.sc.models && this.sc.models.renderer) this.sc.models.renderer.mapShadowKey = null;
     }

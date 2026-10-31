@@ -120,7 +120,7 @@
       if (!L || !L.length || !map || !map.setLooks) return;
       let cur = L[0];
       for (const k of L) if (k.t <= (t ?? 0)) cur = k;
-      map.setLooks(cur.show, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))), cur.lift);
+      map.setLooks(cur.show, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))), cur.lift, cur.shift);
     }
 
     // Skip ahead to second `to` (a phase pushed early): the abilities and mechanics in between never happen.

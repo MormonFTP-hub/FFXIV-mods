@@ -63,7 +63,7 @@
   // a1, a2, a3) changes with them. (In the game P2 is 95 yalms north of P1, and P3 under it, 200 yalms down.)
   const P1_END = 148, P2_END = 352.1;
   const ARENA = [{ t: 0, shape: 'square', half: 20 }, { t: P1_END, shape: 'rect', a: [-12.5, -25], b: [12.5, 25] }, { t: P2_END, shape: 'square', half: 20 }];
-  const LOOKS = [{ t: 0, show: ['a1'] }, { t: P1_END, show: ['a2'] }, { t: P2_END, show: ['a3'] }];
+  const LOOKS = [{ t: 0, show: ['a1'] }, { t: P1_END, show: ['a2'], shift: [0, -95] }, { t: P2_END, show: ['a3'], shift: [0, -95], lift: 200 }];
   const HITBOX = [{ t: 0, r: 7 }, { t: P1_END, r: 19.712 }, { t: P2_END, r: 7 }];
 
   // Everyone's spot outside mechanics while the boss is in the middle (it faces the tanks, north): the tanks at its
