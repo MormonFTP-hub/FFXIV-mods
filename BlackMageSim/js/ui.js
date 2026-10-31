@@ -814,6 +814,7 @@ ${job.helpHtml(seq, ic)}
       bind('#s-pull', 'pullLength', el => parseInt(el.value, 10));
       bind('#s-cd', 'countdown', el => parseInt(el.value, 10));
       bind('#s-vol', 'volume', el => parseFloat(el.value), 'input');
+      bind('#s-music', 'musicVolume', el => parseFloat(el.value), 'input');
       bind('#s-mpcost', 'showMpCost', el => el.checked);
       bind('#s-slide', 'slidecastMarker', el => el.checked);
       bind('#s-timeline', 'showTimeline', el => el.checked);
@@ -868,6 +869,7 @@ ${job.helpHtml(seq, ic)}
       $('#s-pull').value = String(s.pullLength);
       $('#s-cd').value = String(s.countdown);
       $('#s-vol').value = String(s.volume);
+      $('#s-music').value = String(s.musicVolume);
       $('#s-mpcost').checked = s.showMpCost;
       $('#s-slide').checked = s.slidecastMarker;
       $('#s-timeline').checked = s.showTimeline;

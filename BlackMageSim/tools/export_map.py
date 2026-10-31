@@ -39,7 +39,7 @@ OUT = ROOT / "work"
 
 ZONES = {
     "pier": {"name": "Wolves' Den Pier", "label": "Wolves' Den Pier · striking dummy", "bg": "bg/ffxiv/sea_s1/pvp/s1p1/",
-             "out": "game-map.js", "sky": "day",
+             "out": "game-map.js", "sky": "day", "music": "music/ffxiv/BGM_Town_Lim_Day.scd",   # Limsa Lominsa by day: the pier is off its Lower Decks
              # The dummy the sim's own stands in for: one of the four on the lower deck, the pair that faces the pier's
              # far end, so you look past it to the ships and the open sea. Its feet are at y 2.25.
              "dummy": (96.13, 2.25, -4.63),
@@ -79,6 +79,9 @@ ZONES = {
                                    "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "frogtourageFan": 3998,
                                    "sustainedDamage": 2935, "weakness": 43, "brinkOfDeath": 44}}},
 }
+# More fights, one file each: tools/zones/<key>.json, the same fields as above (the dummy's spot a list).
+for _f in sorted((Path(__file__).resolve().parent / "zones").glob("*.json")):
+    ZONES[_f.stem] = json.loads(_f.read_text(encoding="utf-8"))
 ZONE = ZONES["pier"]        # the one being exported
 LAYOUTS = ("level/bg.lgb",)
 # PMP Viewer's model helper leaves out a model's water and vertical-fog meshes, where the light shafts and the glow
@@ -480,6 +483,18 @@ def timeline(f):
     return {"events": events, "untargetable": untarget, "enrage": enrage}
 
 
+def timeline_only(key):
+    """A fight's timeline and statuses only (no arena, no boss), for writing and checking its script before the map
+    is exported: work/fights/<key>.json, which tools/qa_fight.js reads."""
+    f = ZONES[key]["fight"]
+    tl = timeline(f)
+    tl["statuses"] = statuses_out(f["statuses"]) if f.get("statuses") else {}
+    out = OUT / "fights" / f"{key}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps({"key": key, "fight": dict({k: f.get(k) for k in ("duty", "boss", "hitbox")}, **tl)}), encoding="utf-8")
+    print(f"{key}: timeline -> {out}")
+
+
 def main(key):
     global ZONE
     ZONE = ZONES[key]
@@ -536,7 +551,11 @@ def main(key):
 
 if __name__ == "__main__":
     try:
-        for k in sys.argv[1:] or list(ZONES):
-            main(k)
+        args = [a for a in sys.argv[1:] if not a.startswith("--")]
+        for k in args or list(ZONES):
+            if "--timeline" in sys.argv:
+                timeline_only(k)
+            else:
+                main(k)
     finally:
         game.SERVE.close()

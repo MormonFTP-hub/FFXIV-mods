@@ -1,0 +1,23 @@
+{
+  "name": "Brute Abombinator's arena",
+  "label": "M7S · Brute Abombinator",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6r7/",
+  "out": "game-map-m7s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "AAC Cruiserweight M3 (Savage)",
+    "boss": "Brute Abombinator",
+    "timeline": "07-dt/raid/r7s",
+    "hitbox": 7.0,
+    "model": {
+      "kind": "monster", "id": 935, "body": 1, "variant": 1, "scale": 0.7,
+      "pap": "chara/monster/m0935/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0935/animation/a0001/bt_common/mon_sp/m0935/"
+    },
+    "statuses": {"thornsOfDeath": 4466, "thornsOfDeathTank": 4499, "magicVuln": 2941, "damageDown": 2911,
+                 "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44}
+  }
+}

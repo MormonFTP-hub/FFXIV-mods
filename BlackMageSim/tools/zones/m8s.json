@@ -1,0 +1,26 @@
+{
+  "name": "Howling Blade's arena",
+  "label": "M8S · Howling Blade",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6r8/",
+  "out": "game-map-m8s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "AAC Cruiserweight M4 (Savage)",
+    "boss": "Howling Blade",
+    "timeline": "07-dt/raid/r8s",
+    "hitbox": 5.0,
+    "model": {
+      "kind": "monster", "id": 928, "body": 1, "variant": 1, "scale": 0.65,
+      "pap": "chara/monster/m0928/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0928/animation/a0001/bt_common/mon_sp/m0928/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "physVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "windpack": 4389, "stonepack": 4390, "earthborneEnd": 4391, "windborneEnd": 4392, "bind": 2518,
+      "lamentClose": 4396, "lamentDistant": 4397
+    }
+  }
+}

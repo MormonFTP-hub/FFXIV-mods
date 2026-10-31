@@ -183,6 +183,7 @@
       marks();
       if (vuln) why = (why ? why + '; ' : '') + 'doubled by Magic Vulnerability Up';
       ui.fly({ at, text: fmt(amount), cls: 'hurt', dx: -60 });
+      this.app.sfx.play('hurt');
       ui.log(`${source} hits you for ${fmt(amount)} damage${why ? ` (${why})` : ''}.`, 'lose', 'battle');
       if (e.hp <= 0) this.ko(source);
     }

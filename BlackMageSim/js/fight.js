@@ -26,10 +26,14 @@
     reset() {
       this.next = 0;
       this.casting = null;
+      this.castHeard = null;
       this.over = false;
       this.picks = {};
       this.t = null;
       this.hp = this.maxHp;
+      this.dealt = 0;                            // all the party's damage this pull, and what the adds took of it
+      this.soaked = 0;
+      this.addsTaken = (this.script && this.script.adds || []).map(() => 0);
       this.app.engine.untargetable = false;
       if (this.mech) this.mech.reset();          // the next pull's picks
       if (this.app.party) this.app.party.reset();
@@ -57,10 +61,23 @@
       const t = this.t = e.now - enc.start;
       while (this.next < this.events.length && this.events[this.next].t <= t) this.fire(this.events[this.next++]);
       this.casting = this.events.find((ev) => ev.cast && t >= ev.t - ev.cast && t < ev.t) || null;
+      if (this.casting && this.casting !== this.castHeard) {           // the boss's cast sound, as it starts
+        this.castHeard = this.casting;
+        if (app.sfx && app.sfx.boss) app.sfx.boss(this.key, this.label(this.casting), 'cast');
+      }
       e.untargetable = this.data.untargetable.some(([a, b]) => t >= a && t < b);
       if (this.mech) this.mech.update(t);
       if (this.maxHp) {
-        this.hp = Math.max(0, this.maxHp - enc.total - app.party.botDamage);
+        // Adds that soak damage (script.adds: [{from, to, hp, share, name}]): in each window that share of what the
+        // party deals goes to them, not the boss, until their HP is gone (the fight's own adds, fought beside her).
+        const dealt = enc.total + app.party.botDamage, d = dealt - this.dealt;
+        this.dealt = dealt;
+        (this.script.adds || []).forEach((w, k) => {
+          if (d <= 0 || t < w.from || t >= w.to) return;
+          const take = Math.min(d * (w.share ?? 1), w.hp - this.addsTaken[k]);
+          if (take > 0) { this.addsTaken[k] += take; this.soaked += take; }
+        });
+        this.hp = Math.max(0, this.maxHp - (dealt - this.soaked));
         if (!this.over && this.hp <= 0) {
           this.over = true;
           app.ui.log(`${this.name} is defeated!`, 'gain', 'battle');
@@ -80,6 +97,7 @@
     fire(ev) {
       const name = this.label(ev);
       if (ev.anim) { this.motion = ev.anim; this.motionSeq = (this.motionSeq || 0) + 1; }       // the boss plays it
+      if (this.app.sfx && this.app.sfx.boss) this.app.sfx.boss(this.key, name, 'use');         // and its sound
       if (ev.cast || ev.kind === 'enrage') this.app.ui.log(`${this.name} casts ${name}.`, 'lose', 'battle');
       else this.app.ui.log(`${this.name} uses ${name}.`, 'dim', 'battle');
     }
@@ -111,9 +129,12 @@
       // With a script: the strat, your spot, and your debuff's timer.
       const party = this.app.party, me = party && party.playerSlot();
       const deb = this.mech && t !== null && this.mech.plan.debuffs.find(d => d.slot === me && t >= d.t0 && t < d.t1);
+      const adds = t === null ? -1 : (this.script && this.script.adds || []).findIndex(w => t >= w.from && t < w.to);
+      const aw = adds >= 0 && this.script.adds[adds], left = aw ? Math.max(0, 1 - this.addsTaken[adds] / aw.hp) : 0;
       $('#fight-tl-body').innerHTML = `<div class="hd"><span>${esc(this.data.duty)}</span><b>${t === null ? 'Pull to start' : `${mmss(t)} / ${mmss(this.data.enrage)}`}</b></div>`
         + (this.mech ? `<div class="sub">${esc(this.script.strats[this.mech.strat].label)} · you're ${me}</div>` : '')
         + (deb ? `<div class="ev deb"><b>${Math.ceil(deb.t1 - t)}</b>${esc(deb.name)}${deb.hint ? `: ${esc(deb.hint)}` : ''}</div>` : '')
+        + (aw && left > 0 ? `<div class="ev adds"><b>${Math.ceil(left * 100)}%</b>${esc(aw.name || 'Adds')}: the party's damage goes to them</div>` : '')
         + up.map((ev) => `<div class="ev${ev.kind === 'enrage' ? ' enr' : ''}"><b>${Math.ceil(ev.t - now)}</b>${esc(this.label(ev))}</div>`).join('')
         + (this.app.engine.untargetable ? '<div class="ev unt">Untargetable</div>' : '');
     }

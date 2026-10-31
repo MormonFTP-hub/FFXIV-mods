@@ -166,6 +166,9 @@
       this.engine.pos.z = -this.job.startDistance;
       this.sfx = new B.Sfx();
       this.sfx.setVolume(this.store.settings.volume);
+      this.sfx.want(this.job.id);                 // the job's own sounds (tools/export_audio.py), if exported
+      this.music = new B.Music(this.sfx);
+      this.music.setVolume(this.store.settings.musicVolume);
       this.scene = new B.Scene(document.getElementById('scene'), this.engine, document.getElementById('fx'));
       this.models = new B.ModelLayer(document.getElementById('models'), this.engine, this.scene, this.store.settings);
       this.scene.models = this.models;
@@ -197,6 +200,7 @@
     applySettings() {
       if (this.debug) this.debug.add('settings changed');
       this.sfx.setVolume(this.store.settings.volume);
+      this.music.setVolume(this.store.settings.musicVolume);
       this.models.setEnabled();
       this.map.setEnabled();
       this.ui.updateMeter(true);
@@ -242,6 +246,7 @@
       this.job = B.setJob(jobId, st.versions[jobId]);
       const fresh = !this.hasBars();          // before anything draws the bars (which fills in the defaults)
       this.engine.setJob(this.job);
+      this.sfx.want(this.job.id);
       this.placeStart();
       this.party.setup();                     // your spot and HP follow the job
       this.cd = null; this.cdEndedAt = null; this.recentUses = [];
@@ -302,7 +307,7 @@
       const caster = () => B.isCaster(e.job);
       e.on('castStart', ev => {
         sc.onCastStart(ev.id);
-        sfx.play(caster() ? 'cast' : 'draw');
+        if (!sfx.action(ev.id, 'cast')) sfx.play(caster() ? 'cast' : 'draw');      // the game's sound, or the synth's
         ui.log(caster() ? `You begin casting ${A[ev.id].name}.` : `You ready ${A[ev.id].name}.`, 'act');
       });
       e.on('resolve', ev => {
@@ -311,10 +316,12 @@
         if (a.kind === 'gcd') ui.log(caster() ? `You cast ${a.name}.` : `You use ${a.name}.`, 'act');
         else if (a.kind === 'item') ui.log(`You use a ${a.name}.`, 'act');
         else ui.log(`You use ${a.name}.`, 'act');
-        if (a.kind !== 'gcd') sfx.play(ev.id === 'manafont' ? 'manafont' : 'ogcd');
+        // The game plays an action's sound with its animation, as it goes off.
+        if (!sfx.action(ev.id, 'use') && a.kind !== 'gcd') sfx.play(ev.id === 'manafont' ? 'manafont' : 'ogcd');
       });
       e.on('interrupt', ev => {
         ui.castInterrupted(ev.id, ev.reason);
+        sfx.stopCast();
         sfx.play('interrupt');
         ui.log(ev.reason === 'Interrupted' ? `${A[ev.id].name} is interrupted.` : `${A[ev.id].name} fails: ${ev.reason}`, 'lose');
         const u = [...this.recentUses].reverse().find(x => x.id === ev.id && A[x.id].kind === 'gcd');
@@ -348,7 +355,8 @@
         ui.log(`${lead}${what}${target()} takes ${fmt(ev.amount)} damage.`, 'dmg');
         sc.onHit(ev);
         if (ev.dot) sfx.play('dot');
-        else {
+        else if (sfx.hasAction(ev.id, 'use')) sfx.action(ev.id, 'hit');      // its sound played as it went off
+        else if (!sfx.action(ev.id, 'hit')) {
           const snd = a.sound || a.fx || { fire: 'fire', fire3: 'fire', fire4: 'fire4', despair: 'despair', blizzard: 'ice', blizzard3: 'ice', blizzard4: 'ice4', thunder3: 'thunder', xenoglossy: 'xeno', foul: 'xeno', paradox: 'paradox', scathe: 'xeno' }[a.look || ev.id];
           if (snd) sfx.play(snd);
         }
@@ -388,6 +396,7 @@
       this.cdEndedAt = null;
       const pre = this.recentUses.filter(u => u.t >= start - 25);
       this.enc = new Encounter(this.history.length + 1, start, pre);
+      if (this.music.mode === 'win') this.music.play(this.musicKey());       // after a clear, the fight's own again
       if (this.debug) this.debug.add(`pull ${this.enc.n} started`);
       this.ui.log(`Pull ${this.enc.n} started.`, 'dim', 'system');
     },
@@ -408,7 +417,10 @@
       const dps = enc.total / dur;
       if (this.debug) this.debug.add(`pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'} (${reason}): ${Math.round(dps)} DPS over ${dur.toFixed(1)}s`);
       const mm = Math.floor(dur / 60) + ':' + String(Math.floor(dur % 60)).padStart(2, '0');
-      if (reason === 'kill') this.ui.log(`Pull ${enc.n}: ${this.fight ? this.fight.name : 'the boss'} defeated in ${mm}. Your DPS: ${fmt(dps)}.`, 'sys', 'system');
+      if (reason === 'kill') {
+        this.ui.log(`Pull ${enc.n}: ${this.fight ? this.fight.name : 'the boss'} defeated in ${mm}. Your DPS: ${fmt(dps)}.`, 'sys', 'system');
+        this.music.win();
+      }
       else this.ui.log(`Pull ${enc.n} ${reason === 'time' ? 'complete' : 'ended'}: ${fmt(dps)} DPS over ${mm}.`, 'sys', 'system');
       if (reason === 'time') this.ui.count('TIME', true);
       if (dur >= 15 && !this.ui.anyWindow()) this.ui.showResults(enc);
@@ -438,10 +450,15 @@
       else this.ui.log(`There's no fight "${arg}". /fight lists them.`, 'err', 'system');
     },
 
+    // The music for where you are (tools/export_audio.py): the fight's own, or the pier's.
+    musicKey() { return this.map.key || null; },
+
     // The map has loaded: its fight, if it has one, whose boss's hitbox sets the ranges; then back to the start.
     onMap() {
       const f = this.map.fight();
       this.fight = f ? new B.Fight(this, this.map.key, f) : null;
+      if (this.fight) this.sfx.want('boss-' + this.map.key);
+      this.music.play(this.musicKey());
       B.DUMMY_RADIUS = this.fight ? this.fight.hitbox : BASE_RADIUS;
       B.DUMMY_KEEP = this.fight ? 1 : null;          // a boss you can walk under
       if (!this.fight) B.Fight.clear();
@@ -541,6 +558,7 @@
       this.cd = { end: this.engine.now + n, shown: null };
       this.ui.log(`Battle commencing in ${n} seconds! (${name})`, 'sys', 'system');
       this.sfx.ensure();
+      if (this.fight) this.music.play(this.musicKey());        // a fresh pull: the fight's music from its start
     },
 
     updateCountdown() {

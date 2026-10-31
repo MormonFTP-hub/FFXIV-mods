@@ -11,6 +11,9 @@ Writes two files to BlackMageSim/build/ (git-ignored):
                      -1.js, ...: whole icons per file, each file under 10 MB. The map
                      (work/game-map.js, from tools/export_map.py) goes next to it the
                      same way as the models, as game-map-0.js, ...
+                     The game's sounds and music (work/sounds/, work/music/, from tools/export_audio.py) go next
+                     to it as sounds/<name>.js and music/<name>.js: the page loads a job's or a fight's when it
+                     needs them. BlackMageSim.html has them all inside.
   DummySimLab.html   the simulator (sim.html) in one file; sim-artifact.html its artifact fragment.
 And a folder:
   site/              a website to upload to a free static host (Cloudflare Pages, GitHub
@@ -128,6 +131,34 @@ def icon_chunks():
     return names
 
 
+AUDIO_TAG = '<script src="js/audio.js"></script>'
+
+
+def audio_files():
+    """work/sounds/*.js and work/music/*.js copied to build/ as sounds/<name>.js, music/<name>.js; their names."""
+    names = []
+    for d in ("sounds", "music"):
+        if (OUT / d).exists():
+            shutil.rmtree(OUT / d)
+        src = ROOT / "work" / d
+        if not src.exists():
+            continue
+        (OUT / d).mkdir()
+        for f in sorted(src.glob("*.js")):
+            shutil.copyfile(f, OUT / d / f.name)
+            names.append(f"{d}/{f.name}")
+    return names
+
+
+def with_audio(src: str, names, inside: bool) -> str:
+    """The page with the audio files: all of them inside (one file to send), or loaded from beside it."""
+    if inside:
+        tags = "".join(f'<script src="work/{n}"></script>\n  ' for n in names)
+    else:
+        tags = "<script>BLM.ASSET_BASE = '';</script>\n  "
+    return src.replace(AUDIO_TAG, tags + AUDIO_TAG)
+
+
 def fragment(html: str) -> str:
     head = re.search(r"<head>(.*?)</head>", html, re.S).group(1)
     body = re.search(r"<body>(.*?)</body>", html, re.S).group(1)
@@ -142,8 +173,11 @@ def site(page: str, files) -> None:
     for old in SITE.iterdir():
         if old.is_file():
             old.unlink()
+        elif old.name in ("sounds", "music"):
+            shutil.rmtree(old)
     (SITE / "index.html").write_text(page, encoding="utf-8")
     for name in files:
+        (SITE / name).parent.mkdir(exist_ok=True)
         shutil.copyfile(OUT / name, SITE / name)
     # Cloudflare's wrangler leaves its cache (account name included) in the folder it runs from: never upload it.
     (SITE / ".assetsignore").write_text(".wrangler\n", encoding="utf-8")
@@ -161,8 +195,11 @@ def sim_lab() -> None:
 
 def main():
     src = (ROOT / "index.html").read_text(encoding="utf-8")
+    assert AUDIO_TAG in src, "index.html has no js/audio.js tag"
     OUT.mkdir(exist_ok=True)
-    (OUT / "BlackMageSim.html").write_text(inline(src), encoding="utf-8")
+    audio = audio_files()
+    (OUT / "BlackMageSim.html").write_text(inline(with_audio(src, audio, True)), encoding="utf-8")
+    src = with_audio(src, audio, False)
     chunks = model_chunks()
     map_files = map_chunks()
     maps = [n for names in map_files.values() for n in names]
@@ -170,11 +207,14 @@ def main():
     keep = {"work/game-models.js": chunks, "work/game-icons.js": icons, **map_files}
     page = inline(src, keep=keep)
     (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
-    site(page, [*icons, *chunks, *maps])
+    site(page, [*icons, *chunks, *maps, *audio])
     sim_lab()
+    if audio:
+        size = sum((OUT / n).stat().st_size for n in audio)
+        print(f"{OUT / 'sounds'}, {OUT / 'music'}  {len(audio)} files, {size / 1024 / 1024:.0f} MB")
     for name in ("BlackMageSim.html", "artifact.html", *icons, *chunks, *maps):
         print(f"{OUT / name}  {(OUT / name).stat().st_size / 1024:.0f} KB")
-    files = sorted(SITE.iterdir())
+    files = sorted(f for f in SITE.rglob("*") if f.is_file())
     print(f"{SITE}  {len(files)} files, {sum(f.stat().st_size for f in files) / 1024 / 1024:.0f} MB, "
           f"largest {max(f.stat().st_size for f in files) / 1024 / 1024:.1f} MB")
 

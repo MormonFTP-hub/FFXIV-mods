@@ -353,7 +353,7 @@ window.BLM = window.BLM || {};
     ['KeyQ', 'KeyE', 'KeyR', 'KeyF', 'KeyT', 'KeyG', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyY'],
   ];
 
-  B.SIM_VERSION = '2.53.0';      // the README changelog's newest entry (shown in the debug log)
+  B.SIM_VERSION = '2.54.0';      // the README changelog's newest entry (shown in the debug log)
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
@@ -363,6 +363,7 @@ window.BLM = window.BLM || {};
     ping: 70,             // ms; the vanilla client adds it to every lock
     latencyComp: true,    // NoClippy / XivAlexander (most players run one); off is the vanilla client
     volume: 0.5,
+    musicVolume: 0.35,
     pullLength: 0,        // seconds, 0 = until you stop
     countdown: 15,
     showMpCost: true,

@@ -1,0 +1,28 @@
+{
+  "name": "Sugar Riot's canvas",
+  "label": "M6S · Sugar Riot",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6r6/",
+  "out": "game-map-m6s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "_a[23]_",
+  "fight": {
+    "duty": "AAC Cruiserweight M2 (Savage)",
+    "boss": "Sugar Riot",
+    "timeline": "07-dt/raid/r6s",
+    "hitbox": 4.0,
+    "model": {
+      "kind": "monster", "id": 922, "body": 1, "variant": 1, "scale": 1.0,
+      "pap": "chara/monster/m0922/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0922/animation/a0001/bt_common/mon_sp/m0922/"
+    },
+    "statuses": {
+      "warmTint": 4451, "coolTint": 4452, "wingmark": 4450, "stun": 4163, "mousseMine": 4453,
+      "heatingUp": 4454, "burningUp": 4448, "fireResDown": 4383, "sixFulmsUnder": 567, "bind": 3625,
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "vulnUp": 3361,
+      "sustainedDamage": 2935, "weakness": 43, "brinkOfDeath": 44
+    }
+  }
+}
