@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_a1_stc06",
   "fight": {
     "duty": "Recollection (Extreme)",
     "boss": "Zelenia",

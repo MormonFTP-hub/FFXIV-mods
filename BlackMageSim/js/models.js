@@ -523,19 +523,19 @@
     // A fight's other bosses (the plan's `others`, the map's extra models): out in their windows, where the plan has
     // them, turned to the party (or their `face`), idling, and casting with the fight's cast bar.
     updateOthers(fight) {
-      const out = fight && fight.mech && fight.data.extra ? fight.mech.othersAt(fight.t) : [];
+      const out = fight && fight.mech ? fight.mech.othersAt(fight.t) : [];
       this.others = this.others || new Map();
       const shown = new Set();
       for (const { o, at } of out) {
-        const data = fight.data.extra[o.model];
+        const data = o.model === 'main' ? fight.data.model : fight.data.extra[o.model];      // 'main': a copy of the boss
         if (!data) continue;
-        let ch = this.others.get(data);
+        let ch = this.others.get(o);                           // each entry its own figure (several clones of one model)
         if (!ch) {
           const src = this.sc.map.source();
           for (const a of Object.values(data.anims)) a.src = src;
           ch = this.buildCharacter(data, src);
           ch.group.scale.setScalar(data.scale || 1);
-          this.others.set(data, ch);
+          this.others.set(o, ch);
           this.play(ch.anims.idle, true, null, ch);
         }
         shown.add(ch);

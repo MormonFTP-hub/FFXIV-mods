@@ -73,7 +73,7 @@
         this.castHeard = this.casting;
         if (app.sfx && app.sfx.boss) app.sfx.boss(this.key, this.label(this.casting), 'cast');
       }
-      e.untargetable = this.data.untargetable.some(([a, b]) => t >= a && t < b);
+      e.untargetable = this.data.untargetable.concat((this.mech && this.mech.plan.untargetable) || []).some(([a, b]) => t >= a && t < b);
       // Adds up while the boss can't be targeted (an adds window with `whileAway`): the party hits them meanwhile.
       this.onAdds = e.untargetable && (this.script && this.script.adds || []).some((w, k) => w.whileAway && t >= w.from && t < w.to && this.addsTaken[k] < w.hp);
       if (this.onAdds) e.untargetable = false;

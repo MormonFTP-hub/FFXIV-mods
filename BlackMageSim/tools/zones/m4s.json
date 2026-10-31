@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "x6r4_a0_elc01|_a1_bil(1[34]|2[234])|x6r1_a0_(elc0|dro)|_a1_lmp2|_a3_pic",
   "fight": {
     "duty": "AAC Light-heavyweight M4 (Savage)",
     "boss": "Wicked Thunder",
@@ -22,7 +23,8 @@
       "p2": {
         "kind": "monster", "id": 889, "body": 1, "variant": 1, "scale": 3.0,
         "pap": "chara/monster/m0889/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"}
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+        "specials": "chara/monster/m0889/animation/a0001/bt_common/mon_sp/m0889/"
       }
     },
     "statuses": {

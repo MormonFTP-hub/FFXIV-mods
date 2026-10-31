@@ -6,6 +6,7 @@
   "sky": "day",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_a0_gmc|_u3_[a-z0-9]+[.]mdl|_u4_emv|_u5_(all|mnt|rck|lva)[a-z0-9]*[.]mdl|_u0_all0[78]|_a2_|_t[02]_roc|_p0_sabo|_p3_plt|_p1_(bbh01|tre0)",
   "fight": {
     "duty": "Worqor Lar Dor (Extreme)",
     "boss": "Valigarmanda",

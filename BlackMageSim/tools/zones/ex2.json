@@ -1,0 +1,27 @@
+{
+  "name": "Everkeep's arena",
+  "label": "EX2 · Zoraal Ja",
+  "bg": "bg/ex5/01_xkt_x6/fld/x6fa/",
+  "out": "game-map-ex2.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "_a1_ring3",
+  "fight": {
+    "duty": "Everkeep (Extreme)",
+    "boss": "Zoraal Ja",
+    "timeline": "07-dt/trial/zoraal-ja-ex",
+    "branches": "main",
+    "hitbox": 10.05,
+    "model": {
+      "kind": "monster", "id": 879, "body": 1, "variant": 1, "scale": 1.5,
+      "pap": "chara/monster/m0879/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0879/animation/a0001/bt_common/mon_sp/m0879/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "projection": 4047, "windResistanceDown": 2096, "liftoff": 3262, "burningChains": 769
+    }
+  }
+}

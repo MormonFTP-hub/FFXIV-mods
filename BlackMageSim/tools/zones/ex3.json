@@ -1,0 +1,29 @@
+{
+  "name": "Queen Eternal's arena",
+  "label": "EX3 · Queen Eternal",
+  "bg": "bg/ex5/01_xkt_x6/fld/x6fc/",
+  "out": "game-map-ex3.js",
+  "sky": "day",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "x6fb_a1_stg0[13]|_a1_stg1c|_a[056]_|_a3_stg1r|_a8_col01|_u3_nat01|_u4_nat0[12]",
+  "fight": {
+    "duty": "The Minstrel's Ballad: Sphene's Burden",
+    "boss": "Queen Eternal",
+    "timeline": "07-dt/trial/queen-eternal-ex",
+    "branches": "main",
+    "hitbox": 22.0,
+    "model": {
+      "kind": "monster", "id": 881, "body": 1, "variant": 1, "scale": 1.0,
+      "pap": "chara/monster/m0881/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+      "specials": "chara/monster/m0881/animation/a0001/bt_common/mon_sp/m0881/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "physVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "eastWindOfChange": 4189, "westWindOfChange": 4190, "missingLink": 3587, "gravitationalAnomaly": 3770,
+      "authoritysExpansion": 4186, "authoritysBoot": 4187, "authoritysHeel": 4188,
+      "freezingUp": 2540, "deepFreeze": 3519
+    }
+  }
+}

@@ -117,8 +117,13 @@ def map_chunks():
 
 MAP_INDEX = {}           # map_chunks' listing of every map
 EAGER_MAPS = ("pier",)   # loaded with the page (where you start); the rest when you go there
-# Left off the claude.ai artifact, which holds 256 MB at most (the website has them): M2S, a timeline-only test fight.
-ARTIFACT_SKIP = ("m2s",)
+# The claude.ai copies: each holds 256 MB at most, so the fights are split between them (the website has them all).
+# Each page lists only its own fights; the shared files (models, icons, the pier, the jobs' sounds) are in both, and
+# artifact-files.json says which files each needs. M2S, a timeline-only test fight, is on neither.
+ARTIFACTS = {
+    "artifact.html": ("m5s", "m6s", "m7s", "m8s", "m9s", "m10s", "m11s", "m12s"),          # the Savage tiers
+    "artifact-2.html": ("m4s", "ex1", "ex2", "ex3", "ex4", "ex5", "ex6", "ex7", "ex8", "chaotic"),   # the rest
+}
 
 
 def icon_chunks():
@@ -245,8 +250,20 @@ def main():
     def listed(d):
         return src.replace(AUDIO_TAG, f"<script>BLM.MAP_FILES = {json.dumps(d, separators=(',', ':'))};</script>\n  " + AUDIO_TAG)
     page = inline(listed(lazy), keep=keep)
-    art = {k: v for k, v in lazy.items() if k not in ARTIFACT_SKIP}
-    (OUT / "artifact.html").write_text(fragment(inline(listed(art), keep=keep)), encoding="utf-8")
+    shared = [*icons, *chunks, *[n for k, m in MAP_INDEX.items() if k in EAGER_MAPS for n in m["files"]]]
+    shared += [n for n in audio if n.startswith("sounds/") and not n.startswith("sounds/boss-")]
+    shared += [n for n in audio if n.startswith(("music/pier", "music/win"))]
+    listing = {}
+    for name, keys in ARTIFACTS.items():
+        art = {k: v for k, v in lazy.items() if k in keys}
+        (OUT / name).write_text(fragment(inline(listed(art), keep=keep)), encoding="utf-8")
+        own = [n for k in art for n in art[k]["files"]]
+        own += [n for n in audio if any(n in (f"sounds/boss-{k}.js", f"music/{k}.js") or n.startswith(f"music/{k}-") for k in art)]
+        files = shared + own
+        listing[name] = {"fights": list(art), "files": files,
+                         "mb": round((sum((OUT / f).stat().st_size for f in files) + (OUT / name).stat().st_size) / 1048576, 1)}
+        print(f"{OUT / name}  {len(art)} fights, {len(files)} files, {listing[name]['mb']} MB in all")
+    (OUT / "artifact-files.json").write_text(json.dumps(listing, indent=1), encoding="utf-8")
     site(page, [*icons, *chunks, *maps, *audio])
     sim_lab()
     if audio:

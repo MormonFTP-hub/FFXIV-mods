@@ -257,6 +257,29 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   check('no adds alive: it never comes', r.hurt.length === 0, r.hurt);
 }
 
+// A knockback aimed at one player throws only them.
+{
+  const r = run({ hazards: [{ t: 5, effect: 'knockback', from: 'boss', targets: ['R2'], dist: 10 }], spots: { R2: [0, -5], M1: [0, 5] } });
+  check('a targeted knockback throws its target', JSON.stringify(r.at('R2')) === JSON.stringify([0, -15]), r.at('R2'));
+  check('and nobody else', JSON.stringify(r.at('M1')) === JSON.stringify([0, 5]), r.at('M1'));
+}
+
+// A diamond floor (a turned square) with a deathwall: off its corner-cut edge on foot is a KO.
+{
+  const arena = { shape: 'line', at: [0, -14], deg: 45, len: 28, back: 0, w: 28, deathwall: true };
+  let r = run({ hazards: [], spots: { R2: [0, -2] }, arena, until: 1 });
+  check('inside a diamond floor', !r.hurt.length, r.hurt);
+  r = run({ hazards: [], spots: { R2: [-14, -14] }, arena, until: 1 });
+  check('off a diamond floor', whys(r, 'R2')[0] === 'fell off the arena', r.hurt);
+}
+
+// A cleave turned 90 degrees off its target: it misses them and hits whoever's beside.
+{
+  const h = { t: 5, shape: 'cone', r: 20, half: 20, from: 'boss', aim: 'target', targets: ['MT'], turn: 90, dmg: 0.5 };
+  const r = run({ hazards: [h], spots: { MT: [0, 10], R2: [10, 0] } });
+  check('a turned cleave', r.hurt.length === 1 && r.hurt[0].slot === 'R2', r.hurt);
+}
+
 // A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.
 {
   const hz = [{ t: 3, shape: 'circle', r: 5, at: [0, -10], name: 'skipped' }, { t: 8, shape: 'circle', r: 5, at: [0, -10], name: 'kept' }];

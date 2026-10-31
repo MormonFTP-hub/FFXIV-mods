@@ -439,8 +439,11 @@ def boss_out(pack, m, events):
         path = m.get("specials", "") + key + ".pap"
         if not game.game_file(path):
             continue
-        names = X.pap(path)[0]
-        out["anims"][key] = X.anim_out(pack, path, names[0], base)
+        try:                    # one motion the reader can't take (M4S's second form has one) leaves the rest
+            names = X.pap(path)[0]
+            out["anims"][key] = X.anim_out(pack, path, names[0], base)
+        except Exception as err:      # noqa: BLE001
+            print(f"  boss animation {key}: skipped ({ascii(str(err))[:80]})")
     print(f"  boss animations: {', '.join(out['anims'])}")
     out["weapons"] = []
     out["scale"] = m.get("scale", 1.0)

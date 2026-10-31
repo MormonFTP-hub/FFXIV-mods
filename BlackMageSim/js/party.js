@@ -152,9 +152,9 @@
           b.facing = Math.atan2(-dx, dy);                 // the sim's yaw (x is west)
         } else b.facing = Math.atan2(b.pos[0] - bc[0], bc[1] - b.pos[1]);    // toward the boss
       }
-      // The boss faces the main tank.
-      const mt = this.compassOf('MT');
-      e.facing = Math.atan2(bc[0] - mt[0], mt[1] - bc[1]);
+      // The boss faces the main tank (or where the fight's plan turns it).
+      const mt = this.compassOf('MT'), set = this.mech.faceAt ? this.mech.faceAt(t) : null;
+      e.facing = set !== null ? -set * Math.PI / 180 : Math.atan2(bc[0] - mt[0], mt[1] - bc[1]);
       // Healing: whatever got hurt is topped back up a few seconds later.
       const heal = (now, last, max) => (now - last > 2 ? max * 0.07 * dt : 0);
       for (const b of this.bots) b.hp = Math.min(b.maxHp, b.hp + heal(e.now, b.lastHit, b.maxHp));

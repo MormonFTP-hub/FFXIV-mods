@@ -226,7 +226,7 @@
       for (const h of hz) {
         if (isKnock(h)) {
           if (slot && (h.immune || []).includes(slot)) continue;
-          p = this.knockOf(h, p);
+          p = this.knockOf(h, p, slot);
           if (!this.onArena(p, 0.6)) return false;
         } else if (this.parts(h).some(s => s.shape && inside(s, p, 1.1))) return false;
       }
@@ -489,6 +489,7 @@
     //   snap     it locks in where it's going this many seconds before it lands (a baited puddle: drop, then move);
     //            till then its marker follows
     //   len      'target': a line that runs to its target (a charge, a line stack); otherwise its length in yalms
+    //   turn     degrees added to where it's aimed (a cleave beside its target, not at it)
     //   effect   what it does to whoever's in it:
     //            'hit'       the default: everyone in it takes dmg
     //            'share'     a stack: dmg is each one's share when `min` stand in it (fewer and it hits harder; more
@@ -496,7 +497,9 @@
     //            'bait'      spreads, defamations, baited cones: its target takes `own` (dmg by default), anyone else
     //                        in it the full dmg
     //            'tower'     `soak`: how many must stand in it, or [min, max]; short of that it hits everyone (`fail`)
-    //            'knockback' `dist` yalms away from its point (or toward bearing `dir`); nobody standing right on its
+    //            'knockback' `dist` yalms away from its point (or toward bearing `dir`); with a shape, whoever's in
+    //                        one of its shapes is thrown (a circle on a player throws whoever stands with them); with
+    //                        `targets` and no shape, only the targets, each from its own point; nobody standing right on its
     //                        point moves; Arm's Length and Surecast stop it (unless `unstoppable`); `immune`: the bots
     //                        that use them. Off the floor is a KO with the arena's `deathwall`, else its edge stops you
     //            'pull'      toward its point, `dist` at most, stopping `minDist` short of it
@@ -512,17 +515,21 @@
     //   ifAlive  k: it only comes if adds window k's adds are still up (kill them in time and it doesn't)
     // Sequences (exaflares, rotating cleaves, chasing puddles) are lists of these: see B.mechSeq below.
     // The plan can also give (each optional):
-    //   arena    the floor: {shape: 'square', half} (default 20), {shape: 'circle', at, r}, {shape: 'rect', a, b},
+    //   arena    the floor: {shape: 'square', half} (default 20), {shape: 'circle', at, r}, {shape: 'rect', a, b}, or any
+    //            attack shape (a turned square: {shape: 'line', at, deg, len, back, w}),
     //            {parts: [...]} (platforms); `deathwall` makes leaving it a KO (walking or thrown); a list of them,
     //            each with its second `t`, for a floor that changes
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
+    //   face     [{t, deg | at}]: which way the boss faces from then (a bearing, or a point or slot to face); null: its
+    //            main tank again (the default)
+    //   untargetable [[t0, t1], ...]: windows the boss can't be targeted, besides cactbot's
     //   form     [{t, model}]: the boss's model by phase, a name from the zone's `extra` models (a second form);
     //            'none' takes it off the field for a while, null brings back its own
     //   others   [{model, path: [{t, at, move}], shows: [[t0, t1], ...], face}]: other bosses beside it (a zone `extra`
-    //            model each), out in their windows; attacks can come `from` one by its model name; `face`: a point
-    //            or 'party' (the party's middle, the default) to turn to
+    //            model each, or 'main': a copy of the boss itself, for clones), out in their windows; attacks can come
+    //            `from` one by its model name; `face`: a point or 'party' (the party's middle, the default) to turn to
     //   looks    [{t, show: ['a1_flo', 'a3_flo02'], lift}]: the arena's look by phase. Its models are named
     //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
     //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
@@ -581,6 +588,7 @@
         if (toward && Math.hypot(toward[0] - at[0], toward[1] - at[1]) > 0.01) deg = Math.atan2(toward[0] - at[0], toward[1] - at[1]) * 180 / Math.PI;
         else if (h.aim === 'facing') deg = this.bossFacing();
         if (len === 'target') len = toward ? Math.hypot(toward[0] - at[0], toward[1] - at[1]) + 0.5 : 0;
+        deg += h.turn || 0;                                    // turned that many degrees off where it's aimed
         return { shape: h.shape, r: h.r, r0: h.r0, r1: h.r1, half: h.half, len, w: h.w, back: h.back, at, deg, owner: s };
       });
     }
@@ -627,6 +635,15 @@
     bossFacing() {
       return -this.app.engine.facing * 180 / Math.PI;
     }
+    // The plan's facing for the boss at second t, as a compass bearing (null: toward its main tank).
+    faceAt(t) {
+      let f = null;
+      for (const k of (this.plan && this.plan.face) || []) if (k.t <= (t ?? 0)) f = k;
+      if (!f || (f.deg === undefined && f.at === undefined)) return null;
+      if (f.deg !== undefined) return f.deg;
+      const o = this.bossAt(t), q = this.pointAt(f.at);
+      return Math.atan2(q[0] - o[0], q[1] - o[1]) * 180 / Math.PI;
+    }
 
     // The floor (the script's or plan's `arena`, or a list of them, each from its second `t`): {shape: 'square',
     // half} (the default, 20), {shape: 'circle', at, r}, {shape: 'rect', a, b}, or {parts: [...]} (platforms). With
@@ -646,6 +663,7 @@
       const on = (s) => {
         if (s.shape === 'circle') { const c = s.at || [0, 0]; return Math.hypot(p[0] - c[0], p[1] - c[1]) < s.r - m; }
         if (s.shape === 'rect') return p[0] > Math.min(s.a[0], s.b[0]) + m && p[0] < Math.max(s.a[0], s.b[0]) - m && p[1] > Math.min(s.a[1], s.b[1]) + m && p[1] < Math.max(s.a[1], s.b[1]) - m;
+        if (s.shape && s.shape !== 'square') return inside(s, p, -m);       // any attack shape: a turned square ('line'), a donut
         const half = s.half ?? ARENA;
         return Math.abs(p[0]) < half - m && Math.abs(p[1]) < half - m;
       };
@@ -659,7 +677,11 @@
         let b;
         if (s.shape === 'circle') { const c = s.at || [0, 0]; b = [c[0] - s.r, c[0] + s.r, c[1] - s.r, c[1] + s.r]; }
         else if (s.shape === 'rect') b = [Math.min(s.a[0], s.b[0]), Math.max(s.a[0], s.b[0]), Math.min(s.a[1], s.b[1]), Math.max(s.a[1], s.b[1])];
-        else { const h = s.half ?? ARENA; b = [-h, h, -h, h]; }
+        else if (s.shape && s.shape !== 'square') {             // any attack shape: its outline's box
+          BOX = { x0: -200, x1: 200, y0: -200, y1: 200 };
+          const pts = outline(s).flat();
+          b = [Math.min(...pts.map(q => q[0])), Math.max(...pts.map(q => q[0])), Math.min(...pts.map(q => q[1])), Math.max(...pts.map(q => q[1]))];
+        } else { const h = s.half ?? ARENA; b = [-h, h, -h, h]; }
         x0 = Math.min(x0, b[0]); x1 = Math.max(x1, b[1]); y0 = Math.min(y0, b[2]); y1 = Math.max(y1, b[3]);
       }
       BOX = { x0, x1, y0, y1 };
@@ -699,9 +721,10 @@
 
     // Where a knockback (or draw-in) leaves a body standing at p: pushed by each of its points in turn (only one in
     // whose shape it stands, when it has a shape), away from it or toward bearing `dir`.
-    knockOf(h, p) {
+    knockOf(h, p, slot) {
       let q = p.slice();
       for (const s of this.parts(h)) {
+        if (h.targets && !h.shape && s.owner !== slot) continue;   // aimed at players, no shape: it throws only them
         if (h.shape && !inside(s, q, 0)) continue;
         let v, dist = h.dist || 0;
         if (h.dir !== undefined) v = B.bearing(h.dir, 1);
@@ -720,7 +743,7 @@
       for (const m of party.members()) {
         const immune = !h.unstoppable && (m.slot === me ? (e.has('armsLength') || e.has('surecast')) : (h.immune || []).includes(m.slot));
         if (immune) continue;
-        const p = party.compassOf(m.slot), q = this.knockOf(h, p);
+        const p = party.compassOf(m.slot), q = this.knockOf(h, p, m.slot);
         if (Math.hypot(q[0] - p[0], q[1] - p[1]) < 0.05) continue;
         const off = !this.onArena(q);
         party.push(m.slot, off ? this.toEdge(q, p) : q, 0.5);
