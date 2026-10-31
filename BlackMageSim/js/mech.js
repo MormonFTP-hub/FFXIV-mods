@@ -341,6 +341,7 @@
     // An attack lands: on you if you're in it (and on a bot that's in it, though they shouldn't be).
     land(h) {
       const party = this.app.party;
+      if (h.ifAlive !== undefined && !this.addsAlive(h.ifAlive)) return;     // killed in time: it never comes
       if (this.live(h) && !h.res) h.res = this.aimAt(h);
       if (!h.quiet) this.flashes.push({ h: this.resolveShape(h), t: h.t, effect: h.effect });
       if (h.effect === 'tower') this.tower(h);
@@ -504,7 +505,11 @@
     //   lasts    it stays that long (a puddle), hitting whoever's in it every `tick` seconds (1) for `tickDmg`
     //   tether   a point (usually 'boss'): a line from it to each target while it's coming; `stretch`: the target must
     //            be at least that far from it as it lands, `within`: at most that far
-    //   falloff  proximity damage: full at its point, down to a tenth `falloff` yalms out
+    //   falloff  proximity damage: full at its point, down to a tenth `falloff` yalms out (a bait with falloff: only
+    //            the hit's share past half of it counts as standing too close)
+    //   grow     a lasting puddle spreads this many yalms a second
+    //   only     a tower only these may soak (spots, or {role}); anyone else in it is hit
+    //   ifAlive  k: it only comes if adds window k's adds are still up (kill them in time and it doesn't)
     // Sequences (exaflares, rotating cleaves, chasing puddles) are lists of these: see B.mechSeq below.
     // The plan can also give (each optional):
     //   arena    the floor: {shape: 'square', half} (default 20), {shape: 'circle', at, r}, {shape: 'rect', a, b},
@@ -517,10 +522,12 @@
     //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
     //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
     //            anywhere; models the list never names always show. `lift` raises what it shows that many yalms and
-    //            `shift` ([E, N]) moves it (a phase the game fights lower down or elsewhere); meanwhile you walk a
-    //            flat floor (the map's collision stays where the game has it)
+    //            `shift` ([E, N]) moves it (a phase the game fights lower down or elsewhere), `shifts` ({name: [E, N]})
+    //            moves the models so named their own way (a floor splitting apart); meanwhile you walk a flat floor
+    //            (the map's collision stays where the game has it)
     // and the script (B.FIGHT_SCRIPTS[key]):
-    //   adds     [{from, to, hp, share, name}]: adds soak `share` of the party's damage in that window until their hp
+    //   adds     [{from, to, hp, share, name, whileAway}]: adds soak `share` of the party's damage in that window until
+    //            their hp; `whileAway`: while the boss can't be targeted you hit them instead (all of it)
     //   pushes   [{from, to, dealt | adds, name}]: deal `dealt` to the boss this pull (or kill window `adds`'s adds)
     //            between from and to, and the fight skips ahead to `to` (an HP-pushed phase); see B.Fight.jump
     live(h) {
@@ -558,7 +565,8 @@
       return (h.targets ? this.pick(h) : [null]).map(s => {
         let at = (h.from === 'target' ? (s ? party.compassOf(s) : [0, 0]) : this.pointAt(h.from ?? h.at ?? [0, 0])).slice();
         if (h.after && h.move !== undefined) {           // a chaser: from where it last landed, at most `move` toward them
-          const prev = this.parts(h.after)[0].at, d = Math.hypot(at[0] - prev[0], at[1] - prev[1]), k = d > h.move ? h.move / d : 1;
+          const pp = this.parts(h.after), prev = (pp.find(q => q.owner === s) || pp[0]).at;
+          const d = Math.hypot(at[0] - prev[0], at[1] - prev[1]), k = d > h.move ? h.move / d : 1;
           at = [prev[0] + (at[0] - prev[0]) * k, prev[1] + (at[1] - prev[1]) * k];
         }
         let deg = h.deg ?? 0, len = h.len;
@@ -572,7 +580,10 @@
 
     // Its shapes: locked in, or (still coming) following whoever it's aimed at; a puddle's ticks where it landed.
     parts(h) {
-      if (h.tickOf) return this.parts(h.tickOf);
+      if (h.tickOf) {                    // where it landed; `grow`: yalms it spreads a second
+        const g = h.tickOf.grow || 0, ps = this.parts(h.tickOf);
+        return g ? ps.map(s => ({ ...s, r: (s.r || 0) + g * (h.t - h.tickOf.t) })) : ps;
+      }
       if (h.res) return h.res;
       return this.live(h) ? this.aimAt(h) : [h];
     }
@@ -692,12 +703,21 @@
       }
     }
 
-    // A tower: enough in it and they share it; too few and it hits everyone.
+    // Whether adds window k (the script's `adds`) still has its adds up.
+    addsAlive(k) {
+      const w = (this.script.adds || [])[k], f = this.fight;
+      return !!w && (!f.addsTaken || f.addsTaken[k] < w.hp - 1);
+    }
+
+    // A tower: enough in it and they share it; too few and it hits everyone. `only` (spots, or a role as in
+    // `targets`): just they may soak it; anyone else in it is hit and doesn't count.
     tower(h) {
       const party = this.app.party, ms = party.members();
       const [lo, hi] = Array.isArray(h.soak) ? h.soak : [h.soak || 1, h.soak || 1];
+      const may = h.only ? new Set(this.pick({ targets: h.only })) : null;
       for (const s of this.parts(h)) {
-        const inn = ms.filter(m => inside(s, party.compassOf(m.slot), 0));
+        const all = ms.filter(m => inside(s, party.compassOf(m.slot), 0)), inn = may ? all.filter(m => may.has(m.slot)) : all;
+        for (const m of all) if (may && !may.has(m.slot)) party.hurt(m.slot, h.fail ?? 0.9, h.name, 'in a tower that isn\'t yours', { fail: true });
         if (inn.length < lo) {
           for (const m of ms) party.hurt(m.slot, h.fail ?? 0.9, h.name, inn.length ? `a tower short: ${inn.length} of ${lo}` : 'a tower nobody soaked', { fail: true });
         } else {
@@ -736,6 +756,10 @@
       }
       if (eff === 'bait') {
         const others = inn.filter(s => s.owner !== m.slot);
+        if (others.length && h.falloff) {                     // a proximity bait (a flare): less the further out
+          const k = others.reduce((a, s) => a + Math.max(0.1, 1 - Math.hypot(p[0] - s.at[0], p[1] - s.at[1]) / h.falloff), 0);
+          return { dmg: h.dmg * k, why: k > 0.5 ? `too close to ${others.map(s => s.owner).join(', ')}'s ${h.name}` : null, fail: k > 0.5, status: h.status };
+        }
         if (others.length) return { dmg: h.dmg * others.length, why: `in ${others.map(s => s.owner).join(', ')}'s ${h.name}`, fail: true, status: h.status };
         return { dmg: h.own ?? h.dmg, status: h.status, tankbuster: h.buster };
       }

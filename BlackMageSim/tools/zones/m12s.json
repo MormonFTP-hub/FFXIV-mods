@@ -1,0 +1,34 @@
+{
+  "name": "The Lindwurm's arena",
+  "label": "M12S · Lindwurm",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6rc/",
+  "out": "game-map-m12s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "_a1_fn[ab]|_a1_fld0[2-6]|_a1_tan|_a2_f(hc|hd)|_a2_flo0[23]|x6r8_a2_roc02|_a2_roc01[.]|_a2_roc(0[25789]|1[0-4]|2[01]|30)|_a2_rub01|_a2_lsf2?2|_a1_ent01|_a0_chr",
+  "fight": {
+    "duty": "AAC Heavyweight M4 (Savage)",
+    "boss": "Lindwurm",
+    "timeline": "07-dt/raid/r12s",
+    "branches": "main",
+    "hitbox": 13.8,
+    "model": {
+      "kind": "monster", "id": 971, "body": 1, "variant": 1, "scale": 0.6,
+      "pap": "chara/monster/m0971/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+      "specials": "chara/monster/m0971/animation/a0001/bt_common/mon_sp/m0971/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44, "bind": 2518,
+      "sustainedDamage": 2935, "poisonResDown": 3935,
+      "burstingGrotesquerie": 4761, "sharedGrotesquerie": 4762, "rottingFlesh": 4763, "mitoticPhase": 4764,
+      "directedGrotesquerie": 4976,
+      "bondsA": 4752, "unbreakableA": 4753, "bondsB": 4754, "unbreakableB": 4755,
+      "firstInLine": 3004, "secondInLine": 3005, "thirdInLine": 3006, "fourthInLine": 3451,
+      "fireResDown": 2937, "darkResDown": 3323, "lightResDown": 4164,
+      "mutationA": 4769, "mutatingCells": 4770, "mutationB": 4771,
+      "farawayPortent": 4766, "nearbyPortent": 4767, "hotBlooded": 4768, "doom": 3364
+    }
+  }
+}

@@ -172,18 +172,21 @@
 
     // The arena's look (a fight's plan: `looks`): of the models the fight switches (all: names like 'a1', 'a1_flo' or
     // 'a3_flo02', each every model whose look-and-name starts so), only those in show; the rest of the room stays.
-    setLooks(show, all, lift, shift) {
-      const E = this.cur, key = show ? `${show.join(',')}@${lift || 0}@${shift || ''}` : '';
+    setLooks(show, all, lift, shift, shifts) {
+      const E = this.cur, key = show ? `${show.join(',')}@${lift || 0}@${shift || ''}@${JSON.stringify(shifts || {})}` : '';
       if (!E || !E.looked || E.lookKey === key) return;
       E.lookKey = key;
       const hit = (name, list) => list.some(e => name.startsWith(e));
       for (const im of E.looked) {
         const named = show && hit(im.userData.look, show);
         im.visible = !show || !hit(im.userData.look, [...all]) || named;
-        // A phase the game fights elsewhere (lower down, or off to one side) brought to the fight's floor.
-        im.position.set(named && shift ? -shift[0] : 0, named ? lift || 0 : 0, named && shift ? shift[1] : 0);
+        // A phase the game fights elsewhere (lower down, or off to one side) brought to the fight's floor; `shifts`
+        // moves some models their own way (a floor that splits apart).
+        const own = named && shifts && Object.keys(shifts).find(k => im.userData.look.startsWith(k));
+        const mv = own ? shifts[own] : named ? shift : null;
+        im.position.set(mv ? -mv[0] : 0, named ? lift || 0 : 0, mv ? mv[1] : 0);
       }
-      E.flat = !!(show && (lift || shift));        // its collision is where the game has it: walk a flat floor
+      E.flat = !!(show && (lift || shift || (shifts && Object.keys(shifts).length)));   // its collision stays where the game has it: walk a flat floor
       if (this.renderer) this.renderer.mapShadowKey = null;          // its shadows drawn again
       if (this.sc.models && this.sc.models.renderer) this.sc.models.renderer.mapShadowKey = null;
     }
@@ -243,6 +246,7 @@
       // bg.shpk's colour constants: a tint on the texture, and light of its own (neon: black, lit in a colour).
       if (m.diffuse) mat.color.setRGB(m.diffuse[0], m.diffuse[1], m.diffuse[2]);
       if (m.emissive) mat.emissive.setRGB(m.emissive[0], m.emissive[1], m.emissive[2]);
+      if (m.emissiveMap !== undefined && m.emissiveMap !== null) mat.emissiveMap = this.texture(m.emissiveMap, false, E);   // where it glows
       if (m.normal !== null && m.normal !== undefined) { mat.normalMap = this.texture(m.normal, false, E); mat.normalScale = new T.Vector2(1, -1); }
       if (m.alpha) mat.alphaTest = m.alphaTest > 0 ? Math.max(0.3, m.alphaTest) : 0.5;      // nets, ropes, leaves
       if (m.color1 !== undefined && m.color1 !== null) this.blendLayers(mat, this.texture(m.color1, true, E));

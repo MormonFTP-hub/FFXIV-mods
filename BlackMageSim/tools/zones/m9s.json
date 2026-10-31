@@ -1,0 +1,27 @@
+{
+  "name": "Vamp Fatale's arena",
+  "label": "M9S · Vamp Fatale",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6r9/",
+  "out": "game-map-m9s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "_a1_(bld0|arf02|lmp0[1238]|chn01|saw02|bal05|ndl0[367])",
+  "fight": {
+    "duty": "AAC Heavyweight M1 (Savage)",
+    "boss": "Vamp Fatale",
+    "timeline": "07-dt/raid/r9s", "branches": "main",
+    "hitbox": 4.0,
+    "model": {
+      "kind": "monster", "id": 981, "body": 1, "variant": 1, "scale": 3.8,
+      "pap": "chara/monster/m0981/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0981/animation/a0001/bt_common/mon_sp/m0981/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "curseOfTheBombpyre": 4729, "hellAwaits": 4730,
+      "hellInACell": 4731
+    }
+  }
+}

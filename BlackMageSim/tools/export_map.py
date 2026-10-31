@@ -302,6 +302,19 @@ def glow_texture(local, limit):
     return len(X.TEXTURES) - 1
 
 
+def emissive_mask(local, limit):
+    """Where a bg.shpk material glows: its specular map's alpha (white = lit), or None when that's lit all over."""
+    px = game.texture(local)
+    if px.shape[-1] < 4 or px[..., 3].mean() > 230:
+        return None
+    img = Image.fromarray(np.ascontiguousarray(np.repeat(px[..., 3:4], 3, axis=2)))
+    img.thumbnail((limit, limit), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, "WEBP", quality=85, method=6)
+    X.TEXTURES.append("data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode())
+    return len(X.TEXTURES) - 1
+
+
 def layer_view(mt, k):
     """The material with only layer k's samplers, so the bake picks that layer's textures."""
     ids = LAYER_SAMPLERS[k]
@@ -344,6 +357,13 @@ def material(name):
             out["diffuse"] = rgb(dif)
         if emi and any(c > 1e-3 for c in emi[:3]):
             out["emissive"] = rgb(emi)
+            # It glows only where its specular map's alpha says (M9S's floor: a white glow constant, lit in a few
+            # lines); a material lit all over (the neon) keeps no mask.
+            spec = next((s["tex"] for s in v0["samplers"] if s["id"] == LAYER_SAMPLERS[0][2]), None)
+            if spec is not None and texs.get(spec):
+                m = emissive_mask(texs[spec], 512)
+                if m is not None:
+                    out["emissiveMap"] = m
     # A second layer with its own colour map, blended in by the vertices' alpha.
     v1 = layer_view(mt, 1)
     c0 = next((s["tex"] for s in v0["samplers"] if s["id"] == LAYER_SAMPLERS[0][0]), None)
@@ -427,6 +447,88 @@ def boss_out(pack, m, events):
     return out
 
 
+def main_line(text):
+    """cactbot's timeline read along its main line, as (second, name, rest) rows. Where it branches (a jump into
+    labelled blocks, one per way the fight can go), its own generic lines ("A/B?") stand for the branches; the blocks
+    are passed over and the fight goes on from the label where they all rejoin, moved up to follow on (the gap each
+    jump skips taken out). Found by following the first branch: each jump adds its gap, until a label past every
+    block jumped into. Backward jumps (the enrage loop) and the reset end the reading."""
+    rows = []
+    for line in text.splitlines():
+        m = re.match(r'^(\d+(?:\.\d+)?)\s+label\s+"([^"]+)"', line)
+        if m:
+            rows.append((float(m.group(1)), "label", m.group(2), ""))
+            continue
+        m = re.match(r'^(\d+(?:\.\d+)?)\s+"([^"]+)"(.*)$', line)
+        if m:
+            rows.append((float(m.group(1)), "event", m.group(2), m.group(3)))
+    labels = {r[2]: i for i, r in enumerate(rows) if r[1] == "label"}
+
+    def target(i):
+        """The row a jump on row i goes to (None: no jump, the reset, or backward)."""
+        m = re.search(r'\b(?:force)?jump\s+(?:"([^"]+)"|(\d+(?:\.\d+)?))', rows[i][3])
+        if not m:
+            return None
+        if m.group(1):
+            j = labels.get(m.group(1))
+        else:
+            t = float(m.group(2))
+            j = None if t == 0 else next((k for k, r in enumerate(rows) if r[0] >= t), None)
+        return j if j is not None and rows[j][0] > rows[i][0] else None
+
+    def jumps_at(k):
+        """Every place the rows at row k's second jump to (cactbot lists one line per way it can go)."""
+        return {target(x) for x in range(k, len(rows)) if rows[x][0] == rows[k][0] and target(x) is not None}
+
+    out, i, offset, first = [], 0, 0.0, None      # first: the main line's latest branch point (its row, where it can go)
+    while i < len(rows):
+        t, kind, name, rest = rows[i]
+        if kind == "label":
+            if first is None:                     # a label on the main line itself
+                i += 1
+                continue
+            # Into the branch blocks: follow the first way to where they all rejoin, adding up the gaps jumped (and
+            # keeping its lines, for a main line with no generic ones of its own to stand in).
+            src, starts = first
+            k = min(starts)
+            gap, known, way = rows[k][0] - rows[src][0], set(starts), []
+            k += 1
+            while k < len(rows):
+                if rows[k][1] == "label":
+                    if k >= max(known) and k not in starts:      # past every block: the fight goes on from here
+                        break
+                    k += 1
+                    continue
+                tg = target(k)
+                if tg is None:
+                    way.append((round(rows[k][0] - offset - gap, 1), rows[k][2], rows[k][3]))
+                    k += 1
+                    continue
+                known |= jumps_at(k)
+                gap += rows[tg][0] - rows[k][0]
+                k = tg
+            if k >= len(rows):
+                break
+            rejoin = round(rows[k][0] - offset - gap, 1)
+            # The main line's own lines for the branches: generic ones ("A/B?") the sim can pick between. When they stop
+            # well short of where the branches rejoin (the branches hold the whole act), the first way's lines stand in.
+            since = round(rows[src][0] - offset, 1)
+            generic = [r for r in out if since < r[0] < rejoin and not r[1].startswith("--")]
+            if not generic or generic[-1][0] < rejoin - 10:
+                out = [r for r in out if r[0] <= since] + [r for r in way if r[0] < rejoin]
+            offset += gap
+            # The main line's generic lines running past the rejoin stood in for what follows it: the real lines now.
+            out = [r for r in out if r[0] < rejoin]
+            first = None
+            i = k + 1
+            continue
+        if target(i) is not None and (first is None or rows[first[0]][0] != t):
+            first = (i, jumps_at(i))
+        out.append((round(t - offset, 1), name, rest))
+        i += 1
+    return out
+
+
 def timeline(f):
     """cactbot's timeline for the fight, as the boss's abilities in order: the second each goes off, its name (the
     alternatives a random pick chooses between, "A/B"), its cast (from the Action sheet; the cast bar ends at the
@@ -440,11 +542,18 @@ def timeline(f):
     key_col = tl.string_cols()[0]
     CAST = 38           # Action's Cast<100ms> column (Fire III 35, Call Me Honey 50)
     events, untarget, start = [], [], None
-    for line in cache.read_text(encoding="utf-8").splitlines():
-        m = re.match(r'^(\d+(?:\.\d+)?)\s+"([^"]+)"(.*)$', line)
-        if not m:
-            continue
-        t, name, rest = float(m.group(1)), m.group(2), m.group(3)
+    # A fight whose zone says "branches": "main" is read along its main line (main_line); the others line by line,
+    # as their scripts were written against.
+    text = cache.read_text(encoding="utf-8")
+    if f.get("branches") == "main":
+        rows = [(t, name.rstrip("?"), rest) for t, name, rest in main_line(text)]
+    else:
+        rows = []
+        for line in text.splitlines():
+            m = re.match(r'^(\d+(?:\.\d+)?)\s+"([^"]+)"(.*)$', line)
+            if m:
+                rows.append((float(m.group(1)), m.group(2), m.group(3)))
+    for t, name, rest in rows:
         low = name.lower()
         if "untargetable" in low:
             start = t

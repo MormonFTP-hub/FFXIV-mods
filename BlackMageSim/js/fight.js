@@ -69,6 +69,9 @@
         if (app.sfx && app.sfx.boss) app.sfx.boss(this.key, this.label(this.casting), 'cast');
       }
       e.untargetable = this.data.untargetable.some(([a, b]) => t >= a && t < b);
+      // Adds up while the boss can't be targeted (an adds window with `whileAway`): the party hits them meanwhile.
+      this.onAdds = e.untargetable && (this.script && this.script.adds || []).some((w, k) => w.whileAway && t >= w.from && t < w.to && this.addsTaken[k] < w.hp);
+      if (this.onAdds) e.untargetable = false;
       if (this.mech) {
         this.mech.update(t);
         const at = B.toSim(this.mech.bossAt(t));             // the boss walks or leaps where the plan has it
@@ -85,7 +88,7 @@
         this.dealt = dealt;
         (this.script.adds || []).forEach((w, k) => {
           if (d <= 0 || t < w.from || t >= w.to) return;
-          const take = Math.min(d * (w.share ?? 1), w.hp - this.addsTaken[k]);
+          const take = Math.min(d * (this.onAdds && w.whileAway ? 1 : w.share ?? 1), w.hp - this.addsTaken[k]);
           if (take > 0) { this.addsTaken[k] += take; this.soaked += take; }
         });
         this.hp = Math.max(0, this.maxHp - (dealt - this.soaked));
@@ -120,7 +123,7 @@
       if (!L || !L.length || !map || !map.setLooks) return;
       let cur = L[0];
       for (const k of L) if (k.t <= (t ?? 0)) cur = k;
-      map.setLooks(cur.show, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))), cur.lift, cur.shift);
+      map.setLooks(cur.show, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))), cur.lift, cur.shift, cur.shifts);
     }
 
     // Skip ahead to second `to` (a phase pushed early): the abilities and mechanics in between never happen.

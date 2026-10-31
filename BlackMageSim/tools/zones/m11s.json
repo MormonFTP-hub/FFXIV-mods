@@ -1,0 +1,25 @@
+{
+  "name": "The Tyrant's arena",
+  "label": "M11S · The Tyrant",
+  "bg": "bg/ex5/01_xkt_x6/rad/x6rb/",
+  "out": "game-map-m11s.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "AAC Heavyweight M3 (Savage)",
+    "boss": "The Tyrant",
+    "timeline": "07-dt/raid/r11s", "branches": "main",
+    "hitbox": 5.0,
+    "model": {
+      "kind": "monster", "id": 980, "body": 1, "variant": 1, "scale": 1.0,
+      "pap": "chara/monster/m0980/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0980/animation/a0001/bt_common/mon_sp/m0980/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "physVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "fireResistDown": 2937
+    }
+  }
+}

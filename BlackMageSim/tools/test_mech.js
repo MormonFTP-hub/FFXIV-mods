@@ -218,6 +218,45 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   check('back onto the nearest platform', Math.hypot(q[0] - 15, q[1]) < 5.01 && q[0] < 11, q);
 }
 
+// A tank-only tower: a healer in it is hit and doesn't count.
+{
+  const h = { t: 5, effect: 'tower', shape: 'circle', r: 3, at: [0, -10], soak: 1, only: { role: 'tank' }, dmg: 0.3, fail: 0.9 };
+  let r = run({ hazards: [h], spots: { MT: [0, -10] } });
+  check('tank tower soaked by a tank', r.hurt.length === 1 && !r.hurt[0].why, r.hurt);
+  r = run({ hazards: [h], spots: { H1: [0, -10] } });
+  check('a healer in a tank tower', whys(r, 'H1').includes("in a tower that isn't yours") && r.hurt.filter(x => x.why === 'a tower nobody soaked').length === 8, r.hurt);
+}
+
+// A puddle that grows: 2 yalms, then 1 a second more (ticks at r 3-7); standing 4 yalms out, 4 ticks reach you.
+{
+  const h = { t: 1, shape: 'circle', r: 2, at: [0, -10], lasts: 5, tick: 1, grow: 1, dmg: 0.4, tickDmg: 0.1 };
+  const r = run({ hazards: [h], spots: { R2: [0, -14] } });
+  check('a growing puddle reaches you', r.hurt.length === 4, r.hurt);
+}
+
+// A flare (a bait with falloff): close to it hurts and counts, far out barely.
+{
+  const h = { t: 5, effect: 'bait', shape: 'circle', r: 30, from: 'target', targets: ['MT'], falloff: 30, dmg: 1, own: 0.5 };
+  let r = run({ hazards: [h], spots: { MT: [0, 15], R2: [0, 10] } });
+  check('close to a flare', String(whys(r, 'R2')[0]).startsWith('too close'), r.hurt);
+  r = run({ hazards: [h], spots: { MT: [0, 15], R2: [0, -12] } });
+  check('far from a flare', r.hurt.filter(x => x.slot === 'R2').every(x => !x.why), r.hurt);
+}
+
+// Chasers on two players: each follows its own.
+{
+  const a = { t: 3, shape: 'circle', r: 3, from: 'target', targets: ['R2', 'M1'], snap: 0.2, dmg: 0.4, name: 'chase' };
+  const b = { t: 5, shape: 'circle', r: 3, from: 'target', targets: ['R2', 'M1'], snap: 0.2, dmg: 0.4, name: 'chase', after: a, move: 4 };
+  const r = run({ hazards: [a, b], spots: { R2: [0, -10], M1: [10, 10] } });
+  check('two chasers, each on its own target', r.hurt.filter(x => x.slot === 'R2').length === 2 && r.hurt.filter(x => x.slot === 'M1').length === 2, r.hurt);
+}
+
+// ifAlive: an attack that only comes while the adds are up (none here: it never comes).
+{
+  const r = run({ hazards: [{ t: 5, raidwide: true, dmg: 0.5, ifAlive: 0 }] });
+  check('no adds alive: it never comes', r.hurt.length === 0, r.hurt);
+}
+
 // A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.
 {
   const hz = [{ t: 3, shape: 'circle', r: 5, at: [0, -10], name: 'skipped' }, { t: 8, shape: 'circle', r: 5, at: [0, -10], name: 'kept' }];
