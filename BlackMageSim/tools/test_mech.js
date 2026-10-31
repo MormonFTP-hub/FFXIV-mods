@@ -204,5 +204,36 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   check('puddle ticks while you stand in it', r.hurt.length === 5, r.hurt);
 }
 
+// Walking off a deathwall arena's edge is a KO.
+{
+  const r = run({ hazards: [], spots: { R2: [0, -15] }, arena: { shape: 'circle', r: 12, deathwall: true }, until: 1 });
+  check('off a deathwall arena on foot', whys(r, 'R2')[0] === 'fell off the arena', r.hurt);
+}
+
+// A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.
+{
+  const hz = [{ t: 3, shape: 'circle', r: 5, at: [0, -10], name: 'skipped' }, { t: 8, shape: 'circle', r: 5, at: [0, -10], name: 'kept' }];
+  const start = Object.fromEntries(B.SLOTS.map((s, i) => [s, B.bearing(i * 45, 30)]));
+  start.R2 = [0, -10];
+  PLAN = () => ({ start, prefs: [], hazards: hz.map(h => Object.assign({ dmg: 0.3, tell: 0 }, h)), checks: [], calls: [], marks: [], labels: new Map(), debuffs: [] });
+  F.reset(); P.setup();
+  for (const b of P.bots) b.pos = start[b.slot].slice();
+  app.engine.pos.x = 0; app.engine.pos.z = -10;
+  const hurt = [], keep = P.hurt;
+  P.hurt = (slot, share, src) => hurt.push(src);
+  for (let t = 0; t <= 2; t += 0.05) { F.t = t; F.mech.update(t); }
+  F.t = 2; F.jump(6, 'test push');
+  for (let t = 6; t <= 10; t += 0.05) { F.t = t; F.mech.update(t); }
+  P.hurt = keep;
+  check('a phase push skips what it passes over', hurt.length === 1 && hurt[0] === 'kept', hurt);
+}
+
+// A boss that leaps: tank cones and proteans come from where it stands.
+{
+  const h = { t: 5, shape: 'protean', half: 15, r: 40, dmg: 0.3 };
+  const r = run({ hazards: [h], spots: { R2: [10, -10], M1: [10, -20] }, boss: [{ t: 0, at: [10, 0] }] });
+  check('a protean from a boss that moved', whys(r, 'R2').some(w => w && w.includes('protean')), r.hurt);
+}
+
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

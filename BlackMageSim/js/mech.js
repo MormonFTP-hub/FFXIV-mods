@@ -494,6 +494,19 @@
     //            be at least that far from it as it lands, `within`: at most that far
     //   falloff  proximity damage: full at its point, down to a tenth `falloff` yalms out
     // Sequences (exaflares, rotating cleaves, chasing puddles) are lists of these: see B.mechSeq below.
+    // The plan can also give (each optional):
+    //   arena    the floor: {shape: 'square', half} (default 20), {shape: 'circle', at, r}, {shape: 'rect', a, b},
+    //            {parts: [...]} (platforms); `deathwall` makes leaving it a KO (walking or thrown); a list of them,
+    //            each with its second `t`, for a floor that changes
+    //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
+    //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
+    //   hitbox   [{t, r}]: the boss's size by phase
+    //   looks    [{t, show: ['a1']}]: the arena's look by phase (its models named _a1_, _a2_, ...: export them all, and
+    //            each entry shows the looks it names of those the list mentions; the rest of the room always shows)
+    // and the script (B.FIGHT_SCRIPTS[key]):
+    //   adds     [{from, to, hp, share, name}]: adds soak `share` of the party's damage in that window until their hp
+    //   pushes   [{from, to, dealt | adds, name}]: deal `dealt` to the boss this pull (or kill window `adds`'s adds)
+    //            between from and to, and the fight skips ahead to `to` (an HP-pushed phase); see B.Fight.jump
     live(h) {
       return !!(h.targets || h.from !== undefined || h.aim !== undefined);
     }

@@ -134,8 +134,11 @@
         a.center.lerp(b.center, (r - a.radius) / d);
         a.radius = r;
       };
+      E.looked = [];
       for (const md of G.models) {
         const inst = this.view(md.instances, E), n = inst.length / 12;
+        // An arena's looks (its models' _a1_, _a2_, ...: the floor each phase stands on), for the fight to switch.
+        const look = ((md.path || '').match(/_(a\d)_/) || [])[1];
         for (const me of md.meshes) {
           const mat = mats[me.material];
           if (!mat) continue;
@@ -153,9 +156,21 @@
           g.boundingSphere = bounds;
           im.castShadow = !mat.transparent;
           im.receiveShadow = !mat.transparent;
+          if (look) { im.userData.look = look; E.looked.push(im); }
           s.add(im);
         }
       }
+    }
+
+    // The arena's look (a fight's plan: `looks`): of the looks the fight switches between (all), only those in show;
+    // the rest of the room stays.
+    setLooks(show, all) {
+      const E = this.cur, key = show ? show.join(',') : '';
+      if (!E || !E.looked || E.lookKey === key) return;
+      E.lookKey = key;
+      for (const im of E.looked) im.visible = !show || !all.has(im.userData.look) || show.includes(im.userData.look);
+      if (this.renderer) this.renderer.mapShadowKey = null;          // its shadows drawn again
+      if (this.sc.models && this.sc.models.renderer) this.sc.models.renderer.mapShadowKey = null;
     }
 
     // Its own renderer, made the first time it draws itself.

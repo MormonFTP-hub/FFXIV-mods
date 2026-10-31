@@ -38,7 +38,7 @@
       this.soaked = 0;
       this.addsTaken = (this.script && this.script.adds || []).map(() => 0);
       this.app.engine.untargetable = false;
-      if (this.mech) this.mech.reset();          // the next pull's picks
+      if (this.mech) { this.mech.reset(); this.showLooks(null); }          // the next pull's picks, the opening look
       if (this.app.party) this.app.party.reset();
     }
 
@@ -73,6 +73,7 @@
         this.mech.update(t);
         const at = B.toSim(this.mech.bossAt(t));             // the boss walks or leaps where the plan has it
         B.BOSS.x = at.x; B.BOSS.z = at.z;
+        this.showLooks(t);
         // A boss whose size changes by phase (the plan's `hitbox`: [{t, r}]).
         const hb = this.mech.plan.hitbox;
         if (hb) { let r = this.hitbox; for (const k of hb) if (k.t <= t) r = k.r; B.DUMMY_RADIUS = r; }
@@ -111,6 +112,15 @@
         app.endEncounter(enc.start + this.data.enrage, 'time');
       }
       this.draw(t);
+    }
+
+    // The arena's look for second t (the plan's `looks`: [{t, show: ['a1']}]): the stage changes with the phases.
+    showLooks(t) {
+      const L = this.mech && this.mech.plan.looks, map = this.app.map;
+      if (!L || !L.length || !map || !map.setLooks) return;
+      let cur = L[0].show;
+      for (const k of L) if (k.t <= (t ?? 0)) cur = k.show;
+      map.setLooks(cur, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))));
     }
 
     // Skip ahead to second `to` (a phase pushed early): the abilities and mechanics in between never happen.

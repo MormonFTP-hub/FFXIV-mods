@@ -6,7 +6,6 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "_a[23]_",
   "fight": {
     "duty": "AAC Cruiserweight M2 (Savage)",
     "boss": "Sugar Riot",
