@@ -3,50 +3,63 @@
 // (JP), MR (OCE), Latte and Toxic Friends. Each strat gives the eight spots (MT OT H1 H2 M1 M2 R1 R2) a place for
 // each mechanic; the bots stand there, and so should you. Spots are [east, north] yalms from the arena's middle.
 //
-// What's modelled: Deep Cut's tank cones; the 2/3/4-snap Twist's half-room cleaves (the side and count picked each
-// pull) and the A-side (role positions) or B-side (light parties) it plays after; Celebrate Good Times, Disco
-// Infernal and Let's Pose raidwides; Funky Floor's checkerboard; Disco Infernal's Burn Baby Burn (stand in a
-// spotlight when it runs out); Inside Out / Outside In; Arcady Night Fever's in/out proteans and their echoes; Let's
-// Dance's eight half-room cleaves (and the Remix); Ride the Waves' lanes; Quarter Beats (partner stacks) and Eighth
-// Beats (spreads); Frogtourage's Moonburn lines; Do the Hustle's cleaves. Simplified: the dance floor's patterns
-// and lanes are fixed shapes, not the game's moving ones; the conga debuffs, Wavelength and the frogs' Back-up
-// Dance baits only move the bots (nothing lands for them).
+// The mechanics follow BossMod's module for the fight (github.com/awgil/ffxiv_bossmod, RM05SDancingGreen), whose
+// shapes and sizes come from the game's own Action sheet:
+//   - Deep Cut: a 60-degree cone at each tank.
+//   - #-snap Twist & Drop the Needle: the boss and his helpers hit one half of the room 2, 3 or 4 times in quick
+//     succession, then Drop the Needle hits the other half; Play A-side then fires a 45-degree cone at everyone (be
+//     in no other role's), Play B-side two 8-wide line stacks at the healers (be in exactly one).
+//   - Funky Floor: the checkerboard, its tiles flipping every 4.1 s; Burn Baby Burn: stand in a spotlight when it
+//     runs out; Inside Out / Outside In: a 7-yalm circle and a donut from 5, 2.5 s apart.
+//   - Arcady Night Fever: a circle and a donut in turn every 2.5 s, and with each a 45-degree protean at one player
+//     (supports and DPS taking turns), repeated in the same place 2.5 s later.
+//   - Let's Dance: half the room, eight times, in the order the frogs showed; Wavelength: pairs merge (within 2
+//     yalms) as their timers run out.
+//   - Ride the Waves: rows of tiles flowing north to south, their safe columns zig-zagging; Quarter Beats: 4-yalm
+//     partner stacks; Eighth Beats: 5-yalm spreads.
+//   - Frogtourage: Moonburn's 15-yalm bands of tiles; Do the Hustle's half-room cleaves.
+// Simplified: the frogs' Back-up Dance baits and where the spotlights stand (fixed here, by wtfdig's diagrams).
 (function (B) {
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
   const at = B.bearing;
   const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   const G1 = ['MT', 'H1', 'M1', 'R1'], G2 = ['OT', 'H2', 'M2', 'R2'];
-  const SUPPORT = ['MT', 'OT', 'H1', 'H2'];
+  const SUPPORT = ['MT', 'OT', 'H1', 'H2'], DPS = ['M1', 'M2', 'R1', 'R2'];
   const DIR = { N: [0, 1], E: [1, 0], S: [0, -1], W: [-1, 0] };
   const DEG = { N: 0, E: 90, S: 180, W: 270 };
   const NAME = { N: 'North', E: 'East', S: 'South', W: 'West' };
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  // A tile: column i (0 west to 7 east), row j (0 south to 7 north), as the mechanics' tile shapes number them.
+  const tile = (i, j) => i + 8 * j;
+  const tilesWhere = (f) => { const set = new Set(); for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) if (f(i, j)) set.add(tile(i, j)); return set; };
 
-  // Everyone's spot outside mechanics: tanks at the boss's front (she faces north), melee at her rear flanks, the
+  // Everyone's spot outside mechanics: tanks at the boss's front (he faces north), melee at his rear flanks, the
   // ranged and healers further back.
   const UP = { MT: [0, 6.5], OT: [2.5, 6], M1: [-4.5, -5], M2: [4.5, -5], R1: [-7, -10], R2: [7, -10], H1: [-2.5, -12.5], H2: [2.5, -12.5] };
   // Clumped round the boss, to dodge half-room cleaves that come quickly.
   const CLUMP = { MT: [0, 3], OT: [1.5, 3], M1: [-2, -2], M2: [2, -2], R1: [-3.5, -1], R2: [3.5, -1], H1: [-1.5, -3.5], H2: [1.5, -3.5] };
 
   // ---------- each strat's spots ----------
-  // #-snap Twist, then Play A-side (role positions) or B-side (light parties), on the side the last hit leaves safe
-  // (s: +1 east, -1 west). groups: who stacks together (the check: you're with yours, at your spot).
-  function twist(strat, ab, s) {
-    const x = 2.5 * s;
-    if (strat === 'game8') {          // static: the same spots for both sides
-      const north = ['MT', 'H1', 'R1', 'R2'];
-      return { spots: all(k => north.includes(k) ? [x, 6.5] : [x, -6.5]), groups: [north, S.filter(k => !north.includes(k))] };
-    }
-    if (strat === 'mr') {             // fixed: tanks north, H1 north-west, H2 south-east, DPS south
-      return { spots: { MT: [x, 6.5], OT: [x, 6.5], H1: [6 * s, 4], H2: [6 * s, -4], M1: [x, -6.5], M2: [x, -6.5], R1: [x, -6.5], R2: [x, -6.5] },
-        groups: [['MT', 'OT'], ['H1'], ['H2'], ['M1', 'M2', 'R1', 'R2']] };
+  // #-snap Twist: where each spot plays A-side (role cones) or B-side (line stacks at the healers), on the half the
+  // snaps hit (s: +1 east, -1 west; Drop the Needle has just hit the other); `wait`, where it stands through the snaps.
+  function twist(strat, ab, s, first) {
+    const x = 2.5 * s, xw = 2.5 * first;
+    if (strat === 'game8' || strat === 'mr') {
+      // Static spots round the boss for both sides, taken once the needle drops; wait at the boss's side meanwhile.
+      const deg = strat === 'game8'
+        ? { MT: 315, OT: 225, H1: 0, H2: 180, M1: 135, M2: 135, R1: 45, R2: 45 }
+        : { MT: 0, OT: 0, H1: 315, H2: 135, M1: 180, M2: 180, R1: 180, R2: 180 };
+      const spots = all(k => at(deg[k], 4.5));
+      return { spots, wait: all(k => [xw, Math.sign(spots[k][1] || 1) * 3.5]), cross: all(k => [x, Math.sign(spots[k][1] || 1) * 3.5]), static: true };
     }
     if (ab === 'A') {                 // tanks north, healers out to the side, DPS south
-      return { spots: { MT: [x, 6], OT: [x, 6], H1: [6.5 * s, 0], H2: [6.5 * s, 0], M1: [x, -6], M2: [x, -6], R1: [x, -6], R2: [x, -6] },
-        groups: [['MT', 'OT'], ['H1', 'H2'], ['M1', 'M2', 'R1', 'R2']] };
+      const lay = (e) => ({ MT: [e, 6], OT: [e, 6], H1: [2.6 * e, 0], H2: [2.6 * e, 0], M1: [e, -6], M2: [e, -6], R1: [e, -6], R2: [e, -6] });
+      return { spots: lay(x), wait: lay(xw) };
     }
-    return { spots: all(k => G1.includes(k) ? [x, 6] : [x, -6]), groups: [G1, G2] };      // G1 north, G2 south
+    const lay = (e) => all(k => (G1.includes(k) ? [e, 6] : [e, -6]));      // G1 north, G2 south (with H1 and H2)
+    return { spots: lay(x), wait: lay(xw) };
   }
 
   // Disco Infernal 1: each spot's half of the floor and the spotlight it cleanses in (supports first, then DPS).
@@ -61,47 +74,63 @@
       lights: { MT: [-2.5, 7.5], M1: [-7.5, -2.5], H1: [-12.5, 12.5], R1: [-12.5, -12.5], OT: [7.5, 2.5], M2: [2.5, -7.5], H2: [12.5, 12.5], R2: [12.5, -12.5] } };
   }
 
-  // Arcady Night Fever: each spot's protean bearing (rotating 22.5 degrees clockwise after each hit, then back).
+  // Arcady Night Fever: each spot's protean slice (its bearing; the slices are 45 degrees, one per player).
   const PROTEAN = {
     hector: { MT: 337.5, OT: 22.5, H1: 292.5, H2: 67.5, M1: 202.5, M2: 157.5, R1: 247.5, R2: 112.5 },
     latte: { MT: 22.5, OT: 337.5, H1: 67.5, H2: 292.5, M1: 202.5, M2: 157.5, R1: 247.5, R2: 112.5 },
     toxic: { MT: 337.5, OT: 202.5, H1: 292.5, H2: 247.5, M1: 112.5, M2: 157.5, R1: 22.5, R2: 67.5 },
   };
 
-  // Ride the Waves: the two dark lanes (tile columns 1-2 and 4-5) and each spot's place in them; pairs for Quarter
-  // Beats' partner stacks.
-  const WAVE_COLS = [0, 3, 6, 7];
+  // Ride the Waves: each spot's place in a lane, a row of its own (far north, near north, near south, far south: rows
+  // ten yalms apart, so the 5-yalm spreads fit and partners meet in the row between); the snake of safe columns
+  // moves everyone sideways. Pairs: Quarter Beats' partner stacks.
+  const ROW = { farN: 12.5, nearN: 2.5, nearS: -7.5, farS: -17.5 };
+  const lane = (e, rows) => Object.fromEntries(Object.entries(rows).map(([s, r]) => [s, [e, ROW[r]]]));
   function waves(strat) {
-    if (strat === 'game8') {          // melee north, ranged south
-      return { spots: { MT: [-10, 12], M1: [-10, 5], H1: [-10, -5], R1: [-10, -12], OT: [5, 12], M2: [5, 5], H2: [5, -5], R2: [5, -12] },
+    if (strat === 'game8') {          // G1 west, G2 east; melee north, ranged south
+      return { spots: Object.assign(lane(-12.5, { MT: 'farN', M1: 'nearN', H1: 'nearS', R1: 'farS' }), lane(2.5, { OT: 'farN', M2: 'nearN', H2: 'nearS', R2: 'farS' })),
         pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']] };
     }
-    if (strat === 'mr') {             // melee in the close lane, ranged in the far one; G1 north, G2 south
-      return { spots: { MT: [5, 12], M1: [5, 5], H1: [-10, 12], R1: [-10, 5], OT: [5, -12], M2: [5, -5], H2: [-10, -12], R2: [-10, -5] },
+    if (strat === 'mr') {             // melee in the lane nearer the boss, ranged in the far one; G1 north, G2 south
+      return { spots: Object.assign(lane(2.5, { MT: 'farN', M1: 'nearN', OT: 'farS', M2: 'nearS' }), lane(-12.5, { H1: 'farN', R1: 'nearN', H2: 'farS', R2: 'nearS' })),
         pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']] };
     }
-    if (strat === 'toxic') {          // TR and HM stacks, ranged far, melee close
-      return { spots: { MT: [-7, 6], R1: [-12, 10], H1: [-12, -10], M1: [-7, -6], OT: [2.5, 6], R2: [8, 10], H2: [8, -10], M2: [2.5, -6] },
-        pairs: [['MT', 'R1'], ['H1', 'M1'], ['OT', 'R2'], ['H2', 'M2']] };
-    }
-    return { spots: { MT: [-12, 5], R1: [-8, 8.5], M1: [-12, -3.5], H1: [-12, -11], OT: [2.5, 5], R2: [7.5, 8.5], M2: [2.5, -3.5], H2: [2.5, -11] },
+    // Hector, Latte, Toxic: G1 west, G2 east; tanks north close, ranged north far, melee south close, healers south far
+    return { spots: Object.assign(lane(-12.5, { MT: 'nearN', R1: 'farN', M1: 'nearS', H1: 'farS' }), lane(2.5, { OT: 'nearN', R2: 'farN', M2: 'nearS', H2: 'farS' })),
       pairs: [['MT', 'R1'], ['OT', 'R2'], ['H1', 'M1'], ['H2', 'M2']] };
   }
+  // The rows' safe columns, a snake: two lanes (columns 1 and 4, 2 and 5, or 3 and 6), each step through a row wide
+  // enough for both.
+  const LANES = { 1: [1, 4], 12: [1, 2, 4, 5], 2: [2, 5], 23: [2, 3, 5, 6], 3: [3, 6] };
+  function snake(n) {
+    let s = pick([1, 3]), dir = s === 1 ? 1 : -1;
+    const rows = [];
+    while (rows.length < n) {
+      rows.push(LANES[s]);
+      const to = s + dir;
+      rows.push(LANES[Math.min(s, to) * 10 + Math.max(s, to)]);
+      s = to;
+      if (s === 1 || s === 3) dir = -dir;
+    }
+    return rows.slice(0, n);
+  }
 
-  // Frogtourage 1: Moonburn leaves north and south safe (axis 'NS') or east and west ('EW'); G1 takes north (or
-  // west), G2 south (or east), supports on the left facing the boss.
+  // Frogtourage 1: Moonburn's bands leave a corridor north and south ('NS') or east and west ('EW'); G1 takes
+  // north (or west), G2 south (or east), supports on the left facing the boss.
   function frog1(strat, axis) {
     const rot = (p) => (axis === 'NS' ? p : [-p[1], p[0]]);
     if (strat === 'mr') {             // the safe spot nearest each intercard: melee close, ranged far
-      const spot = (sx, sy, d) => (axis === 'NS' ? [sx * 4, sy * d] : [sx * d, sy * 4]);
+      const spot = (sx, sy, d) => (axis === 'NS' ? [sx * 3, sy * d] : [sx * d, sy * 3]);
       return { spots: { MT: spot(-1, 1, 9), R1: spot(-1, 1, 17), OT: spot(1, 1, 9), R2: spot(1, 1, 17), M1: spot(-1, -1, 9), H1: spot(-1, -1, 17), M2: spot(1, -1, 9), H2: spot(1, -1, 17) },
         pairs: [['MT', 'R1'], ['OT', 'R2'], ['H1', 'M1'], ['H2', 'M2']] };
     }
     const base = strat === 'latte'
-      ? { MT: [4, 11], M1: [-4, 11], H1: [-4, 18.5], R1: [4, 18.5], OT: [4, -11], M2: [-4, -11], H2: [-4, -18.5], R2: [4, -18.5] }
-      : { MT: [4, 11], H1: [4, 18.5], M1: [-4, 11], R1: [-4, 18.5], OT: [-4, -11], H2: [-4, -18.5], M2: [4, -11], R2: [4, -18.5] };
+      ? { MT: [3, 11], M1: [-3, 11], H1: [-3, 18], R1: [3, 18], OT: [3, -11], M2: [-3, -11], H2: [-3, -18], R2: [3, -18] }
+      : { MT: [3, 11], H1: [3, 18], M1: [-3, 11], R1: [-3, 18], OT: [-3, -11], H2: [-3, -18], M2: [3, -11], R2: [3, -18] };
     return { spots: all(k => rot(base[k])), pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']] };
   }
+  // Moonburn's bands: three tiles wide, a whole column or row of them.
+  const band = (cols, i0) => tilesWhere((i, j) => (cols ? i : j) >= i0 && (cols ? i : j) < i0 + 3);
 
   // Disco Infernal 2: colour partners, a support and a DPS by each waymark colour; supports cleanse first while
   // their DPS baits a frog nearer the middle, then they swap.
@@ -139,7 +168,7 @@
   function plan(events, strat) {
     const P = { start: Object.assign({}, UP), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [] };
     let id = 0;
-    const hz = (o) => { P.hazards.push(Object.assign({ id: ++id, react: 3 }, o)); };
+    const hz = (o) => { const h = Object.assign({ id: ++id, react: 3 }, o); P.hazards.push(h); return h.id; };
     const pref = (t, spots) => P.prefs.push({ t, spots });
     const call = (t, text, o) => P.calls.push(Object.assign({ t, text }, o));
     const check = (o) => P.checks.push(o);
@@ -149,6 +178,9 @@
     let ab = null, lastFlip = null, lastQE = null, discos = 0, frogs = 0, phase = null, wavePlan = null, frogPlan = null;
     const runs = new Set();
     const qeSpots = () => (phase === 'waves' ? wavePlan : phase === 'frog1' ? frogPlan : phase === 'funky2' ? funky2(strat) : null);
+    // Where everyone goes back to after a mechanic inside a phase.
+    const phaseSpots = (t) => (phase === 'disco1' && t < 120 ? disco1(strat).zone : phase === 'waves' && t < 265 ? wavePlan.spots
+      : phase === 'funky2' && t < 553 ? funky2(strat).spots : UP);
     const partnerCalls = (t, pairs) => {
       for (const [a, b] of pairs) { call(t, `Stack with ${b}`, { slot: a }); call(t, `Stack with ${a}`, { slot: b }); }
     };
@@ -159,7 +191,7 @@
       if (name === 'Deep Cut') {
         pref(t - 5.6, { MT: [-5, 5], OT: [5, 5] });
         pref(t + 0.6, { MT: UP.MT, OT: UP.OT });
-        hz({ t, tell: t - 5, shape: 'tankcones', aimed: true, slots: ['MT', 'OT'], half: 30, r: 40, dmg: 1.5, buster: 0.75, name });
+        hz({ t, tell: t - 5, shape: 'tankcones', aimed: true, slots: ['MT', 'OT'], half: 30, r: 60, dmg: 1.5, buster: 0.75, name });
         call(t - 5.6, 'Tank cleaves: stay out of the tanks\' cones');
         for (const s of ['MT', 'OT']) call(t - 5.6, 'Tank cleave on YOU: face it away from the party', { slot: s, alert: true });
       } else if (name.startsWith('Flip to')) {
@@ -168,20 +200,25 @@
         P.labels.set(ev, `Flip to ${ab}-side`);
         call(castOf(ev, 4), ab === 'A' ? '(Role positions later)' : '(Light parties later)', { dur: 4 });
       } else if (name.includes('snap Twist')) {
-        const n = pick([2, 3, 4]), s0 = pick([-1, 1]), sf = n % 2 ? s0 : -s0, side = ab || 'B';
+        // The boss and his helpers hit one half (`hit`) n times quickly; Drop the Needle then hits the other half
+        // (`first`, where you waited), so you cross over and play the side from there.
+        const n = pick([2, 3, 4]), first = pick([-1, 1]), hit = -first, side = ab || 'B';
         P.labels.set(ev, `${n}-snap Twist & Drop the Needle`);
         const needle = next(i, e => e.name === 'Drop the Needle', 6), play = next(i, e => e.name.startsWith('Play '), 9);
-        const last = needle ? needle.t : t + 3.7, cs = castOf(ev, 5);
-        const tw = twist(strat, side, sf);
-        pref(cs, tw.spots);
-        for (let k = 0; k < n; k++) {
-          const tk = t + k * (last - t) / (n - 1), safe = s0 * (k % 2 ? -1 : 1);
-          hz({ t: tk, tell: k ? t + (k - 1) * (last - t) / (n - 1) : cs + 0.5, shape: 'half', dir: [-safe, 0], dmg: 1.4, name: k === n - 1 ? 'Drop the Needle' : `${n}-snap Twist`, react: k ? 1.6 : 3 });
-        }
-        call(cs, `Start ${s0 < 0 ? 'West' : 'East'} (${n} hits) => ${side === 'A' ? 'Role positions' : 'Light parties'}`, { alert: true, dur: 7 });
+        const last = needle ? needle.t : t + 3.5, cs = castOf(ev, 5);
+        const quick = { 2: [0, 1.5], 3: [0, 1.2, 1.9], 4: [0, 1, 1.5, 2] }[n];
+        quick.forEach((d) => hz({ t: t + d, tell: cs + 0.5, shape: 'half', dir: [hit, 0], dmg: 1.4, name: `${n}-snap Twist`, react: 3 }));
+        hz({ t: last, tell: t + quick[quick.length - 1], shape: 'half', dir: [first, 0], dmg: 1.4, name: 'Drop the Needle', react: 2 });
+        const tw = twist(strat, side, hit, first);
+        pref(cs, tw.wait);
+        pref(t + quick[quick.length - 1] + 0.05, tw.static ? tw.cross : tw.spots);
+        if (tw.static) pref(last + 0.05, tw.spots);
+        const sideName = (s) => (s < 0 ? 'West' : 'East');
+        call(cs, `${sideName(first)} first (${n} hits), then ${sideName(hit)} => ${side === 'A' ? 'Role positions' : 'Light parties'}`, { alert: true, dur: 7 });
         if (play) {
           P.labels.set(play, `Play ${side}-side`);
-          check({ t: play.t, kind: 'stack', groups: tw.groups, spots: tw.spots, r: 4, dmg: 0.3, fail: 0.6, name: `Play ${side}-side` });
+          if (side === 'A') check({ t: play.t, kind: 'rolecones', half: 22.5, dmg: 0.25, fail: 0.7, name: 'Play A-side' });
+          else check({ t: play.t, kind: 'lines', healers: ['H1', 'H2'], width: 4, dmg: 0.3, fail: 1.1, name: 'Play B-side' });
           pref(play.t + 0.6, UP);
         }
         ab = null;
@@ -195,25 +232,25 @@
           phase = 'disco1';
           const d = disco1(strat);
           pref(t, d.zone);
-          P.marks.push(...LIGHTS1.map(p => ({ kind: 'spotlight', at: p, r: 2.2, t0: t, t1: t + 33 })));
+          P.marks.push(...LIGHTS1.map(p => ({ kind: 'spotlight', at: p, r: 2.5, t0: t, t1: t + 33 })));
           for (const s of S) {
             const ex = t + (SUPPORT.includes(s) ? 23.5 : 31.5);
             pref(ex - 4.5, { [s]: d.lights[s] });
             pref(ex + 0.4, { [s]: d.zone[s] });
-            check({ t: ex, kind: 'spotlight', slots: [s], lights: LIGHTS1, r: 2.4, fail: 0.9, name: 'Burn Baby Burn' });
-            P.debuffs.push({ slot: s, name: 'Burn Baby Burn', t0: t, t1: ex });
+            check({ t: ex, kind: 'spotlight', slots: [s], lights: LIGHTS1, r: 2.5, fail: 0.9, name: 'Burn Baby Burn' });
+            P.debuffs.push({ slot: s, name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
             call(ex - 5, 'Cleanse in a spotlight', { slot: s, alert: true, dur: 5 });
           }
         } else {
           const cols = disco2(strat), lights = Object.values(COLOR_SPOT);
-          P.marks.push(...lights.map(p => ({ kind: 'spotlight', at: p, r: 2.2, t0: t, t1: t + 20 })));
+          P.marks.push(...lights.map(p => ({ kind: 'spotlight', at: p, r: 2.5, t0: t, t1: t + 20 })));
           for (const [c, [sup, dps]] of Object.entries(cols)) {
             const spot = COLOR_SPOT[c], bait = [spot[0] * 0.55, spot[1] * 0.55];
             pref(t, { [sup]: spot, [dps]: bait });
             pref(t + 9.5, { [sup]: bait, [dps]: spot });
             [[sup, t + 9], [dps, t + 19]].forEach(([s, ex]) => {
-              check({ t: ex, kind: 'spotlight', slots: [s], lights, r: 2.4, fail: 0.9, name: 'Burn Baby Burn' });
-              P.debuffs.push({ slot: s, name: 'Burn Baby Burn', t0: t, t1: ex });
+              check({ t: ex, kind: 'spotlight', slots: [s], lights, r: 2.5, fail: 0.9, name: 'Burn Baby Burn' });
+              P.debuffs.push({ slot: s, name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
               call(ex - 5, `Cleanse in the ${c} spotlight`, { slot: s, alert: true, dur: 5 });
             });
             call(t, `Bait the frog by ${c}, then cleanse`, { slot: dps, dur: 5 });
@@ -227,8 +264,8 @@
         }
         const p0 = pick([0, 1]);
         if (t > 500) { phase = 'funky2'; pref(t - 4, funky2(strat).spots); }
-        run.forEach((e, k) => hz({ t: e.t, tell: k ? run[k - 1].t : e.t - 4, shape: 'tiles', parity: (p0 + k) % 2, dmg: 1.3, name, react: 1.6 }));
-        call(t - 4, 'Funky Floor: step onto a safe tile before each flash', { dur: 5 });
+        run.forEach((e, k) => hz({ t: e.t, tell: k ? run[k - 1].t : e.t - 3.1, shape: 'tiles', parity: (p0 + k) % 2, dmg: 1.3, name, react: 1.6 }));
+        call(t - 3.1, 'Funky Floor: step onto a safe tile before each flash', { dur: 5 });
         const end = run[run.length - 1].t;
         if (t > 500) pref(end + 0.5, UP);
       } else if (name === 'Inside Out/Outside In') {
@@ -238,51 +275,102 @@
         const first = io === 'Inside Out' ? out : under, then = io === 'Inside Out' ? under : out;
         P.labels.set(ev, io);
         hz(Object.assign({ t, tell: castOf(ev, 5), dmg: 1.3, name: io }, first));
+        // Everyone gathers round the boss as the cast starts, each on their own side of him: at max melee for the
+        // circle, under him for the donut, then the other.
+        const ring = (r) => all(s => { const p = UP[s], l = Math.hypot(p[0], p[1]); return [p[0] / l * r, p[1] / l * r]; });
+        const outR = 8.3, inR = 2.5;
+        pref(castOf(ev, 5), ring(io === 'Inside Out' ? outR : inR));
         if (second) {
           runs.add(second);
           P.labels.set(second, io);
-          hz(Object.assign({ t: second.t, tell: t, dmg: 1.3, name: io, react: 2.6 }, then));
+          hz(Object.assign({ t: second.t, tell: t, dmg: 1.3, name: io, react: 2.5 }, then));
+          pref(t + 0.05, ring(io === 'Inside Out' ? inR : outR));
+          pref(second.t + 0.3, phaseSpots(second.t));
         }
         call(castOf(ev, 5), io === 'Inside Out' ? 'Max melee => Under' : 'Under => Max melee', { alert: true, dur: 6 });
       } else if (name.startsWith('Get Down!')) {
+        // In and out in turn, and a protean at one player each time, supports and DPS taking turns; it repeats where
+        // it went 2.5 s later. Whoever it hit hides in a neighbour's slice of their own group (never the next one
+        // targeted) for that beat, then goes home. (The strats put supports side by side, and DPS.)
         const run = [ev];
         for (let k = i + 1; k < events.length && events[k].t - t < 25; k++) if (events[k].name.startsWith('Get Down!')) { run.push(events[k]); runs.add(events[k]); }
-        const base = PROTEAN[strat] || PROTEAN.hector;
-        let prevT = null;
-        run.forEach((e, k) => {
-          const echoOnly = !/Protean/.test(e.name);
-          const outSet = /\(Out/.test(e.name), shift = k % 2 ? 22.5 : 0;
-          if (!echoOnly) {
-            pref(prevT === null ? e.t - 5.5 : prevT + 0.25, all(s => at(base[s] + shift, outSet ? 9.5 : 3.5)));
-            hz(Object.assign({ t: e.t, tell: prevT === null ? e.t - 5 : prevT, dmg: 1.3, name: 'Get Down!', react: 2.4 },
-              outSet ? { shape: 'circle', at: [0, 0], r: 7 } : { shape: 'donut', at: [0, 0], r0: 5 }));
-          } else pref(prevT + 0.25, all(s => at(base[s] + shift, 9.5)));
-          if (k) hz({ t: e.t, tell: e.t - 1.2, shape: 'protean', aimed: true, echo: true, half: 12.5, r: 40, dmg: 0.9, name: 'Get Down! (echo)' });
-          if (!echoOnly) hz({ t: e.t, tell: e.t - 1.2, shape: 'protean', aimed: true, snapshot: true, half: 12.5, r: 40, dmg: 0.9, own: 0.12, name: 'Get Down!' });
-          prevT = e.t;
+        const sets = run.filter(e => /Protean/.test(e.name)), tail = run.find(e => !/Protean/.test(e.name));
+        const base = PROTEAN[strat] || PROTEAN.hector, ang = Object.assign({}, base);
+        const sup = shuffle(SUPPORT), dps = shuffle(DPS), supFirst = Math.random() < 0.5;
+        const order = [];
+        for (let k = 0; k < 4; k++) order.push(...(supFirst ? [sup[k], dps[k]] : [dps[k], sup[k]]));
+        const diff = (a, b) => Math.abs(((a - b) % 360 + 540) % 360 - 180);
+        let prev = null;
+        sets.forEach((e, k) => {
+          const outSet = /\(Out/.test(e.name), r = outSet ? 9.5 : 3.5, tgt = order[k];
+          pref(k ? sets[k - 1].t + 0.25 : e.t - 5.5, all(s => at(ang[s], r)));
+          hz(Object.assign({ t: e.t, tell: k ? sets[k - 1].t : e.t - 5.2, dmg: 1.3, name: 'Get Down!', react: 2.4 },
+            outSet ? { shape: 'circle', at: [0, 0], r: 7 } : { shape: 'donut', at: [0, 0], r0: 5 }));
+          if (prev) hz({ t: e.t, tell: e.t - 2.5, shape: 'protean', aimed: true, echoOf: prev.id, half: 22.5, r: 40, dmg: 0.9, name: 'Get Down! (repeat)' });
+          const pid = hz({ t: e.t, tell: e.t - 1.2, shape: 'protean', aimed: true, target: tgt, half: 22.5, r: 60, dmg: 0.9, own: 0.15, name: 'Get Down!' });
+          // The dodge, for the next beat; the last one hit goes home.
+          if (prev) ang[prev.slot] = base[prev.slot];
+          const mates = (SUPPORT.includes(tgt) ? SUPPORT : DPS).filter(s => s !== tgt);
+          const hide = mates.reduce((a, b) => (diff(base[a], base[tgt]) <= diff(base[b], base[tgt]) ? a : b));
+          ang[tgt] = base[hide];
+          call(e.t + 0.1, `Protean hit you: step into ${hide}'s slice for a beat`, { slot: tgt, alert: true, dur: 2.4 });
+          prev = { id: pid, slot: tgt };
         });
-        call(t - 5.5, 'Proteans: out first, then in; rotate a step clockwise after every hit', { alert: true, dur: 7 });
-        pref(prevT + 0.5, UP);
+        if (tail && prev) {
+          pref(sets[sets.length - 1].t + 0.25, all(s => at(ang[s], 9.5)));
+          ang[prev.slot] = base[prev.slot];
+          hz({ t: tail.t, tell: tail.t - 2.5, shape: 'protean', aimed: true, echoOf: prev.id, half: 22.5, r: 40, dmg: 0.9, name: 'Get Down! (repeat)' });
+        }
+        call(t - 5.5, 'Proteans: out, then in, every 2.5s; one hits a player each time and repeats there', { alert: true, dur: 7 });
+        pref((tail || sets[sets.length - 1]).t + 0.5, UP);
       } else if (name.startsWith("Let's Dance!")) {
         const remix = name.includes('Remix');
         const run = [ev];
         for (let k = i + 1; k < events.length && events[k].t - run[run.length - 1].t < 4; k++) if (events[k].name.startsWith("Let's Dance!")) { run.push(events[k]); runs.add(events[k]); }
         const dirs = run.map(() => pick(['N', 'E', 'S', 'W']));
-        pref(t - (remix ? 6 : 4), CLUMP);
         run.forEach((e, k) => {
           const d = DIR[dirs[k]];
           P.labels.set(e, `${remix ? "Let's Dance! Remix" : "Let's Dance!"} ${k + 1} (${NAME[dirs[k]]} safe)`);
-          hz({ t: e.t, tell: k ? run[k - 1].t : e.t - 3, shape: 'half', dir: [-d[0], -d[1]], dmg: 1.4, name: remix ? "Let's Dance! Remix" : "Let's Dance!", react: remix ? 1.5 : 2.6 });
+          hz({ t: e.t, tell: k ? run[k - 1].t : e.t - 3, shape: 'half', dir: [-d[0], -d[1]], dmg: 1.4, name: remix ? "Let's Dance! Remix" : "Let's Dance!", react: remix ? 1.5 : 2.4 });
         });
-        call(t - (remix ? 6 : 4), `Safe: ${dirs.map(d => d).join(' > ')}`, { alert: true, dur: remix ? 14 : 20 });
-        pref(run[run.length - 1].t + 0.5, UP);
+        call(t - (remix ? 6 : 4), `Safe: ${dirs.join(' > ')}`, { alert: true, dur: remix ? 14 : 20 });
+        // Wavelength (the first dance): four pairs, each merging, away from the others, as its timers run out;
+        // shortest timers north, longest south.
+        const merges = events.filter(e => /^Debuffs \d/.test(e.name) && e.t > t - 5 && e.t < t + 30);
+        if (!remix && merges.length) {
+          const who = shuffle(S), spot = [[-4.5, 4], [4.5, 4], [-4.5, -4], [4.5, -4]], spots = {};
+          merges.slice(0, 4).forEach((m, k) => {
+            const [a, b] = [who[2 * k], who[2 * k + 1]];
+            spots[a] = spots[b] = spot[k];
+            check({ t: m.t, kind: 'pair', slots: [a, b], partner: { [a]: b, [b]: a }, r: 2, fail: 0.8, name: 'Wavelength' });
+            for (const [s, o] of [[a, b], [b, a]]) {
+              P.debuffs.push({ slot: s, name: `Wavelength ${k + 1}`, hint: `merge with ${o}, away from the rest`, t0: t - 5, t1: m.t });
+              call(m.t - 4, `Merge with ${o} now`, { slot: s, alert: true, dur: 4 });
+            }
+          });
+          pref(t - 4, spots);
+        } else pref(t - (remix ? 6 : 4), CLUMP);
+        pref(Math.max(run[run.length - 1].t, ...merges.map(m => m.t)) + 0.5, UP);
       } else if (name === 'Ride the Waves') {
+        // Seven rows of tiles flow in from the north, a row every 2.1 s, each with its safe columns, then flow out
+        // the south; while the first six come in, the top row is all lit.
         phase = 'waves';
         wavePlan = waves(strat);
         pref(castOf(ev, 3.5), wavePlan.spots);
-        for (let tt = t + 3.5; tt < t + 26; tt += 2.5) hz({ t: tt, tell: tt - 2.5, shape: 'cols', cols: WAVE_COLS, dmg: 1.2, name, react: 2.5 });
-        call(castOf(ev, 3.5), 'Ride the Waves: keep to your lane (the dark columns)', { alert: true, dur: 6 });
-        pref(t + 26.5, UP);
+        const first = t + 4, n = 14, rows = snake(7);
+        for (let k = 1; k <= n; k++) {
+          const set = new Set();
+          for (let r = 0; r < 8; r++) {
+            const j = 7 - r, row = k - r;
+            if (r === 0 && k >= 2 && k <= 6) { for (let c = 0; c < 8; c++) set.add(tile(c, j)); continue; }
+            if (row < 1 || row > rows.length) continue;
+            for (let c = 0; c < 8; c++) if (!rows[row - 1].includes(c)) set.add(tile(c, j));
+          }
+          const tt = first + (k - 1) * 2.1;
+          hz({ t: tt, tell: tt - 2.1, shape: 'tiles', set, dmg: 1.2, name, react: 2.1 });
+        }
+        call(castOf(ev, 3.5), 'Ride the Waves: follow your lane as it zig-zags down', { alert: true, dur: 6 });
+        pref(first + (n - 1) * 2.1 + 0.5, UP);
       } else if (name.includes('Quarter Beats')) {
         const quarter = lastQE && t - lastQE.t < 15 ? !lastQE.quarter : Math.random() < 0.5;
         lastQE = { t, quarter };
@@ -293,11 +381,11 @@
           const spots = {};
           for (const [a, b] of q.pairs) spots[a] = spots[b] = mid(q.spots[a], q.spots[b]);
           pref(cs, spots);
-          check({ t, kind: 'stack', groups: q.pairs, r: 3.5, dmg: 0.3, fail: 0.6, name: 'Quarter Beats' });
+          check({ t, kind: 'stack', groups: q.pairs, r: 4, dmg: 0.3, fail: 0.6, name: 'Quarter Beats' });
           partnerCalls(cs, q.pairs);
         } else {
           pref(cs, q.spots);
-          check({ t, kind: 'spread', r: 4, dmg: 0.25, fail: 0.7, name: 'Eighth Beats' });
+          check({ t, kind: 'spread', r: 5, dmg: 0.25, fail: 0.7, name: 'Eighth Beats' });
           call(cs, 'Spread', { dur: 5 });
         }
         pref(t + 0.4, q.spots);
@@ -310,8 +398,8 @@
           pref(t + 1, frogPlan.spots);
           const moon = next(i, e => e.name === 'Moonburn', 20);
           if (moon) {
-            const a = axis === 'NS' ? [[[-20, -20], [-6, 20]], [[6, -20], [20, 20]]] : [[[-20, -20], [20, -6]], [[-20, 6], [20, 20]]];
-            for (const [p, q] of a) hz({ t: moon.t, tell: moon.t - 7, shape: 'rect', a: p, b: q, dmg: 1.4, name: 'Moonburn' });
+            const set = new Set([...band(axis === 'NS', 0), ...band(axis === 'NS', 5)]);
+            hz({ t: moon.t, tell: moon.t - 10.5, shape: 'tiles', set, dmg: 1.4, name: 'Moonburn', react: 4 });
           }
           call(t + 1, `Moonburn: ${axis === 'NS' ? 'north and south' : 'east and west'} safe`, { alert: true, dur: 8 });
         } else {
@@ -322,6 +410,10 @@
           pref(486, near(false));
           pref(497, UP);
           call(470, 'Frog baits: supports out first, then DPS', { dur: 6 });
+          // Each Moonburn here: one band of tiles across the room.
+          events.filter(e => e.name === 'Moonburn' && e.t > t && e.t < t + 60).forEach(m => {
+            hz({ t: m.t, tell: m.t - 10.5, shape: 'tiles', set: band(Math.random() < 0.5, pick([0, 2, 3, 5])), dmg: 1.4, name: 'Moonburn', react: 4 });
+          });
         }
       } else if (name.startsWith('Do the Hustle')) {
         if (name.includes('(dancers)')) {
@@ -359,7 +451,7 @@
       latte: { label: 'Latte' },
       toxic: { label: 'Toxic Friends' },
     },
-    source: 'wtfdig.info/72/m5s',
+    source: 'wtfdig.info/72/m5s; mechanics after BossMod (github.com/awgil/ffxiv_bossmod)',
     waymarks: [
       { label: 'A', at: [0, 7], color: 'red' }, { label: 'B', at: [7, 0], color: 'yellow' },
       { label: 'C', at: [0, -7], color: 'blue' }, { label: 'D', at: [-7, 0], color: 'purple' },

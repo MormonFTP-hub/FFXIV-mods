@@ -110,7 +110,7 @@
       const deb = this.mech && t !== null && this.mech.plan.debuffs.find(d => d.slot === me && t >= d.t0 && t < d.t1);
       tl.innerHTML = `<div class="hd"><span>${esc(this.data.duty)}</span><b>${t === null ? 'Pull to start' : `${mmss(t)} / ${mmss(this.data.enrage)}`}</b></div>`
         + (this.mech ? `<div class="sub">${esc(this.script.strats[this.mech.strat].label)} · you're ${me}</div>` : '')
-        + (deb ? `<div class="ev deb"><b>${Math.ceil(deb.t1 - t)}</b>${esc(deb.name)}: be in a spotlight when it ends</div>` : '')
+        + (deb ? `<div class="ev deb"><b>${Math.ceil(deb.t1 - t)}</b>${esc(deb.name)}${deb.hint ? `: ${esc(deb.hint)}` : ''}</div>` : '')
         + up.map((ev) => `<div class="ev${ev.kind === 'enrage' ? ' enr' : ''}"><b>${Math.ceil(ev.t - now)}</b>${esc(this.label(ev))}</div>`).join('')
         + (this.app.engine.untargetable ? '<div class="ev unt">Untargetable</div>' : '');
     }

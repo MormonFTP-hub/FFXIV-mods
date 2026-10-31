@@ -353,7 +353,7 @@ window.BLM = window.BLM || {};
     ['KeyQ', 'KeyE', 'KeyR', 'KeyF', 'KeyT', 'KeyG', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyY'],
   ];
 
-  B.SIM_VERSION = '2.49.0';      // the README changelog's newest entry (shown in the debug log)
+  B.SIM_VERSION = '2.50.0';      // the README changelog's newest entry (shown in the debug log)
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',

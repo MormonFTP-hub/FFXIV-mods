@@ -43,7 +43,7 @@
         // Any tile the body (a square of +-m) touches.
         const i0 = tileOf(p[0] - m), i1 = tileOf(p[0] + m), j0 = tileOf(p[1] - m), j1 = tileOf(p[1] + m);
         for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
-          if (h.shape === 'tiles' ? (i + j) % 2 === h.parity : h.cols.includes(i)) return true;
+          if (h.shape === 'tiles' ? (h.set ? h.set.has(i + 8 * j) : (i + j) % 2 === h.parity) : h.cols.includes(i)) return true;
         }
         return false;
       }
@@ -85,7 +85,7 @@
       case 'tiles': case 'cols': {
         const out = [];
         for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) {
-          if (h.shape === 'tiles' ? (i + j) % 2 !== h.parity : !h.cols.includes(i)) continue;
+          if (h.shape === 'tiles' ? (h.set ? !h.set.has(i + 8 * j) : (i + j) % 2 !== h.parity) : !h.cols.includes(i)) continue;
           const x0 = -ARENA + i * TILE, y0 = -ARENA + j * TILE;
           out.push([[x0 + 0.15, y0 + 0.15], [x0 + TILE - 0.15, y0 + 0.15], [x0 + TILE - 0.15, y0 + TILE - 0.15], [x0 + 0.15, y0 + TILE - 0.15]]);
         }
@@ -127,9 +127,11 @@
       this.plan.prefs.sort((a, b) => a.t - b.t);
       this.plan.hazards.sort((a, b) => a.t - b.t);
       this.plan.checks.sort((a, b) => a.t - b.t);
+      this.plan.calls.sort((a, b) => a.t - b.t);
       this.nextHz = 0; this.nextCk = 0; this.nextCall = 0;
       this.calls = [];
       this.flashes = [];
+      this.snap = {};                 // where each protean went (its id -> bearing), for its repeat
       this.solved = {};
       this.t = null;
     }
@@ -186,12 +188,12 @@
     target(slot, t, pos) {
       const pref = this.pref(slot, t), hz = this.dodging(t);
       if (!hz.length) return pref;
-      const key = hz.map(h => h.id).join(',') + '|' + pref[0].toFixed(2) + ',' + pref[1].toFixed(2);
+      const soon = this.dodging(t, true);
+      const key = soon.map(h => h.id).join(',') + '|' + hz.length + '|' + pref[0].toFixed(2) + ',' + pref[1].toFixed(2);
       const memo = this.solved[slot];
       let best;
       if (memo && memo.key === key) best = memo.p;
       else {
-        const soon = this.dodging(t, true);
         best = (soon.length > hz.length && this.nearestSafe(pref, soon, 20)) || this.nearestSafe(pref, hz, 40) || pref;
         this.solved[slot] = { key, p: best };
       }
@@ -241,11 +243,14 @@
       }
       // A protean's echo lands later where everyone stood for this one.
       if (h.snapshot) this.lastProtean = party.members().map(m => party.bearingOf(m.slot));
+      if (h.target) this.snap[h.id] = party.bearingOf(h.target);
     }
 
     // A protean's cones: one at each party member (and whose it is), or the echo's, where they stood last time.
     protean(h) {
       const party = this.app.party;
+      if (h.target) return { degs: [party.bearingOf(h.target)], slots: [h.target] };       // at one player
+      if (h.echoOf) return { degs: this.snap[h.echoOf] === undefined ? [] : [this.snap[h.echoOf]], slots: [] };
       if (h.echo) return { degs: this.lastProtean || [], slots: [] };
       const ms = party.members();
       return { degs: ms.map(m => party.bearingOf(m.slot)), slots: ms.map(m => m.slot) };
@@ -312,6 +317,30 @@
         const close = party.members().filter(m => m.slot !== me && Math.hypot(...sub(party.compassOf(m.slot), p)) < c.r);
         if (close.length) party.hurt(me, c.fail * close.length, c.name, `spread: ${close.map(m => m.slot).join(', ')} too close`);
         else party.hurt(me, c.dmg, c.name);
+      } else if (c.kind === 'rolecones') {
+        // Play A-side: a cone at every player; one aimed at another role's player mustn't catch you.
+        const role = (s) => (B.SLOT_ROLE[s] === 'melee' || B.SLOT_ROLE[s] === 'ranged' ? 'dps' : B.SLOT_ROLE[s]);
+        const hit = party.members().filter(m => m.slot !== me && role(m.slot) !== role(me)
+          && inside({ shape: 'cone', at: [0, 0], deg: party.bearingOf(m.slot), half: c.half, r: 60 }, p, 0.3));
+        if (hit.length) party.hurt(me, c.fail * hit.length, c.name, `in ${hit.map(m => m.slot).join(', ')}'s cone (another role)`);
+        else party.hurt(me, c.dmg, c.name);
+      } else if (c.kind === 'lines') {
+        // Play B-side: a line stack from the boss at each healer; you share exactly one.
+        const n = c.healers.filter(h => {
+          const q = party.compassOf(h), l = Math.hypot(q[0], q[1]);
+          if (l < 0.5) return false;
+          const along = (p[0] * q[0] + p[1] * q[1]) / l, across = Math.abs(p[0] * q[1] - p[1] * q[0]) / l;
+          return along > -0.5 && along < 60 && across < c.width + 0.3;
+        }).length;
+        if (n !== 1) party.hurt(me, c.fail * (n || 1), c.name, n ? 'in both line stacks' : 'in neither line stack');
+        else party.hurt(me, c.dmg, c.name);
+      } else if (c.kind === 'pair') {
+        // Wavelength: merge with your partner, clear of everyone else.
+        const mate = c.partner[me], d = Math.hypot(...sub(party.compassOf(mate), p));
+        const others = party.members().filter(m => m.slot !== me && m.slot !== mate && Math.hypot(...sub(party.compassOf(m.slot), p)) < c.r);
+        if (d > c.r + 0.5) party.hurt(me, c.fail, c.name, `not merged with ${mate}`);
+        else if (others.length) party.hurt(me, c.fail, c.name, `${others.map(m => m.slot).join(', ')} in your merge`);
+        else this.app.ui.log(`Wavelength: you merge with ${mate}.`, 'gain', 'battle');
       } else if (c.kind === 'spotlight') {
         const lit = c.lights.some(l => Math.hypot(l[0] - p[0], l[1] - p[1]) < c.r);
         if (lit) this.app.ui.log(`You cleanse ${c.name} in a spotlight.`, 'gain', 'battle');
@@ -336,7 +365,8 @@
         if (!h.shape || h.hidden || t < h.tell || t >= h.t) continue;
         const k = Math.max(0, Math.min(1, (t - h.tell) / Math.max(0.5, h.t - h.tell)));
         const s = this.resolveShape(h);
-        this.drawShape(sc, s, `rgba(255,${Math.round(150 - 60 * k)},60,${(0.16 + 0.22 * k).toFixed(3)})`, `rgba(255,190,110,${(0.5 + 0.4 * k).toFixed(3)})`);
+        const a0 = s.shape === 'tiles' ? 0.3 : 0.16;      // a lit tile has to show over the dance floor's own glow
+        this.drawShape(sc, s, `rgba(255,${Math.round(150 - 60 * k)},60,${(a0 + 0.22 * k).toFixed(3)})`, `rgba(255,190,110,${(0.5 + 0.4 * k).toFixed(3)})`);
       }
       for (const f of this.flashes) {
         const a = 1 - (t - f.t) / 0.45;
@@ -396,6 +426,51 @@
     }
   }
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+
+  // ---------- the self-check (/qa) ----------
+  // Fast-forwards whole pulls of the fight with you playing a spot perfectly (running at 6 yalms a second to where
+  // the strat and the dodging put you) and the bots playing theirs, for each strat and spot asked for, and lists
+  // everything that hit anyone it shouldn't have: an attack landing on someone, or a stack, spread, spotlight or
+  // merge you'd fail by doing what the strat says. Tank busters on the tanks and shared stacks don't count.
+  // Each run is picked fresh (sides, orders, patterns), so a few runs per strat catch the rarer combinations.
+  B.mechQA = async function (app, opts) {
+    const f = app.fight, P = app.party, e = app.engine, st = app.store.settings;
+    if (!f || !f.mech) return null;
+    const strats = opts.strats || Object.keys(f.script.strats), slots = opts.slots || B.SLOTS, reps = opts.reps || 1;
+    const keep = { strats: Object.assign({}, st.strats), slot: st.partySlot, dmg: st.takeDamage, pos: Object.assign({}, e.pos) };
+    if (app.enc) app.endEncounter(e.now, 'idle');
+    const hurt = P.hurt, issues = [];
+    let runs = 0;
+    try {
+      for (let rep = 0; rep < reps; rep++) for (const strat of strats) for (const slot of slots) {
+        (st.strats = Object.assign({}, keep.strats))[f.key] = strat;
+        st.partySlot = slot;
+        f.reset(); P.setup(); app.placeStart();
+        const me = P.playerSlot(), dt = 0.05, end = f.data.enrage;
+        P.hurt = (s, share, src, why) => {
+          if ((share >= 0.6 && src !== 'Deep Cut') || why) issues.push({ strat, slot, t: f.t, who: s, what: src, why: why || 'stood in it', at: P.compassOf(s).map(v => +v.toFixed(1)) });
+        };
+        for (let i = 0; i * dt < end; i++) {
+          const t = i * dt;
+          f.t = t;
+          const s = B.toSim(f.mech.target(me, t, P.compassOf(me)));
+          const dx = s.x - e.pos.x, dz = s.z - e.pos.z, d = Math.hypot(dx, dz), step = Math.min(d, 6 * dt);
+          if (d > 0.01) { e.pos.x += dx / d * step; e.pos.z += dz / d * step; }
+          f.mech.update(t);
+          P.update(dt);
+        }
+        P.hurt = hurt;
+        runs++;
+        if (opts.progress) opts.progress(runs, reps * strats.length * slots.length);
+        await new Promise(r => setTimeout(r, 0));
+      }
+    } finally {
+      P.hurt = hurt;
+      st.strats = keep.strats; st.partySlot = keep.slot; st.takeDamage = keep.dmg;
+      f.t = null; f.reset(); P.setup(); app.placeStart();
+    }
+    return { runs, issues };
+  };
 
   B.Mechanics = Mechanics;
   B.MECH_ARENA = ARENA;

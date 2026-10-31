@@ -464,6 +464,24 @@
       this.placeStart();
     },
 
+    // /qa [strat] [runs]: the fight's self-check (B.mechQA): whole pulls fast-forwarded with you and the bots playing
+    // the strat perfectly, listing anything that still hits someone. The full list goes in the debug log.
+    async qaCommand(arg) {
+      const F = this.fight;
+      if (!F || !F.mech) { this.ui.log('/qa checks a fight with a party (/fight m5s).', 'err', 'system'); return; }
+      const words = arg.split(/\s+/).filter(Boolean);
+      const strat = words.find(w => F.script.strats[w]), reps = Math.max(1, Math.min(10, parseInt(words.find(w => /^\d+$/.test(w)), 10) || 1));
+      const strats = strat ? [strat] : Object.keys(F.script.strats);
+      this.ui.log(`QA: fast-forwarding ${strats.length * B.SLOTS.length * reps} pulls (${strats.join(', ')}; every spot${reps > 1 ? `; ${reps} times each` : ''})...`, 'sys', 'system');
+      const res = await B.mechQA(this, { strats, reps, progress: (n, of) => { if (n % 8 === 0) this.ui.log(`QA: ${n} of ${of}`, 'dim', 'system'); } });
+      const bad = new Set(res.issues.map(i => `${i.strat}:${i.slot}`));
+      const byWhat = {};
+      for (const i of res.issues) byWhat[`${i.what} (${i.why})`] = (byWhat[`${i.what} (${i.why})`] || 0) + 1;
+      this.ui.log(`QA: ${res.runs - bad.size} of ${res.runs} pulls clean.${res.issues.length ? ' Problems: ' + Object.entries(byWhat).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => `${k} x${n}`).join('; ') : ''}`, res.issues.length ? 'err' : 'gain', 'system');
+      this.lastQA = res;
+      if (this.debug) this.debug.add(`QA ${res.runs} pulls, ${res.issues.length} issues: ` + res.issues.slice(0, 40).map(i => `${i.strat}/${i.slot} t${i.t.toFixed(1)} ${i.who} ${i.what}: ${i.why} @${i.at}`).join(' | '));
+    },
+
     stratCommand(arg) {
       const F = this.fight;
       if (!F || !F.mech) { this.ui.log('Strats are for a fight with a party (/fight m5s).', 'err', 'system'); return; }
@@ -544,6 +562,7 @@
         case '/debug': this.debug.copy(); break;
         case '/fight': this.fightCommand(arg.trim().toLowerCase()); break;
         case '/strat': this.stratCommand(arg.trim().toLowerCase()); break;
+        case '/qa': this.qaCommand(arg.trim().toLowerCase()); break;
         case '/damage': {
           const v = arg.trim().toLowerCase(), st = this.store.settings;
           st.takeDamage = v === 'on' ? true : v === 'off' ? false : !st.takeDamage;
