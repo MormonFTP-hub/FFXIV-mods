@@ -210,6 +210,14 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   check('off a deathwall arena on foot', whys(r, 'R2')[0] === 'fell off the arena', r.hurt);
 }
 
+// Thrown off platforms with no floor between them (no deathwall): back onto the nearest platform, not the middle.
+{
+  const arena = { parts: [{ shape: 'circle', at: [-15, 0], r: 5 }, { shape: 'circle', at: [15, 0], r: 5 }] };
+  const r = run({ hazards: [{ t: 5, effect: 'knockback', from: [15, 0], dist: 10 }], spots: { R2: [12, 0] }, arena });
+  const q = r.at('R2');
+  check('back onto the nearest platform', Math.hypot(q[0] - 15, q[1]) < 5.01 && q[0] < 11, q);
+}
+
 // A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.
 {
   const hz = [{ t: 3, shape: 'circle', r: 5, at: [0, -10], name: 'skipped' }, { t: 8, shape: 'circle', r: 5, at: [0, -10], name: 'kept' }];

@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_a[34]_|_a1_(obj02|rng0[12])|_a2_(roc01|spk03)",
   "fight": {
     "duty": "AAC Cruiserweight M4 (Savage)",
     "boss": "Howling Blade",

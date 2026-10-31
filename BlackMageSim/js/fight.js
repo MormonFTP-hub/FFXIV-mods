@@ -118,9 +118,9 @@
     showLooks(t) {
       const L = this.mech && this.mech.plan.looks, map = this.app.map;
       if (!L || !L.length || !map || !map.setLooks) return;
-      let cur = L[0].show;
-      for (const k of L) if (k.t <= (t ?? 0)) cur = k.show;
-      map.setLooks(cur, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))));
+      let cur = L[0];
+      for (const k of L) if (k.t <= (t ?? 0)) cur = k;
+      map.setLooks(cur.show, this.allLooks || (this.allLooks = new Set(L.flatMap(k => k.show))), cur.lift);
     }
 
     // Skip ahead to second `to` (a phase pushed early): the abilities and mechanics in between never happen.

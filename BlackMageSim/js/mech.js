@@ -501,8 +501,9 @@
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
-    //   looks    [{t, show: ['a1']}]: the arena's look by phase (its models named _a1_, _a2_, ...: export them all, and
-    //            each entry shows the looks it names of those the list mentions; the rest of the room always shows)
+    //   looks    [{t, show: ['a1'], lift}]: the arena's look by phase (its models named _a1_, _a2_, ...: export them
+    //            all, and each entry shows the looks it names of those the list mentions; the rest of the room always
+    //            shows); `lift` raises the shown looks that many yalms (a phase the game fights lower down)
     // and the script (B.FIGHT_SCRIPTS[key]):
     //   adds     [{from, to, hp, share, name}]: adds soak `share` of the party's damage in that window until their hp
     //   pushes   [{from, to, dealt | adds, name}]: deal `dealt` to the boss this pull (or kill window `adds`'s adds)
@@ -627,12 +628,20 @@
       this.guideMemo = null;
     }
 
-    // The floor nearest p, back along the way from c (where it came from).
+    // The floor nearest p (off the edge): searched outward round it, nearest first, toward c (where it came from)
+    // when two are as near. A ring or platforms have no floor in the middle, so it's never just "back inward".
     toEdge(p, c) {
       c = c || [0, 0];
-      for (let k = 1; k <= 40; k++) {
-        const q = [p[0] + (c[0] - p[0]) * k / 40, p[1] + (c[1] - p[1]) * k / 40];
-        if (this.onArena(q, 0.3)) return q;
+      for (let r = 0.3; r <= 40; r += 0.3) {
+        const n = Math.max(16, Math.round(r * 8));
+        let best = null, bd = Infinity;
+        for (let k = 0; k < n; k++) {
+          const a = k / n * 2 * Math.PI, q = [p[0] + Math.sin(a) * r, p[1] + Math.cos(a) * r];
+          if (!this.onArena(q, 0.3)) continue;
+          const d = Math.hypot(q[0] - c[0], q[1] - c[1]);
+          if (d < bd) { bd = d; best = q; }
+        }
+        if (best) return best;
       }
       return c;
     }

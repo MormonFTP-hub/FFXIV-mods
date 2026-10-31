@@ -31,9 +31,13 @@
 //     leaving a puddle), Moussacre's 15-degree cones at the four closest, the 3-yalm bait puddles and the towers (one
 //     soaker each); then Wingmark flies everyone to the second towers (four on one island and two on each other, or
 //     all eight south).
+// The floor's look follows Sugarscape: the canvas (the map's _a1_ models), the desert (_a2_), the river (_a3_).
 // Simplified: the boss is where the logs and diagrams put her, not where the tank drags her; the electrified river
-// and the lava hurt rather than wall you off (the engine's floor can't have a curved hole); the bombs' tethers and
-// the Levin Drop on the islands are checks on where you stand; the adds can't be fought (they soak damage).
+// and the lava hurt rather than wall you off (the engine's floor can't have a curved hole); a dropped puddle's first
+// hit lands where its target really stood, but it lingers where the strat drops it (the bots only step round puddles
+// on the floor); the bombs' tethers and the Levin Drop on the islands are checks on where you stand; the adds can't
+// be fought (they soak damage); Wingmark's flight for anyone already on their tower's island in the second towers
+// is into the wall beside it (no 34-yalm flight fits there).
 (function (B) {
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
@@ -106,8 +110,8 @@
   function stickyGroups(strat, targets, layout) {
     const [a, b] = targets;
     if (strat !== 'latte' && strat !== 'yukizuri' && G1.includes(a) !== G1.includes(b)) {
-      const ga = G1.includes(a) ? G1 : G2;
-      return [ga.slice(), (ga === G1 ? G2 : G1).slice()];
+      const ga = G1.includes(a) ? G1 : G2, gb = ga === G1 ? G2 : G1;
+      return [[a, ...ga.filter(s => s !== a)], [b, ...gb.filter(s => s !== b)]];
     }
     const others = S.filter(s => !targets.includes(s));
     const lean = (s) => dist(layout[s], layout[a]) - dist(layout[s], layout[b]);
@@ -215,7 +219,15 @@
   const SAFE_BRIDGE = { NE: 'SW', NW: 'SE', S: 'N' };
   const ISLES = { N: ['NE', 'NW'], SE: ['S', 'NE'], SW: ['NW', 'S'] };       // [clockwise, counter-clockwise]
   const ISLE_SPOT = { NE: [15, 15], NW: [-15, 15], S: [0, -17] };
+  const ROUTES = [[BRIDGE.N, BRIDGE.SE], [BRIDGE.SE, BRIDGE.SW], [BRIDGE.SW, BRIDGE.N]];
+  for (const [k, isles] of Object.entries(ISLES)) for (const i of isles) ROUTES.push([BRIDGE[k], ISLE_SPOT[i]]);
   const CLOUD_CW = { NE: 'S', S: 'NW', NW: 'NE' };
+  // Where the party walks in the storm (bridge to bridge, bridge to the islands' spots): the bolts keep off.
+  const segDist = (p, a, b) => {
+    const d = [b[0] - a[0], b[1] - a[1]], l = d[0] * d[0] + d[1] * d[1] || 1;
+    const u = Math.max(0, Math.min(1, ((p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1]) / l));
+    return dist(p, [a[0] + d[0] * u, a[1] + d[1] * u]);
+  };
   const CLOUD_CCW = { NE: 'NW', NW: 'S', S: 'NE' };
 
   // The lava: the first towers (fixed), who takes which, and Mousse Drip's four drops for each island's pair.
@@ -225,7 +237,7 @@
     if (s === 'game8') return { MT: T1.sWestNear, OT: T1.sEastNear, M1: T1.sWestWall, M2: T1.sEastWall, H1: T1.nwOut, R1: T1.nwIn, H2: T1.neIn, R2: T1.neOut };
     return { MT: T1.sWestWall, OT: T1.sEastWall, M1: T1.sWestNear, M2: T1.sEastNear, H1: T1.nwIn, R1: T1.nwOut, H2: T1.neIn, R2: T1.neOut };
   }
-  const DRIPS = [[-16, 17], [-9.5, 17.5], [-15.5, 10.5], [-9, 11]];          // the north-west island's; mirrored for north-east
+  const DRIPS = { NW: [[-9, 11], [-9.5, 17.5], [-16, 17], [-15.5, 10.5]], NE: [[11, 18], [17.5, 18], [14, 11.5], [7.5, 11]] };
   // The boss in the lava: south, where the tanks and melee bait Moussacre's cones from their towers.
   const LAVA_BOSS = [-0.5, -11.4];
   // The second towers: four on one island (north-east or north-west) and two on each other, or all eight south.
@@ -248,37 +260,68 @@
     const out = s === 'game8' ? { MT: four.near1, OT: four.near2, M1: four.far1, M2: four.far2 } : { MT: four.far1, OT: four.far2, M1: four.near1, M2: four.near2 };
     return Object.assign(out, { H1: T.two[g1Isle].close, R1: T.two[g1Isle].far, H2: T.two[g2Isle].close, R2: T.two[g2Isle].far });
   }
-  // A Wingmark launch: the bearing to fly and the spot 34 yalms back from the landing, inside the arena and off the
-  // lava, as near as can be to where you are (and not on top of anyone else's).
-  function launchTo(land, from, taken) {
-    let best = null, bd = Infinity;
-    for (let d = 0; d < 360; d += 5) {
-      const p = add(land, at(d, 1), -FLY);
-      if (Math.abs(p[0]) > 18.5 || Math.abs(p[1]) > 18.5 || inZone(LAVA(), p, 1.6) || taken.some(q => dist(p, q) < 2.6)) continue;
-      const k = dist(p, from);
-      if (k < bd) { bd = k; best = { p, deg: d }; }
+  // The island a point is on (the river's branches leave the middle at bearings 7.5, 127.5 and 247.5).
+  const isleOf = (p) => { const b = ((Math.atan2(p[0], p[1]) * 180 / Math.PI) + 360) % 360; return b >= 7.5 && b < 127.5 ? 'NE' : b >= 127.5 && b < 247.5 ? 'S' : 'NW'; };
+  // A Wingmark flight onto a tower's island: where to land (on the island, off the lava, as near the tower as a
+  // 34-yalm flight allows) and where to stand to launch (34 yalms back, on your own island and off the lava, as near
+  // as can be to where you are, and not on top of anyone else's), with the bearing to face.
+  function flightTo(tower, from, taken) {
+    const lands = [];
+    for (const r of [0, 2, 4, 6, 8, 10]) for (let d = 0; d < 360; d += r ? 22.5 : 360) {
+      const L = add(tower, at(d, r));
+      if (Math.abs(L[0]) < 18.5 && Math.abs(L[1]) < 18.5 && isleOf(L) === isleOf(tower) && !inZone(LAVA(), L, 1.6)) lands.push(L);
     }
-    return best;
+    for (const gap of [2.6, 1.5]) {
+      let best = null, bc = Infinity;
+      for (const L of lands) for (let d = 0; d < 360; d += 2) {
+        const p = add(L, at(d, 1), -FLY);
+        if (Math.abs(p[0]) > 18.8 || Math.abs(p[1]) > 18.8 || isleOf(p) !== isleOf(from) || inZone(LAVA(), p, 1.6) || taken.some(q => dist(p, q) < gap)) continue;
+        const c = dist(L, tower) * 2 + dist(p, from) * 0.5;
+        if (c < bc) { bc = c; best = { p, land: L, deg: d }; }
+      }
+      if (best) return best;
+    }
+    // Already on the tower's island with no room for a whole flight: stand at the nearest wall facing it, and the
+    // wall stops you there.
+    if (isleOf(from) === isleOf(tower)) {
+      const walls = [[[tower[0], -18.2], 180], [[tower[0], 18.2], 0], [[-18.2, tower[1]], 270], [[18.2, tower[1]], 90]]
+        .filter(([q]) => isleOf(q) === isleOf(tower) && !inZone(LAVA(), q, 1.6) && !taken.some(o => dist(q, o) < 1.5))
+        .sort((x, y) => dist(x[0], tower) - dist(y[0], tower));
+      if (walls.length) { const [q, deg] = walls[0]; return { p: q, land: add(q, at(deg, 1), 1.4), deg }; }
+    }
+    return null;
   }
   // Bait-then-soak: stand at the tower's edge (A) as the 3-yalm puddles are baited, then step across it (B), 4.4
   // yalms off, out of your own puddle and nobody's else's, and out of the puddles (zones) still on the floor.
-  function baitSoak(towers, zones) {
+  function baitSoak(towers, zones, from) {
+    // B: inside the tower (up to 2.4 off its middle); A: 3.7 to 4.3 yalms from B, anywhere on clear floor. Each
+    // spot's pair the one with the most room: from the puddles still on the floor (zones), the lava, and everyone
+    // else's puddle (their A) once they step into their tower (B).
     const A = {}, Bs = {};
+    const room = (p) => {
+      let r = 9;
+      if (Math.abs(p[0]) > 19 || Math.abs(p[1]) > 19) return -9;
+      for (const z of zones) r = Math.min(r, dist(p, z) - 6.4);
+      if (inZone(LAVA(), p, 1.3)) r = Math.min(r, -4);
+      return r;
+    };
     for (let pass = 0; pass < 2; pass++) {
       for (const s of S) {
         const t = towers[s];
         let best = null, bs = -Infinity;
-        for (let d = 0; d < 360; d += 22.5) {
-          const u = at(d, 2.2), a = add(t, u), b = add(t, u, -1);
-          if (Math.abs(a[0]) > 19 || Math.abs(a[1]) > 19 || Math.abs(b[0]) > 19 || Math.abs(b[1]) > 19) continue;
-          let score = 99;
-          for (const z of zones) score = Math.min(score, dist(a, z) - 6.4, dist(b, z) - 6.4);
-          if (inZone(LAVA(), a, 1.6) || inZone(LAVA(), b, 1.6)) score = Math.min(score, -5);
-          for (const o of S) {
-            if (o === s || !A[o]) continue;
-            score = Math.min(score, dist(b, A[o]) - 4.4, dist(Bs[o], a) - 4.4);
+        for (const rb of [0, 1.4, 2.4]) for (let db = 0; db < 360; db += rb ? 30 : 360) {
+          const b = add(t, at(db, rb)), rB = room(b);
+          if (rB <= bs) continue;
+          for (const ra of [3.7, 4.3]) for (let da = 0; da < 360; da += 22.5) {
+            const a = add(b, at(da, ra));
+            let score = Math.min(rB, room(a)) - rb * 0.05;
+            if (from && from[s]) score = Math.min(score, (11 - dist(from[s], a)) * 0.5);      // reached in time
+            for (const o of S) {
+              if (o === s || !A[o]) continue;
+              score = Math.min(score, dist(b, A[o]) - 3.7, dist(Bs[o], a) - 3.7);
+            }
+            if (score > bs) { bs = score; best = [a, b]; }
           }
-          if (score > bs) { bs = score; best = [a, b]; }
         }
         [A[s], Bs[s]] = best;
       }
@@ -314,19 +357,44 @@
     const deb = (slot, key, name, hint, t0, t1) => P.debuffs.push({ slot, key, name, hint, t0, t1 });
     const castOf = (ev, d) => ev.t - (ev.cast || d || 5);
     const next = (i, test, within) => { for (let k = i + 1; k < events.length && events[k].t - events[i].t <= within; k++) if (test(events[k])) return events[k]; return null; };
-    const voidzone = (p, r, t0, t1, name, dmg) => { let prev = t0 - 1; for (let t = t0; t <= t1 + 1e-6; t += 1) { hz({ t, tell: prev, shape: 'circle', at: p, r, dmg: dmg || 0.8, name, react: 1.2 }); prev = t; } };
+    const find = (test, after) => events.find(e => e.t > after && test(e));
+    // Arrow lines: three from the north edge, three from the east, 7 wide, right across.
     const lanes = (pat, t, tell, name) => {
-      for (const x of LANES[pat].col) hz({ t, tell, shape: 'rect', a: [x - 3.5, -20], b: [x + 3.5, 20], dmg: 1.3, name, react: 2.5 });
-      for (const y of LANES[pat].row) hz({ t, tell, shape: 'rect', a: [-20, y - 3.5], b: [20, y + 3.5], dmg: 1.3, name, react: 2.5 });
+      for (const x of LANES[pat].col) hz({ t, tell, shape: 'line', at: [x, 20], deg: 180, len: 40, w: 7, dmg: 1.3, name, react: 2.5 });
+      for (const y of LANES[pat].row) hz({ t, tell, shape: 'line', at: [20, y], deg: 270, len: 40, w: 7, dmg: 1.3, name, react: 2.5 });
     };
     const markLit = (shape, t0, t1, fill) => P.marks.push(Object.assign({ kind: 'lit', t0, t1, fill }, shape));
-    const river = (t0, t1, fill) => {
-      for (const [deg, half] of [[10, 7], [250, 8], [122, 8]]) markLit({ shape: 'cone', at: [0, 0], deg, half, r: 29 }, t0, t1, fill);
+    // A floor that hurts from t to t + lasts (the electrified river, the lava, the quicksand): each piece a puddle.
+    const floorZone = (shapes, t, tell, lasts, name, status, o) => {
+      for (const s of shapes) hz(Object.assign({ t, tell, dmg: 1.2, lasts, tick: 1, tickDmg: 0.9, name, react: 3, status }, o, s));
+    };
+    // A puddle dropped where its target stands `snap` seconds before it lands (that first hit lands where they really
+    // were), then staying `lasts` seconds where the strat drops it (`spot`): the bots step round a puddle on the floor,
+    // not round one still following its target.
+    const puddle = (slot, t, snap, r, lasts, name, spot, tick = 1) => {
+      hz({ t, tell: t - snap, shape: 'circle', r, from: 'target', targets: [slot], snap, dmg: 0.9, name });
+      hz({ t: t + tick, tell: t, shape: 'circle', at: spot, r, dmg: 0.8, lasts: lasts - tick, tick, tickDmg: 0.8, name, react: 3 });
     };
 
-    let tint = null, wingmarks = 0, stickies = 0, layers = 0, sprays = 0, sugarscapes = 0, doubleStyles = 0, tastes = 0, explosions = 0;
+    // Where the boss stands (FFLogs' kills and the strats' diagrams): north for the desert and the river, south for
+    // the lava, the middle otherwise.
+    const evAt = (test, d) => { const e = events.find(test); return e ? e.t : d; };
+    const tDesert = evAt(e => e.name === 'Sugarscape', 91.3) - 2.2, tRiver = evAt(e => e.name === 'Sugarscape' && e.t > 300, 428.3) - 2.2;
+    const layerTimes = events.filter(e => e.name === 'Layer').map(e => e.t);
+    const tLava = layerTimes[3] || 529.9, tLavaOn = tLava + 7, wing2 = find(e => e.name === 'Wingmark', tLava) || { t: tLava + 39 };
+    // The canvas comes back with the Mousse Mural after the second towers (cactbot: "Blank canvas").
+    const tLavaOff = (find(e => e.name === 'Mousse Mural', (find(e => e.name === 'Explosion', wing2.t) || { t: 591.3 }).t) || { t: 596.3 }).t;
+    const tStormOn = (layerTimes[2] || 454.5) + 6.2;
+    P.boss = [{ t: 0, at: [0, 0] }, { t: tDesert, at: [0, 15], move: 1.5 }, { t: tDesert + 53.3, at: [0, 0], move: 1.5 },
+      { t: tRiver, at: [0, 15], move: 1.5 }, { t: tLava + 0.6, at: LAVA_BOSS, move: 2 }, { t: tLavaOff, at: [0, 0], move: 2 }];
+    // The floor's look (the map's _a1_ canvas, _a2_ desert, _a3_ river/storm/lava models), as Sugarscape repaints it.
+    const mural = events.filter(e => e.name === 'Mousse Mural').map(e => e.t);
+    P.looks = [{ t: 0, show: ['a1'] }, { t: tDesert + 2.2, show: ['a2'] }, { t: mural[1] || 199, show: ['a1'] },
+      { t: tRiver + 2.2, show: ['a3'] }, { t: mural[3] || 596.3, show: ['a1'] }];
+
+    let tint = null, wingmarks = 0, layers = 0, sprays = 0, sugarscapes = 0, doubleStyles = 0;
     let deskTank = null, deskDps = null, deskStack = null, qsCorner = 0, qsNorth = false, cloud = null, stormEnd = null;
-    let t1Spots = null, lastBridge = null, bindHealer = null;
+    let t1Spots = null, lastBridge = null;
     const done = new Set();
 
     events.forEach((ev, i) => {
@@ -346,8 +414,9 @@
         if (bomb) { P.labels.set(bomb, iceClose ? 'Cool Bomb (close) + Warm Bomb (far)' : 'Warm Bomb (close) + Cool Bomb (far)'); done.add(bomb); }
         pref(cs + 0.6, { [close]: [0, 2.2], [far]: [10.9, 13] });
         pref(tb + 0.5, { MT: UP.MT, OT: UP.OT });
-        hz({ t: tb, tell: cs, shape: 'tankcones', aimed: true, slots: [close], half: 70, r: 6.5, dmg: 1.5, buster: 0.55, name: iceClose ? 'Cool Bomb' : 'Warm Bomb' });
-        hz({ t: tb, tell: cs, shape: 'tankcones', aimed: true, slots: [far], half: 16, r: 60, dmg: 1.5, buster: 0.55, name: iceClose ? 'Warm Bomb' : 'Cool Bomb' });
+        const bombOf = (sel, nm) => hz({ t: tb, tell: cs, shape: 'circle', r: 4, from: 'target', targets: sel, effect: 'bait', dmg: 1.5, own: 0.55, buster: true, name: nm });
+        bombOf({ nearest: 1 }, iceClose ? 'Cool Bomb' : 'Warm Bomb');
+        bombOf({ farthest: 1 }, iceClose ? 'Warm Bomb' : 'Cool Bomb');
         const nextRiot = events.find(e => e.name === 'Color Riot' && e.t > t);
         const until = nextRiot ? nextRiot.t + 2.1 : tb + 60;
         const TINT = { cool: ['coolTint', 'Cool Tint', 'take fire (red) next'], warm: ['warmTint', 'Warm Tint', 'take ice (blue) next'] };
@@ -360,7 +429,7 @@
         wingmarks++;
         if (wingmarks === 2) { lavaTowers2(ev, i); return; }
         // Color Clash is stored (light parties or partners), then Double Style's summons leave one corner safe; you
-        // launch from the opposite corner and land there as the summons go off, then stack.
+        // stand by the opposite corner facing it, fly 34 yalms into it as the summons go off, then stack.
         const clash = next(i, e => e.name === 'Color Clash', 10);
         const ds = next(i, e => e.name === 'Double Style', 30);
         const aoe = next(i, e => e.name.startsWith('Bad Breath'), 35);
@@ -368,7 +437,7 @@
         if (!ds || !aoe) return;
         const lp = Math.random() < 0.5, k = Math.floor(Math.random() * 4);
         const kinds = pick(DS_KINDS), shapes = dsAdds(kinds).map(h => turnShape(h, k));
-        const stun = aoe.t - 4.6, summon = aoe.t - 14, tStack = stacks ? stacks.t : aoe.t + 0.4;
+        const stun = aoe.t - 4.6, fly = aoe.t - 2.9, summon = aoe.t - 14, tStack = stacks ? stacks.t : aoe.t + 0.4;
         if (clash) { P.labels.set(clash, `Color Clash (${lp ? 'light parties' : 'partners'} later)`); call(castOf(clash, 3), `Stored: ${lp ? 'light party stacks' : 'partner stacks'} for later`, { dur: 5 }); }
         if (stacks) { P.labels.set(stacks, lp ? 'Color Clash (light parties)' : 'Color Clash (partners)'); done.add(stacks); }
         P.labels.set(ds, 'Double Style');
@@ -377,20 +446,21 @@
         done.add(aoe);
         const land = dsLanding(lp, k);
         pref(summon, all(s => launchFor(land[s], k)));
-        pref(stun - 2.2, land);
+        pref(fly + 0.05, land);
         pref(tStack + 0.4, UP);
+        // The flight: everyone 34 yalms toward the safe corner (Wingmark can't be stopped).
+        hz({ t: fly, tell: stun, effect: 'knockback', dir: (315 + 90 * k) % 360, dist: FLY, unstoppable: true, dmg: 0, name: 'Wingmark', react: 4 });
         for (const h of shapes) hz(Object.assign({ t: aoe.t, tell: summon, dmg: 1.4, name: names, react: 3 }, h));
-        if (lp) check({ t: tStack, kind: 'stack', groups: [G1, G2], r: 6, dmg: 0.3, fail: 0.6, name: 'Color Clash' });
-        else check({ t: tStack, kind: 'stack', groups: DS_PAIRS.map(p => p.slice(0, 2)), r: 6, dmg: 0.3, fail: 0.6, name: 'Color Clash' });
+        if (lp) hz({ t: tStack, tell: tStack - 5, shape: 'circle', r: 6, from: 'target', targets: ['H1', 'H2'], effect: 'share', min: 4, dmg: 0.3, name: 'Color Clash' });
+        else hz({ t: tStack, tell: tStack - 5, shape: 'circle', r: 6, from: 'target', targets: SUPPORT.slice(), effect: 'share', min: 2, max: 2, dmg: 0.3, name: 'Color Clash' });
         for (const s of S) {
           deb(s, 'wingmark', 'Wingmark', `you fly ${FLY} yalms the way you face when it runs out`, t, stun);
-          deb(s, 'stun', 'Stun', 'flying', stun, stun + 3);
+          deb(s, 'stun', 'Stun', 'flying', stun, fly + 0.5);
         }
         const safe = CORNER[k], from = CORNER[(k + 2) % 4];
         call(summon, `Start ${from}, launch toward ${safe}`, { alert: true, dur: 7 });
         call(tStack - 5, lp ? 'Light parties (on the healers)' : 'Partner stacks (on the supports)', { alert: true, dur: 5 });
       } else if (name === 'Sticky Mousse') {
-        stickies++;
         const snap = next(i, e => e.name === 'Sticky Mousse (snapshot)', 3), burst = next(i, e => e.name === 'Burst', 10);
         const ts = snap ? snap.t : t + 0.9, tb = burst ? burst.t : ts + 6, cs = castOf(ev, 5);
         const layout = stickyLayout(base(strat)), targets = shuffle(NONTANK).slice(0, 2);
@@ -398,12 +468,12 @@
         if (snap) { P.labels.set(snap, 'Sticky Mousse (spreads)'); done.add(snap); }
         if (burst) { P.labels.set(burst, 'Burst (light party stacks)'); done.add(burst); }
         pref(cs, layout);
-        check({ t: ts, kind: 'spread', slots: NONTANK, r: 4, dmg: 0.25, fail: 0.7, name: 'Sticky Mousse' });
+        hz({ t: ts, tell: cs, shape: 'circle', r: 4, from: 'target', targets: NONTANK.slice(), effect: 'bait', dmg: 0.9, own: 0.2, name: 'Sticky Mousse' });
         // The rooted two stay put; their groups gather on them, a yalm their own side of them.
         const mates = {};
         groups.forEach(g => { const tg = g[0]; for (const s of g.slice(1)) mates[s] = add(layout[tg], unit([layout[s][0] - layout[tg][0], layout[s][1] - layout[tg][1]]), 1.2); });
         pref(ts + 0.1, mates);
-        check({ t: tb, kind: 'stack', groups, r: 4, dmg: 0.3, fail: 0.6, name: 'Burst' });
+        hz({ t: tb, tell: ts, shape: 'circle', r: 4, from: 'target', targets: targets.slice(), effect: 'share', min: 4, dmg: 0.3, name: 'Burst' });
         for (const s of targets) {
           deb(s, 'mousseMine', 'Mousse Mine', 'rooted: your light party stacks on you', ts, tb);
           call(ts, 'Rooted: stack on YOU', { slot: s, alert: true, dur: 5 });
@@ -427,7 +497,9 @@
           }
           if (b2) for (const s of ['H1', 'H2']) deb(s, 'heatingUp', 'Heating Up', 'defamation (15 yalms): your corner, away from everyone', d0, b2.t);
         } else {
-          markRiver(t);
+          // The river: water, harmless till the storm.
+          for (const s of RIVER) markLit(s, t + 8, tStormOn, 'rgba(90,170,255,0.18)');
+          for (const k of ['N', 'SE', 'SW']) markLit(bridgeShape(k), t + 8, tLavaOn, 'rgba(200,160,110,0.3)');
         }
       } else if (name === 'Layer') {
         layers++;
@@ -481,33 +553,32 @@
         if (b1) { spots[deskTank] = pos.tank; spots[deskDps] = pos.dps; }
         pref(k ? times[k - 1] + 0.05 : tt - 4, spots);
       });
-      // Then the short defamations and the party stack.
+      // Then the short defamations (15 yalms) and the party stack (6) on the Burning Up DPS.
       if (!b1) return;
       const spots = all(s => (s === deskTank ? D.tank : s === deskDps ? D.dps : add(D.stack, ringOff(s, 1))));
       pref(last + 0.05, spots);
       P.labels.set(b1, 'Brûlée (defamations) + Crowd Brûlée (stack)');
-      const group = S.filter(s => s !== deskTank && s !== deskDps);
-      check({ t: b1.t, kind: 'spread', slots: [deskTank, deskDps], r: 15, dmg: 0.3, fail: 0.8, name: 'Brûlée' });
-      check({ t: b1.t, kind: 'stack', groups: [group], r: 6, dmg: 0.3, fail: 0.6, name: 'Crowd Brûlée' });
+      hz({ t: b1.t, tell: last, shape: 'circle', r: 15, from: 'target', targets: [deskTank, deskDps], effect: 'bait', dmg: 1.2, own: 0.3, status: ['fireResDown', 30], name: 'Brûlée' });
+      hz({ t: b1.t, tell: last, shape: 'circle', r: 6, from: 'target', targets: [deskStack], effect: 'share', min: 6, dmg: 0.3, status: ['fireResDown', 30], name: 'Crowd Brûlée' });
       call(last + 0.1, `Defamations out (${deskTank}, ${deskDps}), party stack on ${deskStack}`, { dur: 5 });
       for (const s of [deskTank, deskDps]) call(last + 0.1, 'Defamation: go to your corner', { slot: s, alert: true, dur: 5 });
       pref(b1.t + 0.5, UP);
     }
 
     function desertQuicksand(ev) {
-      // The quicksand round the middle (23 yalms) and nine cacti leave the corners; one corner has a cactus.
+      // The quicksand round the middle (23 yalms, sinking whoever's in it till it goes) and nine cacti leave the
+      // corners; one corner has a cactus.
       const appear = ev.t + 7.1, spray = events.find(e => e.name === 'Spray Pain' && e.t > ev.t), b2 = events.find(e => /^Br.l.e$/.test(e.name));
       const ts = spray ? spray.t : ev.t + 15.8, act = ts + 0.46, gone = act + 4;
       qsCorner = Math.floor(Math.random() * 4);
       if (spray) P.labels.set(spray, `Spray Pain (${CORNER[qsCorner]} unsafe)`);
-      hz({ t: act, tell: appear, shape: 'circle', at: [0, 0], r: 23, dmg: 1.4, name: 'Quicksand', react: 3 });
-      markLit({ shape: 'circle', at: [0, 0], r: 23 }, appear, gone, 'rgba(230,180,90,0.16)');
+      floorZone([{ shape: 'circle', at: [0, 0], r: 23 }], act, appear, gone - act, 'Quicksand', ['sixFulmsUnder', 4]);
       for (const c of QS_CACTI[qsCorner]) hz({ t: ts, tell: ts - 8.5, shape: 'circle', at: c, r: 10, dmg: 1.3, name: 'Spray Pain', react: 3 });
       const spots = desertCorners(strat, qsCorner);
       pref(appear, spots);
       if (b2) {
         P.labels.set(b2, 'Brûlée (healer defamations)');
-        check({ t: b2.t, kind: 'spread', slots: ['H1', 'H2'], r: 15, dmg: 0.3, fail: 0.8, name: 'Brûlée' });
+        hz({ t: b2.t, tell: appear, shape: 'circle', r: 15, from: 'target', targets: ['H1', 'H2'], effect: 'bait', dmg: 1.2, own: 0.3, status: ['fireResDown', 30], name: 'Brûlée' });
       }
       const cornerOf = (p) => CORNER[CORNER_AT.findIndex(c => c[0] === Math.sign(p[0]) && c[1] === Math.sign(p[1]))];
       call(appear, `Quicksand: corners. Cactus ${CORNER[qsCorner]}, the party goes ${cornerOf(spots.MT)}`, { alert: true, dur: 7 });
@@ -517,21 +588,23 @@
 
     function desertBombs(ev) {
       // Blue tethers (the supports) drop their paint bombs in the quicksand; pink (the DPS) aim their winged bombs
-      // into it from outside; Pudding Graf's 6-yalm spreads place them; then everyone out before it sinks.
+      // into it from outside; Pudding Graf's 6-yalm spreads place them; then everyone out before it sinks (it stays
+      // till Mousse Mural).
       const graf = next(events.indexOf(ev), e => e.name === 'Pudding Graf', 3);
       const tg = graf ? graf.t : ev.t + 1, appear = ev.t - 7.4, act = tg + 2.5;
+      const mm = find(e => e.name === 'Mousse Mural', tg), gone = mm ? mm.t + 0.3 : act + 7;
       qsNorth = Math.random() < 0.5;
       const qc = [0, qsNorth ? 20 : -20], spots = bombSpots(strat, qsNorth);
       P.labels.set(ev, `Double Style (bombs, quicksand ${qsNorth ? 'north' : 'south'})`);
       if (graf) { P.labels.set(graf, 'Pudding Graf (spreads)'); done.add(graf); }
-      hz({ t: act, tell: appear, shape: 'circle', at: qc, r: 23, dmg: 1.4, name: 'Quicksand', react: 2.3 });
-      markLit({ shape: 'circle', at: qc, r: 23 }, appear, act + 7, 'rgba(230,180,90,0.16)');
+      floorZone([{ shape: 'circle', at: qc, r: 23 }], act, appear, gone - act, 'Quicksand', ['sixFulmsUnder', 4], { react: 2.3 });
       pref(appear, spots);
-      check({ t: tg, kind: 'spread', r: 6, dmg: 0.25, fail: 0.7, name: 'Pudding Graf' });
+      hz({ t: tg, tell: tg - 5, shape: 'circle', r: 6, from: 'target', targets: S.slice(), effect: 'bait', dmg: 0.8, own: 0.2, name: 'Pudding Graf' });
       check({ t: tg, kind: 'spot', slots: SUPPORT, spots, r: 3, fail: 0.9, name: 'Paint Bomb' });
+      // Out: everyone on the other side of the boss, till the quicksand's gone.
       const outY = qsNorth ? -5 : 5;
       pref(tg + 0.05, Object.fromEntries(SUPPORT.map(s => [s, [spots[s][0], outY]])));
-      pref(act + 0.5, UP);
+      pref(gone + 0.2, UP);
       for (const s of SUPPORT) call(appear, 'Blue tether: stand in the quicksand to drop your bomb', { slot: s, alert: true, dur: 6 });
       for (const s of DPS) call(appear, 'Pink tether: face the quicksand from outside (your bomb flies 16 yalms)', { slot: s, alert: true, dur: 6 });
       call(tg + 0.1, 'Out of the quicksand', { alert: true, dur: 2.5 });
@@ -549,22 +622,20 @@
       pref(lp[2].t + 1, ADDS[3]);
       pref(lp[3].t + 1, ADDS[4]);
       call(lp[0].t, 'Adds: ram west with OT, MT holds the boss and squirrels', { dur: 6 });
-      // Wave 2: the feather rays tether R2 (north-west) and H2 (north-east): an 8-yalm Water III each, its puddle
-      // staying on the floor.
-      const w2 = lp[1].t + 3.1;
-      const drop = (s, p, tt) => {
-        check({ t: tt, kind: 'spread', slots: [s], r: 8, dmg: 0.3, fail: 0.7, name: 'Water III' });
-        deb(s, 'vulnUp', 'Vulnerability Up', 'from your Water III', tt, tt + 8);
-        voidzone(p, 8, tt + 2.5, tt + 30, 'Water III');
+      // The feather rays' Water III: an 8-yalm spread on the tethered player, its puddle staying 30 s.
+      const drop = (s, tt, spot) => {
+        hz({ t: tt, tell: tt - 3, shape: 'circle', r: 8, from: 'target', targets: [s], effect: 'bait', dmg: 0.9, own: 0.3, status: ['vulnUp', 8], name: 'Water III' });
+        puddle(s, tt + 2.5, 2.5, 8, 27, 'Water III', spot, 2);
       };
-      drop('R2', ADDS[2].R2, w2 + 10.1);
-      drop('H2', ADDS[2].H2, w2 + 10.1);
+      // Wave 2: R2 north-west and H2 north-east, one drop each.
+      const w2 = lp[1].t + 3.1;
+      drop('R2', w2 + 10.1, ADDS[2].R2);
+      drop('H2', w2 + 10.1, ADDS[2].H2);
       pref(w2 + 10.15, { R2: [1.5, 7.5], H2: [-1.5, 6.5] });          // back to the party, off the puddles
       call(lp[1].t, 'Feather rays: R2 north-west, H2 north-east (8-yalm puddles)', { dur: 6 });
       // Wave 3: the Jabberwock binds a healer, who goes south-east first.
       const healers = shuffle(['H1', 'H2']);
       const jab1 = lp[2].t + 11.1, jab2 = lp[3].t + 11.1;
-      bindHealer = healers[0];
       pref(jab1 - 3, { [healers[0]]: [17, -17] });
       deb(healers[0], 'bind', 'Bind', 'the Jabberwock has you: kill it fast', jab1, ore[0] ? ore[0].t : jab1 + 18);
       call(jab1 - 3, 'Jabberwock on YOU: go south-east', { slot: healers[0], alert: true, dur: 5 });
@@ -575,8 +646,8 @@
         const tt = w4 + 10.5 + 9.3 * n;
         const p1 = [ADDS[4].R1[0], ADDS[4].R1[1] + 10 * n], p2 = [ADDS[4].R2[0], ADDS[4].R2[1] + 10 * n];
         if (n) pref(tt - 9.15, { R1: p1, R2: p2 });          // on up the edge, off the last puddle
-        drop('R1', p1, tt);
-        drop('R2', p2, tt);
+        drop('R1', tt, p1);
+        drop('R2', tt, p2);
         if (n === 2) pref(tt + 0.15, { R1: [-9, 0], R2: [8, 0] });
       });
       call(lp[3].t, 'Feather rays: R1 south-west, R2 south-east; MT takes the Jabberwock north', { dur: 6 });
@@ -588,11 +659,6 @@
     }
 
     // ---------- the river ----------
-    function markRiver(t) {
-      const lavaLayer = events.filter(e => e.name === 'Layer')[3];
-      const tl = lavaLayer ? lavaLayer.t : t + 100;
-      river(t + 8, tl + 7, 'rgba(90,170,255,0.16)');
-    }
     function riverStyle(ev) {
       // Double Style: fire (light party stacks on the healers, in the water) or lightning (spreads, out of it), with
       // the arrows.
@@ -603,44 +669,55 @@
       if (rush) { P.labels.set(rush, `Rush + Taste of ${fire ? 'Fire (healer stacks)' : 'Thunder (spreads)'}`); done.add(rush); }
       lanes(pat, tr, tr - 7.2, 'Rush');
       pref(cs + 1, fire ? fireSpots(pat) : lightningSpots(strat, pat));
-      if (fire) check({ t: tr, kind: 'stack', groups: FIRE, r: 6, dmg: 0.3, fail: 0.6, name: 'Taste of Fire' });
-      else check({ t: tr, kind: 'spread', r: 6, dmg: 0.25, fail: 0.7, name: 'Taste of Thunder' });
+      if (fire) hz({ t: tr + 0.1, tell: cs, shape: 'circle', r: 6, from: 'target', targets: ['H1', 'H2'], effect: 'share', min: 4, dmg: 0.3, name: 'Taste of Fire' });
+      else hz({ t: tr + 0.1, tell: cs, shape: 'circle', r: 6, from: 'target', targets: S.slice(), effect: 'bait', dmg: 0.8, own: 0.2, name: 'Taste of Thunder' });
       call(cs, fire ? 'Healer groups in the water, avoid the arrow lines' : 'Spread out of the water, avoid the arrow lines', { alert: true, dur: 7 });
     }
 
     // ---------- the storm ----------
     function storm(ev) {
       // The cloud strikes 21 yalms round itself every 10.6 s, moving island to island; the party waits on the bridge
-      // across from it. First everyone baits a 3-yalm puddle round that bridge, then steps on.
+      // across from it. The river is electrified from here on. First everyone baits a 3-yalm puddle at either end
+      // of that bridge, then steps on.
       const ls = events.filter(e => e.name === 'Lightning Storm' && e.t > ev.t), bait = events.find(e => e.name === 'Taste of Thunder' && e.t > ev.t);
       if (ls.length < 4) return;
+      floorZone(RIVER, tStormOn, ev.t - 0.9, tLavaOn - tStormOn - 0.5, 'Levin Merengue', null, { tick: 2 });
       const strikes = [ls[0].t - 10.6, ...ls.map(e => e.t)];
       cloud = [pick(['NE', 'NW', 'S'])];
       for (let k = 1; k < strikes.length; k++) cloud.push((Math.random() < 0.5 ? CLOUD_CW : CLOUD_CCW)[cloud[k - 1]]);
       const bridges = cloud.map(c => SAFE_BRIDGE[c]);
       const tb = bait ? bait.t : strikes[0] - 1.8, snap = tb - 3;
-      // The puddles, round the first bridge.
-      const b0 = BRIDGE[bridges[0]];
-      const ring = all(s => add(b0, at(S.indexOf(s) * 45, 4.8)));
-      pref(ev.t - 1.5, ring);
-      for (const s of S) hz({ t: tb, tell: snap, shape: 'circle', at: ring[s], r: 3, dmg: 1.0, name: 'Taste of Thunder', react: 2.8 });
+      const b0 = BRIDGE[bridges[0]], ax = at(BRIDGE_AXIS[bridges[0]], 1), along = [ax[1], -ax[0]];
+      const ends = all(s => { const k = S.indexOf(s); return add(add(b0, ax, k < 4 ? 4.8 : -4.8), along, [-1.8, -0.6, 0.6, 1.8][k % 4]); });
+      pref(ev.t - 1.5, ends);
+      hz({ t: tb, tell: snap, shape: 'circle', r: 3, from: 'target', targets: S.slice(), snap: 3, dmg: 1.0, name: 'Taste of Thunder' });
       if (bait) { P.labels.set(bait, 'Taste of Thunder (puddles)'); done.add(bait); }
-      call(snap - 1, `Bait your puddle by the ${bridges[0] === 'N' ? 'north' : bridges[0] === 'SE' ? 'south-east' : 'south-west'} bridge, then step on it`, { alert: true, dur: 5 });
+      const BRIDGE_NAME = { N: 'north', SE: 'south-east', SW: 'south-west' };
+      call(snap - 1, `Bait your puddle at the end of the ${BRIDGE_NAME[bridges[0]]} bridge, then step on it`, { alert: true, dur: 5 });
       pref(snap + 0.05, clump(b0, 0.3));
       // Who takes each Lightning Storm: a support and a DPS.
       const sup = shuffle(SUPPORT), dps = shuffle(DPS);
       strikes.forEach((ts, k) => {
         const c = cloud[k], br = bridges[k], bp = BRIDGE[br];
         hz({ t: ts, tell: k ? strikes[k - 1] + 1 : ts - 6.9, shape: 'circle', at: CLOUD[c], r: 21, dmg: 1.5, name: 'Highlightning', react: 3 });
-        markLit({ shape: 'circle', at: BRIDGE[br], r: 2.5 }, k ? strikes[k - 1] : ts - 6, ts, 'rgba(255,255,160,0.25)');
+        markLit(Object.assign(bridgeShape(br), {}), k ? strikes[k - 1] : ts - 6, ts, 'rgba(255,255,160,0.3)');
         if (k) pref(strikes[k - 1] + 0.8, clump(bp, 0.3));
-        call(k ? strikes[k - 1] + 0.1 : ts - 6, `Cloud ${c === 'S' ? 'south' : c === 'NE' ? 'north-east' : 'north-west'}: to the ${br === 'N' ? 'north' : br === 'SE' ? 'south-east' : 'south-west'} bridge`, { dur: 5 });
+        call(k ? strikes[k - 1] + 0.1 : ts - 6, `Cloud ${c === 'S' ? 'south' : c === 'NE' ? 'north-east' : 'north-west'}: to the ${BRIDGE_NAME[br]} bridge`, { dur: 5 });
         if (!k) return;
         const lev = ls[k - 1], targets = [sup[k - 1], dps[k - 1]], [cw, ccw] = ISLES[br];
         const spots = { [targets[0]]: ISLE_SPOT[cw], [targets[1]]: ISLE_SPOT[ccw] };
         pref(ts - 3.2, spots);
-        pref(ts + 0.8, Object.fromEntries(targets.map(s => [s, add(bp, ringOff(s, 0.3))])));
-        check({ t: ts, kind: 'spread', slots: targets, r: 8, dmg: 0.3, fail: 0.8, name: 'Lightning Storm' });
+        // Back by way of this bridge when the next one isn't on their island (no wading through the river).
+        const nb = bridges[k + 1], nbp = nb ? BRIDGE[nb] : bp;
+        for (const s of targets) {
+          const isle = s === targets[0] ? cw : ccw, home = add(nbp, ringOff(s, 0.3));
+          if (nb && !ISLES[nb].includes(isle)) {
+            pref(ts + 0.85, { [s]: add(bp, ringOff(s, 0.3)) });
+            pref(ts + 0.85 + dist(ISLE_SPOT[isle], bp) / 6 + 0.3, { [s]: home });
+          } else pref(ts + 0.85, { [s]: home });
+        }
+        hz({ t: ts, tell: ts - 5, shape: 'circle', r: 8, from: 'target', targets: targets.slice(), effect: 'bait', dmg: 0.9, own: 0.3, name: 'Lightning Storm' });
+        // Levin Drop: an island a Lightning Storm landed on is electrified; everyone else waits on the bridge.
         const on = S.filter(s => !targets.includes(s));
         check({ t: ts + 0.7, kind: 'spot', slots: on, spots: Object.fromEntries(on.map(s => [s, bp])), r: 2.6, fail: 0.8, name: 'Levin Drop' });
         for (const s of targets) call(ts - 5, `Lightning Storm on YOU: out to the ${s === targets[0] ? 'clockwise' : 'counter-clockwise'} island`, { slot: s, alert: true, dur: 5 });
@@ -649,10 +726,9 @@
         // Lightning Storm goes.
         const prev = strikes[k - 1];
         for (const tt of [prev + 4.6, prev + 7.1]) {
-          const avoid = [BRIDGE.N, BRIDGE.SE, BRIDGE.SW, ...Object.values(spots)];
-          for (let n = 0, tries = 0; n < 6 && tries < 300; tries++) {
+          for (let n = 0, tries = 0; n < 6 && tries < 400; tries++) {
             const p = [Math.random() * 36 - 18, Math.random() * 36 - 18];
-            if (avoid.some(q => dist(p, q) < 7)) continue;
+            if (ROUTES.some(([a, b]) => segDist(p, a, b) < 6.5)) continue;
             hz({ t: tt, tell: tt - 3, shape: 'circle', at: p, r: 4, dmg: 1.0, name: 'Lightning Bolt', react: 2.5 });
             n++;
           }
@@ -666,17 +742,18 @@
         const tgt = pick(S);
         P.labels.set(pp, `Pudding Party x5 (on ${tgt})`);
         pref(stormEnd + 0.8, clump(lastBridge, 0.4));
-        for (let n = 0; n < 5; n++) check({ t: pp.t + 1.06 * n, kind: 'stack', groups: [S.slice()], r: 6, dmg: 0.15, fail: 0.5, name: 'Pudding Party' });
+        for (let n = 0; n < 5; n++) hz({ t: pp.t + 1.06 * n, tell: pp.t - 4, shape: 'circle', r: 6, from: 'target', targets: [tgt], effect: 'share', min: 8, dmg: 0.15, name: 'Pudding Party' });
         call(pp.t - 4, `Stack on ${tgt} five times`, { alert: true, dur: 6 });
       }
     }
 
     // ---------- the lava ----------
     function lava(ev) {
-      // The river turns to lava. Healers and ranged pair up on the north-west and north-east islands for Mousse Drip,
-      // the tanks and melee bait Moussacre south of the boss, then everyone takes a tower.
+      // The river and its bridges turn to lava; the boss moves south. Healers and ranged pair up on the north-west
+      // and north-east islands for Mousse Drip, the tanks and melee bait Moussacre from their towers by her, then
+      // everyone takes a tower.
       const tl = ev.t;
-      river(tl + 7, tl + 70, 'rgba(255,90,40,0.28)');
+      floorZone(LAVA(), tLavaOn, tl, tLavaOff - tLavaOn, 'Lava', null, { tick: 2 });
       const drip = events.find(e => e.name === 'Mousse Drip' && e.t > tl && e.cast);
       const drops = events.filter(e => e.name === 'Mousse Drip' && e.t > tl && !e.cast).slice(0, 4);
       const mous = events.find(e => e.name === 'Moussacre' && e.t > tl), snapM = events.find(e => e.name === 'Moussacre (snapshot)' && e.t > tl);
@@ -685,73 +762,87 @@
       const T = towers1(strat);
       t1Spots = T;
       const baiters = base(strat) === 'game8' ? ['H1', 'H2'] : ['R1', 'R2'];
-      const pairs = [['H1', 'R1', 1], ['H2', 'R2', -1]];
+      const pairs = [['H1', 'R1', 'NW'], ['H2', 'R2', 'NE']];
       const zones = [];
-      // Before: the islands and the boss's south.
-      pref(tl + 1, Object.assign({}, all(s => (PROTEAN_DEG[s] !== undefined ? at(PROTEAN_DEG[s], 6.5) : null)),
-        { H1: add(DRIPS[0], [1.5, -1]), R1: add(DRIPS[0], [-0.5, 1]), H2: add([-DRIPS[0][0], DRIPS[0][1]], [-1.5, -1]), R2: add([-DRIPS[0][0], DRIPS[0][1]], [0.5, 1]) }));
+      // Before: the tanks and melee at their towers (by the boss), the others on their islands.
+      pref(tl + 1, Object.assign({ MT: T.MT, OT: T.OT, M1: T.M1, M2: T.M2 },
+        { H1: add(DRIPS.NW[0], [1.5, -1]), R1: add(DRIPS.NW[0], [-0.5, 1]), H2: add(DRIPS.NE[0], [-1.5, -1]), R2: add(DRIPS.NE[0], [0.5, 1]) }));
+      const tgts = [];
       for (const [h, r, side] of pairs) {
         const tgt = baiters.includes(h) ? h : r, mate = tgt === h ? r : h;
-        DRIPS.forEach((d0, k) => {
-          const d = [d0[0] * side, d0[1]], tt = drops[k].t;
+        tgts.push(tgt);
+        DRIPS[side].forEach((d, k) => {
+          const tt = drops[k].t;
           pref(k ? drops[k - 1].t + 0.05 : castOf(drip, 5), { [tgt]: d, [mate]: add(d, unit([-d[0], -d[1]]), 1) });
           zones.push(d);
-          voidzone(d, 5, tt + 2, tt + 8, 'Mousse Drip');
+          puddle(tgt, tt + 2, 2, 5, 6, 'Mousse Drip', d);
         });
         call(castOf(drip, 5), `Mousse Drip on YOU: four drops, ${mate} stacks with you`, { slot: tgt, alert: true, dur: 6 });
         call(castOf(drip, 5), `Stack with ${tgt} for four drops`, { slot: mate, dur: 6 });
       }
-      drops.forEach((e, k) => { P.labels.set(e, `Mousse Drip (${k + 1})`); check({ t: e.t, kind: 'stack', groups: pairs.map(p => p.slice(0, 2)), r: 5, dmg: 0.25, fail: 0.6, name: 'Mousse Drip' }); });
-      drops.forEach(e => done.add(e));
-      // Moussacre: a cone at each of the four closest to the boss.
+      drops.forEach((e, k) => {
+        P.labels.set(e, `Mousse Drip (${k + 1})`);
+        hz({ t: e.t, tell: k ? drops[k - 1].t : castOf(drip, 5), shape: 'circle', r: 5, from: 'target', targets: tgts.slice(), effect: 'share', min: 2, max: 2, dmg: 0.25, name: 'Mousse Drip' });
+        done.add(e);
+      });
+      // Moussacre: a 15-degree cone at each of the four closest to the boss.
       if (snapM) {
-        for (const s of Object.keys(PROTEAN_DEG)) hz({ t: snapM.t, tell: castOf(mous, 4), shape: 'protean', aimed: true, target: s, half: 15, r: 60, dmg: 0.9, own: 0.3, name: 'Moussacre' });
-        call(castOf(mous, 4), 'Moussacre: tanks and melee bait the cones south, 25 degrees apart', { dur: 5 });
+        hz({ t: snapM.t, tell: castOf(mous, 4), shape: 'cone', half: 15, r: 60, from: 'boss', aim: 'target', targets: { nearest: 4 }, effect: 'bait', dmg: 0.9, own: 0.3, name: 'Moussacre' });
+        call(castOf(mous, 4), 'Moussacre: tanks and melee bait the cones from your towers', { dur: 5 });
         P.labels.set(mous, 'Moussacre (cones at the four closest)');
       }
       // The towers: bait your puddle at the tower's edge, step across.
       const tbait = bait ? bait.t - 3 : boom.t - 4.8, after = Math.max(drops[3].t, snapM ? snapM.t : 0) + 0.1;
       const live = zones.filter((z, n) => drops[n % 4].t + 8 > tbait);
-      const { A, B: Bspot } = baitSoak(T, live);
+      const endAt = {};
+      pairs.forEach(([h, r, side]) => { const tgt = baiters.includes(h) ? h : r, d4 = DRIPS[side][3]; endAt[tgt] = d4; endAt[tgt === h ? r : h] = add(d4, unit([-d4[0], -d4[1]]), 1); });
+      const { A, B: Bspot } = baitSoak(T, live, Object.assign({ MT: T.MT, OT: T.OT, M1: T.M1, M2: T.M2 }, endAt));
       pref(after, A);
       pref(tbait + 0.05, Bspot);
-      for (const s of S) hz({ t: tbait + 3, tell: tbait, shape: 'circle', at: A[s], r: 3, dmg: 1.0, name: 'Taste of Thunder', react: 2.8 });
+      hz({ t: tbait + 3, tell: tbait, shape: 'circle', r: 3, from: 'target', targets: S.slice(), snap: 3, dmg: 1.0, name: 'Taste of Thunder' });
       if (bait) { P.labels.set(bait, 'Taste of Thunder (puddles)'); done.add(bait); }
-      P.marks.push(...Object.values(T).map(p => ({ kind: 'spotlight', at: p, r: 3, t0: tl + 15, t1: boom.t })));
-      check({ t: boom.t, kind: 'spot', spots: T, r: 3, fail: 1.2, name: 'Explosion (tower)' });
+      towers(T, tl + 15, boom.t);
       P.labels.set(boom, 'Explosion (towers)');
       done.add(boom);
       call(tbait - 2, 'Bait your puddle at your tower\'s edge, then step across into it', { alert: true, dur: 5 });
     }
+    // Eight towers, one soaker each (an unsoaked one hits everyone).
+    function towers(T, tell, t) {
+      for (const p of Object.values(T)) hz({ t, tell, shape: 'circle', r: 3, at: p, effect: 'tower', soak: 1, dmg: 0.3, fail: 1.2, name: 'Explosion' });
+    }
 
     function lavaTowers2(ev) {
       // Wingmark: fly from the first towers to the second (four on one island and two on each other, or all eight
-      // south), bait the puddles, soak.
-      const tw = ev.t, stun = tw + 11, appear = tw + 3.1;
+      // south), each the way they face; bait the puddles, soak.
+      const tw = ev.t, stun = tw + 11, fly = stun + 1.5, appear = tw + 3.1;
       const bait = events.find(e => e.name === 'Taste of Thunder' && e.t > tw), boom = events.find(e => e.name === 'Explosion' && e.t > tw);
       if (!boom) return;
       const type = pick(['NE', 'NW', '8S']);
       const T = towers2(strat, type), from = t1Spots || UP;
-      const launch = all(s => launchTo(T[s], from[s]));
-      pref(appear, launch);
-      pref(stun - 2.2, T);
+      const taken = [], launch = {}, deg = {}, land = {};
       for (const s of S) {
+        const l = flightTo(T[s], from[s], taken) || { p: from[s], land: from[s], deg: 0 };
+        launch[s] = l.p; deg[s] = l.deg; land[s] = l.land; taken.push(l.p);
+      }
+      pref(appear, launch);
+      pref(fly + 0.05, land);
+      for (const s of S) {
+        hz({ t: fly, tell: stun, effect: 'knockback', shape: 'circle', r: 1.2, from: 'target', targets: [s], dir: deg[s], dist: FLY, unstoppable: true, dmg: 0, name: 'Wingmark' });
         deb(s, 'wingmark', 'Wingmark', `you fly ${FLY} yalms the way you face when it runs out`, tw, stun);
-        deb(s, 'stun', 'Stun', 'flying', stun, stun + 3);
+        deb(s, 'stun', 'Stun', 'flying', stun, fly + 0.5);
       }
       const tbait = bait ? bait.t - 3 : boom.t - 5;
-      const { A, B: Bspot } = baitSoak(T, []);
-      pref(stun + 3.6, A);
+      const { A, B: Bspot } = baitSoak(T, [], land);
+      pref(fly + 1.2, A);
       pref(tbait + 0.05, Bspot);
-      for (const s of S) hz({ t: tbait + 3, tell: tbait, shape: 'circle', at: A[s], r: 3, dmg: 1.0, name: 'Taste of Thunder', react: 2.8 });
+      hz({ t: tbait + 3, tell: tbait, shape: 'circle', r: 3, from: 'target', targets: S.slice(), snap: 3, dmg: 1.0, name: 'Taste of Thunder' });
       if (bait) { P.labels.set(bait, 'Taste of Thunder (puddles)'); done.add(bait); }
-      P.marks.push(...Object.values(T).map(p => ({ kind: 'spotlight', at: p, r: 3, t0: appear, t1: boom.t })));
-      check({ t: boom.t, kind: 'spot', spots: T, r: 3, fail: 1.2, name: 'Explosion (tower)' });
+      towers(T, appear, boom.t);
       P.labels.set(ev, `Wingmark (towers: ${type === '8S' ? 'all eight south' : `four ${type === 'NE' ? 'north-east' : 'north-west'}`})`);
       P.labels.set(boom, 'Explosion (towers)');
       done.add(boom);
       call(appear, type === '8S' ? '8 towers south: launch onto your tower' : `4 towers ${type === 'NE' ? 'north-east' : 'north-west'}: everyone rotates ${type === 'NE' ? 'counter-clockwise' : 'clockwise'}`, { alert: true, dur: 7 });
-      pref(boom.t + 0.5, UP);
+      pref(tLavaOff + 0.3, UP);
     }
 
     return P;

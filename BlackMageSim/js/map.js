@@ -171,11 +171,15 @@
 
     // The arena's look (a fight's plan: `looks`): of the looks the fight switches between (all), only those in show;
     // the rest of the room stays.
-    setLooks(show, all) {
-      const E = this.cur, key = show ? show.join(',') : '';
+    setLooks(show, all, lift) {
+      const E = this.cur, key = show ? show.join(',') + '@' + (lift || 0) : '';
       if (!E || !E.looked || E.lookKey === key) return;
       E.lookKey = key;
-      for (const im of E.looked) im.visible = !show || !all.has(im.userData.look) || show.includes(im.userData.look);
+      for (const im of E.looked) {
+        const named = show && show.includes(im.userData.look);
+        im.visible = !show || !all.has(im.userData.look) || named;
+        im.position.y = named ? lift || 0 : 0;                    // a lower phase raised to the fight's floor
+      }
       if (this.renderer) this.renderer.mapShadowKey = null;          // its shadows drawn again
       if (this.sc.models && this.sc.models.renderer) this.sc.models.renderer.mapShadowKey = null;
     }

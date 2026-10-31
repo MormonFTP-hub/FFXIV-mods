@@ -2,35 +2,41 @@
 // strats wtfdig.info lists for them: Toxic (its first, the one NA and EU party finders run: Toxic P1, Locked P2, Toxic
 // P3), Kindred (an uptime P1, then Locked and Toxic), Game8 (JP) and MR (OCE). Each strat gives the eight spots (MT OT
 // H1 H2 M1 M2 R1 R2) a place for each mechanic; the bots stand there, and so should you. Spots are [east, north] yalms
-// from the arena's middle.
+// from the middle of the arena the phase is fought in.
 //
 // The mechanics follow BossMod's module for the fight (github.com/awgil/ffxiv_bossmod, RM07SBruteAbominator), whose
 // shapes and sizes come from the game's own Action sheet, and where they land follows four FFLogs kills (positions of
-// the boss's helpers as they cast):
-//   - Stoneringer: the club (out of a 12-yalm circle) or the sword (in, a donut from 9), stored; Smash Here / There then
-//     drops a 6-yalm tank buster the two tanks share on whoever is nearest / furthest, a second after the swing.
+// the boss and its helpers as they cast). Built on the mechanics toolkit (js/mech.js):
+//   - Three floors (the plan's arena and looks): P1 a 40-yalm square (look a1); P2 a 25 x 50 arena between two walls
+//     (a2; in the game 95 yalms north); P3 a 40-yalm square again (a3; there, 200 yalms down). The boss moves (the
+//     plan's boss): to the walls and buildings it leaps to, across the arena with its lariat, onto the Pulp Smash
+//     target and into Slaminator's tower; its hitbox is 7 yalms, 19.7 in P2.
+//   - Stoneringer: the club (out of a 12-yalm circle) or the sword (in, a donut from 9), stored; Smash Here / There
+//     then drops a 6-yalm buster the two tanks share on whoever is nearest / furthest from the boss.
 //   - Spore Sac (four 8-yalm circles in a pinwheel) and Pollen (twelve of the 4x4 grid's 16 points, 11 apart, leaving
 //     two inner and two outer, on opposite diagonals); Sinister Seeds: four 6-yalm seed spreads on the tanks and melee
-//     or the healers and ranged, and four chasing 7-yalm puddles, 2 s apart, on the other four; each seed sprouts
-//     Tendrils of Terror (an eight-way star of 4-wide lines) and each puddle Roots of Evil (12 yalms) a few seconds
-//     later; Impact: light-party stacks on the healers.
-//   - Adds (the Blooming Abominations, at the seeds), Quarry Swamp (line of sight: hide behind them) and three
-//     proximity Explosions round the arena (bearings 0, 120 and 240 at 16 yalms, either way round).
-//   - Pulp Smash: a stack on a player, then The Unpotted (30-degree cones at everyone) and a 6-yalm circle under the
-//     boss.
-//   - P2 (a 25 x 50 arena between two walls, here scaled to 0.8 so it fits the sim's 40 x 40 floor): the boss leaps to
-//     a wall for Brutish Swing (out of 25 yalms, or within 21.7), then Glower Power (a 14-wide line along its facing)
-//     with everyone's 6-yalm spreads; Abominable Blink, a 23-yalm flare on a tank; Sporesplosion (a 3 x 6 grid of
-//     8-yalm puddles in three sets); Strange Seeds (two seeds every 5 s, each a star 4.7 s later) and Killer Seeds
-//     (partner stacks, each a star).
-//   - P3: Stoneringers (two swings from walls 34.5 out, a Lashing Lariat sweeping all but a strip on one side, Glower
-//     Power across the middle with spreads, Slaminator, an 8-yalm tank tower), Debris Deathmatch (tethers, Spore Sac,
-//     Pollen, Killer Seeds, Quarry Swamp), Sinister Seeds again with Pulp Smash, and Strange Seeds with the swings.
-// Simplified (what the engine can't show): the boss stays in the middle (where it really stands, at a wall or after a
-// leap, is drawn as a faint ring); the puddles follow fixed paths rather than chasing whoever baits them; the adds are
-// killed or interrupted as real parties do (their crosses only land for the uptime strat that leaves them alone);
-// tethers are just statuses; P2's walls are drawn but don't stop you; Sporesplosion's puddles are drawn a little
-// small (7 yalms, not 8) so there's room to stand between them; the lariat leaves a 12-yalm strip (as the logs show).
+//     or the healers and ranged, and four 7-yalm puddles, 2 s apart, dropped where each of the other four stands as
+//     its cast starts; each seed sprouts Tendrils of Terror (an eight-way star of 4-wide lines) where it fell, each
+//     puddle Roots of Evil (12 yalms) where it fell; Impact: light-party stacks on the healers.
+//   - Adds (the Blooming Abominations, at the seeds; they take the party's damage till they die), Quarry Swamp (line
+//     of sight: hide behind them) and three proximity Explosions round the arena (bearings 0, 120 and 240 at 16
+//     yalms, either way round; damage falls off with distance).
+//   - Pulp Smash: a stack on a player (the boss lands on them), then The Unpotted (30-degree cones from the boss at
+//     everyone) and a 6-yalm circle under it.
+//   - Neo Bombarian Special: a raidwide that launches everyone north, onto P2.
+//   - P2: Brutish Swing from a wall (out of 25 yalms, or within 21.7), Glower Power (a 14-wide line along its facing)
+//     with everyone's 6-yalm spreads; Thorny Deathmatch's tank tether; Abominable Blink, a 23-yalm flare on a tank;
+//     Sporesplosion (a 3 x 6 grid of 8-yalm puddles in three sets); Demolition Deathmatch's two wall tethers (held
+//     stretched); Strange Seeds (two seeds every 5 s, each a star 4.7 s later) and Killer Seeds (partner stacks, each
+//     a star).
+//   - P3: Stoneringers (two swings from walls 34.5 out, a Lashing Lariat charging across, all but a strip on one side,
+//     Glower Power across the middle with spreads, Slaminator, an 8-yalm tower for one tank), Debris Deathmatch
+//     (wall tethers, Spore Sac, Pollen, Killer Seeds, Quarry Swamp), Sinister Seeds again with Pulp Smash, and
+//     Strange Seeds with the swings.
+// Still approximated: the stars of Killer Seeds come up where the strat puts the pairs (the stacks themselves land on
+// their targets); a bait or puddle that lands where its target stood is something the bots can't see coming, so they
+// keep clear of where the strat sends its target (unseen guides); the wall tethers' anchors are a guess (the logs
+// don't give them); the lariat leaves a 12-yalm strip (as the logs show, though BossMod's rectangle is 32 wide).
 (function (B) {
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
@@ -43,51 +49,33 @@
   const TANKS = ['MT', 'OT'], NONTANK = S.filter(s => !TANKS.includes(s));
   const sgn = (v) => (v < 0 ? -1 : 1);
   const mul = (p, k) => [p[0] * k, p[1] * k];
+  const add = (p, q) => [p[0] + q[0], p[1] + q[1]];
   const brg = (p) => Math.atan2(p[0], p[1]) * 180 / Math.PI;
   // A point turned clockwise (as bearings go) by deg about the middle.
   const rot = (p, deg) => { const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a); return [p[0] * c + p[1] * s, -p[0] * s + p[1] * c]; };
   const rotAll = (o, deg) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, rot(v, deg)]));
+  const shift = (o, d) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, add(v, d)]));
   // Small offsets so a clump isn't eight bodies on one point.
   const OFF = { MT: [-0.7, 0.7], OT: [0.7, 0.7], H1: [-1, 0], H2: [1, 0], M1: [-0.6, -0.6], M2: [0.6, -0.6], R1: [-0.3, -1], R2: [0.3, -1] };
   const clump = (c, k = 1) => all(s => [c[0] + OFF[s][0] * k, c[1] + OFF[s][1] * k]);
-  const K = 0.8;              // P2's arena (25 x 50) scaled to fit the floor
+
+  // The floors: P1 and P3 are 40-yalm squares, P2 25 x 50 between its walls; the arena's look (the exported map's
+  // a1, a2, a3) changes with them. (In the game P2 is 95 yalms north of P1, and P3 under it, 200 yalms down.)
+  const P1_END = 148, P2_END = 352.1;
+  const ARENA = [{ t: 0, shape: 'square', half: 20 }, { t: P1_END, shape: 'rect', a: [-12.5, -25], b: [12.5, 25] }, { t: P2_END, shape: 'square', half: 20 }];
+  const LOOKS = [{ t: 0, show: ['a1'] }, { t: P1_END, show: ['a2'] }, { t: P2_END, show: ['a3'] }];
+  const HITBOX = [{ t: 0, r: 7 }, { t: P1_END, r: 19.712 }, { t: P2_END, r: 7 }];
 
   // Everyone's spot outside mechanics while the boss is in the middle (it faces the tanks, north): the tanks at its
   // front, the rest hugging its back (its hitbox is 7 yalms).
   const UP = { MT: [-1, 5.5], OT: [1.5, 5], M1: [-2.5, -5.5], M2: [2.5, -5.5], R1: [-1, -7], R2: [1.5, -7], H1: [-4, -6], H2: [4, -6] };
-  // P2: hugging the boss at its wall (its hitbox grows to 19.7 yalms there), drawn for the east wall (the other wall
-  // turns it about the middle); and under the north building, where it starts.
-  const UP2 = { MT: [6.5, 9.5], OT: [6.5, 11], M1: [6.5, 6.5], M2: [7.8, 5.5], R1: [4.8, 4.5], R2: [7, 3.2], H1: [4.2, 6.5], H2: [5.5, 2.5] };
-  const UP2N = { MT: [-0.8, 14.5], OT: [0.8, 14.5], M1: [-2.5, 13.3], M2: [2.5, 13.3], R1: [-1.5, 11.8], R2: [1.5, 11.8], H1: [-3.8, 12.2], H2: [3.8, 12.2] };
+  // P2: hugging the boss at its wall (its hitbox reaching 7.3 yalms into the arena), drawn for the east wall (the
+  // west one turns it about the middle); and under the north building, where it starts.
+  const UP2 = { MT: [8.1, 11.9], OT: [8.1, 13.8], M1: [8.1, 8.1], M2: [9.75, 6.9], R1: [6, 5.6], R2: [8.75, 4], H1: [5.25, 8.1], H2: [6.9, 3.1] };
+  const UP2N = { MT: [-1, 18.1], OT: [1, 18.1], M1: [-3.1, 16.6], M2: [3.1, 16.6], R1: [-1.9, 14.75], R2: [1.9, 14.75], H1: [-4.75, 15.25], H2: [4.75, 15.25] };
 
-  // ---------- shapes the engine doesn't have, out of the ones it does ----------
-  // A line 2*half wide right across the arena through p, along bearing deg: north-south and east-west ones are
-  // rectangles; a diagonal one is a cone so narrow (from 300 yalms back) it's a band of near-constant width.
-  function line(p, deg, half) {
-    const d = ((deg % 180) + 180) % 180;
-    if (d === 0) return { shape: 'rect', a: [p[0] - half, -60], b: [p[0] + half, 60] };
-    if (d === 90) return { shape: 'rect', a: [-60, p[1] - half], b: [60, p[1] + half] };
-    const D = 300, u = at(d, 1);
-    return { shape: 'cone', at: [p[0] - u[0] * D, p[1] - u[1] * D], deg: d, half: Math.atan(half / D) * 180 / Math.PI, r: 2 * D };
-  }
-  // Tendrils of Terror: a cross and a diagonal cross, 4 wide.
-  const star = (p, half = 2) => [0, 90, 45, 135].map(d => line(p, d, half));
-  const crossOf = (p, half) => [0, 90].map(d => line(p, d, half));
-  // Everything outside a disc (a swing's "in" from a wall, its middle off the floor), as thin strips: a donut there
-  // would be drawn filling the floor outside the arena too.
-  function outsideDisc(c, R) {
-    const out = [];
-    for (let y = -20; y < 20; y += 0.5) {
-      const dy = Math.abs(y + 0.25 - c[1]);
-      if (dy >= R) { out.push({ shape: 'rect', a: [-20, y], b: [20, y + 0.5] }); continue; }
-      const w = Math.sqrt(R * R - dy * dy), x0 = c[0] - w, x1 = c[0] + w;
-      if (x0 > -20) out.push({ shape: 'rect', a: [-20, y], b: [Math.min(20, x0), y + 0.5] });
-      if (x1 < 20) out.push({ shape: 'rect', a: [Math.max(-20, x1), y], b: [20, y + 0.5] });
-    }
-    return out;
-  }
-  // A rectangle turned by a multiple of 90 degrees.
-  const rotRect = (a, b, deg) => { const p = rot(a, deg), q = rot(b, deg); return { shape: 'rect', a: [Math.min(p[0], q[0]), Math.min(p[1], q[1])], b: [Math.max(p[0], q[0]), Math.max(p[1], q[1])] }; };
+  // Tendrils of Terror: a cross and a diagonal cross, 4 wide, right across the arena.
+  const star = (p) => [{ shape: 'cross', at: p, deg: 0, len: 60, w: 4 }, { shape: 'cross', at: p, deg: 45, len: 60, w: 4 }];
 
   // ---------- the arena's grid (Spore Sac, Pollen) ----------
   const GRID = [];
@@ -134,14 +122,19 @@
         Object.assign(seeds, { MT: riv(pt.inW), M1: other(riv(pt.inW)), OT: riv(pt.inE), M2: other(riv(pt.inE)) });
         for (const s of baiters) {
           const o = g1(s) ? pt.outW : pt.outE, ex = sgn(o[0]), ny = sgn(o[1]);
-          paths[s] = [o, [18.5 * ex, 8.5 * ny], [18.5 * ex, 0], [18.5 * ex, -8.5 * ny]];
+          paths[s] = [o, [18.5 * ex, 8 * ny], [18.5 * ex, -0.5 * ny], [18.5 * ex, -9 * ny]];
         }
         for (const s of S) stacks[s] = g1(s) ? [-5.5, 0] : [5.5, 0];
       } else {
         // Ranged seeds on the cardinals (healers clockwise from their corner, ranged counter-clockwise); the tanks and
-        // melee drop puddles clockwise round the middle; the stacks on the inner intercards (1/3 or 2/4).
+        // melee drop their puddles out into the corner the ranged left and round it (wtfdig's round the middle has
+        // each light party walk into the other's first puddle as it bursts); the stacks on the inner intercards
+        // (1/3 or 2/4).
         for (const s of seeders) seeds[s] = at(brg(g1(s) ? pt.outW : pt.outE) + (s[0] === 'H' ? 45 : -45), 12);
-        for (const s of baiters) { const b0 = brg(g1(s) ? pt.inW : pt.inE); paths[s] = [0, 1, 2, 3].map(k => at(b0 + 90 * k, 7.8)); }
+        for (const s of baiters) {
+          const i = g1(s) ? pt.inW : pt.inE, ex = sgn(i[0]), ny = sgn(i[1]);
+          paths[s] = [i, [11.5 * ex, 11.5 * ny], [18.5 * ex, 17 * ny], [10 * ex, 18.5 * ny]];
+        }
         for (const s of S) stacks[s] = mul(g1(s) ? pt.inW : pt.inE, 3.5 / 5.5);
       }
     } else {
@@ -153,17 +146,18 @@
         Object.assign(seeds, { MT: [-9, 9], OT: [9, 9], M1: [-9, -9], M2: [9, -9] });
         for (const s of baiters) {
           const o = s[0] === 'H' ? pt.outS : pt.outN, ny = sgn(o[1]);
-          paths[s] = [o, [8.5 * sgn(o[0]), 18 * ny], [0, 18 * ny], [0, 10 * ny]];
+          paths[s] = [o, [8 * sgn(o[0]), 18.5 * ny], [-0.5 * sgn(o[0]), 18.5 * ny], [0, 10 * ny]];
         }
       } else {
         // Ranged seeds on the rivets; the melee drop puddles tight in the middle: Game8 clockwise, MR up, middle, south.
         Object.assign(seeds, { H1: [-9, -9], H2: [9, -9], R1: [-9, 9], R2: [9, 9] });
         const b0 = brg(pt.inS);
-        for (const s of baiters) paths[s] = v === 'game8' ? [0, 1, 2, 3].map(k => at(b0 + 90 * k, k < 2 ? 7.8 : 4.5)) : [pt.inS, [pt.inS[0], 3], [0, -2], [0, -9.5]];
+        const sx = sgn(pt.inS[0]);
+        for (const s of baiters) paths[s] = v === 'game8' ? [at(b0, 7.8), at(b0 + 90, 7.8), at(b0 + 180, 4.5), at(b0 + 281, 6.3)] : [pt.inS, [pt.inS[0], 3.5], [-3 * sx, -1.5], [2 * sx, -9]];
       }
       for (const s of S) stacks[s] = g1(s) ? [-5.5, 0] : [5.5, 0];
     }
-    return { start, paths, seeds, stacks, seeders, baiters };
+    return { start, paths, seeds, stacks, seeders, baiters, leave: 1.2 };
   }
 
   // P1's adds: where the party kills them, then hides from Quarry Swamp (behind them, from the boss), and the hazard
@@ -177,13 +171,14 @@
       const groups = adds.map(a => ({ a, b: brg(a) })), order = [['MT', 'H1'], ['M1', 'R1'], ['OT', 'H2'], ['M2', 'R2']];
       const westN = groups.filter(g => g.a[0] < -0.5 || (Math.abs(g.a[0]) < 0.5 && g.a[1] > 0)).sort((x, y) => y.a[1] - x.a[1]);
       const eastS = groups.filter(g => !westN.includes(g)).sort((x, y) => y.a[1] - x.a[1]);
-      const pairs = [westN[0], westN[1], eastS[0], eastS[1]];
       const los = {};
-      pairs.forEach((g, k) => Object.assign(los, ring(g.b, r0 + 3, order[k])));
+      [westN[0], westN[1], eastS[0], eastS[1]].forEach((g, k) => Object.assign(los, ring(g.b, r0 + 3, order[k])));
       const H = 16, haz = [{ shape: 'circle', at: [0, 0], r: r0 + 1.5 }, ...groups.map(g => ({ shape: 'cone', at: [0, 0], deg: g.b + 45, half: 45 - H, r: 60 }))];
-      // Their crosses: the middle (melee seeds) or the corners (ranged seeds) are clear.
+      // Their crosses: the middle (melee seeds) or the corners (ranged seeds) are clear; with ranged seeds the
+      // puddles' roots fill the two corners the melee baited in, so each light party takes the other corner on its side.
+      const free = [L.start.MT, L.start.OT].map(p => [-sgn(p[0]) * 18.5, sgn(p[1]) * 18.5]);     // across from each inner spot
       const kill = seedTM ? clump([0, 0], 2.5)
-        : { MT: [-18.5, 18.5], M1: [-18, 18.8], H1: [-18.5, -18.5], R1: [-18, -18.8], OT: [18.5, 18.5], M2: [18, 18.8], H2: [18.5, -18.5], R2: [18, -18.8] };
+        : all(s => { const c = free.find(p => (p[0] < 0) === G1.includes(s)); return [c[0] - sgn(c[0]) * (OFF[s][0] < 0 ? 0 : 0.6), c[1] - sgn(c[1]) * (OFF[s][1] < 0 ? 0.4 : 0)]; });
       return { kill, los, haz, adds, where: seedTM ? 'the middle' : 'the corners' };
     }
     const A = v === 'toxic' ? [0, 10] : v === 'mr' ? [14, 0] : seedTM ? [-14, 0] : [-10.5, 10.5];
@@ -197,27 +192,27 @@
 
   // P1/P3 Smash Here / There with the stored swing: the tanks' shared buster spot and everyone's.
   function smashSpots(inn, here) {
-    if (inn && here) return { tank: [0, 1.2], spots: { MT: [-0.4, 1.4], OT: [0.4, 1.2], M1: [-2.5, -5.8], M2: [2.5, -5.8], R1: [-1, -6.8], R2: [1, -6.8], H1: [-4.3, -4.8], H2: [4.3, -4.8] } };
-    if (inn) return { tank: [0, 7.2], spots: { MT: [-0.4, 7.2], OT: [0.4, 7.1], M1: [-1.5, -2], M2: [1.5, -2], R1: [-0.8, -3], R2: [0.8, -3], H1: [-2.5, -1.2], H2: [2.5, -1.2] } };
-    if (here) return { tank: [0, 13.5], spots: { MT: [-0.4, 13.5], OT: [0.4, 13.5], M1: [-2.5, -15.3], M2: [2.5, -15.3], R1: [-1, -16.3], R2: [1, -16.3], H1: [-4.5, -14.8], H2: [4.5, -14.8] } };
-    return { tank: [0, 18.5], spots: { MT: [-0.4, 18.5], OT: [0.4, 18.5], M1: [-2, -13.6], M2: [2, -13.6], R1: [-1, -14.6], R2: [1, -14.6], H1: [-4, -13.3], H2: [4, -13.3] } };
+    if (inn && here) return { MT: [-0.4, 1.4], OT: [0.4, 1.2], M1: [-2.5, -5.8], M2: [2.5, -5.8], R1: [-1, -6.8], R2: [1, -6.8], H1: [-4.3, -4.8], H2: [4.3, -4.8] };
+    if (inn) return { MT: [-0.4, 7.2], OT: [0.4, 7.1], M1: [-1.5, -2], M2: [1.5, -2], R1: [-0.8, -3], R2: [0.8, -3], H1: [-2.5, -1.2], H2: [2.5, -1.2] };
+    if (here) return { MT: [-0.4, 13.5], OT: [0.4, 13.5], M1: [-2.5, -15.3], M2: [2.5, -15.3], R1: [-1, -16.3], R2: [1, -16.3], H1: [-4.5, -14.8], H2: [4.5, -14.8] };
+    return { MT: [-0.4, 18.5], OT: [0.4, 18.5], M1: [-2, -13.6], M2: [2, -13.6], R1: [-1, -14.6], R2: [1, -14.6], H1: [-4, -13.3], H2: [4, -13.3] };
   }
 
   // Pulp Smash's protean clock spots (true north, which the boss in the middle also faces).
   const CLOCK = { MT: 0, R2: 45, H2: 90, M2: 135, OT: 180, M1: 225, H1: 270, R1: 315 };
 
-  // P2's walls (scaled): the boss leaps to the east wall's north half or the west wall's south half (the two
-  // diagonal buildings), or sits on the north building; layouts are drawn for the east one.
-  const P2W = { NE: { at: [27 * K, 12.5 * K], flip: 1 }, SW: { at: [-27 * K, -12.5 * K], flip: -1 }, N: { at: [0, 39.5 * K], flip: 0 } };
+  // P2's walls: the boss leaps to the east wall's north building or the west wall's south one (facing into the
+  // arena), or stands on the north building; layouts are drawn for the east one.
+  const P2W = { NE: { at: [27, 12.5], face: 270, flip: 1 }, SW: { at: [-27, -12.5], face: 90, flip: -1 }, N: { at: [0, 39.5], face: 180, flip: 0 } };
   const WALLNAME = { NE: 'east wall', SW: 'west wall', N: 'north end' };
   const flipAll = (o, f) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, [v[0] * f, v[1] * f]]));
   const up2 = (w) => (w === 'N' ? UP2N : flipAll(UP2, P2W[w].flip));
   // Brutish Swing + Glower Power spreads, for the east wall: the edge strip past the line (north) and the big side.
-  const rows = (edge, mid) => { const xs = [8.8, 2.9, -3, -8.8], o = {}; edge.forEach((s, k) => { o[s] = [xs[k], 18.3]; }); mid.forEach((s, k) => { o[s] = [xs[k], 1.5]; }); return o; };
-  const cols = (g1, g2) => { const ys = [15.5, 9.7, 3.9, -1.9], o = {}; g1.forEach((s, k) => { o[s] = [-8.2, ys[k]]; }); g2.forEach((s, k) => { o[s] = [8.2, ys[k]]; }); return o; };
+  const rows = (edge, mid) => { const xs = [11, 3.6, -3.75, -11], o = {}; edge.forEach((s, k) => { o[s] = [xs[k], 22.9]; }); mid.forEach((s, k) => { o[s] = [xs[k], 1.9]; }); return o; };
+  const cols = (g1, g2) => { const ys = [19.4, 12.1, 4.9, -2.4], o = {}; g1.forEach((s, k) => { o[s] = [-10.25, ys[k]]; }); g2.forEach((s, k) => { o[s] = [10.25, ys[k]]; }); return o; };
   const SPREAD2 = {
     // Locked (wtfdig: Alpha's): MT M1 R1 in the edge strip (MT deep in the corner), the rest in the big side.
-    locked: { MT: [9.6, 18.8], M1: [3.6, 17.4], R1: [-6.4, 17.6], OT: [9.6, -0.8], M2: [4.8, 2.4], R2: [2.4, -4], H1: [-4, 2.4], H2: [-7.2, -6.4] },
+    locked: { MT: [11.5, 23.5], M1: [4.5, 21.75], R1: [-8, 22], OT: [11.5, -1], M2: [6, 3], R2: [3, -5], H1: [-5, 3], H2: [-9, -8] },
     // Game8: G1 left of the line facing the boss, G2 right, melee nearest, then tanks, healers, ranged.
     game8: rows(['M1', 'MT', 'H1', 'R1'], ['M2', 'OT', 'H2', 'R2']),
     // MR: G1 the edge, G2 the middle, tanks nearest, then melee, healers, ranged.
@@ -227,22 +222,28 @@
   // Abominable Blink, for the east wall: Locked and MR take the flare to the corner by the boss and the party away
   // south; Game8 runs it far and the party stays on the boss.
   const FLARE2 = {
-    near: { flare: [9.4, 18.6], other: [8.8, -0.8], rest: { H1: [5, -4.5], H2: [7, -5.6], M1: [8, -3.4], M2: [9.2, -4.6], R1: [5.6, -7], R2: [8, -7.6] } },
-    far: { flare: [-9.6, -19.2], other: UP2.MT, rest: UP2 },
+    near: { flare: [11.5, 23.5], other: [11, -1], rest: { H1: [6.25, -5.6], H2: [8.75, -7], M1: [10, -4.25], M2: [11.5, -5.75], R1: [7, -8.75], R2: [10, -9.5] } },
+    far: { flare: [11.5, -24], other: UP2.MT, rest: UP2 },
   };
   // Strange Seeds, for the boss on the west wall ("boss south"): the spot by the boss the strats keep clear of every
-  // star, the two wall tethers' spots, the seed drops (waves 1 and 3, waves 2 and 4) and Killer Seeds' pair spots.
+  // star, the two wall tethers' spots (and the buildings they come from), the seed drops (waves 1 and 3, waves 2 and
+  // 4: no star from one set crosses the other, nor the spot by the boss) and Killer Seeds' pair spots.
   const SEEDS2 = {
-    safe: [-6.4, -9.6], mid: [9.6, 0], far: [-9.6, 19.2],
-    dotsA: [[-9.6, 0], [-9.6, -19.2]], dotsB: [[-3.4, -15.8], [-3.2, -1.6]],
-    pairsAt: { mid: [8.8, 0], far: [-9.2, 18.8], wmid: [-8, 0], corner: [-8.8, -18.8] },
+    safe: [-8, -12], mid: [11.5, 0], far: [-11.5, 23.5], midFrom: [-27, 12.5], farFrom: [27, -12.5],
+    dotsA: [[-3, -23], [-3, 2]], dotsB: [[2, -8], [6, -19]],
+    pairsAt: { mid: [11, 0], far: [-11.5, 23.5], wmid: [-10, 0], corner: [-11, -23.5] },
   };
   const TETHER2 = { locked: { mid: 'R1', far: 'H2' }, game8: { mid: 'R1', far: 'R2' }, mr: { mid: 'H1', far: 'H2' } };
+  // (Game8's far tether waits a little further south: its flare runs to the far corner.)
+  const tetherSpot = (v, k) => (v === 'game8' && k === 'far' ? [-11.5, 16] : SEEDS2[k]);
   const PAIRS2 = {
     locked: { mid: ['H1', 'R1'], far: ['H2', 'R2'], wmid: ['MT', 'M1'], corner: ['OT', 'M2'] },
     game8: { mid: ['MT', 'R1'], far: ['OT', 'R2'], wmid: ['H1', 'M1'], corner: ['H2', 'M2'] },
     mr: { mid: ['H1', 'M1'], far: ['H2', 'M2'], wmid: ['MT', 'R1'], corner: ['OT', 'R2'] },
   };
+  // Sporesplosion's grid: three columns, six rows; for the east wall, which row each spot takes.
+  const SPORE_COLS = [-8.5, 0, 8.5], SPORE_ROWS = [-21.2, -12.8, -4.2, 4.2, 12.8, 21.2];
+  const SPORE_ROW = { MT: 12.8, OT: 12.8, M1: 4.2, H1: 4.2, R1: 4.2, M2: -4.2, R2: -4.2, H2: -4.2 };
 
   // P3: the walls 34.5 out at the cardinals; layouts drawn for the north wall and turned to the real one.
   const P3_GLOWER = {
@@ -264,29 +265,27 @@
 
   // ---------- the pull ----------
   function plan(events, strat) {
-    const P = { start: Object.assign({}, UP), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [] };
+    const P = { start: Object.assign({}, UP), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [],
+      arena: ARENA, looks: LOOKS, hitbox: HITBOX, boss: [{ t: 0, at: [0, 0] }] };
     const [V1, V2, V3] = PARTS[strat] || PARTS.toxic;
     let id = 0;
-    const hz = (o) => { const h = Object.assign({ id: ++id, react: 3 }, o); P.hazards.push(h); return h.id; };
-    const hzs = (shapes, o) => shapes.forEach(s => hz(Object.assign({}, o, s)));
+    const hz = (o) => { const h = Object.assign({ id: ++id, react: 3 }, o); P.hazards.push(h); return h; };
+    const hzs = (shapes, o) => shapes.map(s => hz(Object.assign({}, o, s)));
     const pref = (t, spots) => P.prefs.push({ t, spots });
     const call = (t, text, o) => P.calls.push(Object.assign({ t, text }, o));
     const callEach = (t, slots, text, o) => slots.forEach(s => call(t, text, Object.assign({ slot: s }, o)));
-    const check = (o) => P.checks.push(o);
-    const mark = (o) => P.marks.push(o);
     const deb = (slot, key, name, hint, t0, t1) => P.debuffs.push({ slot, key, name, hint, t0, t1 });
     const castOf = (ev, d) => ev.t - (ev.cast || d || 5);
     const find = (i, test, within) => { for (let k = i + 1; k < events.length && events[k].t - events[i].t <= within; k++) if (test(events[k])) return events[k]; return null; };
     const used = new Set();
     const raid = (t, tell, dmg, name) => hz({ t, tell, raidwide: true, dmg, name });
-    // A swing "in" from a wall: the strips outside its reach, shown as marks (the strips' own outlines would hatch it).
-    const inDisc = (c, R, t, tell, name) => {
-      const strips = outsideDisc(c, R);
-      hzs(strips, { t, tell, dmg: 1.4, name, hidden: true });
-      strips.forEach(s => mark(Object.assign({ kind: 'lit', t0: tell, t1: t, fill: 'rgba(255,120,60,0.24)' }, s)));
-    };
-    // Where the boss really is while it stands off the middle (its hitbox, faintly).
-    const bossAt = (c, r, t0, t1) => mark({ kind: 'lit', shape: 'circle', at: c, r, t0, t1, fill: 'rgba(170,110,255,0.13)' });
+    // The boss walks (move seconds) or leaps to a spot.
+    const bossTo = (t, p, move) => P.boss.push({ t, at: p, move });
+    // An attack where an earlier aimed one (a seed, a puddle) landed: its target's spot, held there.
+    const where = (prev, slot, o) => hz(Object.assign({ from: 'target', targets: [slot], after: prev, move: 0 }, o));
+    // What the bots keep clear of for an attack aimed at someone (which they don't see coming): where the strat sends
+    // its target. Unseen, harmless.
+    const guard = (s, t, tell, react) => hz(Object.assign({ t, tell, dmg: 0, hidden: true, quiet: true, name: 'keep clear', react: react ?? 3 }, s));
 
     // The pull's picks.
     const pat1 = pick(['NE', 'NW']), pat3 = pick(['NE', 'NW']), pw1 = pick(SPORE), pw3 = pick(SPORE);
@@ -301,12 +300,10 @@
       const tSw = sw ? sw.t : t + 1, tBs = bs ? bs.t : t + 2.1, inn = stored === 'in';
       if (sw) { used.add(sw); P.labels.set(sw, `Brutish Swing (${inn ? 'in' : 'out'})`); }
       P.labels.set(ev, here ? 'Smash Here' : 'Smash There');
-      hz(Object.assign({ t: tSw, tell: cs, dmg: 1.4, name: 'Brutish Swing' }, inn ? { shape: 'donut', at: [0, 0], r0: 9 } : { shape: 'circle', at: [0, 0], r: 12 }));
-      const sp = smashSpots(inn, here);
-      pref(cs, sp.spots);
-      check({ t: tBs, kind: 'stack', slots: TANKS, groups: [TANKS], r: 6, spots: { MT: sp.tank, OT: sp.tank }, dmg: 0.5, fail: 1.2, name: 'Brutal Smash' });
-      check({ t: tBs, kind: 'spot', slots: NONTANK, spots: sp.spots, r: 3.5, fail: 1.2, name: 'Brutal Smash' });
-      mark({ kind: 'lit', shape: 'circle', at: sp.tank, r: 6, t0: cs, t1: tBs, fill: 'rgba(255,70,70,0.2)' });
+      hz(Object.assign({ t: tSw, tell: cs, dmg: 1.4, name: 'Brutish Swing', from: 'boss' }, inn ? { shape: 'donut', r0: 9 } : { shape: 'circle', r: 12 }));
+      // The buster: on whoever's nearest (furthest) from the boss as it lands, shared by the two tanks.
+      hz({ t: tBs, tell: cs, effect: 'share', shape: 'circle', r: 6, from: 'target', targets: here ? { nearest: 1 } : { farthest: 1 }, min: 2, max: 2, dmg: 0.5, name: 'Brutal Smash' });
+      pref(cs, smashSpots(inn, here));
       pref(tBs + 0.3, UP);
       const ring = inn ? 'In' : 'Out';
       callEach(cs, TANKS, `${ring} => Tanks ${here ? 'in' : 'out'}, Shared tankbuster`, { alert: true, dur: 6 });
@@ -321,7 +318,40 @@
       call(castOf(ev, 4), pt.call, { dur: 5 });
     };
 
-    // P1 Sinister Seeds, from its cast to the stacks.
+    // Sinister Seeds (both phases): the puddles dropped where each baiter stands as each cast starts (2 s apart,
+    // landing 3 s later), the seed spreads, a star where each seed fell, Roots of Evil where each puddle fell.
+    // paths/seeds: where the strat sends them (what the bots keep clear of).
+    const sinister = (puds, drop, tend, roots, baiters, seeders, paths, seeds, seedT, rootsTell) => {
+      const pudsOf = {};
+      puds.forEach((pe, k) => {
+        if (!pe) return;
+        const t0 = pe.t - 3, pts = [];
+        for (const s of baiters) {
+          (pudsOf[s] = pudsOf[s] || [])[k] = hz({ t: pe.t, tell: t0, shape: 'circle', r: 7, from: 'target', targets: [s], snap: 3, dmg: 1.2, name: 'Sinister Seeds' });
+          const p = paths[s][k];
+          if (!pts.some(q => same(q, p))) { pts.push(p); guard({ shape: 'circle', at: p, r: 7 }, pe.t, t0, 1.8); }
+        }
+        if (k < 3) pref(t0 + (k ? 0.05 : 0.2), Object.fromEntries(baiters.map(s => [s, paths[s][k + 1]])));
+      });
+      const seedHz = {};
+      for (const s of seeders) seedHz[s] = hz({ t: seedT, tell: castOf(drop, 7), shape: 'circle', r: 6, from: 'target', targets: [s], effect: 'bait', dmg: 0.8, own: 0.2, name: 'Sinister Seeds' });
+      if (tend) {
+        for (const s of seeders) {
+          star(seeds[s]).forEach(c => {
+            where(seedHz[s], s, { t: tend.t, tell: tend.t - 3, shape: 'cross', deg: c.deg, len: c.len, w: c.w, dmg: 1.3, name: 'Tendrils of Terror' });
+            guard(c, tend.t, tend.t - 3);
+          });
+        }
+        call(tend.t - 3, 'Avoid line AoEs', { dur: 3 });
+      }
+      if (roots) {
+        for (const s of baiters) (pudsOf[s] || []).forEach((ph, k) => ph && where(ph, s, { t: roots.t, tell: rootsTell, shape: 'circle', r: 12, dmg: 1.4, name: 'Roots of Evil' }));
+        const pts = [];
+        for (const s of baiters) for (const p of paths[s]) if (!pts.some(q => same(q, p))) { pts.push(p); guard({ shape: 'circle', at: p, r: 12 }, roots.t, rootsTell); }
+      }
+    };
+
+    // P1 Sinister Seeds, from its cast to the stacks, the adds and Quarry Swamp.
     const seeds1 = (i, ev) => {
       const pt = POLLEN[pat1], seedTM = Math.random() < 0.5, L = seedsP1(V1, seedTM, pt);
       const puds = [1, 2, 3, 4].map(k => find(i, e => e.name === `Sinister Seeds (puddles ${k})`, 15));
@@ -329,34 +359,19 @@
       const roots = find(i, e => e.name === 'Roots of Evil', 22), imp = find(i, e => e.name === 'Impact', 16);
       [...puds, drop, tend, roots, imp].forEach(e => e && used.add(e));
       P.labels.set(ev, `Sinister Seeds (seeds on the ${seedTM ? 'tanks and melee' : 'healers and ranged'})`);
-      const tStart = castOf(ev, 4) + 0.4;
-      pref(Math.max(tStart, 48.6), L.start);
-      // The puddles: one where each baiter stands as each cast starts, 2 s apart, landing 3 s later.
-      const all16 = [];
-      puds.forEach((pe, k) => {
-        if (!pe) return;
-        const t0 = pe.t - 3, pts = [];
-        for (const s of L.baiters) { const p = L.paths[s][k]; if (!pts.some(q => same(q, p))) pts.push(p); }
-        pts.forEach(p => { hz({ t: pe.t, tell: t0, shape: 'circle', at: p, r: 7, dmg: 1.2, name: 'Sinister Seeds' }); all16.push(p); });
-        if (k < 3) pref(t0 + (k ? 0.05 : 0.2), Object.fromEntries(L.baiters.map(s => [s, L.paths[s][k + 1]])));
-      });
+      pref(45.5, L.start);
       const seedT = drop ? drop.t : ev.t + 8;
+      sinister(puds, drop || ev, tend, roots, L.baiters, L.seeders, L.paths, L.seeds, seedT, tend ? tend.t : seedT);
       pref(puds[0] ? puds[0].t - 2.75 : seedT - 6.75, Object.fromEntries(L.seeders.map(s => [s, L.seeds[s]])));
-      check({ t: seedT, kind: 'spread', slots: L.seeders, r: 6, dmg: 0.2, fail: 0.8, name: 'Sinister Seeds' });
       for (const s of L.seeders) deb(s, null, 'Sinister Seed', 'drop it on your spot, clear of everyone', castOf(drop || ev, 7), seedT);
       callEach(castOf(drop || ev, 7), L.seeders, 'Drop seed', { dur: 6 });
       callEach(castOf(drop || ev, 7), L.baiters, 'Bait Puddles', { alert: true, dur: 6 });
       pref(seedT + 0.2, Object.fromEntries(L.seeders.map(s => [s, L.stacks[s]])));
-      pref((puds[3] ? puds[3].t - 3 : seedT) + 1.2, Object.fromEntries(L.baiters.map(s => [s, L.stacks[s]])));
-      if (tend) {
-        Object.values(L.seeds).forEach(p => hzs(star(p), { t: tend.t, tell: tend.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
-        call(tend.t - 3, 'Avoid line AoEs', { dur: 3 });
-      }
+      pref((puds[3] ? puds[3].t - 3 : seedT) + L.leave, Object.fromEntries(L.baiters.map(s => [s, L.stacks[s]])));
       if (imp) {
-        check({ t: imp.t, kind: 'stack', groups: [G1, G2], r: 6, spots: L.stacks, dmg: 0.3, fail: 0.8, name: 'Impact' });
+        hz({ t: imp.t, tell: seedT, effect: 'share', shape: 'circle', r: 6, from: 'target', targets: ['H1', 'H2'], min: 4, max: 4, dmg: 0.3, name: 'Impact' });
         call(seedT, 'Healer groups', { alert: true, dur: 4 });
       }
-      if (roots) all16.forEach(p => hz({ t: roots.t, tell: tend ? tend.t : roots.t - 5, shape: 'circle', at: p, r: 12, dmg: 1.4, name: 'Roots of Evil' }));
       // The adds grow where the seeds fell: kill (or leave) them, then hide behind them.
       const A = addsP1(V1, seedTM, L), tAdds = (imp ? imp.t : seedT + 4.6) + 0.4;
       pref(tAdds, A.kill);
@@ -366,7 +381,7 @@
         P.labels.set(winds, 'Winding Wildwinds & Crossing Crosswinds (adds)');
         if (A.adds) {
           // Kindred leaves the adds alone: two of them cast a 10-wide cross (the other two, interrupted, a donut).
-          shuffle(A.adds).slice(0, 2).forEach(a => hzs(crossOf(a, 5), { t: winds.t, tell: castOf(winds, 7), dmg: 1.4, name: 'Crossing Crosswinds' }));
+          shuffle(A.adds).slice(0, 2).forEach(a => hz({ t: winds.t, tell: castOf(winds, 7), shape: 'cross', at: a, deg: 0, len: 50, w: 10, dmg: 1.4, name: 'Crossing Crosswinds' }));
           call(castOf(winds, 7), `Interrupt Winding Wildwinds; dodge the crosses in ${A.where}`, { alert: true, dur: 7 });
         } else call(castOf(winds, 7), `Kill the adds ${A.where}; interrupt Winding Wildwinds`, { alert: true, dur: 7 });
       }
@@ -380,15 +395,16 @@
       }
     };
 
-    // P1's Explosions: three points round the arena, 16 out, in turn either way round; stand opposite each.
+    // P1's Explosions: three points round the arena, 16 out, in turn either way round; stand opposite each. Damage
+    // falls off from each (too close, within 22, is a failure); the bots keep 22 clear.
     const explosions = (i, ev) => {
       const run = [ev, find(i, e => e.name === 'Explosion 2', 6), find(i, e => e.name === 'Explosion 3', 8)].filter(Boolean);
       run.forEach(e => used.add(e));
       const b0 = pick([0, 120, 240]), dir = pick([1, -1]);
       run.forEach((e, k) => {
         const b = b0 + dir * 120 * k, p = at(b, 16);
-        hz({ t: e.t, tell: castOf(e, 9), shape: 'circle', at: p, r: 22, dmg: 1.2, react: 2.6, name: 'Explosion' });
-        raid(e.t, castOf(e, 9), 0.15, 'Explosion');
+        hz({ t: e.t, tell: castOf(e, 9), shape: 'circle', at: p, r: 60, effect: 'hit', falloff: 33, aimed: true, dmg: 1.8, name: 'Explosion' });
+        guard({ shape: 'circle', at: p, r: 22 }, e.t, castOf(e, 9), 2.6);
         pref(k ? run[k - 1].t + 0.05 : castOf(ev, 9) + 3.5, clump(at(b + 180, 7.5), 1.2));
       });
       const NAMES = { 0: 'north', 120: 'south-east', 240: 'south-west' }, nm = (b) => NAMES[((b % 360) + 360) % 360];
@@ -396,34 +412,34 @@
       pref(run[run.length - 1].t + 0.2, UP);
     };
 
-    // Pulp Smash in the middle: stack on the marked player, then out to the clock spots for the proteans.
-    const pulpMiddle = (t, unp, stackSpots) => {
-      const tgt = pick(S);
-      pref(t - 4.8, stackSpots || clump([0, 0], 1));
-      check({ t, kind: 'stack', groups: [S], r: 6, dmg: 0.3, fail: 0.9, name: 'Pulp Smash' });
+    // Pulp Smash: stack on the marked player (the boss lands on them), then out to the clock spots round it for the
+    // proteans and the circle under it.
+    const pulp = (t, unp, stackAt, clockAt, after) => {
+      const tgt = pick(S), tu = unp ? unp.t : t + 2;
+      bossTo(t - 0.9, stackAt, 0.5);
+      pref(t - 4.8, clump(stackAt, 1));
+      hz({ t, tell: t - 5.1, effect: 'share', shape: 'circle', r: 6, from: 'target', targets: [tgt], min: 8, dmg: 0.3, name: 'Pulp Smash' });
       call(t - 5, `Stack on ${tgt} => Out + Protean`, { dur: 5 });
-      const tu = unp ? unp.t : t + 2;
-      hz({ t: tu, tell: t, shape: 'circle', at: [0, 0], r: 6, dmg: 1.3, react: 2, name: 'It Came from the Dirt' });
+      hz({ t: tu, tell: t, shape: 'circle', r: 6, from: 'boss', dmg: 1.3, react: 2, name: 'It Came from the Dirt' });
       hz({ t: tu, tell: t, shape: 'protean', aimed: true, half: 15, r: 60, dmg: 0.9, own: 0.15, name: 'The Unpotted' });
-      pref(t + 0.05, all(s => at(CLOCK[s], 8.2)));
-      pref(tu + 0.4, UP);
+      pref(t + 0.05, clockAt);
+      pref(tu + 0.4, after);
     };
 
     // ---- P2 ----
     const preSwing2 = (wk, inn, lay) => {
-      if (wk === 'N') return inn ? all(s => [G1.includes(s) ? -3.5 : 3.5, 17.2 + OFF[s][1]]) : all(s => [(G1.includes(s) ? -6 : 6) + OFF[s][0], 5 + OFF[s][1]]);
+      if (wk === 'N') return inn ? all(s => [G1.includes(s) ? -4.4 : 4.4, 21.5 + OFF[s][1]]) : all(s => [(G1.includes(s) ? -7.5 : 7.5) + OFF[s][0], 6.25 + OFF[s][1]]);
       const f = P2W[wk].flip;
-      if (inn) return flipAll(clump([8, 10], 1.2), f);
-      return flipAll(all(s => (lay[s][1] > 10 ? [-5 + OFF[s][0] * 1.5, 17.5 + OFF[s][1]] : [-2 + OFF[s][0] * 1.5, -6 + OFF[s][1]])), f);
+      if (inn) return flipAll(clump([10, 12.5], 1.5), f);
+      return flipAll(all(s => (lay[s][1] > 12.5 ? [-6.25 + OFF[s][0] * 1.5, 21.9 + OFF[s][1]] : [-2.5 + OFF[s][0] * 1.5, -7.5 + OFF[s][1]])), f);
     };
     const swing2 = (i, ev) => {
       n2++;
       const wk = [w1, w2, w3][n2 - 1] || w3, W = P2W[wk], inn = stored2 === 'in', t = ev.t, cs = t - 8.1;
       P.labels.set(ev, `Brutish Swing (${inn ? 'in' : 'out'}, ${WALLNAME[wk]})`);
-      if (inn) inDisc(W.at, 21.712 * K, t, cs, 'Brutish Swing');
-      else hz({ t, tell: cs, shape: 'circle', at: W.at, r: 25 * K, dmg: 1.4, name: 'Brutish Swing' });
-      const nx = find(i, e => e.name === 'Brutish Swing', 90);
-      bossAt(W.at, 19.7 * K, cs + 4, nx ? nx.t - 4.1 : 352.1);
+      // It leaps to the wall the tether shows, then swings a half-circle into the arena: out of 25, or within 21.7.
+      bossTo(cs + 4.6, W.at, 2.8);
+      hz(Object.assign({ t, tell: cs, shape: 'cone', at: W.at, deg: W.face, half: 90, dmg: 1.4, name: 'Brutish Swing' }, inn ? { r0: 21.712, r: 80 } : { r: 25 }));
       const canon = wk === 'N' ? SPREAD2N[V2] : SPREAD2[V2], lay = wk === 'N' ? canon : flipAll(canon, W.flip);
       pref(Math.max(cs + 0.3, sporeEnd + 0.1), preSwing2(wk, inn, canon));
       call(cs, `${inn ? 'In at' : 'Out from'} tethered wall (${WALLNAME[wk]})`, { alert: true, dur: 7 });
@@ -431,104 +447,150 @@
       if (ef) used.add(ef);
       if (gp) {
         used.add(gp);
-        const band = wk === 'N' ? { shape: 'rect', a: [-7 * K, -30], b: [7 * K, 40] } : { shape: 'rect', a: [-30, W.at[1] - 7 * K], b: [30, W.at[1] + 7 * K] };
-        hz(Object.assign({ t: gp.t, tell: gp.t - 4, dmg: 1.4, name: 'Glower Power' }, band));
+        hz({ t: gp.t, tell: gp.t - 4, shape: 'line', at: W.at, deg: W.face, len: 65, w: 14, dmg: 1.4, name: 'Glower Power' });
         call(gp.t - 4, 'Spread, Away from front', { alert: true, dur: 4 });
       }
       pref(t + 0.1, lay);
-      if (ef) check({ t: ef.t, kind: 'spread', r: 6 * K, dmg: 0.25, fail: 0.8, name: 'Electrogenetic Force' });
+      if (ef) hz({ t: ef.t, tell: ef.t - 3.9, effect: 'bait', shape: 'circle', r: 6, from: 'target', targets: S.slice(), dmg: 0.8, own: 0.25, name: 'Electrogenetic Force' });
       pref((ef ? ef.t : t + 5) + 0.3, up2(wk));
     };
 
-    // Abominable Blink: a flare on a tank (the first a random one, the second the other), 23 yalms of fall-off.
+    // Abominable Blink: a flare on a tank (the first a random one, the second the other): 23 yalms of it to keep the
+    // party out of, its damage falling off to everyone; the other tank takes the tank tether meanwhile.
     const blink = (i, ev) => {
       nBlink++;
-      const wk = nBlink === 1 ? w1 : w2, f = wk === 'N' ? 1 : P2W[wk].flip, t = ev.t, cs = t - 6.6;
+      const wk = nBlink === 1 ? w1 : w2, f = P2W[wk].flip, t = ev.t, cs = t - 6.6;
       const tank = flares[(nBlink - 1) % 2], other = tank === 'MT' ? 'OT' : 'MT';
-      const L = V2 === 'game8' ? FLARE2.far : FLARE2.near;
+      // (Game8's second: the tethers are out, so the corner by the boss, as the others.)
+      const L = V2 === 'game8' && nBlink === 1 ? FLARE2.far : FLARE2.near;
       const spots = Object.assign(flipAll(L.rest, f), { [tank]: mul(L.flare, f), [other]: mul(L.other, f) });
       // The wall tethers' holders stay on their tethers.
-      if (nBlink === 2) for (const [k, s] of Object.entries(TETHER2[V2])) spots[s] = mul(SEEDS2[k], w2 === 'SW' ? 1 : -1);
+      if (nBlink === 2) for (const [k, s] of Object.entries(TETHER2[V2])) spots[s] = mul(tetherSpot(V2, k), w2 === 'SW' ? 1 : -1);
       P.labels.set(ev, `Abominable Blink (flare on ${tank})`);
       pref(cs, spots);
-      check({ t, kind: 'spread', slots: [tank], r: 23 * K, dmg: 0.5, fail: 1.2, name: 'Abominable Blink' });
-      check({ t, kind: 'spot', slots: S.filter(s => s !== tank), spots, r: 4, fail: 1.2, name: 'Abominable Blink' });
-      mark({ kind: 'lit', shape: 'circle', at: spots[tank], r: 23 * K, t0: cs, t1: t, fill: 'rgba(255,90,40,0.12)' });
+      hz({ t, tell: cs, effect: 'bait', shape: 'circle', r: 23, from: 'target', targets: [tank], dmg: 1.2, own: 0.5, buster: true, name: 'Abominable Blink' });
+      hz({ t, tell: cs, effect: 'hit', shape: 'circle', r: 60, from: 'target', targets: [tank], falloff: 30, dmg: 0.45, hidden: true, quiet: true, name: 'Abominable Blink' });
       call(cs, 'Flare + buster on YOU, Away from party', { slot: tank, alert: true, dur: 6 });
       callEach(cs, S.filter(s => s !== tank), 'Away from Flare', { alert: true, dur: 6 });
       if (tank === 'MT') call(cs, 'Provoke: take the tank tether', { slot: 'OT', alert: true, dur: 5 });
       pref(t + 0.3, nBlink === 2 ? strange2Spots() : up2(wk));
     };
 
-    // Sporesplosion: a 3 x 6 grid of puddles in three sets, each row's three in a random order.
+    // Sporesplosion: a 3 x 6 grid of 8-yalm puddles in three sets, each row's three in a random order, 8.5 apart: the
+    // only ground is a burst point, so each spot waits on its row's last point, then steps onto a burst one beside it.
     const sporesplosion = (i, ev) => {
       const sets = [1, 2, 3].map(k => find(i, e => e.name === `Sporesplosion ${k}`, 14));
       sets.forEach(e => e && used.add(e));
-      const order = [0, 1, 2, 3, 4, 5].map(() => shuffle([0, 1, 2]));
-      const cols3 = [-8.5 * K, 0, 8.5 * K], rows6 = [-21.2, -12.8, -4.2, 4.2, 12.8, 21.2].map(v => v * K);
+      const order = SPORE_ROWS.map(() => shuffle([0, 1, 2])), f = P2W[w1].flip;
       sets.forEach((e, k) => {
         if (!e) return;
-        // (5.6, not 8 x 0.8: the grid is 8.5 apart, and a body needs the gap to stand on a burst point.)
-        rows6.forEach((y, r) => hz({ t: e.t, tell: e.t - 5, shape: 'circle', at: [cols3[order[r][k]], y], r: 5.6, dmg: 1.2, react: 2, name: 'Sporesplosion' }));
+        // (The bots can't fit between the puddles' keep-clear margins: they stand where the strat says.)
+        SPORE_ROWS.forEach((y, r) => hz({ t: e.t, tell: e.t - 5, shape: 'circle', at: [SPORE_COLS[order[r][k]], y], r: 8, aimed: true, dmg: 1.2, name: 'Sporesplosion' }));
       });
       sporeEnd = (sets[2] || ev).t;
-      call(castOf(ev, 4), 'Puddles: step into each one after it bursts', { alert: true, dur: 6 });
+      if (sets[0] && sets[1]) {
+        const last = {}, then = {};
+        for (const s of S) {
+          const y = SPORE_ROW[s] * f, r = SPORE_ROWS.findIndex(v => Math.abs(v - y) < 0.1), c3 = order[r][2];
+          const c = c3 === 1 ? (f > 0 ? 2 : 0) : 1;            // the burst point beside it (toward the boss from the middle)
+          last[s] = [SPORE_COLS[c3], y]; then[s] = [SPORE_COLS[c], y];
+        }
+        pref(sets[0].t - 4.9, last);
+        pref(sets[1].t + 0.05, then);
+      }
+      call(castOf(ev, 4), 'Puddles: wait on the last, step into a burst one', { alert: true, dur: 6 });
     };
 
     // Strange Seeds: two seeds every 5 s, a support's and a DPS's; each drops on its wave's dot (or a tether holder's
-    // own spot) and sprouts a star 4.7 s later; everyone else waits by the boss, where no star reaches.
+    // own spot) and sprouts a star where it fell 4.7 s later; everyone else waits by the boss, where no star reaches.
     const fS = () => (w2 === 'SW' ? 1 : -1);
     const strange2Spots = () => {
       const f = fS(), sp = clump(mul(SEEDS2.safe, f), 1);
-      for (const [k, s] of Object.entries(TETHER2[V2])) sp[s] = mul(SEEDS2[k], f);
+      for (const [k, s] of Object.entries(TETHER2[V2])) sp[s] = mul(tetherSpot(V2, k), f);
       return sp;
     };
     const strange2 = (i, ev) => {
-      const f = fS(), tet = TETHER2[V2], tethered = Object.values(tet);
+      const f = fS(), tet = TETHER2[V2];
       const waves = [1, 2, 3, 4].map(k => find(i, e => e.name === `Strange Seeds ${k}`, 25));
       const tends = [1, 2, 3, 4].map(k => find(i, e => e.name === `Tendrils of Terror ${k}`, 30));
       [...waves, ...tends].forEach(e => e && used.add(e));
       P.labels.set(ev, `Strange Seeds (boss ${w2 === 'SW' ? 'south' : 'north'})`);
-      const sup = shuffle(SUP), dps = shuffle(DPS), home = strange2Spots();
-      pref(castOf(ev, 4), home);
+      const ks = find(i, e => e.name === 'Killer Seeds', 35), t5 = find(i, e => e.name === 'Tendrils of Terror 5', 40);
+      let pairSpots = null;
+      if (ks) { pairSpots = {}; for (const [k, pr] of Object.entries(PAIRS2[V2])) for (const s of pr) pairSpots[s] = mul(SEEDS2.pairsAt[k], f); }
+      const sup = shuffle(SUP), dps = shuffle(DPS), home = strange2Spots(), safe = clump(mul(SEEDS2.safe, f), 1);
+      const tspots = Object.entries(tet).map(([k, s]) => [s, mul(tetherSpot(V2, k), f)]);
+      // Each wave's drops: its two dots, or a tether holder's own spot, moved where the last wave's stars cross it
+      // (they land just before) to the nearest ground clear of them whose own star misses the spot by the boss.
+      const onStar = (c, p, m) => star(c).some(h => B.mechInside(h, p, m));
+      const near = (p, q, r) => Math.hypot(p[0] - q[0], p[1] - q[1]) < r;
+      const faults = (p, owner, prev, taken) => (Math.abs(p[0]) > 11.5 || Math.abs(p[1]) > 23.5 ? 9 : 0)
+        + prev.filter(c => onStar(c, p, 1.2)).length * 3 + Object.values(safe).filter(q => onStar(p, q, 1.15)).length
+        + Object.values(safe).filter(q => near(p, q, 6.8)).length * 2 + tspots.filter(([s, q]) => s !== owner && near(p, q, 6.5)).length * 2
+        + taken.filter(q => near(p, q, 6.5)).length * 2;
+      const dropAt = (want, owner, prev, taken) => {
+        let best = want, bf = faults(want, owner, prev, taken);
+        for (let r = 0.5; r <= 9 && bf > 0; r += 0.5) {
+          const n = Math.max(1, Math.round(r * 6));
+          for (let k = 0; k < n; k++) { const c = add(want, at(k / n * 360, r)), fc = faults(c, owner, prev, taken); if (fc < bf) { bf = fc; best = c; } }
+        }
+        return best;
+      };
+      let prev = [];
       waves.forEach((w, k) => {
         if (!w) return;
         const pair = [sup[k], dps[k]], dots = (k % 2 ? SEEDS2.dotsB : SEEDS2.dotsA).map(p => mul(p, f));
-        const drop = {};
-        pair.forEach((s, j) => {
-          const tk = Object.keys(tet).find(x => tet[x] === s);
-          drop[s] = tk ? mul(SEEDS2[tk], f) : dots[j];
+        const drop = {}, taken = [];
+        // (A tether holder drops on its spot; the other holder takes the dot further from it.)
+        const tk = (s) => Object.keys(tet).find(x => tet[x] === s);
+        const order = pair.slice().sort((x, y) => (tk(y) ? 1 : 0) - (tk(x) ? 1 : 0));
+        const free = dots.slice();
+        order.forEach((s) => {
+          if (tk(s)) { drop[s] = dropAt(mul(tetherSpot(V2, tk(s)), f), s, prev, taken); taken.push(drop[s]); return; }
+          free.sort((p, q) => Math.min(...taken.map(t => Math.hypot(q[0] - t[0], q[1] - t[1])), 99) - Math.min(...taken.map(t => Math.hypot(p[0] - t[0], p[1] - t[1])), 99));
+          drop[s] = free.shift(); taken.push(drop[s]);
         });
+        prev = Object.values(drop);
         pref(w.t - 4.6, drop);
-        check({ t: w.t, kind: 'spread', slots: pair, r: 6 * K, dmg: 0.2, fail: 0.8, name: 'Strange Seeds' });
         pair.forEach(s => deb(s, null, `Strange Seed (wave ${k + 1})`, 'drop it on your dot, then back to the boss', w.t - 5, w.t));
         callEach(w.t - 5, pair, 'Drop seed', { alert: true, dur: 5 });
-        pref(w.t + 0.15, Object.fromEntries(pair.map(s => [s, home[s]])));
+        // Back by the boss (or to the tether); after the last wave, out to the Killer Seeds pairs' spots.
+        pref(w.t + 0.15, Object.fromEntries(pair.map(s => [s, k === 3 && pairSpots ? pairSpots[s] : home[s]])));
         const te = tends[k];
-        if (te) Object.values(drop).forEach(p => hzs(star(p, 2 * K), { t: te.t, tell: te.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
+        for (const s of pair) {
+          const seed = hz({ t: w.t, tell: w.t - 5, effect: 'bait', shape: 'circle', r: 6, from: 'target', targets: [s], dmg: 0.8, own: 0.2, name: 'Strange Seeds' });
+          if (te) star(drop[s]).forEach(c => {
+            where(seed, s, { t: te.t, tell: te.t - 3, shape: 'cross', deg: c.deg, len: c.len, w: c.w, dmg: 1.3, name: 'Tendrils of Terror' });
+            guard(c, te.t, te.t - 3);
+          });
+        }
+        if (k === 3 && pairSpots) pref(w.t + 0.15, Object.fromEntries(S.filter(s => !pair.includes(s)).map(s => [s, pairSpots[s]])));
       });
       if (tends[0]) call(tends[0].t - 3, 'Avoid line AoEs', { dur: 3 });
-      // Killer Seeds: partner stacks, each sprouting a star.
-      const ks = find(i, e => e.name === 'Killer Seeds', 35), t5 = find(i, e => e.name === 'Tendrils of Terror 5', 40);
+      // Killer Seeds: partner stacks on the supports or the DPS, each sprouting a star.
       if (ks) {
         used.add(ks);
-        const pairs = PAIRS2[V2], spots = {};
-        for (const [k, pr] of Object.entries(pairs)) for (const s of pr) spots[s] = mul(SEEDS2.pairsAt[k], f);
+        const pairs = PAIRS2[V2], spots = pairSpots;
         pref(castOf(ks, 5) + 0.2, spots);
-        check({ t: ks.t, kind: 'stack', groups: Object.values(pairs), r: 6 * K, spots, dmg: 0.3, fail: 0.8, name: 'Killer Seeds' });
+        hz({ t: ks.t, tell: castOf(ks, 5), effect: 'share', shape: 'circle', r: 6, from: 'target', targets: { role: pick(['support', 'dps']) }, min: 2, max: 2, dmg: 0.3, name: 'Killer Seeds' });
         call(castOf(ks, 5), 'Stack with partner', { alert: true, dur: 5 });
         for (const pr of Object.values(pairs)) for (const s of pr) call(castOf(ks, 5), `Stack with ${pr.find(x => x !== s)}`, { slot: s, dur: 5 });
         if (t5) {
           used.add(t5);
-          Object.keys(pairs).forEach(k => hzs(star(mul(SEEDS2.pairsAt[k], f), 2 * K), { t: t5.t, tell: t5.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
+          Object.keys(pairs).forEach(k => hzs(star(mul(SEEDS2.pairsAt[k], f)), { t: t5.t, tell: t5.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
         }
         pref(ks.t + 0.2, up2(w2));
-        tethered.forEach(s => deb(s, 'thornsOfDeath', 'Thorns of Death', 'hold your wall tether', 267.6, ks.t + 0.3));
+        // The wall tethers: from the far buildings, held stretched (30 yalms at least) till the seeds are done.
+        for (const [k, s] of Object.entries(tet)) {
+          deb(s, 'thornsOfDeath', 'Thorns of Death', 'hold your wall tether, stretched', 267.6, ks.t + 0.3);
+          hz({ t: ks.t, tell: 267.6, from: 'target', targets: [s], tether: mul(SEEDS2[k + 'From'], f), stretch: 30, dmg: 0.3, fail: 0.9, name: 'Thorns of Death' });
+        }
       }
     };
 
     // ---- P3 ----
     const WALL3NAME = { 0: 'north', 90: 'east', 180: 'south', 270: 'west' };
+    const lariatSpots = (side, wb) => rotAll(clump([side === 'right' ? 14 : -14, 2], 1.6), wb);
     // Before a P3 swing: the ground nearest each slot's next spot that's inside (or outside) the swing's reach and clear
     // of anything landing with it.
     const preNear = (targets, wall, inn, extra) => all(s => {
@@ -548,15 +610,13 @@
       }
       return q;
     });
-    const lariatSpots = (side, wb) => rotAll(clump([side === 'right' ? 14 : -14, 2], 1.6), wb);
     const swing3 = (i, ev) => {
       nSwing3++;
       const R = ring3, k = nSwing3 - 1, wb = R.walls[k], inn = k === 0 ? R.first === 'in' : R.first !== 'in';
-      const t = ev.t, cs = t - 6.7, wall = at(wb, 34.5), weapon = inn ? 'sword' : 'club';
+      const t = ev.t, cs = t - 6.7, wall = at(wb, 34.5), weapon = inn ? 'sword' : 'club', face = (wb + 180) % 360;
       P.labels.set(ev, `Brutish Swing (${inn ? 'in' : 'out'}, ${WALL3NAME[wb]} wall)`);
-      if (inn) inDisc(wall, 21.712, t, cs, 'Brutish Swing');
-      else hz({ t, tell: cs, shape: 'circle', at: wall, r: 25, dmg: 1.4, name: 'Brutish Swing' });
-      bossAt(wall, 19.7, cs + 3, t + 8);
+      bossTo(cs + 3.1, wall, 2.6);
+      hz(Object.assign({ t, tell: cs, shape: 'cone', at: wall, deg: face, half: 90, dmg: 1.4, name: 'Brutish Swing' }, inn ? { r0: 21.712, r: 80 } : { r: 25 }));
       const lar = k === 0 ? find(i, e => e.name === 'Lashing Lariat', 9) : null, side = R.hands[weapon];
       // Where each goes next: the lariat's strip, or (the second swing) Glower Power's spreads or the tank tower.
       const nextSpots = k === 0 ? lariatSpots(side, wb) : R.n === 1 ? rotAll(P3_GLOWER[V3], wb) : slamSpots(R.n === 1 ? 'MT' : 'OT', rotAll(clump([0, inn ? 15 : -5], 1.3), wb));
@@ -575,12 +635,20 @@
       call(cs, text, { alert: true, dur: 7 });
       if (lar) {
         used.add(lar);
-        // The lariat sweeps all but a 12-yalm strip on the weapon's side (looking at the wall).
-        const lc = castOf(lar, 4), rect = side === 'right' ? rotRect([-25, -25], [8, 40], wb) : rotRect([-8, -25], [25, 40], wb);
-        hz(Object.assign({ t: lar.t, tell: lc, dmg: 1.5, name: 'Lashing Lariat' }, rect));
+        // The lariat: the boss charges to the far wall with its weapon arm out, sweeping all but a 12-yalm strip on
+        // the weapon's side (looking at the wall it charges from).
+        const lc = castOf(lar, 4), far = at(wb + 180, 34.5);
+        hz({ t: lar.t, tell: lc, shape: 'line', at: rot([side === 'right' ? -8 : 8, 34.5], wb), deg: face, len: 70, w: 32, dmg: 1.5, name: 'Lashing Lariat' });
+        bossTo(lar.t - 0.4, far, 0.8);
         P.labels.set(lar, `Lashing Lariat (get ${side})`);
         call(lc, side === 'left' ? '<== Get Left' : 'Get Right ==>', { alert: true, dur: 4 });
-        pref(t + (R.n === 1 ? 0.2 : (R.tend[0] ? R.tend[0].t - t + 0.1 : 0.4)), lariatSpots(side, wb));
+        // (Stoneringers 2: the next seed holders wait in the strip level with their markers, to make them in time.)
+        const ls = lariatSpots(side, wb);
+        if (R.n === 2) for (const s of R.holders[1] || []) {
+          const m = rot(R.markers[s], -wb), x = side === 'right' ? Math.max(10, m[0]) : Math.min(-10, m[0]);
+          ls[s] = rot([x, m[1]], wb);
+        }
+        pref(t + (R.n === 1 ? 0.2 : (R.tend[0] ? R.tend[0].t - t + 0.1 : 0.4)), ls);
       }
     };
 
@@ -588,20 +656,21 @@
     const glower3 = (i, ev, wb) => {
       const ef = find(i, e => e.name === 'Electrogenetic Force', 5), gp = find(i, e => e.name === 'Glower Power', 5);
       [ef, gp].forEach(e => e && used.add(e));
-      if (gp) hz(Object.assign({ t: gp.t, tell: gp.t - 2, dmg: 1.4, name: 'Glower Power' }, rotRect([-7, -25], [7, 40], wb)));
+      if (gp) hz({ t: gp.t, tell: gp.t - 2, shape: 'line', at: at(wb, 34.5), deg: (wb + 180) % 360, len: 65, w: 14, dmg: 1.4, name: 'Glower Power' });
       pref(ev.t + 0.1, rotAll(P3_GLOWER[V3], wb));
-      if (ef) check({ t: ef.t, kind: 'spread', r: 6, dmg: 0.25, fail: 0.8, name: 'Electrogenetic Force' });
+      if (ef) hz({ t: ef.t, tell: ev.t, effect: 'bait', shape: 'circle', r: 6, from: 'target', targets: S.slice(), dmg: 0.8, own: 0.25, name: 'Electrogenetic Force' });
       return ef ? ef.t : ev.t + 3;
     };
 
-    // Slaminator's tower: the tank in the middle, everyone else 10.8 out on the bearing they came from.
+    // Slaminator: the boss leaps into the middle, an 8-yalm tower one tank soaks (invulnerable); everyone else 10.8
+    // out on the bearing they came from.
     const slamSpots = (tank, prev) => Object.assign(all(s => at(prev && Math.hypot(prev[s][0], prev[s][1]) > 1 ? brg(prev[s]) : CLOCK[s], 10.8)), { [tank]: [0, 0.3] });
     const slaminator = (ev, after, prev) => {
       nSlam++;
       const tank = nSlam === 1 ? 'MT' : 'OT', cs = castOf(ev, 5);
-      hz({ t: ev.t, tell: cs, shape: 'tankcones', aimed: true, slots: [tank], half: 180, r: 8, dmg: 1.4, buster: 0.5, name: 'Slaminator' });
+      bossTo(ev.t - 1, [0, 0], 0.8);
+      hz({ t: ev.t, tell: cs, effect: 'tower', shape: 'circle', at: [0, 0], r: 8, soak: [1, 1], dmg: 0.5, fail: 1.4, name: 'Slaminator' });
       pref(Math.max(cs, after), slamSpots(tank, prev));
-      check({ t: ev.t, kind: 'spot', slots: [tank], spots: { [tank]: [0, 0.3] }, r: 3, fail: 1.4, name: 'Slaminator' });
       call(cs, 'Get tower (tank buster: invuln)', { slot: tank, alert: true, dur: 5 });
       callEach(cs, S.filter(s => s !== tank), 'Tank tower in the middle: stay out', { dur: 5 });
       pref(ev.t + 0.3, UP);
@@ -611,14 +680,17 @@
     // Quarry Swamp behind the two adds.
     const debris = (i, ev) => {
       const pt = POLLEN[pat3], t = ev.t;
-      HR.forEach(s => deb(s, 'thornsOfDeath', 'Thorns of Death', `hold the tether from the ${WALL3NAME[WALL3[s]]} wall`, t + 1.1, 533.5));
+      HR.forEach(s => {
+        deb(s, 'thornsOfDeath', 'Thorns of Death', `hold the tether from the ${WALL3NAME[WALL3[s]]} wall, stretched`, t + 1.1, 533.5);
+        hz({ t: 533.5, tell: t + 1.1, from: 'target', targets: [s], tether: at(WALL3[s], 34.5), stretch: 12, dmg: 0.3, fail: 0.9, name: 'Thorns of Death' });
+      });
       callEach(castOf(ev, 3), HR, 'Get tethers', { dur: 5 });
       pref(t + 0.3, Object.assign({}, UP, Object.fromEntries(HR.map(s => [s, at(WALL3[s], 17)]))));
       const spore = find(i, e => e.name === 'Spore Sac' && e.cast === 4, 15), pol = find(i, e => e.name === 'Pollen', 20);
       const ks = find(i, e => e.name === 'Killer Seeds', 25), tend = find(i, e => e.name === 'Tendrils of Terror', 28);
       const quarry = find(i, e => e.name === 'Quarry Swamp', 40);
       [spore, pol, ks, tend, quarry].forEach(e => e && used.add(e));
-      if (spore) { pw3.forEach(p => hz({ t: spore.t, tell: castOf(spore, 4), shape: 'circle', at: p, r: 8, dmg: 1.3, name: 'Spore Sac' })); }
+      if (spore) pw3.forEach(p => hz({ t: spore.t, tell: castOf(spore, 4), shape: 'circle', at: p, r: 8, dmg: 1.3, name: 'Spore Sac' }));
       // Pollen: the tethered to the outer safe corner by their wall, the rest to the inner one by their partner's.
       const angd = (a, b) => Math.abs((((a - b) % 360) + 540) % 360 - 180);
       const near = (b, list) => list.reduce((p, q) => (angd(brg(q), b) < angd(brg(p), b) ? q : p));
@@ -628,10 +700,10 @@
       for (const s of TM) polSpots[s] = mul(near(WALL3[PAIR3[s]], inner), 0.9);
       if (pol) { pollenHits(pol, pat3); pref((spore ? spore.t : castOf(pol, 4)) + 0.2, polSpots); }
       if (ks) {
-        const r = V3 === 'game8' ? 18 : 15, spots = {}, groups = [];
-        for (const [m, h] of Object.entries(PAIR3)) { spots[m] = spots[h] = at(WALL3[h], r); groups.push([m, h]); }
+        const r = V3 === 'game8' ? 18 : 15, spots = {};
+        for (const [m, h] of Object.entries(PAIR3)) spots[m] = spots[h] = at(WALL3[h], r);
         pref((pol ? pol.t : castOf(ks, 5)) + 0.2, spots);
-        check({ t: ks.t, kind: 'stack', groups, r: 6, spots, dmg: 0.3, fail: 0.8, name: 'Killer Seeds' });
+        hz({ t: ks.t, tell: castOf(ks, 5), effect: 'share', shape: 'circle', r: 6, from: 'target', targets: { role: pick(['support', 'dps']) }, min: 2, max: 2, dmg: 0.3, name: 'Killer Seeds' });
         call(castOf(ks, 5), 'Stack with partner', { alert: true, dur: 5 });
         if (tend) Object.values(spots).filter((p, k, a) => a.findIndex(q => same(q, p)) === k).forEach(p => hzs(star(p), { t: tend.t, tell: tend.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
       }
@@ -655,8 +727,8 @@
       const seedTM = Math.random() < 0.5, seeders = seedTM ? TM : HR, baiters = seedTM ? HR : TM;
       const puds = [1, 2, 3, 4].map(k => find(i, e => e.name === `Sinister Seeds (puddles ${k})`, 15));
       const drop = find(i, e => e.name === 'Sinister Seeds (seeds drop)', 12), tend = find(i, e => e.name === 'Tendrils of Terror', 16);
-      const roots = find(i, e => e.name === 'Roots of Evil', 16), pulp = find(i, e => e.name === 'Pulp Smash', 20), unp = find(i, e => e.name === 'The Unpotted', 22);
-      [...puds, drop, tend, roots, pulp, unp].forEach(e => e && used.add(e));
+      const roots = find(i, e => e.name === 'Roots of Evil', 16), pul = find(i, e => e.name === 'Pulp Smash', 20), unp = find(i, e => e.name === 'The Unpotted', 22);
+      [...puds, drop, tend, roots, pul, unp].forEach(e => e && used.add(e));
       P.labels.set(ev, `Sinister Seeds (${seedTM ? 'ranged' : 'melee'} puddles)`);
       const paths = {}, seeds = {};
       let wait, stackAt;
@@ -672,51 +744,32 @@
           ? { MT: [-10, 10], OT: [10, 10], M1: [-10, -10], M2: [10, -10] } : { MT: [-10, 10], OT: [10, -10], M1: [-10, -10], M2: [10, 10] });
         wait = V3 === 'game8' ? { MT: [-3.2, 3.2], R1: [-3.2, 3.2], OT: [3.2, -3.2], R2: [3.2, -3.2], M1: [-3.2, -3.2], H1: [-3.2, -3.2], M2: [3.2, 3.2], H2: [3.2, 3.2] }
           : { MT: [0, 4.6], R1: [0, 4.6], OT: [0, -4.6], R2: [0, -4.6], M1: [-4.6, 0], H1: [-4.6, 0], M2: [4.6, 0], H2: [4.6, 0] };
-        stackAt = null;
+        stackAt = [0, 0];
       } else {
         // Melee puddles clockwise round the boss, 8 out (Game8 from the north-west); the ranged's seeds at their
         // walls; everyone waits out the roots in the south-west corner and stacks there.
         const b0 = V3 === 'game8' ? 315 : 270;
-        for (const s of baiters) paths[s] = [0, 60, 120, 180].map(d => at(b0 + d, 8));
+        for (const s of baiters) paths[s] = [0, 60, 120, 180].map(d => at(b0 + d, 8.6));
         for (const s of seeders) seeds[s] = at(WALL3[s], 18.5);
         wait = clump([-14.5, -14.5], 1.2);
         stackAt = [-12, -12];
       }
-      const t0 = castOf(ev, 4);
-      pref(t0, Object.assign(Object.fromEntries(baiters.map(s => [s, paths[s][0]])), Object.fromEntries(seeders.map(s => [s, seedTM ? [seeds[s][0] * 0.4, seeds[s][1] * 0.4] : seeds[s]]))));
-      const all16 = [];
-      puds.forEach((pe, k) => {
-        if (!pe) return;
-        const ts = pe.t - 3, pts = [];
-        for (const s of baiters) { const p = paths[s][k]; if (!pts.some(q => same(q, p))) pts.push(p); }
-        pts.forEach(p => { hz({ t: pe.t, tell: ts, shape: 'circle', at: p, r: 7, dmg: 1.2, name: 'Sinister Seeds' }); all16.push(p); });
-        if (k < 3) pref(ts + 0.05, Object.fromEntries(baiters.map(s => [s, paths[s][k + 1]])));
-      });
-      const seedT = drop ? drop.t : ev.t + 8;
+      const t0 = castOf(ev, 4), seedT = drop ? drop.t : ev.t + 8;
+      pref(t0, Object.assign(Object.fromEntries(baiters.map(s => [s, paths[s][0]])), Object.fromEntries(seeders.map(s => [s, seedTM ? mul(seeds[s], 0.4) : seeds[s]]))));
+      sinister(puds, drop || ev, tend, roots, baiters, seeders, paths, seeds, seedT, tend ? tend.t - 3 : seedT);
       pref(puds[1] ? puds[1].t + 0.1 : seedT - 2, Object.fromEntries(seeders.map(s => [s, seeds[s]])));
-      check({ t: seedT, kind: 'spread', slots: seeders, r: 6, dmg: 0.2, fail: 0.8, name: 'Sinister Seeds' });
       for (const s of seeders) deb(s, null, 'Sinister Seed', 'drop it on your spot, clear of everyone', castOf(drop || ev, 7), seedT);
       callEach(castOf(drop || ev, 7), seeders, 'Drop seed', { dur: 6 });
       callEach(castOf(drop || ev, 7), baiters, 'Bait Puddles', { alert: true, dur: 6 });
       pref(seedT + 0.2, Object.fromEntries(seeders.map(s => [s, wait[s]])));
       pref((puds[3] ? puds[3].t - 3 : seedT) + 0.6, Object.fromEntries(baiters.map(s => [s, wait[s]])));
-      if (tend) Object.values(seeds).forEach(p => hzs(star(p), { t: tend.t, tell: tend.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
-      if (roots) all16.forEach(p => hz({ t: roots.t, tell: tend ? tend.t - 3 : roots.t - 5, shape: 'circle', at: p, r: 12, dmg: 1.4, name: 'Roots of Evil' }));
-      if (!pulp) return;
-      if (!stackAt) { pulpMiddle(pulp.t, unp, clump([0, 0], 1)); return; }
-      // Stacked in the south-west, the boss leaps onto the stack and fires its proteans from there: the clock round
-      // it (it faces the middle), drawn, and checked as your spot.
-      const tgt = pick(S), tu = unp ? unp.t : pulp.t + 2;
-      pref(pulp.t - 4.8, clump(stackAt, 1));
-      check({ t: pulp.t, kind: 'stack', groups: [S], r: 6, dmg: 0.3, fail: 0.9, name: 'Pulp Smash' });
-      call(pulp.t - 5, `Stack on ${tgt} => Out + Protean`, { dur: 5 });
-      hz({ t: tu, tell: pulp.t, shape: 'circle', at: stackAt, r: 6, dmg: 1.3, react: 2, name: 'It Came from the Dirt' });
-      bossAt(stackAt, 7, pulp.t, 573.6);
-      const clockAt = all(s => { const p = at(CLOCK[s] + 45, 7.2); return [stackAt[0] + p[0], stackAt[1] + p[1]]; });
-      pref(pulp.t + 0.05, clockAt);
-      check({ t: tu, kind: 'spot', spots: clockAt, r: 2.5, fail: 0.9, name: 'The Unpotted' });
-      S.forEach(s => mark({ kind: 'lit', shape: 'cone', at: stackAt, deg: CLOCK[s] + 45, half: 15, r: 40, t0: pulp.t, t1: tu, fill: 'rgba(255,120,60,0.16)' }));
-      pref(tu + 0.4, UP);
+      if (!pul) return;
+      // The stack in the middle (true north clock spots), or in the south-west, the boss landing there and firing its
+      // proteans from there (the clock round it, facing the middle); then the party hugs it there till it goes back.
+      const mid = stackAt[0] === 0;
+      const clockAt = mid ? all(s => at(CLOCK[s], 8.2)) : all(s => add(stackAt, at(CLOCK[s] + 45, 7.2)));
+      pulp(pul.t, unp, stackAt, clockAt, mid ? UP : shift(rotAll(UP, 45), stackAt));
+      if (!mid) { bossTo(573.6, [0, 0], 1.5); pref(573.8, UP); }
     };
 
     // Stoneringers 2's Strange Seeds: the supports' or DPS's seeds on the intercards, then the others'.
@@ -732,14 +785,18 @@
         const d = drops[k];
         if (!d) return;
         pref(k ? d.t - 4.2 : castOf(ev, 4) + 0.2, Object.assign(k ? {} : clump([0, 0], 1.5), Object.fromEntries(grp.map(s => [s, map[s]]))));
-        check({ t: d.t, kind: 'spread', slots: grp, r: 6, dmg: 0.2, fail: 0.8, name: 'Strange Seeds' });
         grp.forEach(s => deb(s, null, 'Strange Seed', 'drop it on your marker', d.t - 5, d.t));
         callEach(d.t - 5, grp, 'Drop seed', { alert: true, dur: 5 });
         R.hold[k] = d.t + 0.2;
         R.holders[k] = grp;
+        R.markers = Object.assign(R.markers || {}, Object.fromEntries(grp.map(x => [x, map[x]])));
         const te = R.tend[k];
         R.stars[k] = [];
-        if (te) grp.map(s => map[s]).filter((p, j, a) => a.findIndex(q => same(q, p)) === j).forEach(p => { R.stars[k].push(...star(p)); hzs(star(p), { t: te.t, tell: te.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }); });
+        grp.forEach(s => {
+          const seed = hz({ t: d.t, tell: d.t - 5, effect: 'bait', shape: 'circle', r: 6, from: 'target', targets: [s], dmg: 0.8, own: 0.2, name: 'Strange Seeds' });
+          if (te) star(map[s]).forEach(c => where(seed, s, { t: te.t, tell: te.t - 3, shape: 'cross', deg: c.deg, len: c.len, w: c.w, dmg: 1.3, name: 'Tendrils of Terror' }));
+        });
+        if (te) grp.map(s => map[s]).filter((p, j, a) => a.findIndex(q => same(q, p)) === j).forEach(p => star(p).forEach(c => { R.stars[k].push(c); guard(c, te.t, te.t - 3); }));
       });
       call(castOf(ev, 4), 'Seeds on the markers, then in/out from the wall', { dur: 5 });
     };
@@ -753,7 +810,7 @@
         call(castOf(ev, 5), `AoE x${n}`, { dur: 4 });
       } else if (name === 'Stoneringer') {
         const kind = pick(['out', 'in']);
-        if (t > 150 && t < 360) {
+        if (t > P1_END && t < P2_END) {
           stored2 = kind;
           P.labels.set(ev, `Stoneringer (${kind === 'out' ? 'club: out later' : 'sword: in later'})`);
           call(castOf(ev, 2), kind === 'out' ? 'Out (for later)' : 'In (for later)', { dur: 6 });
@@ -763,21 +820,21 @@
           call(castOf(ev, 2), kind === 'out' ? 'Out' : 'In', { dur: 6 });
         }
       } else if (name === 'Smash Here/Smash There') smash(i, ev);
-      else if (name === 'Spore Sac' && ev.cast === 4 && t < 150) {
+      else if (name === 'Spore Sac' && ev.cast === 4 && t < P1_END) {
         pw1.forEach(p => hz({ t, tell: castOf(ev, 4), shape: 'circle', at: p, r: 8, dmg: 1.3, name: 'Spore Sac' }));
-      } else if (name === 'Pollen' && t < 150) pollenHits(ev, pat1);
-      else if (name === 'Sinister Seeds') { if (t < 150) seeds1(i, ev); else seeds3(i, ev); }
+      } else if (name === 'Pollen' && t < P1_END) pollenHits(ev, pat1);
+      else if (name === 'Sinister Seeds') { if (t < P1_END) seeds1(i, ev); else seeds3(i, ev); }
       else if (name === 'Explosion 1') explosions(i, ev);
-      else if (name === 'Pulp Smash' && t < 150) pulpMiddle(t, find(i, e => e.name === 'The Unpotted', 4));
+      else if (name === 'Pulp Smash' && t < P1_END) pulp(t, find(i, e => e.name === 'The Unpotted', 4), [0, 0], all(s => at(CLOCK[s], 8.2)), UP);
       else if (name === 'Neo Bombarian Special') {
+        // Everyone north; the blast launches them on, onto P2 (the boss up on the north building).
         raid(t, castOf(ev, 8), 0.5, name);
+        hz({ t, tell: castOf(ev, 8), effect: 'knockback', dir: 0, dist: 8, unstoppable: true, name });
         call(castOf(ev, 8), 'Go North, big AoE + Launch', { alert: true, dur: 8 });
-        pref(castOf(ev, 8) + 0.5, all(s => [OFF[s][0] * 3, 15 + OFF[s][1]]));
-        // P2: a long arena between two walls (drawn scaled to 0.8: 20 wide here), the boss on the north building.
-        for (const x of [1, -1]) mark({ kind: 'lit', shape: 'rect', a: [10 * x, -20], b: [20 * x, 20], t0: t, t1: 352.1, fill: 'rgba(10,10,20,0.62)' });
-        bossAt(P2W.N.at, 19.7 * K, t, 176.5);
-        pref(t + 0.2, UP2N);
-      } else if (name === 'Brutish Swing' && t > 150 && t < 360) swing2(i, ev);
+        pref(castOf(ev, 8) + 0.5, all(s => [OFF[s][0] * 3, 10.5 + OFF[s][1]]));
+        bossTo(t + 0.5, P2W.N.at);
+        pref(t + 1, UP2N);
+      } else if (name === 'Brutish Swing' && t > P1_END && t < P2_END) swing2(i, ev);
       else if (name === 'Revenge of the Vines') {
         raid(t, ev.cast ? castOf(ev, 5) : t - 2, 0.4, name);
         call(ev.cast ? castOf(ev, 5) : t - 2, 'Big AoE', { dur: 3 });
@@ -785,24 +842,32 @@
         call(castOf(ev, 3), 'Tank tether on MT', { dur: 5 });
         // The tank tether: MT's, but the other tank's while MT carries a flare away.
         const blinks = events.filter(e => e.name === 'Abominable Blink' && e.t > t).slice(0, 2);
+        const hold = (s, t0, t1, hint) => {
+          deb(s, 'thornsOfDeathTank', 'Thorns of Death (tank tether)', hint, t0, t1);
+          hz({ t: t1, tell: t0, from: 'target', targets: [s], tether: 'boss', name: 'Thorns of Death' });
+        };
         let t0 = t + 1.1;
         blinks.forEach((b, k) => {
           if (flares[k] !== 'MT') return;
-          deb('MT', 'thornsOfDeathTank', 'Thorns of Death (tank tether)', 'keep the boss on you', t0, b.t - 6.6);
-          deb('OT', 'thornsOfDeathTank', 'Thorns of Death (tank tether)', 'hold it while MT has the flare', b.t - 6.6, b.t + 1);
+          hold('MT', t0, b.t - 6.6, 'keep the boss on you');
+          hold('OT', b.t - 6.6, b.t + 1, 'hold it while MT has the flare');
           t0 = b.t + 1;
         });
-        deb('MT', 'thornsOfDeathTank', 'Thorns of Death (tank tether)', 'keep the boss on you', t0, 321.4);
+        hold('MT', t0, 321.4, 'keep the boss on you');
       } else if (name === 'Abominable Blink') blink(i, ev);
       else if (name === 'Sporesplosion') sporesplosion(i, ev);
       else if (name === 'Demolition Deathmatch') {
         call(castOf(ev, 3), 'Get tethers', { dur: 5 });
         pref(t + 0.3, strange2Spots());
-      } else if (name === 'Strange Seeds' && t < 360) strange2(i, ev);
+      } else if (name === 'Strange Seeds' && t < P2_END) strange2(i, ev);
       else if (name === 'Powerslam') {
+        // The floor gives way: P3, the boss coming down north of the middle, then walking to it.
         raid(t, castOf(ev, 6), 0.5, name);
         call(castOf(ev, 6), 'Big AoE', { alert: true, dur: 5 });
-        pref(t + 0.3, UP);
+        bossTo(t + 0.5, [0, 8]);
+        pref(t + 0.6, shift(UP, [0, 8]));
+        const mid = find(i, e => e.name === 'Brutal Impact x7', 40);
+        if (mid) { bossTo(mid.t + 9.8, [0, 0], 1.5); pref(mid.t + 10, UP); }
       } else if (name === 'Stoneringer 2: Stoneringers') {
         nRing3++;
         const swordLeft = Math.random() < 0.5, first = pick(['in', 'out']);
@@ -810,7 +875,7 @@
         ring3 = { n: nRing3, first, walls, hands: { sword: swordLeft ? 'left' : 'right', club: swordLeft ? 'right' : 'left' }, hold: [], tend: [], stars: [], holders: [] };
         nSwing3 = 0;
         P.labels.set(ev, `Stoneringers (sword ${swordLeft ? 'left' : 'right'}, club ${swordLeft ? 'right' : 'left'})`);
-      } else if (name === 'Brutish Swing' && t > 360 && ring3 && nSwing3 < 2) {
+      } else if (name === 'Brutish Swing' && t > P2_END && ring3 && nSwing3 < 2) {
         swing3(i, ev);
         if (ring3.n === 1 && nSwing3 === 2) {
           const end = glower3(i, ev, ring3.walls[1]);
@@ -821,9 +886,10 @@
           if (sl) { used.add(sl); slaminator(sl, (ring3.tend[1] ? ring3.tend[1].t : t) + 0.2, ring3.last); }
         }
       } else if (name === 'Debris Deathmatch') debris(i, ev);
-      else if (name === 'Strange Seeds' && t > 360) strange3(i, ev);
+      else if (name === 'Strange Seeds' && t > P2_END) strange3(i, ev);
       else if (name === 'Special Bombarian Special (enrage cast)') call(castOf(ev, 10), 'Enrage', { alert: true, dur: 5 });
     });
+    P.boss.sort((a, b) => a.t - b.t);
     return P;
   }
 
@@ -831,6 +897,9 @@
   B.FIGHT_SCRIPTS.m7s = {
     // His max HP in an FFLogs M7S kill (every damage event on him carries it).
     hp: 118583808,
+    // The four Blooming Abominations (743,785 HP each in the same kill): the party's damage goes to them from when
+    // they grow till they die (before Hurricane Force, their enrage).
+    adds: [{ from: 71, to: 90, hp: 2975140, share: 1, name: 'Blooming Abominations' }],
     defaultStrat: 'toxic',
     strats: {
       toxic: { label: 'Toxic (NA / EU, the default)' },
