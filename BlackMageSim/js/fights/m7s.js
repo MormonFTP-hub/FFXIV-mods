@@ -414,10 +414,10 @@
 
     // Pulp Smash: stack on the marked player (the boss lands on them), then out to the clock spots round it for the
     // proteans and the circle under it.
-    const pulp = (t, unp, stackAt, clockAt, after) => {
+    const pulp = (t, unp, stackAt, clockAt, after, earliest) => {
       const tgt = pick(S), tu = unp ? unp.t : t + 2;
       bossTo(t - 0.9, stackAt, 0.5);
-      pref(t - 4.8, clump(stackAt, 1));
+      pref(Math.max(t - 4.8, earliest || 0), clump(stackAt, 1));
       hz({ t, tell: t - 5.1, effect: 'share', shape: 'circle', r: 6, from: 'target', targets: [tgt], min: 8, dmg: 0.3, name: 'Pulp Smash' });
       call(t - 5, `Stack on ${tgt} => Out + Protean`, { dur: 5 });
       hz({ t: tu, tell: t, shape: 'circle', r: 6, from: 'boss', dmg: 1.3, react: 2, name: 'It Came from the Dirt' });
@@ -765,9 +765,9 @@
           const b = WALL3[s];
           paths[s] = V3 === 'game8'
             ? (b === 0 || b === 270 ? [-33, -6, 21, 48] : [33, 6, -21, -48]).map(d => at(b + d, 18.5))
-            : [-14, -41, -68, -95].map(d => at(b + d, 18.5));
+            : [-14, -41, -70, -97].map(d => at(b + d, 18.5));
         }
-        Object.assign(seeds, V3 === 'game8' ? { MT: [0, 14], OT: [0, -14], M1: [-14, 0], M2: [14, 0] } : V3 === 'mr'
+        Object.assign(seeds, V3 === 'game8' ? { MT: [0, 12], OT: [0, -12], M1: [-12, 0], M2: [12, 0] } : V3 === 'mr'
           ? { MT: [-10, 10], OT: [10, 10], M1: [-10, -10], M2: [10, -10] } : { MT: [-10, 10], OT: [10, -10], M1: [-10, -10], M2: [10, 10] });
         wait = V3 === 'game8' ? { MT: [-3.2, 3.2], R1: [-3.2, 3.2], OT: [3.2, -3.2], R2: [3.2, -3.2], M1: [-3.2, -3.2], H1: [-3.2, -3.2], M2: [3.2, 3.2], H2: [3.2, 3.2] }
           : { MT: [0, 4.6], R1: [0, 4.6], OT: [0, -4.6], R2: [0, -4.6], M1: [-4.6, 0], H1: [-4.6, 0], M2: [4.6, 0], H2: [4.6, 0] };
@@ -795,7 +795,7 @@
       // proteans from there (the clock round it, facing the middle); then the party hugs it there till it goes back.
       const mid = stackAt[0] === 0;
       const clockAt = mid ? all(s => at(CLOCK[s], 8.2)) : all(s => add(stackAt, at(CLOCK[s] + 45, 7.2)));
-      pulp(pul.t, unp, stackAt, clockAt, mid ? UP : shift(rotAll(UP, 45), stackAt));
+      pulp(pul.t, unp, stackAt, clockAt, mid ? UP : shift(rotAll(UP, 45), stackAt), Math.max(tend ? tend.t : 0, roots ? roots.t : 0) + 0.1);
       if (!mid) { bossTo(573.6, [0, 0], 1.5); pref(573.8, UP); }
     };
 
