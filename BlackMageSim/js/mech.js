@@ -472,6 +472,100 @@
     return { runs, issues };
   };
 
+  // ---------- against real kills (/qa logs) ----------
+  // Plays a pull of the fight with its reference strat (the logs' parties play Hector's) and, at each mechanic the
+  // fight's reference file has (js/fights/<key>_ref.js, made by tools/fflogs_<key>_ref.py from FFLogs kills),
+  // measures how far each party spot stands from where real players stood. Layouts that change each pull are turned
+  // the same way the reference was: the twist's plays mirrored to the east, Frogtourage's corridor north-south.
+  const SAMPLE = {
+    'Celebrate Good Times': { at: (ev, L) => ev.name === 'Celebrate Good Times' },
+    'Deep Cut': { at: (ev, L) => ev.name === 'Deep Cut' },
+    'Play A-side': { at: (ev, L) => L === 'Play A-side', norm: 'east' },
+    'Play B-side': { at: (ev, L) => L === 'Play B-side', norm: 'east' },
+    'Frogtourage 1 spread': { at: (ev, L) => L === 'Eighth Beats' && ev.t > 300 && ev.t < 330, norm: 'corridor' },
+    'Frogtourage 1 stack': { at: (ev, L) => L === 'Quarter Beats' && ev.t > 300 && ev.t < 330, norm: 'corridor' },
+    'Back-Up Dance 1 (Disco 2)': { at: (ev, L) => ev.name === 'Back-up Dance', nth: 0 },
+    'Back-Up Dance 3 (Frogtourage 2)': { at: (ev, L) => ev.name === 'Back-up Dance', nth: 2 },
+    'Back-Up Dance 4 (Frogtourage 2)': { at: (ev, L) => ev.name === 'Back-up Dance', nth: 3 },
+  };
+  const median = (a) => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
+  function normalise(p, how) {
+    if (how === 'east') {
+      const s = median(Object.values(p).map(v => v[0])) >= 0 ? 1 : -1;
+      return Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [v[0] * s, v[1]]]));
+    }
+    if (how === 'corridor') {
+      const sd = (a) => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length); };
+      if (sd(Object.values(p).map(v => v[0])) > sd(Object.values(p).map(v => v[1]))) p = Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [v[1], -v[0]]]));
+      if (p.MT[1] < 0) p = Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [-v[0], -v[1]]]));
+    }
+    return p;
+  }
+  B.mechLogCheck = async function (app, opts = {}) {
+    const f = app.fight, P = app.party, e = app.engine, st = app.store.settings;
+    const ref = f && (B.FIGHT_REFS || {})[f.key];
+    if (!f || !f.mech || !ref) return null;
+    const keep = { strats: Object.assign({}, st.strats), slot: st.partySlot };
+    if (app.enc) app.endEncounter(e.now, 'idle');
+    const hurt = P.hurt, rows = {};
+    try {
+      for (let rep = 0; rep < (opts.reps || 3); rep++) {
+        (st.strats = Object.assign({}, keep.strats))[f.key] = opts.strat || f.script.defaultStrat;
+        st.partySlot = opts.slot || 'R2';
+        f.reset(); P.setup(); app.placeStart();
+        P.hurt = () => {};
+        // When each reference mechanic happens in this pull.
+        const want = [], count = {};
+        for (const ev of f.events) {
+          const L = f.label(ev);
+          for (const [name, s] of Object.entries(SAMPLE)) {
+            if (!ref.mechs[name] || !s.at(ev, L)) continue;
+            count[name] = (count[name] || 0) + 1;
+            if (count[name] - 1 === (s.nth || 0)) want.push({ name, t: ev.t, norm: s.norm });
+          }
+        }
+        const me = P.playerSlot(), dt = 0.05, end = Math.max(...want.map(w => w.t)) + 0.1;
+        let next = 0;
+        want.sort((a, b) => a.t - b.t);
+        for (let i = 0; i * dt < end; i++) {
+          const t = i * dt;
+          f.t = t;
+          const s = B.toSim(f.mech.target(me, t, P.compassOf(me)));
+          const dx = s.x - e.pos.x, dz = s.z - e.pos.z, d = Math.hypot(dx, dz), step = Math.min(d, 6 * dt);
+          if (d > 0.01) { e.pos.x += dx / d * step; e.pos.z += dz / d * step; }
+          f.mech.update(t);
+          P.update(dt);
+          while (next < want.length && want[next].t <= t) {
+            const w = want[next++];
+            const p = normalise(Object.fromEntries(B.SLOTS.map(sl => [sl, P.compassOf(sl).slice()])), w.norm);
+            (rows[w.name] = rows[w.name] || []).push(p);
+          }
+        }
+        P.hurt = hurt;
+        await new Promise(r => setTimeout(r, 0));
+      }
+    } finally {
+      P.hurt = hurt;
+      st.strats = keep.strats; st.partySlot = keep.slot;
+      f.t = null; f.reset(); P.setup(); app.placeStart();
+    }
+    // Per mechanic: each spot's distance from the logs' median (the sim's own median over its runs), and the typical
+    // spread of real players around theirs, for scale.
+    const out = [];
+    for (const [name, r] of Object.entries(ref.mechs)) {
+      const runs = rows[name];
+      if (!runs) { out.push({ name, missing: true }); continue; }
+      const slots = B.SLOTS.filter(s => r.spots[s]).map(s => {
+        const sim = [median(runs.map(p => p[s][0])), median(runs.map(p => p[s][1]))], log = r.spots[s];
+        return { slot: s, sim, log: [log[0], log[1]], off: Math.hypot(sim[0] - log[0], sim[1] - log[1]), spread: log[2], loose: log[2] > 6 };
+      });
+      // A spot real players were all over (more than 6 yalms from their median, typically) says little: left out.
+      const firm = slots.filter(s => !s.loose);
+      out.push({ name, kills: r.n, mean: firm.reduce((a, b) => a + b.off, 0) / Math.max(1, firm.length), slots: firm, loose: slots.filter(s => s.loose).map(s => s.slot) });
+    }
+    return { kills: ref.kills, mechs: out };
+  };
+
   B.Mechanics = Mechanics;
   B.MECH_ARENA = ARENA;
 })(window.BLM);

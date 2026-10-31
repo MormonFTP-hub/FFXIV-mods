@@ -469,6 +469,20 @@
     async qaCommand(arg) {
       const F = this.fight;
       if (!F || !F.mech) { this.ui.log('/qa checks a fight with a party (/fight m5s).', 'err', 'system'); return; }
+      if (arg.startsWith('logs')) {
+        // The bots' spots against where real players stood in FFLogs kills (js/fights/<key>_ref.js).
+        const res = await B.mechLogCheck(this, {});
+        if (!res) { this.ui.log('No FFLogs reference for this fight (tools/fflogs_<key>_ref.py makes one).', 'err', 'system'); return; }
+        this.ui.log(`QA logs: the bots (${F.script.strats[F.script.defaultStrat].label}) against ${res.kills} FFLogs kills, yalms from where real players stood:`, 'sys', 'system');
+        for (const m of res.mechs) {
+          if (m.missing) { this.ui.log(`  ${m.name}: not in this pull`, 'dim', 'system'); continue; }
+          const worst = m.slots.slice().sort((a, b) => b.off - a.off).slice(0, 2)
+            .map(s => `${s.slot} ${s.off.toFixed(1)} (sim ${s.sim.map(v => v.toFixed(1)).join(',')} vs ${s.log.map(v => v.toFixed(1)).join(',')})`).join('; ');
+          this.ui.log(`  ${m.name}: ${m.mean.toFixed(1)}y on average; furthest ${worst}${m.loose.length ? ` (real ${m.loose.join(', ')} too scattered to compare)` : ''}`, m.mean > 3 ? 'err' : 'dim', 'system');
+        }
+        this.lastQALogs = res;
+        return;
+      }
       const words = arg.split(/\s+/).filter(Boolean);
       const strat = words.find(w => F.script.strats[w]), reps = Math.max(1, Math.min(10, parseInt(words.find(w => /^\d+$/.test(w)), 10) || 1));
       const strats = strat ? [strat] : Object.keys(F.script.strats);
