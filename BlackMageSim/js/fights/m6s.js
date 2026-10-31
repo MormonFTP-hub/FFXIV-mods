@@ -387,10 +387,14 @@
     const tStormOn = (layerTimes[2] || 454.5) + 6.2;
     P.boss = [{ t: 0, at: [0, 0] }, { t: tDesert, at: [0, 15], move: 1.5 }, { t: tDesert + 53.3, at: [0, 0], move: 1.5 },
       { t: tRiver, at: [0, 15], move: 1.5 }, { t: tLava + 0.6, at: LAVA_BOSS, move: 2 }, { t: tLavaOff, at: [0, 0], move: 2 }];
-    // The floor's look (the map's _a1_ canvas, _a2_ desert, _a3_ river/storm/lava models), as Sugarscape repaints it.
+    // The floor's look, as Sugarscape repaints it: the canvas (a1's floor; its audience, balloons and art stay), the
+    // desert (a2), then a3's river (flo01), electrified under the storm cloud (flo02, clo01) and filled with lava (flo03),
+    // with a3's columns and art throughout.
     const mural = events.filter(e => e.name === 'Mousse Mural').map(e => e.t);
-    P.looks = [{ t: 0, show: ['a1'] }, { t: tDesert + 2.2, show: ['a2'] }, { t: mural[1] || 199, show: ['a1'] },
-      { t: tRiver + 2.2, show: ['a3'] }, { t: mural[3] || 596.3, show: ['a1'] }];
+    const CANVAS = ['a1_flo01'], A3 = ['a3_col', 'a3_art'];
+    P.looks = [{ t: 0, show: CANVAS }, { t: tDesert + 2.2, show: ['a2'] }, { t: mural[1] || 199, show: CANVAS },
+      { t: tRiver + 2.2, show: [...A3, 'a3_flo01'] }, { t: tStormOn, show: [...A3, 'a3_flo02', 'a3_clo01'] },
+      { t: tLavaOn, show: [...A3, 'a3_flo03'] }, { t: mural[3] || 596.3, show: CANVAS }];
 
     let tint = null, wingmarks = 0, layers = 0, sprays = 0, sugarscapes = 0, doubleStyles = 0;
     let deskTank = null, deskDps = null, deskStack = null, qsCorner = 0, qsNorth = false, cloud = null, stormEnd = null;

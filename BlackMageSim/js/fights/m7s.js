@@ -525,15 +525,16 @@
       const onStar = (c, p, m) => star(c).some(h => B.mechInside(h, p, m));
       const near = (p, q, r) => Math.hypot(p[0] - q[0], p[1] - q[1]) < r;
       const faults = (p, owner, prev, taken) => (Math.abs(p[0]) > 11.5 || Math.abs(p[1]) > 23.5 ? 9 : 0)
-        + prev.filter(c => onStar(c, p, 1.2)).length * 3 + Object.values(safe).filter(q => onStar(p, q, 1.15)).length
-        + Object.values(safe).filter(q => near(p, q, 6.8)).length * 2 + tspots.filter(([s, q]) => s !== owner && near(p, q, 6.5)).length * 2
-        + taken.filter(q => near(p, q, 6.5)).length * 2;
+        + prev.filter(c => onStar(c, p, 1.3)).length * 5 + Object.values(safe).filter(q => onStar(p, q, 1.15)).length * 0.2
+        + Object.values(safe).filter(q => near(p, q, 6.8)).length * 3 + tspots.filter(([s, q]) => s !== owner && near(p, q, 6.5)).length * 2
+        + taken.filter(q => near(p, q, 6.5)).length * 3;
       const dropAt = (want, owner, prev, taken) => {
         let best = want, bf = faults(want, owner, prev, taken);
-        for (let r = 0.5; r <= 9 && bf > 0; r += 0.5) {
+        for (let r = 0.5; r <= 12 && bf >= 1; r += 0.5) {
           const n = Math.max(1, Math.round(r * 6));
           for (let k = 0; k < n; k++) { const c = add(want, at(k / n * 360, r)), fc = faults(c, owner, prev, taken); if (fc < bf) { bf = fc; best = c; } }
         }
+        if (bf >= 1 && B.m7sDbg) B.m7sDbg.push({ want, best, bf, owner, prev, taken });
         return best;
       };
       // Plan every wave's drops first (each clear of the wave before's stars).
@@ -564,7 +565,7 @@
       // a wave's stars cross that, the nearest ground clear of them and of the next wave's drops.
       const homeOf = (s, k) => (k === 3 && pairSpots ? pairSpots[s] : home[s]);
       const escape = (q, starsAt, avoid) => {
-        const ok = (p) => Math.abs(p[0]) < 11.5 && Math.abs(p[1]) < 24 && !starsAt.some(c => onStar(c, p, 1.3)) && avoid.every(a => Math.hypot(p[0] - a[0], p[1] - a[1]) > 6.8);
+        const ok = (p) => Math.abs(p[0]) < 11.5 && Math.abs(p[1]) < 24 && !starsAt.some(c => onStar(c, p, 1.8)) && avoid.every(a => Math.hypot(p[0] - a[0], p[1] - a[1]) > 6.8);
         if (ok(q)) return null;
         for (let r = 0.5; r <= 14; r += 0.5) {
           const n = Math.max(1, Math.round(r * 6));
@@ -781,7 +782,8 @@
         wait = clump([-14.5, -14.5], 1.2);
         stackAt = [-12, -12];
       }
-      const t0 = castOf(ev, 4), seedT = drop ? drop.t : ev.t + 8;
+      // (Out to the first drops soon after Quarry Swamp: the line-of-sight spots are across the arena.)
+      const t0 = castOf(ev, 4) - 6, seedT = drop ? drop.t : ev.t + 8;
       pref(t0, Object.assign(Object.fromEntries(baiters.map(s => [s, paths[s][0]])), Object.fromEntries(seeders.map(s => [s, seedTM ? mul(seeds[s], 0.4) : seeds[s]]))));
       sinister(puds, drop || ev, tend, roots, baiters, seeders, paths, seeds, seedT, tend ? tend.t - 3 : seedT);
       pref(puds[1] ? puds[1].t + 0.1 : seedT - 2, Object.fromEntries(seeders.map(s => [s, seeds[s]])));

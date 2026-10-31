@@ -185,7 +185,10 @@
       let first = null;
       const out = [];
       let kb = null;
-      for (const h of this.plan.hazards) {
+      const HZ = this.plan.hazards;
+      for (let i = this.nextHz; i < HZ.length; i++) {
+        const h = HZ[i];
+        if (h.t - t > 20) break;
         if (h.t <= t || !this.dodged(h)) continue;
         if (h.tell > t || h.t - t > Math.max(h.react ?? 3, ahead || 0)) continue;
         if (first === null) first = h.t;
@@ -194,16 +197,25 @@
         if (isKnock(h)) kb = h;
       }
       // A knockback: where it throws you has to be clear of what lands just after (the bots stand so it is).
-      if (kb) for (const h of this.plan.hazards) if (h.t > kb.t && h.t - kb.t <= 3 && h.tell <= t && this.dodged(h) && !out.includes(h)) out.push(h);
+      if (kb) {
+        for (let i = this.nextHz; i < HZ.length && HZ[i].t - kb.t <= 3; i++) {
+          const h = HZ[i];
+          if (h.t > kb.t && h.tell <= t && this.dodged(h) && !out.includes(h)) out.push(h);
+        }
+      }
       return out.sort((a, b) => a.t - b.t);
     }
 
     // Whether the bots step out of it: shapes on the floor and knockbacks, not attacks aimed at someone (the strat's
     // spots already keep those apart), stacks to share or towers to soak.
     dodged(h) {
-      if (h.aimed || h.targets || (typeof h.from === 'string' && B.SLOT_ROLE[h.from])) return false;
-      if (h.effect === 'share' || h.effect === 'tower' || h.effect === 'gaze' || h.effect === 'bait') return false;
-      return !!h.shape || isKnock(h);
+      const src = h.tickOf || h;
+      if (src.effect === 'share' || src.effect === 'tower' || src.effect === 'gaze' || src.effect === 'bait') return false;
+      if (src.aimed) return false;
+      // Aimed at someone: the strat's spots keep it off the others till it locks in where it lands; then it's on the
+      // floor like any other, and everyone (whoever baited it too) steps out.
+      if ((src.targets || (typeof src.from === 'string' && B.SLOT_ROLE[src.from])) && !src.res) return false;
+      return !!src.shape || isKnock(src);
     }
 
     // Whether a body standing at q comes through hz (in the order they land): knockbacks move it (it must land on the
@@ -501,9 +513,11 @@
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
-    //   looks    [{t, show: ['a1'], lift}]: the arena's look by phase (its models named _a1_, _a2_, ...: export them
-    //            all, and each entry shows the looks it names of those the list mentions; the rest of the room always
-    //            shows); `lift` raises the shown looks that many yalms (a phase the game fights lower down)
+    //   looks    [{t, show: ['a1_flo', 'a3_flo02'], lift}]: the arena's look by phase. Its models are named
+    //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
+    //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
+    //            anywhere; models the list never names always show. `lift` raises what it shows that many yalms (a
+    //            phase the game fights lower down)
     // and the script (B.FIGHT_SCRIPTS[key]):
     //   adds     [{from, to, hp, share, name}]: adds soak `share` of the party's damage in that window until their hp
     //   pushes   [{from, to, dealt | adds, name}]: deal `dealt` to the boss this pull (or kill window `adds`'s adds)

@@ -145,7 +145,7 @@
       for (const md of G.models) {
         const inst = this.view(md.instances, E), n = inst.length / 12;
         // An arena's looks (its models' _a1_, _a2_, ...: the floor each phase stands on), for the fight to switch.
-        const look = ((md.path || '').match(/_(a\d)_/) || [])[1];
+        const look = ((md.path || '').match(/_(a\d_[a-z0-9]+)\.mdl$/i) || [])[1];
         for (const me of md.meshes) {
           const mat = mats[me.material];
           if (!mat) continue;
@@ -169,15 +169,16 @@
       }
     }
 
-    // The arena's look (a fight's plan: `looks`): of the looks the fight switches between (all), only those in show;
-    // the rest of the room stays.
+    // The arena's look (a fight's plan: `looks`): of the models the fight switches (all: names like 'a1', 'a1_flo' or
+    // 'a3_flo02', each every model whose look-and-name starts so), only those in show; the rest of the room stays.
     setLooks(show, all, lift) {
       const E = this.cur, key = show ? show.join(',') + '@' + (lift || 0) : '';
       if (!E || !E.looked || E.lookKey === key) return;
       E.lookKey = key;
+      const hit = (name, list) => list.some(e => name.startsWith(e));
       for (const im of E.looked) {
-        const named = show && show.includes(im.userData.look);
-        im.visible = !show || !all.has(im.userData.look) || named;
+        const named = show && hit(im.userData.look, show);
+        im.visible = !show || !hit(im.userData.look, [...all]) || named;
         im.position.y = named ? lift || 0 : 0;                    // a lower phase raised to the fight's floor
       }
       if (this.renderer) this.renderer.mapShadowKey = null;          // its shadows drawn again
