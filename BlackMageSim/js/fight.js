@@ -105,10 +105,13 @@
       }
       const tl = $('#fight-tl');
       tl.classList.add('show');
+      // The quick toggles under the list (a fight with a party): the guide and whether attacks hurt.
+      const st = this.app.store.settings;
+      for (const b of document.querySelectorAll('#fight-opts button')) b.classList.toggle('on', st[b.dataset.opt] !== false);
       // With a script: the strat, your spot, and your debuff's timer.
       const party = this.app.party, me = party && party.playerSlot();
       const deb = this.mech && t !== null && this.mech.plan.debuffs.find(d => d.slot === me && t >= d.t0 && t < d.t1);
-      tl.innerHTML = `<div class="hd"><span>${esc(this.data.duty)}</span><b>${t === null ? 'Pull to start' : `${mmss(t)} / ${mmss(this.data.enrage)}`}</b></div>`
+      $('#fight-tl-body').innerHTML = `<div class="hd"><span>${esc(this.data.duty)}</span><b>${t === null ? 'Pull to start' : `${mmss(t)} / ${mmss(this.data.enrage)}`}</b></div>`
         + (this.mech ? `<div class="sub">${esc(this.script.strats[this.mech.strat].label)} · you're ${me}</div>` : '')
         + (deb ? `<div class="ev deb"><b>${Math.ceil(deb.t1 - t)}</b>${esc(deb.name)}${deb.hint ? `: ${esc(deb.hint)}` : ''}</div>` : '')
         + up.map((ev) => `<div class="ev${ev.kind === 'enrage' ? ' enr' : ''}"><b>${Math.ceil(ev.t - now)}</b>${esc(this.label(ev))}</div>`).join('')
@@ -122,6 +125,12 @@
       $('#fight-tl').classList.remove('show');
     }
   }
+
+  // A status the current fight puts on players (its name, the game's description and icon, from the map's file).
+  B.fightStatus = (key) => {
+    const f = B.app && B.app.fight;
+    return (f && f.data.statuses && f.data.statuses[key]) || null;
+  };
 
   B.Fight = Fight;
 })(window.BLM);

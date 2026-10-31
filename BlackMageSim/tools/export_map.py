@@ -32,7 +32,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import export_models as X       # noqa: E402  (its Pack, textures and mesh packing; it also sets up PMP Viewer's path)
 from export_models import game, shade, resolve, S      # noqa: E402
-from extract_icons import Sheet     # noqa: E402
+from extract_icons import Sheet, icon_col, png_data_url     # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "work"
@@ -72,7 +72,12 @@ ZONES = {
                                 "pap": "chara/monster/m0934/animation/a0001/bt_common/resident/monster.pap",
                                 "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp",
                                           "run": "cbbm_02f_lp0"},
-                                "specials": "chara/monster/m0934/animation/a0001/bt_common/mon_sp/m0934/"}}},
+                                "specials": "chara/monster/m0934/animation/a0001/bt_common/mon_sp/m0934/"},
+                      # The statuses the fight puts on players (Status rows; BossMod's and FFLogs' ids), shown with the
+                      # game's icons where the game shows them.
+                      "statuses": {"burnBabyBurn": 4461, "wavelengthA": 4462, "wavelengthB": 4463, "inTheSpotlight": 4471,
+                                   "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "frogtourageFan": 3998,
+                                   "sustainedDamage": 2935, "weakness": 43, "brinkOfDeath": 44}}},
 }
 ZONE = ZONES["pier"]        # the one being exported
 LAYOUTS = ("level/bg.lgb",)
@@ -379,6 +384,25 @@ def model_out(pack, path, mats, mat_index):
 
 
 # ---------- fights ----------
+def statuses_out(ids):
+    """The fight's statuses: name, the game's description, its icon (as the status bar shows it) and whether it's a debuff."""
+    st = Sheet("Status")
+    rows = st.rows()
+    strings = st.string_cols()
+    icol = icon_col(st, list(ids.values()), 10000)
+    out = {}
+    for key, rid in ids.items():
+        if rid not in rows:
+            continue
+        texts = [st.value(rid, c) for c in strings]
+        name = texts[0] if texts else key
+        desc = texts[1] if len(texts) > 1 else ""
+        _, url = png_data_url(st.value(rid, icol))
+        out[key] = {"id": rid, "name": name, "desc": desc, "icon": url}
+        print(f"  status {key}: {ascii(name)} - {ascii(desc[:70])}")
+    return out
+
+
 def boss_out(pack, m, events):
     """The boss: its model on its own skeleton (resolve.creature), its idle, run and cast animations, the one each of
     its abilities plays (mon_spNNN, by the events' "anim"), and its size."""
@@ -495,6 +519,7 @@ def main(key):
     f = ZONE.get("fight")
     if f:
         tl = timeline(f)
+        tl["statuses"] = statuses_out(f["statuses"]) if f.get("statuses") else {}
         data["fight"] = dict({k: f[k] for k in ("duty", "boss", "hitbox")}, **tl, model=boss_out(pack, f["model"], tl["events"]),
                              source="cactbot (github.com/OverlayPlugin/cactbot), Apache-2.0")
     data.update(textures=X.TEXTURES, bin=pack.b64(), binEncoding="gzip")

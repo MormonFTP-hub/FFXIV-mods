@@ -30,7 +30,7 @@
       <div class="member">
         <img id="party-job" alt="">
         <div>
-          <div class="nm outline"><span id="party-lv">Lv90</span><b id="party-slot"></b><em id="party-name" style="font-style:normal"></em><small id="party-ver"></small></div>
+          <div class="nm outline"><span id="party-lv">Lv90</span><b id="party-slot"></b><em id="party-name" style="font-style:normal"></em><small id="party-ver"></small><span class="pst" id="party-st"></span></div>
           <div class="bars2">
             <div><div class="minibar hp"><i id="party-hp"></i></div><div class="barnum outline" id="party-hpn"></div></div>
             <div><div class="minibar mp"><i id="party-mp"></i></div><div class="barnum outline" id="party-mpn"></div></div>
@@ -49,7 +49,9 @@
 
     <div id="meter" class="panel ia"></div>
 
-    <div id="fight-tl" class="panel"></div>
+    <div id="fight-tl" class="panel ia"><div id="fight-tl-body"></div>
+      <div id="fight-opts"><button data-opt="showSpot" title="A circle where the strat wants you, with a line to it">Guide</button><button data-opt="takeDamage" title="Off: attacks only show where they'd have hit you">Take damage</button></div>
+    </div>
 
     <div id="buffs"></div>
 
@@ -127,7 +129,7 @@
           <label>Fight</label>
           <div class="row2"><label><input id="s-dmg" type="checkbox"> Take damage (off: attacks only show where they'd have hit you). Also /damage</label></div>
           <label></label>
-          <div class="row2"><label><input id="s-spot" type="checkbox"> Show my spot (a ring where the strat wants you)</label></div>
+          <div class="row2"><label><input id="s-spot" type="checkbox"> Guide: a circle in your role's colour where the strat wants you, with a line to it</label></div>
           <label for="s-map">Map</label>
           <div class="row2"><label><input id="s-map" type="checkbox"> The game's Wolves' Den Pier (made by tools/export_map.py); off for the dusk training ground</label></div>
           <label for="s-dummy">Striking dummy</label>

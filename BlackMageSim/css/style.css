@@ -95,6 +95,15 @@ body.ko #hotbars, body.ko #castbar { filter: grayscale(1) brightness(0.55); }
 #fight-tl { position: absolute; left: 18px; top: 300px; width: 330px; padding: 8px 12px; display: none; }
 #fight-tl.show { display: block; }
 #fight-tl .sub { font-size: 12px; color: #b9c8d8; margin: -2px 0 5px; }
+#fight-opts { display: none; gap: 6px; margin-top: 8px; }
+body.in-party #fight-opts { display: flex; }
+#fight-opts button { flex: 1; font: 600 12px var(--ui); color: #cfd6e0; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 5px 6px; cursor: pointer; }
+#fight-opts button::before { content: '\2715  '; opacity: 0.7; }
+#fight-opts button.on { color: #0e1720; background: #7fe3ff; border-color: #7fe3ff; }
+#fight-opts button.on::before { content: '\2713  '; }
+.status.fight .t { color: #ffc0b0; }
+.pst { display: inline-flex; gap: 2px; margin-left: 6px; vertical-align: -3px; }
+.pst img { width: 14px; height: 19px; }
 #fight-tl .ev.deb { color: #ffb070; }
 #fight-tl .hd { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
 #fight-tl .hd b { font: 600 15px var(--num); color: #fff; white-space: nowrap; }

@@ -25,6 +25,7 @@
       this.active = false;
       this.botDamage = 0;
       this.koUntil = null;
+      this.st = {};                 // slot -> { status key -> { start, until } } (the fight's statuses: B.fightStatus)
     }
 
     get fight() { return this.app.fight; }
@@ -51,6 +52,7 @@
       this.active = !!(f && f.mech);
       this.bots = [];
       this.botDamage = 0;
+      this.st = {};
       if (this.active) {
         const me = this.playerSlot(), mine = this.app.engine.job.id;
         const start = f.mech.plan.start;
@@ -83,6 +85,23 @@
       this.botDamage = 0;
       this.app.engine.ko = false;
       this.koUntil = null;
+      this.st = {};
+    }
+
+    // ---------- the fight's statuses (Burn Baby Burn, Wavelength, Magic Vulnerability Up, Damage Down...) ----------
+    addStatus(slot, key, dur) {
+      if (!slot || !(dur > 0)) return;
+      const e = this.app.engine, list = this.st[slot] = this.st[slot] || {};
+      const had = list[key] && list[key].until > e.now;
+      list[key] = { start: e.now, until: e.now + dur };
+      const s = B.fightStatus(key);
+      if (slot === this.playerSlot() && !had && s) this.app.ui.log(`You suffer the effect of ${s.name}.`, 'lose', 'battle');
+    }
+    removeStatus(slot, key) { if (this.st[slot]) delete this.st[slot][key]; }
+    hasStatus(slot, key) { const s = this.st[slot] && this.st[slot][key]; return !!(s && s.until > this.app.engine.now); }
+    statusesOf(slot) {
+      const now = this.app.engine.now;
+      return Object.entries(this.st[slot] || {}).filter(([k, s]) => s.until > now && B.fightStatus(k)).map(([key, s]) => ({ key, s }));
     }
 
     members() {
@@ -124,18 +143,32 @@
         this.botDamage += this.bots.reduce((s, b) => s + BOT_DPS[b.role], 0) * dt;
       }
       if (e.ko && this.koUntil !== null && e.now >= this.koUntil) this.raise();
+      // Your damage under Damage Down (the game's text gives no figure: the usual half) or Weakness (stats -25%,
+      // Brink of Death -50%).
+      const me = this.playerSlot();
+      e.outMult = (this.hasStatus(me, 'damageDown') ? 0.5 : 1) * (this.hasStatus(me, 'brinkOfDeath') ? 0.5 : this.hasStatus(me, 'weakness') ? 0.75 : 1);
       this.draw();
     }
 
     // ---------- damage ----------
-    // share: of a DPS's HP (a raidwide about half, most avoidable attacks more than all of it).
-    hurt(slot, share, source, why) {
+    // share: of a DPS's HP (a raidwide about half, most avoidable attacks more than all of it). opts.vuln: the hit
+    // leaves Magic Vulnerability Up (2 s, as the game's mechanics do; a second hit inside it does double); opts.fail:
+    // standing in something avoidable, which leaves Damage Down (30 s); opts.status: another status it leaves.
+    hurt(slot, share, source, why, opts) {
       if (!share) return;
+      opts = opts || {};
       const app = this.app, e = app.engine, ui = app.ui;
-      const amount = Math.round(share * this.refHp() * (0.95 + Math.random() * 0.1));
+      const vuln = this.hasStatus(slot, 'magicVuln');
+      const amount = Math.round(share * this.refHp() * (0.95 + Math.random() * 0.1) * (vuln ? 2 : 1));
+      const marks = () => {
+        if (opts.vuln) this.addStatus(slot, 'magicVuln', 2);
+        if (opts.fail) this.addStatus(slot, 'damageDown', 30);
+        if (opts.status) this.addStatus(slot, opts.status[0], opts.status[1]);
+      };
       if (slot !== this.playerSlot()) {
         const b = this.bot(slot);
         if (b) { b.hp = Math.max(1, b.hp - amount); b.lastHit = e.now; }
+        marks();
         return;
       }
       const at = app.scene.mageHead();
@@ -147,6 +180,8 @@
       }
       e.hp = Math.max(0, e.hp - amount);
       this.lastHit = e.now;
+      marks();
+      if (vuln) why = (why ? why + '; ' : '') + 'doubled by Magic Vulnerability Up';
       ui.fly({ at, text: fmt(amount), cls: 'hurt', dx: -60 });
       ui.log(`${source} hits you for ${fmt(amount)} damage${why ? ` (${why})` : ''}.`, 'lose', 'battle');
       if (e.hp <= 0) this.ko(source);
@@ -172,6 +207,10 @@
       this.koUntil = null;
       this.lastHit = e.now;
       this.app.ui.log(`${healer ? healer.name : 'Your healer'} raises you.`, 'gain', 'battle');
+      // Raised: Weakness, or Brink of Death if you were still weak.
+      const me = this.playerSlot(), weak = this.hasStatus(me, 'weakness') || this.hasStatus(me, 'brinkOfDeath');
+      if (weak) this.removeStatus(me, 'weakness');
+      this.addStatus(me, weak ? 'brinkOfDeath' : 'weakness', 100);
     }
 
     // ---------- the party list ----------
@@ -181,19 +220,29 @@
       $('#party-slot').textContent = this.active ? this.playerSlot() : '';
       if (!this.active) { box.innerHTML = ''; return; }
       box.innerHTML = this.bots.map(b => `<div class="pm" data-slot="${b.slot}"><img src="${B.jobIcon(b.job)}" alt="">`
-        + `<div><div class="nm outline"><b>${b.slot}</b>${esc(b.name)}</div><div class="minibar hp"><i></i></div></div>`
+        + `<div><div class="nm outline"><b>${b.slot}</b>${esc(b.name)}<span class="pst"></span></div><div class="minibar hp"><i></i></div></div>`
         + '<div class="barnum outline"></div></div>').join('');
-      this.rows = [...box.querySelectorAll('.pm')].map(el => ({ el, bar: el.querySelector('.minibar i'), num: el.querySelector('.barnum'), last: null }));
+      this.rows = [...box.querySelectorAll('.pm')].map(el => ({ el, bar: el.querySelector('.minibar i'), num: el.querySelector('.barnum'), st: el.querySelector('.pst'), last: null, keys: '' }));
     }
     draw() {
       (this.rows || []).forEach((r, i) => {
         const b = this.bots[i];
-        if (!b || r.last === b.hp) return;
+        if (!b) return;
+        this.drawStatuses(r, b.slot);
+        if (r.last === b.hp) return;
         r.last = b.hp;
         r.bar.style.transform = `scaleX(${(b.hp / b.maxHp).toFixed(3)})`;
         r.num.textContent = fmt(b.hp);
       });
+      if (this.active) this.drawStatuses(this.meRow || (this.meRow = { st: $('#party-st'), keys: '' }), this.playerSlot());
       document.body.classList.toggle('ko', !!this.app.engine.ko);
+    }
+    // A member's statuses on the party list, as the game shows them there: the icons, newest last.
+    drawStatuses(row, slot) {
+      const list = this.statusesOf(slot), keys = list.map(x => x.key).join(',');
+      if (!row.st || row.keys === keys) return;
+      row.keys = keys;
+      row.st.innerHTML = list.map(({ key }) => { const s = B.fightStatus(key); return `<img src="${s.icon}" alt="" title="${esc(s.name)}">`; }).join('');
     }
 
     // Each bot's marker on the floor (its role's colour), for the drawn figures and to tell them apart.

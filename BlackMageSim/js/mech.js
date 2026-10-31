@@ -128,6 +128,8 @@
       this.plan.hazards.sort((a, b) => a.t - b.t);
       this.plan.checks.sort((a, b) => a.t - b.t);
       this.plan.calls.sort((a, b) => a.t - b.t);
+      this.plan.debuffs.sort((a, b) => a.t0 - b.t0);
+      this.nextDeb = 0;
       this.nextHz = 0; this.nextCk = 0; this.nextCall = 0;
       this.calls = [];
       this.flashes = [];
@@ -226,6 +228,11 @@
       if (t === null) return;
       while (this.nextHz < P.hazards.length && P.hazards[this.nextHz].t <= t) this.land(P.hazards[this.nextHz++]);
       while (this.nextCk < P.checks.length && P.checks[this.nextCk].t <= t) this.check(P.checks[this.nextCk++]);
+      // The timed debuffs the fight puts on players (Burn Baby Burn, Wavelength), as it puts them.
+      while (this.nextDeb < P.debuffs.length && P.debuffs[this.nextDeb].t0 <= t) {
+        const d = P.debuffs[this.nextDeb++];
+        if (d.key && d.t1 > t) party.addStatus(d.slot, d.key, d.t1 - t);
+      }
       while (this.nextCall < P.calls.length && P.calls[this.nextCall].t <= t) {
         const c = P.calls[this.nextCall++];
         if (!c.slot || c.slot === party.playerSlot()) this.app.ui.callout(c.text, c.dur || 5, c.alert);
@@ -239,7 +246,7 @@
       this.flashes.push({ h: this.resolveShape(h), t: h.t });
       for (const m of party.members()) {
         const hit = this.hits(h, m);
-        if (hit) party.hurt(m.slot, hit.dmg, h.name, hit.why);
+        if (hit) party.hurt(m.slot, hit.dmg, h.name, hit.why, { vuln: !h.raidwide, fail: hit.fail, status: hit.tankbuster ? ['bleeding', 15] : null });
       }
       // A protean's echo lands later where everyone stood for this one.
       if (h.snapshot) this.lastProtean = party.members().map(m => party.bearingOf(m.slot));
@@ -280,7 +287,7 @@
           if (s === m.slot) mine = true;
           else if (inside(c, p, 0.3)) other++;
         }
-        if (other) return { dmg: h.dmg * other, why: 'in a tank cleave' };
+        if (other) return { dmg: h.dmg * other, why: 'in a tank cleave', fail: true };
         return mine ? { dmg: h.buster, tankbuster: true } : null;
       }
       if (h.shape === 'protean') {
@@ -292,17 +299,19 @@
           if (!inside({ shape: 'cone', at: [0, 0], deg: d, half: h.half, r: h.r }, p, 0.3)) return;
           if (slots[i] === m.slot) mine = true; else n++;
         });
-        if (n) return { dmg: h.dmg * n, why: h.echo ? 'in an echo' : 'in someone else\'s protean' };
+        if (n) return { dmg: h.dmg * n, why: h.echo ? 'in an echo' : 'in someone else\'s protean', fail: true };
         return mine ? { dmg: h.own || 0.12 } : null;
       }
       if (!h.shape) return null;
-      return inside(h, p, 0.3) ? { dmg: h.dmg } : null;
+      return inside(h, p, 0.3) ? { dmg: h.dmg, fail: true } : null;
     }
 
     // A check that only you can fail (the bots stand where the strat says): a stack you're not in, a spread you're
     // too close to someone for, a spotlight you're not standing in when your debuff runs out.
     check(c) {
       const party = this.app.party, me = party.playerSlot();
+      // The bots always make it: theirs only leave the status the game gives for it.
+      if (c.kind === 'spotlight') for (const s of c.slots || []) if (s !== me) party.addStatus(s, 'inTheSpotlight', 3);
       if (!me || (c.slots && !c.slots.includes(me))) return;
       const p = party.compassOf(me);
       const spot = c.spots ? c.spots[me] : null;
@@ -338,12 +347,14 @@
         // Wavelength: merge with your partner, clear of everyone else.
         const mate = c.partner[me], d = Math.hypot(...sub(party.compassOf(mate), p));
         const others = party.members().filter(m => m.slot !== me && m.slot !== mate && Math.hypot(...sub(party.compassOf(m.slot), p)) < c.r);
-        if (d > c.r + 0.5) party.hurt(me, c.fail, c.name, `not merged with ${mate}`);
-        else if (others.length) party.hurt(me, c.fail, c.name, `${others.map(m => m.slot).join(', ')} in your merge`);
+        party.removeStatus(me, 'wavelengthA'); party.removeStatus(me, 'wavelengthB');
+        if (d > c.r + 0.5) party.hurt(me, c.fail, c.name, `not merged with ${mate}`, { status: ['sustainedDamage', 15] });
+        else if (others.length) party.hurt(me, c.fail, c.name, `${others.map(m => m.slot).join(', ')} in your merge`, { status: ['sustainedDamage', 15] });
         else this.app.ui.log(`Wavelength: you merge with ${mate}.`, 'gain', 'battle');
       } else if (c.kind === 'spotlight') {
         const lit = c.lights.some(l => Math.hypot(l[0] - p[0], l[1] - p[1]) < c.r);
-        if (lit) this.app.ui.log(`You cleanse ${c.name} in a spotlight.`, 'gain', 'battle');
+        party.removeStatus(me, 'burnBabyBurn');
+        if (lit) { this.app.ui.log(`You cleanse ${c.name} in a spotlight.`, 'gain', 'battle'); party.addStatus(me, 'inTheSpotlight', 3); }
         else party.hurt(me, c.fail, c.name, 'not in a spotlight when it ran out');
       } else if (c.kind === 'spot' && spot) {
         if (Math.hypot(spot[0] - p[0], spot[1] - p[1]) > c.r) party.hurt(me, c.fail, c.name, 'not at your spot');
@@ -372,13 +383,42 @@
         const a = 1 - (t - f.t) / 0.45;
         if (a > 0 && f.h.shape) this.drawShape(sc, f.h, `rgba(255,240,200,${(0.45 * a).toFixed(3)})`, null);
       }
-      // Where the strat wants you (Settings → Show my spot).
+      // The guide (Settings → Guide): where the strat wants you, a disc in your role's colour like the bots' markers,
+      // pulsing while you're away from it with a dotted line to it, white-rimmed once you're on it.
       const me = this.app.party.playerSlot();
       if (me && this.app.store.settings.showSpot !== false) {
         const s = this.target(me, t < 0 ? null : t, this.app.party.compassOf(me));
-        const pulse = 0.8 + 0.2 * Math.sin(sc.time * 5);
-        this.poly(sc, [ring(s, 0.9 * pulse, 24)], false, 'rgba(90,230,255,0.18)', 'rgba(120,240,255,0.95)', 2.5);
+        const p = this.app.party.compassOf(me), d = Math.hypot(s[0] - p[0], s[1] - p[1]), on = d < 1.1;
+        const col = GUIDE_COLOR[B.SLOT_ROLE[me]], pulse = 0.5 + 0.5 * Math.sin(sc.time * 5);
+        this.poly(sc, [ring(s, 1.1, 32)], false, `rgba(${col},${on ? 0.6 : 0.42})`, on ? 'rgba(255,255,255,0.95)' : `rgba(${col},1)`, 3);
+        if (!on) {
+          this.poly(sc, [ring(s, 1.5 + 0.6 * pulse, 32)], false, null, `rgba(${col},${(0.8 - 0.6 * pulse).toFixed(2)})`, 2);
+          if (d > 1.8) this.guideLine(sc, p, s, col);
+        }
       }
+      ctx.restore();
+    }
+
+    // A dotted line along the floor from you to your spot, with an arrowhead short of it.
+    guideLine(sc, p, s, col) {
+      const ctx = sc.ctx, d = Math.hypot(s[0] - p[0], s[1] - p[1]), ux = (s[0] - p[0]) / d, uy = (s[1] - p[1]) / d;
+      const pt = (k) => sc.project(-(p[0] + ux * k), 0.05, p[1] + uy * k);
+      ctx.save();
+      ctx.setLineDash([7, 7]);
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = `rgba(${col},0.9)`;
+      ctx.beginPath();
+      let open = false;
+      for (let k = 0.6; k <= d - 1.3; k += 0.4) {
+        const q = pt(k);
+        if (!q) { open = false; continue; }
+        if (open) ctx.lineTo(q.x, q.y); else { ctx.moveTo(q.x, q.y); open = true; }
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      const tip = pt(d - 1.25), l = sc.project(-(p[0] + ux * (d - 2) - uy * 0.55), 0.05, p[1] + uy * (d - 2) + ux * 0.55),
+        r = sc.project(-(p[0] + ux * (d - 2) + uy * 0.55), 0.05, p[1] + uy * (d - 2) - ux * 0.55);
+      if (tip && l && r) { ctx.fillStyle = `rgba(${col},0.95)`; ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(l.x, l.y); ctx.lineTo(r.x, r.y); ctx.closePath(); ctx.fill(); }
       ctx.restore();
     }
 
@@ -426,6 +466,8 @@
     }
   }
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+  // The guide's colour, by your spot's role (the party list's: tanks blue, healers green, DPS red).
+  const GUIDE_COLOR = { tank: '80,150,255', healer: '90,220,110', melee: '235,80,80', ranged: '235,80,80' };
 
   // ---------- the self-check (/qa) ----------
   // Fast-forwards whole pulls of the fight with you playing a spot perfectly (running at 6 yalms a second to where

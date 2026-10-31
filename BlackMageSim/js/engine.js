@@ -64,6 +64,7 @@
       this.targeted = true;
       this.untargetable = false;   // a fight's boss in one of its untargetable windows
       this.ko = false;             // KO'd by a fight's attack (js/party.js raises you)
+      this.outMult = 1;            // a fight's debuffs on your damage (Damage Down, Weakness: js/party.js)
       this.facing = Math.PI;       // which way the target faces (the sim's yaw): the dummy faces you, a boss its tank
       this.moving = false;
       this.jumpUntil = 0;
@@ -393,7 +394,7 @@
       if (crit) d = Math.floor(d * critMult);
       if (dh) d = Math.floor(d * 1.25);
       d = Math.floor(d * (95 + Math.random() * 10) / 100);
-      d = Math.floor(d * snap.mult);
+      d = Math.floor(d * snap.mult * (this.outMult || 1));
       return { amount: d, crit, dh };
     }
 
@@ -416,7 +417,7 @@
       if (crit) d *= L.critMult || 1.45 + step;
       if (dh) d *= 1.25;
       d *= (95 + Math.random() * 10) / 100;
-      d = Math.max(1, Math.floor(d * snap.mult) - 1);
+      d = Math.max(1, Math.floor(d * snap.mult * (this.outMult || 1)) - 1);
       return { amount: d, crit, dh };
     }
 

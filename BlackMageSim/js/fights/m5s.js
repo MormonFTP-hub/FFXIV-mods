@@ -257,7 +257,7 @@
             pref(ex - 4.5, { [s]: d.lights[s] });
             pref(ex + 0.4, { [s]: d.zone[s] });
             check({ t: ex, kind: 'spotlight', slots: [s], lights: d.all, r: 2.5, fail: 0.9, name: 'Burn Baby Burn' });
-            P.debuffs.push({ slot: s, name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
+            P.debuffs.push({ slot: s, key: 'burnBabyBurn', name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
             call(ex - 5, 'Cleanse in a spotlight', { slot: s, alert: true, dur: 5 });
           }
         } else {
@@ -269,7 +269,7 @@
             pref(t + 15, { [dps]: bait, [sup]: spot });
             [[dps, t + 9.5], [sup, t + 19.5]].forEach(([s, ex]) => {
               check({ t: ex, kind: 'spotlight', slots: [s], lights, r: 2.5, fail: 0.9, name: 'Burn Baby Burn' });
-              P.debuffs.push({ slot: s, name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
+              P.debuffs.push({ slot: s, key: 'burnBabyBurn', name: 'Burn Baby Burn', hint: 'be in a spotlight when it ends', t0: t, t1: ex });
               call(ex - 5, `Cleanse in the ${c} spotlight`, { slot: s, alert: true, dur: 5 });
             });
             call(t, `Bait the frog by ${c}, then cleanse`, { slot: sup, dur: 5 });
@@ -366,7 +366,7 @@
             order[a] = order[b] = k;
             check({ t: m.t, kind: 'pair', slots: [a, b], partner: { [a]: b, [b]: a }, r: 2, fail: 0.8, name: 'Wavelength' });
             for (const [s, o] of [[a, b], [b, a]]) {
-              P.debuffs.push({ slot: s, name: `Wavelength ${k + 1}`, hint: `merge with ${o}, away from the rest`, t0: t - 5, t1: m.t });
+              P.debuffs.push({ slot: s, key: s === a ? 'wavelengthA' : 'wavelengthB', name: `Wavelength ${k + 1}`, hint: `merge with ${o}, away from the rest`, t0: t - 5, t1: m.t });
               call(m.t - 4, `Merge with ${o} now`, { slot: s, alert: true, dur: 4 });
             }
           });

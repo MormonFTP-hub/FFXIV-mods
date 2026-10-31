@@ -222,9 +222,10 @@
         let el = map[key];
         if (!el) {
           el = document.createElement('div');
-          el.className = 'status';
-          el.title = B.STATUSES[key].name;
-          el.innerHTML = `<img src="${B.statusIcon(key)}" alt=""><div class="t outline"></div><div class="stk outline"></div>`;
+          const fs = key.startsWith('fight:') ? B.fightStatus(key.slice(6)) : null;     // a fight's (js/party.js)
+          el.className = 'status' + (fs ? ' fight' : '');
+          el.title = fs ? `${fs.name}\n${fs.desc}` : B.STATUSES[key].name;
+          el.innerHTML = `<img src="${fs ? fs.icon : B.statusIcon(key)}" alt=""><div class="t outline"></div><div class="stk outline"></div>`;
           map[key] = el;
           el._t = $('.t', el); el._k = $('.stk', el);
         }
@@ -245,6 +246,9 @@
     updateStatuses() {
       const e = this.e, now = e.now;
       const self = e.job.selfStatusOrder.filter(k => e.statuses[k] && e.statuses[k].until > now).map(k => ({ key: k, s: e.statuses[k] }));
+      // A fight's statuses on you (Burn Baby Burn, Wavelength, Damage Down...) follow your own, as in the game.
+      const party = this.app.party, me = party && party.playerSlot();
+      if (me) self.push(...party.statusesOf(me).map(({ key, s }) => ({ key: 'fight:' + key, s })));
       this.syncStatusRow($('#buffs'), this.statusEls, self, now);
       const tl = e.job.targetStatusOrder.filter(k => e.tStatuses[k] && e.tStatuses[k].until > now).map(k => ({ key: k, s: e.tStatuses[k] }));
       this.syncStatusRow($('#tdebuffs'), this.tStatusEls, tl, now);
@@ -828,6 +832,15 @@ ${job.helpHtml(seq, ic)}
         this.app.onPartySettings();
       });
       $('#s-slot').addEventListener('change', () => { st().partySlot = $('#s-slot').value; this.app.save(); this.app.onPartySettings(); });
+      // The fight panel's own toggles: the guide and Take damage, the same settings as below.
+      $('#fight-opts').addEventListener('click', (ev) => {
+        const b = ev.target.closest('button');
+        if (!b) return;
+        st()[b.dataset.opt] = st()[b.dataset.opt] === false;
+        b.classList.toggle('on', st()[b.dataset.opt]);
+        this.app.save();
+        this.app.ui.log(b.dataset.opt === 'showSpot' ? `Guide: ${st().showSpot ? 'on' : 'off'}.` : `Take damage: ${st().takeDamage ? 'on' : 'off'}.`, 'sys', 'system');
+      });
       bind('#s-dmg', 'takeDamage', el => el.checked);
       bind('#s-spot', 'showSpot', el => el.checked);
       bind('#s-follow', 'cameraFollow', el => el.checked);
