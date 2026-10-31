@@ -38,7 +38,12 @@
       this.soaked = 0;
       this.addsTaken = (this.script && this.script.adds || []).map(() => 0);
       this.app.engine.untargetable = false;
-      if (this.mech) { this.mech.reset(); this.showLooks(null); }          // the next pull's picks, the opening look
+      if (this.mech) {                            // the next pull's picks, the opening look, where the boss starts
+        this.mech.reset();
+        this.showLooks(null);
+        const at = B.toSim(this.mech.bossAt(0));
+        B.BOSS.x = at.x; B.BOSS.z = at.z;
+      }
       if (this.app.party) this.app.party.reset();
     }
 

@@ -528,8 +528,11 @@
 
     // In front of the dummy (or boss), as far from its edge as the job usually stands.
     placeStart() {
-      const e = this.engine;
+      const e = this.engine, F = this.fight, me = this.party && this.party.playerSlot();
       e.pos.x = 0; e.pos.y = 0; e.pos.z = -(this.job.startDistance - BASE_RADIUS + B.DUMMY_RADIUS);
+      // A fight with a party: your spot's opening place in the strat (on the floor, however the arena's laid out).
+      const at = F && F.mech && me && F.mech.plan.start && F.mech.plan.start[me];
+      if (at) { const q = B.toSim(typeof at === 'function' ? at(-1) : at); e.pos.x = q.x; e.pos.z = q.z; }
       if (e.world) { e.world.good = null; e.world.vy = 0; }
       this.scene.resetCamera();
     },

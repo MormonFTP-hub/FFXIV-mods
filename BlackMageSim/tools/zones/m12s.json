@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "_a1_fn[ab]|_a1_fld0[2-6]|_a1_tan|_a2_f(hc|hd)|_a2_flo0[23]|x6r8_a2_roc02|_a2_roc01[.]|_a2_roc(0[25789]|1[0-4]|2[01]|30)|_a2_rub01|_a2_lsf2?2|_a1_ent01|_a0_chr",
+  "exclude": "_a1_fn[ab]|_a1_fld0[2-6]|_a1_tan|_a2_f(hc|hd)|_a2_flo0[23]|x6r8_a2_roc02|_a2_roc01[.]|_a2_roc(0[25789]|1[0-4]|2[01]|30)|_a2_rub01|_a2_lsf[02]2|_a1_ent01|_a0_chr",
   "fight": {
     "duty": "AAC Heavyweight M4 (Savage)",
     "boss": "Lindwurm",

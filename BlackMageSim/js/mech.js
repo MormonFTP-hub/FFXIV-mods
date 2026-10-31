@@ -592,7 +592,8 @@
     // or jumping there), and which way it faces (a compass bearing: toward its main tank).
     bossAt(t) {
       const path = this.plan && this.plan.boss;
-      if (!path || !path.length || t === null || t === undefined) return [0, 0];
+      if (!path || !path.length) return [0, 0];
+      if (t === null || t === undefined) t = 0;              // before the pull: where it starts
       let prev = [0, 0], cur = null;
       for (const k of path) { if (k.t > t) break; if (cur) prev = cur.at; cur = k; }
       if (!cur) return [0, 0];

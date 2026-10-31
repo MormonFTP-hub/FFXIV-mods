@@ -87,8 +87,18 @@
   function place(wants, hs, o) {
     o = o || {};
     const m = o.m === undefined ? 1.4 : o.m, gap = o.gap || 6.3, ok = o.ok || onSq, out = {};
+    // (With o.to, the walk from each spot on to that point keeps clear of o.walk's shapes, and what's left of it once
+    // o.late yalms are walked (the puddles have come alive) keeps 5.5 from every other spot.)
+    const segDist = (q, a, b) => { const ab = sub(b, a), l2 = ab[0] * ab[0] + ab[1] * ab[1], u = l2 ? Math.max(0, Math.min(1, ((q[0] - a[0]) * ab[0] + (q[1] - a[1]) * ab[1]) / l2)) : 0; return dist(q, add(a, mul(ab, u))); };
+    const lateEnd = (q) => { const d = dist(q, o.to), k = Math.max(0, d - o.late + 0.5) / Math.max(d, 1e-6); return add(o.to, mul(sub(q, o.to), k)); };
+    const clear = (p) => {
+      if (!o.to) return true;
+      const n = Math.ceil(dist(p, o.to) / 0.5);
+      for (let k = 1; k < n; k++) { const q = add(p, mul(sub(o.to, p), k / n)); if (o.walk.some(h => inside(h, q, 0.4))) return false; }
+      return Object.values(out).every(q => segDist(q, o.to, lateEnd(p)) >= 5.5 && segDist(p, o.to, lateEnd(q)) >= 5.5);
+    };
     for (const [s, w] of Object.entries(wants)) {
-      const good = (p) => ok(p) && hs.every(h => !inside(h, p, m)) && Object.values(out).every(q => dist(q, p) >= gap);
+      const good = (p) => ok(p) && hs.every(h => !inside(h, p, m)) && Object.values(out).every(q => dist(q, p) >= gap) && clear(p);
       let best = good(w) ? w : null;
       for (let r = 0.3; r <= 16 && !best; r += 0.3) {
         const n = Math.max(8, Math.round(2 * Math.PI * r / 0.3));
@@ -96,6 +106,14 @@
           const a = j / n * 2 * Math.PI, p = [w[0] + Math.sin(a) * r, w[1] + Math.cos(a) * r];
           if (good(p)) { best = p; break; }
         }
+      }
+      if (!best && B.M10S_DEBUG) {
+        const why = { ok: 0, hs: 0, gap: 0, walk: 0 };
+        for (let r = 0.3; r <= 16; r += 0.6) for (let j = 0; j < 24; j++) {
+          const p = [w[0] + Math.sin(j / 24 * 2 * Math.PI) * r, w[1] + Math.cos(j / 24 * 2 * Math.PI) * r];
+          if (!ok(p)) why.ok++; else if (!hs.every(h => !inside(h, p, m))) why.hs++; else if (!Object.values(out).every(q => dist(q, p) >= gap)) why.gap++; else if (!clear(p)) why.walk++;
+        }
+        B.M10S_DEBUG(`place: no spot for ${s} near ${w} ${JSON.stringify(why)}`);
       }
       out[s] = (best || w).map(v => +v.toFixed(2));
     }
@@ -112,14 +130,14 @@
   // Cutback Blaze (its safe slice runs from her away from the stack).
   const FLOAT = {
     // Toxic: 1st the corner counterclockwise of her, 2nd that wall, 3rd back in the corner, 4th back by the start.
-    toxic: { start: [0, 19.5], b: [[-18.6, 18.6], [-18.6, -2.6], [-13.4, 13.6], [3, 15]], wait: [5, 1], inferno: [-8.5, 5.5], cut: [-5, 2] },
+    toxic: { start: [0, 19.5], b: [[-18.6, 18.6], [-18.6, -2.6], [-13.4, 13.6], [3, 15]], wait: [5, 1], inferno: [-3.5, 3.5], cut: [0, 0] },
     // OCE: 1st the corner, 2nd back at her start, 3rd beside the wall's fire, 4th back by the start, next to the fire.
-    oce: { start: [0, 19.5], b: [[-18.6, 18.6], [1, 18.6], [17.5, 10.5], [0, 12.2]], wait: [2, -6], inferno: [-9, 3.5], cut: [-6, 0.5] },
+    oce: { start: [0, 19.5], b: [[-18.6, 18.6], [1, 18.6], [17.5, 10.5], [0, 12.2]], wait: [2, -6], inferno: [-3.5, 3.5], cut: [0, 0] },
   };
   // The inferno's spreads: melee close round Red Hot, ranged far (OCE: on the walls, off their middles).
   const INFERNO_FAR = {
     toxic: { H1: [-15, -7], H2: [11, 4], R1: [-7, -17], R2: [16, -2] },
-    oce: { H1: [-9, -18.5], H2: [17, 3], R1: [-18.5, -8], R2: [18.5, -5] },
+    oce: { H1: [-8, -12], H2: [12, 3], R1: [-18.5, -4], R2: [-15, -11] },
   };
   // Insane Air: Red Hot's boards from the south-east, Deep Blue's from the north-west, both clockwise round the ring.
   const RED_PATH = [[0, -13], [-13, -13], [-13, 0]], BLUE_PATH = [[0, 13], [13, 13], [13, 0]];
@@ -155,13 +173,10 @@
     const fireIn = (a, b) => fires.filter(f => f.t0 < b && a < f.t1).map(f => f.shape);
     // A puddle where an attack lands: it locks in with the attack and burns from 2.4 s later (BossMod's FlamePuddle:
     // it spawns and goes live 1.2 s apart) till t1, hurting whoever's in it every second.
-    // (Two hazards: the bots step out as it comes alive; its burning after, every second, they keep clear of by their
-    // spots alone, `react` 0, as so many puddles ticking out of step would have them stop for each one.)
-    const puddle = (o, tHit, t1, name) => {
-      hz(Object.assign({ dmg: 0.8, react: 1.2 }, o, { t: tHit + 2.4, tell: tHit, snap: 2.43, name: name || 'Fire' }));
-      if (t1 > tHit + 3.4) hz(Object.assign({ dmg: 0.6, tickDmg: 0.6, tick: 1, react: 0, quiet: true }, o,
-        { t: tHit + 3.4, tell: tHit + 2.4, snap: 3.43, lasts: Math.max(0.5, t1 - tHit - 3.4), name: name || 'Fire' }));
-    };
+    // (`react` 0: the bots keep clear of puddles by their spots alone, as so many puddles ticking out of step would
+    // have them stop for each one; the guide still shows you the way out.)
+    const puddle = (o, tHit, t1, name) => hz(Object.assign({ dmg: 0.8, tickDmg: 0.6, tick: 1 }, o,
+      { t: tHit + 2.4, tell: tHit, snap: 2.43, react: 0, lasts: Math.max(0.5, t1 - tHit - 2.4), name: name || 'Fire' }));
     // Steam Burst: water landing on a round fire puddle sets it off, 9 yalms round it 4.4 s later.
     const steam = (tw, shapes) => {
       for (const f of fires) {
@@ -174,7 +189,7 @@
     const alleyOop = (o, targets, spots, t1, t2, double, name) => {
       hz({ t: t1, tell: t1 - 5.6, effect: 'bait', shape: 'cone', from: o, aim: 'target', targets, half: 15, r: 60, dmg: 1, own: 0.15, name });
       const first = targets.map(s => ({ shape: 'cone', at: o, deg: brg(sub(spots[s], o)), half: 15, r: 60 })), rep = [];
-      if (double) hz({ t: t2, tell: t1, shape: 'cone', from: o, aim: 'target', targets, half: 15, r: 60, snap: t2 - t1, dmg: 1, name: `${name} (repeat)` });
+      if (double) hz({ t: t2, tell: t1, shape: 'cone', from: o, aim: 'target', targets, half: 15, r: 60, snap: t2 - t1 + 0.03, react: 0, dmg: 1, name: `${name} (repeat)` });
       else {
         for (const s of targets) for (const k of [-22.5, 22.5]) {
           const c = { shape: 'cone', at: o, deg: brg(sub(spots[s], o)) + k, half: 7.5, r: 60 };
@@ -264,21 +279,21 @@
     call(tFCast, `Flame Floater: she starts ${dirName(th0)}`, { dur: 5 });
 
     // ----- Alley-oop Inferno, Cutback Blaze, Pyrotation -----
-    // She's pulled to RI for the spreads (melee in a ring round her, ranged far), the party stacks in the ring's hole,
-    // she's pulled on to RC and Cutback Blaze aims at the stack: its safe slice runs from her away from them, and
-    // Pyrotation's three stacks walk out along it.
+    // She's pulled to RI for the spreads (all within a couple of seconds' run of her: melee close, ranged further), the
+    // party stacks there as she's pulled on to RC, and Cutback Blaze aims at the stack: its safe slice runs from her
+    // away from them, and Pyrotation's three stacks walk out along it (each a step past the last before it burns).
     const tInf = T('Alley-oop Inferno', 1, 53.1), tCut = T('Cutback Blaze', 1, 62.8), tPy = T('Pyrotation x3', 0, 68.4);
-    const RI = Ff(FL.inferno), RC = Ff(FL.cut), delta = brg(sub(RC, RI));
+    const RC = Ff(FL.cut), delta = brg(sub(RC, Ff(FL.inferno))), RI = add(RC, at(delta + 180, 4.9));
     let dmax = 0;
     while (onSq(add(RC, at(delta, dmax + 0.2)))) dmax += 0.2;
-    const restD = dmax - 0.4, dPy = [restD - 20.3, restD - 13.8, restD - 7.3], slicePt = (d) => add(RC, at(delta, d));
+    const restD = Math.min(25, dmax - 0.6), dPy = [restD - 17, restD - 11.8, restD - 6.6], slicePt = (d) => add(RC, at(delta, d));
     bossTo(tf[3] + 4, RI, 4);
     bossTo(tInf + 0.3, RC, 3);
-    const keep = [{ shape: 'circle', at: RI, r: 8.2 }, { shape: 'circle', at: RC, r: 6.5 }, ...dPy.concat([restD]).map(d => ({ shape: 'circle', at: slicePt(d), r: 9 }))];
+    const keep = [{ shape: 'circle', at: RI, r: 7.6 }, { shape: 'circle', at: RC, r: 5.5 }, ...dPy.concat([restD]).map(d => ({ shape: 'circle', at: slicePt(d), r: 6.8 }))];
     const far = INFERNO_FAR[st.floater] || INFERNO_FAR.toxic;
-    const infWant = Object.assign({}, ...['MT', 'OT', 'M1', 'M2'].map((s, i) => ({ [s]: add(RI, at(delta + 180 + [-45, 45, -100, 100][i], 6.3)) })),
+    const infWant = Object.assign({}, ...['MT', 'OT', 'M1', 'M2'].map((s, i) => ({ [s]: add(RI, at(delta + 180 + [-45, 45, -100, 100][i], 8.2)) })),
       ...Object.entries(far).map(([s, p]) => ({ [s]: Ff(p) })));
-    const infSpots = place(infWant, lines.concat(keep), { gap: 6.4 });
+    const infSpots = place(infWant, lines.concat(keep), { gap: 6, to: RI, walk: lines, late: 13.4, ok: (p) => onSq(p) && dist(p, RI) <= 17 });
     pref(tInf - 5, infSpots);
     spread(tInf, S, 5, 'Alley-oop Inferno');
     for (const s of S) {
@@ -296,19 +311,75 @@
     call(tCut + 0.05, `Into the slice behind her (${dirName(delta)})`, { alert: true, dur: 4 });
     const X1 = pick(S), ph = [0.9, 2.9, 4.9].map(d => tPy + d);
     ph.forEach((t, k) => {
-      const sp = slicePt(dPy[k]), hs = fireIn(t - 1, t + 2.4);
-      const pts = clump(hs, sp, 8, (p) => onSq(p) && dist(p, sp) <= 4.6, { gap: 0.45 });
+      // (The last puddle comes alive 0.4 s after this stack: just clear of its middle, and on at once.)
+      const sp = slicePt(dPy[k]), prev = k ? slicePt(dPy[k - 1]) : null, hs = fireIn(t - 1, t + 0.3);
+      const pts = clump(hs, sp, 8, (p) => onSq(p) && dist(p, sp) <= 3.6 && (!prev || dist(p, prev) >= 4.9), { gap: 0.45, m: k ? 0.5 : 1.2 });
       pref(k ? ph[k - 1] + 0.05 : tCut + 0.05, Object.assign(assign(S.filter(s => s !== X1), pts.slice(1)), { [X1]: pts[0] }));
       stack(t, [X1], 6, 6, 8, 'Pyrotation', { tell: k ? ph[k - 1] : tPy - 4.3, dmg: 0.3 });
       puddle({ shape: 'circle', r: 6, from: 'target', targets: [X1] }, t, p1End, 'Pyrotation (fire)');
       fire({ shape: 'circle', at: sp, r: 6 }, t + 2.4, p1End, true);
     });
-    pref(ph[2] + 0.05, assign(S, clump(fireIn(ph[2], p1End), slicePt(restD), 8, (p) => onSq(p) && dist(p, slicePt(restD)) <= 5, { gap: 0.5 })));
+    pref(ph[2] + 0.05, assign(S, clump(fireIn(ph[2], p1End), slicePt(restD), 8, (p) => onSq(p) && dist(p, slicePt(restD)) <= 4.5, { gap: 0.5, m: 0.5 })));
     bossTo(ph[2] + 0.4, slicePt(restD - 4.6), 4);
     call(tPy - 4.3, `Stack x3 on ${X1}: walk out along the slice`, { alert: true, dur: 8 });
     divers(0, 1);
 
-    //@@P1C@@
+    // ======================================================== Deep Blue alone =======================================
+    const B0 = [0, 0];
+    bossTo(p1End, B0);
+    pref(p1End + 0.05, hug(B0, 0));
+    // ----- Sick Swell and Sickest Take-off, then Awesome Splash (spreads) or Slab (light parties) -----
+    // Drawn for the wave from the north: everyone thrown 10 south, clear of the line, G1 on the left facing her (west).
+    const tW1 = T('Sick Swell', 1, 115.0), tSp1 = T('Awesome Splash/Awesome Slab', 0, 117.5);
+    const from1 = pick([0, 90, 180, 270]), off1 = pick([-15, 0, 15]), Fw1 = (p) => rot(p, from1);
+    wave(tW1, from1, off1);
+    const cx1 = off1 === 0 ? [-13, 13] : off1 > 0 ? [-14, -1] : [1, 14], splash1 = Math.random() < 0.5;
+    const post1 = {};
+    [G1, G2].forEach((g, i) => g.forEach(s => {
+      const c = [cx1[i], -6.3];
+      post1[s] = splash1 ? add(c, { T: [-3.3, 3.3], M: [3.3, 3.3], H: [-3.3, -3.3], R: [3.3, -3.3] }[ROLE(s)])
+        : add(c, { T: [0, 0.9], M: [0.8, -0.5], H: [0, 0], R: [-0.8, -0.5] }[ROLE(s)]);
+    }));
+    pref(tW1 - 7, all(s => Fw1(add(post1[s], [0, 10]))));
+    pref(tW1 + 0.6, all(s => Fw1(post1[s])));
+    if (splash1) spread(tSp1, S, 5, 'Awesome Splash', { tell: tW1 - 2, own: 0.25 });
+    else stack(tSp1, ['H1', 'H2'], 6, 4, 4, 'Awesome Slab', { tell: tW1 - 2 });
+    label('Awesome Splash/Awesome Slab', 0, splash1 ? 'Awesome Splash (spreads)' : 'Awesome Slab (light parties)');
+    const side = (from, off) => (off === 0 ? 'down the middle' : `by the ${dirName(from + (off > 0 ? 90 : -90))} wall`);
+    call(tW1 - 7, `Knockback from the ${dirName(from1)}; the line ${side(from1, off1)}`, { alert: true, dur: 6 });
+    call(tW1 - 2.5, splash1 ? 'Spread: G1 left, G2 right' : 'Light parties: G1 left, G2 right', { dur: 4 });
+    // ----- Alley-oop: proteans round her, by the clock (tanks north and south) -----
+    const AO = E('Reverse Alley-oop/Alley-oop Double-dip'), aoT = (k, d) => (AO[k] ? AO[k].t : d);
+    const CLOCK = { MT: 0, OT: 180, H1: 270, H2: 90, M1: 225, M2: 135, R1: 315, R2: 45 };
+    const dbl1 = Math.random() < 0.5, aoName = (dbl) => (dbl ? 'Alley-oop Double-dip' : 'Reverse Alley-oop');
+    const clock = all(s => add(B0, at(CLOCK[s], 5.5)));
+    pref(tSp1 + 0.05, clock);
+    alleyOop(B0, S, clock, aoT(0, 125.9), aoT(1, 128.5), dbl1, aoName(dbl1));
+    if (dbl1) pref(aoT(0, 125.9) + 0.05, all(s => add(B0, at(CLOCK[s] + 22.5, 5.5))));
+    [0, 1].forEach(k => { if (AO[k]) P.labels.set(AO[k], aoName(dbl1) + (k ? ' (repeat)' : '')); });
+    call(aoT(0, 125.9) - 5.6, `Proteans => ${dbl1 ? 'move' : 'stay'}`, { alert: true, dur: 5 });
+    // ----- Deep Impact: a buster on the farthest, thrown back -----
+    const tDI1 = T('Deep Impact', 0, 136.5), tDIc1 = T('Deep Impact (bait)', 0, 136.3) - 4.9;
+    pref(tDIc1, Object.assign(hug(B0, 0), { MT: add(B0, [0, 15]) }));
+    buster(tDI1, 'MT', 6, 'Deep Impact', { tell: tDIc1 });
+    throwOff(tDI1, B0, 'MT');
+    pref(tDI1 + 0.6, hug(B0, 0));
+    call(tDIc1, 'Bait the knockback buster far', { slot: 'MT', alert: true, dur: 5 });
+    call(tDIc1, 'Tankbuster on the farthest: stay close', { dur: 4 });
+    divers(1, 1);
+
+    // ======================================================== Xtreme Spectacular ====================================
+    bossTo(150.6, [5, 0]);
+    pref(151, hug([5, 0], 0));
+    const tXS = T('Xtreme Spectacular (line)', 0, 168.7), band = { shape: 'rect', a: [-25, -15], b: [25, 15] };
+    hz(Object.assign({ t: tXS, tell: tXS - 7.4, dmg: 1.3, name: 'Xtreme Spectacular' }, band));
+    raid(tXS, 0.25, 'Xtreme Spectacular', 7.4);
+    for (let k = 0; k < 6; k++) raid(T('Xtreme Spectacular x6', 0, 169.7) + 0.6 * k, 0.06, 'Xtreme Spectacular', 0.5);
+    raid(T('Xtreme Spectacular (big)', 0, 173.6), 0.5, 'Xtreme Spectacular', 1);
+    pref(tXS - 7.4, assign(S, clump([band], [0, -17.4], 8, (p) => onSq(p) && p[1] <= -16.2, { gap: 0.7, m: 1.2 })));
+    call(tXS - 7.4, 'Go N/S + big raidwides', { alert: true, dur: 6 });
+
+    //@@IA1@@
     return P;
   }
 
