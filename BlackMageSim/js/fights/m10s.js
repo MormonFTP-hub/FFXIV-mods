@@ -107,14 +107,7 @@
           if (good(p)) { best = p; break; }
         }
       }
-      if (!best && B.M10S_DEBUG) {
-        const why = { ok: 0, hs: 0, gap: 0, walk: 0 };
-        for (let r = 0.3; r <= 16; r += 0.6) for (let j = 0; j < 24; j++) {
-          const p = [w[0] + Math.sin(j / 24 * 2 * Math.PI) * r, w[1] + Math.cos(j / 24 * 2 * Math.PI) * r];
-          if (!ok(p)) why.ok++; else if (!hs.every(h => !inside(h, p, m))) why.hs++; else if (!Object.values(out).every(q => dist(q, p) >= gap)) why.gap++; else if (!clear(p)) why.walk++;
-        }
-        B.M10S_DEBUG(`place: no spot for ${s} near ${w} ${JSON.stringify(why)}`);
-      }
+      if (!best && B.M10S_DEBUG) B.M10S_DEBUG(`place: no spot for ${s} near ${w}`);
       out[s] = (best || w).map(v => +v.toFixed(2));
     }
     return out;
@@ -141,6 +134,30 @@
   };
   // Insane Air: Red Hot's boards from the south-east, Deep Blue's from the north-west, both clockwise round the ring.
   const RED_PATH = [[0, -13], [-13, -13], [-13, 0]], BLUE_PATH = [[0, 13], [13, 13], [13, 0]];
+
+  // Insane Air: a group's spots round its board (sp) for its mechanic, facing out along om: proteans spread M T H R
+  // clockwise, 30 degrees apart; a stack bunched in the cone on its target; a buster's target alone in front, the rest
+  // well back.
+  const AIR_ORDER = ['M', 'T', 'H', 'R'];
+  function airSpots(sp, om, mech, grp, tgt) {
+    const out = {};
+    if (mech === 'P') grp.forEach(s => { out[s] = add(sp, at(om - 45 + 30 * AIR_ORDER.indexOf(ROLE(s)), 3.6)); });
+    else {
+      out[tgt] = add(sp, at(om, 2.4));
+      grp.filter(s => s !== tgt).forEach((s, i) => {
+        out[s] = mech === 'S' ? add(sp, at(om + [-9, 9, 0][i], [4, 4, 5][i])) : add(sp, at(om + 180 + [-28, 28, 0][i], [7.6, 7.6, 9][i]));
+      });
+    }
+    for (const s of Object.keys(out)) out[s] = out[s].map(v => +v.toFixed(2));
+    return out;
+  }
+  function airShapes(sp, mech, spots, grp, tgt) {
+    if (mech === 'P') return grp.map(s => ({ shape: 'cone', at: sp, deg: brg(sub(spots[s], sp)), half: 22.5, r: 60 }));
+    if (mech === 'S') return [{ shape: 'cone', at: sp, deg: brg(sub(spots[tgt], sp)), half: 22.5, r: 60 }];
+    return [{ shape: 'circle', at: spots[tgt], r: 6 }];
+  }
+  const AIR_NAME = { P: ['Blasting Snap', 'Plunging Snap'], S: ['Re-entry Blast', 'Re-entry Plunge'], TB: ['Vertical Blast', 'Vertical Plunge'] };
+  const AIR_CALL = { P: 'Proteans', S: 'Stack', TB: 'Buster' };
 
   // Each strat's choices (wtfdig's toggles and its strats' own text).
   const STRATS = {
@@ -181,7 +198,7 @@
     const steam = (tw, shapes) => {
       for (const f of fires) {
         if (!f.steam || f.t0 - 1.2 > tw || f.t1 <= tw) continue;
-        if (shapes.some(s => inside(s, f.shape.at, 0))) hz({ t: tw + 4.4, tell: tw + 1.4, shape: 'circle', at: f.shape.at, r: 9, dmg: 0.7, name: 'Steam Burst', react: 2.5 });
+        if (shapes.some(s => inside(s, f.shape.at, 0))) hz({ t: tw + 4.4, tell: tw + 1.4, shape: 'circle', at: f.shape.at, r: 9, dmg: 0.7, name: 'Steam Burst', react: 1.5 });
       }
     };
     // Proteans from Deep Blue at o, at each target (30-degree cones), then their repeat: Double-dip the same cones
@@ -207,18 +224,24 @@
       return { kb, line, v: at(kb, 10) };
     };
     // Spots for a knockback: each near its want after being thrown (post), and where it stands to land there (pre),
-    // both clear of their shapes.
-    const placeKB = (wants, v, hsPre, hsPost, gap) => {
+    // both clear of their shapes and the slide between clear of hsPost; posts gap apart (or gapOf(s, t) for a pair).
+    const placeKB = (wants, v, hsPre, hsPost, gap, gapOf) => {
       const out = {}, post = {};
+      const slideOk = (q) => { for (let k = 1; k < 10; k++) { const p = add(q, mul(v, k / 10)); if (hsPost.some(h => inside(h, p, 0.4))) return false; } return true; };
       for (const [s, w] of Object.entries(wants)) {
-        const good = (q) => onSq(q) && onSq(add(q, v)) && hsPre.every(h => !inside(h, sub(q, [0, 0]), 1.4)) && hsPost.every(h => !inside(h, add(q, v), 1.4))
-          && Object.values(post).every(p => dist(p, add(q, v)) >= gap);
+        // (Failing that, a little closer to the fire and to each other.)
+        const good = (q, k) => onSq(q) && onSq(add(q, v)) && hsPre.every(h => !inside(h, q, 0.9 * k)) && hsPost.every(h => !inside(h, add(q, v), 0.9 * k))
+          && Object.entries(post).every(([t, p]) => dist(p, add(q, v)) >= (gapOf ? gapOf(s, t) : gap) * (k < 1 ? 0.93 : 1)) && slideOk(q);
         const w0 = sub(w, v);
-        let best = good(w0) ? w0 : null;
-        for (let r = 0.3; r <= 16 && !best; r += 0.3) {
-          const n = Math.max(8, Math.round(2 * Math.PI * r / 0.3));
-          for (let j = 0; j < n; j++) { const a = j / n * 2 * Math.PI, q = [w0[0] + Math.sin(a) * r, w0[1] + Math.cos(a) * r]; if (good(q)) { best = q; break; } }
+        let best = null;
+        for (const k of [1, 0.5]) {
+          if (!best && good(w0, k)) best = w0;
+          for (let r = 0.3; r <= 30 && !best; r += 0.3) {
+            const n = Math.max(8, Math.round(2 * Math.PI * r / 0.3));
+            for (let j = 0; j < n; j++) { const a = j / n * 2 * Math.PI, q = [w0[0] + Math.sin(a) * r, w0[1] + Math.cos(a) * r]; if (good(q, k)) { best = q; break; } }
+          }
         }
+        if (!best && B.M10S_DEBUG) B.M10S_DEBUG(`placeKB: no spot for ${s} near ${w}`);
         best = best || w0;
         out[s] = best.map(x => +x.toFixed(2));
         post[s] = add(best, v).map(x => +x.toFixed(2));
@@ -230,7 +253,7 @@
     const buster = (t, slot, r, name, o) => hz(Object.assign({ t, tell: t - 5, effect: 'bait', shape: 'circle', from: 'target', targets: [slot], r, dmg: 1.2, own: 0.5, buster: true, name }, o));
     // Deep Impact's throw: the buster's target, 10 yalms away from Deep Blue (a thin line from her to them).
     const throwOff = (t, o, slot) => hz({ t, tell: t, hidden: true, quiet: true, effect: 'knockback', from: o, aim: 'target', targets: [slot], shape: 'line', len: 'target', w: 1.2, dist: 10, name: 'Deep Impact' });
-    const divers = (k, name) => { const t = name === 1 ? T("Divers' Dare", k) : T("Divers' Dare x2", k); if (t !== undefined) { raid(t, 0.45, "Divers' Dare", 5); call(t - 5, 'Raidwide', { dur: 3 }); } return t; };
+    const divers = (k, one) => { const t = one === 1 ? T("Divers' Dare", k) : T("Divers' Dare x2", k); if (t !== undefined) { raid(t, 0.45, "Divers' Dare", 5); call(t - 5, 'Raidwide', { dur: 3 }); } return t; };
     for (const e of E('Epic Brotherhood x2')) P.labels.set(e, 'Epic Brotherhood (they even out their HP)');
     for (const e of E('Impact Zone').concat(E('Impact Zone x2'))) P.labels.set(e, `${e.name} (only if the bubble's prisoners fall)`);
 
@@ -379,7 +402,465 @@
     pref(tXS - 7.4, assign(S, clump([band], [0, -17.4], 8, (p) => onSq(p) && p[1] <= -16.2, { gap: 0.7, m: 1.2 })));
     call(tXS - 7.4, 'Go N/S + big raidwides', { alert: true, dur: 6 });
 
-    //@@IA1@@
+
+    // ======================================================== Insane Air ============================================
+    // Each round both bosses leap onto their next board and bait the four nearest it; Red Hot's leave fire. The groups'
+    // facing round each board is picked (out toward the wall where it can be) so nobody stands in fire or in the
+    // other board's attack, and Red Hot's new fire keeps off the boards still to come.
+    // Walks clear of the fire on the floor: straight where it can, else by the nearest waypoint from which both legs
+    // are (the fire that comes alive later counts only past dLater yalms in).
+    const pathClear = (pts, now, later, dLater) => {
+      let cum = 0;
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1], b = pts[i], d = dist(a, b), n = Math.max(1, Math.ceil(d / 0.5));
+        for (let k = 1; k <= n; k++) {
+          const q = add(a, mul(sub(b, a), k / n)), c = cum + d * k / n;
+          if (now.some(h => inside(h, q, 0.5)) || (c > dLater && later.some(h => inside(h, q, 0.5)))) return false;
+        }
+        cum += d;
+      }
+      return true;
+    };
+    const walkTo = (from, to, t0, dLater) => {
+      const now = fireIn(t0 - 0.05, t0 + 0.05), later = fireIn(t0, t0 + 4);
+      for (const [s, b] of Object.entries(to)) {
+        const a = from[s];
+        if (!a || pathClear([a, b], now, later, dLater)) { pref(t0, { [s]: b }); continue; }
+        const mid = mul(add(a, b), 0.5);
+        let best = null, bd = Infinity;
+        for (let r = 1; r <= 18 && !best; r += 1) for (let j = 0; j < 24; j++) {
+          const w = add(mid, at(j * 15, r));
+          if (!onSq(w) || !pathClear([a, w, b], now, later, dLater)) continue;
+          const d = dist(a, w) + dist(w, b);
+          if (d < bd) { bd = d; best = w; }
+        }
+        if (!best) { pref(t0, { [s]: b }); continue; }
+        pref(t0, { [s]: best.map(v => +v.toFixed(2)) });
+        pref(t0 + dist(a, best) / 5.8 + 0.15, { [s]: b });
+      }
+    };
+    const insaneAir = (cfg) => {
+      const redMid = Math.random() < 0.5;
+      const rp = RED_PATH.concat([redMid ? [0, 0] : [-13, 13]]), bp = BLUE_PATH.concat([redMid ? [13, -13] : [0, 0]]), boards = { red: rp, blue: bp };
+      const plans = [];
+      for (let k = 0; k < 4; k++) {
+        const fut = [];
+        for (let j = k + 1; j < 4; j++) fut.push(rp[j], bp[j]);
+        const cur = fireIn(k ? cfg.hits[k - 1] : cfg.tells[0], cfg.hits[k] + (cfg.bails ? 1.7 : 0.3)), opts = {};
+        for (const c of ['red', 'blue']) {
+          const sp = boards[c][k], other = boards[c === 'red' ? 'blue' : 'red'][k];
+          const out = Math.hypot(sp[0], sp[1]) < 1 ? brg(sub(sp, other)) : brg(sp);
+          const m = cfg.mech(k, c), grp = cfg.group(k, c), tgt = cfg.target(k, c, m, grp);
+          opts[c] = [0, 1, -1, 2, -2, 3, -3, 4, -4].map(j => {
+            const spots = airSpots(sp, out + 22.5 * j, m, grp, tgt);
+            return { j, spots, shapes: airShapes(sp, m, spots, grp, tgt), sp, m, grp, tgt };
+          });
+        }
+        let best = null;
+        for (const r of opts.red) for (const b of opts.blue) {
+          let bad = (Math.abs(r.j) + Math.abs(b.j)) * 0.01;
+          for (const [o, q] of [[r, b], [b, r]]) for (const p of Object.values(o.spots)) {
+            if (!onSq(p)) bad += 10;
+            if (cur.some(h => inside(h, p, 1.4))) bad += 10;
+            if (q.shapes.some(h => inside(h, p, 1))) bad += 10;
+          }
+          for (const sh of r.shapes) for (const f of fut) if (inside(sh, f, 4.5)) bad += 3;
+          // (The Bailout stacks after: the two groups well apart.)
+          if (cfg.bails) for (const p of Object.values(r.spots)) for (const q of Object.values(b.spots)) if (dist(p, q) < 16.8) bad += 6;
+          if (!best || bad < best.bad) best = { bad, r, b };
+        }
+        if (B.M10S_DEBUG && best.bad >= 1) B.M10S_DEBUG(`insane air round ${k}: ${best.bad.toFixed(2)}`);
+        plans.push(best);
+        for (const sh of best.r.shapes) fire(sh, cfg.hits[k] + 2.4, cfg.end, sh.shape === 'circle');
+      }
+      let last = null;
+      plans.forEach(({ r, b }, k) => {
+        const t = cfg.hits[k], tell = cfg.tells[k];
+        for (const o of [r, b]) {
+          const red = o === r, name = AIR_NAME[o.m][red ? 0 : 1], near = (n) => ({ nearest: n, of: o.sp });
+          if (o.m === 'P') {
+            hz({ t, tell, effect: 'bait', shape: 'cone', from: o.sp, aim: 'target', targets: near(4), half: 22.5, r: 60, dmg: 1, own: 0.2, name });
+            if (red) puddle({ shape: 'cone', from: o.sp, aim: 'target', targets: near(4), half: 22.5, r: 60 }, t, cfg.end, `${name} (fire)`);
+          } else if (o.m === 'S') {
+            hz({ t, tell, effect: 'share', shape: 'cone', from: o.sp, aim: 'target', targets: near(1), half: 22.5, r: 60, min: 4, max: 4, dmg: 0.35, name });
+            if (red) puddle({ shape: 'cone', from: o.sp, aim: 'target', targets: near(1), half: 22.5, r: 60 }, t, cfg.end, `${name} (fire)`);
+          } else {
+            hz({ t, tell, effect: 'bait', shape: 'circle', from: 'target', targets: near(1), r: 6, dmg: 1.2, own: 0.5, buster: true, name });
+            if (red) puddle({ shape: 'circle', r: 6, from: 'target', targets: near(1) }, t, cfg.end, `${name} (fire)`);
+          }
+        }
+        bossTo(cfg.baits[k], rp[k], 0.5);
+        const spots = Object.assign({}, r.spots, b.spots), t0 = k ? (cfg.bails ? cfg.bails[k - 1] : cfg.hits[k - 1]) + 0.05 : cfg.tells[0];
+        if (last) walkTo(last, spots, t0, cfg.bails ? 0 : 13); else pref(t0, spots);
+        last = spots;
+        // (With a Bailout to share after, each group steps just clear of the new fire, keeping off the other group; a
+        // buster's target to the back.)
+        if (cfg.bails) {
+          const burning = fireIn(t + 2.3, t + 2.5), esc = {};
+          for (const [o, q] of [[r, b], [b, r]]) for (const s of o.grp) {
+            const p = o.m === 'TB' && s === o.tgt ? add(o.spots[o.grp.filter(x => x !== o.tgt)[2]], [0.7, 0]) : o.spots[s];
+            esc[s] = clump(burning, p, 1, (x) => onSq(x) && Object.values(q.spots).every(y => dist(x, y) >= 16), { m: 1.3 })[0];
+          }
+          pref(t + 0.05, esc);
+          last = esc;
+        }
+        for (const list of [E('Blasting Snap/Plunging Snap/Re-entry Blast (bait)'), E('Blasting Snap/Plunging Snap/Re-entry Blast')]) {
+          const e = list.find(x => Math.abs(x.t - t) < 2.5);
+          if (e) P.labels.set(e, `${AIR_NAME[r.m][0]} + ${AIR_NAME[b.m][1]}`);
+        }
+        call(tell, cfg.call ? cfg.call(k, r, b) : `Red: ${AIR_CALL[r.m]} (${dirName(brg(rp[k]))}) / Blue: ${AIR_CALL[b.m]} (${dirName(brg(bp[k]))})`, { alert: true, dur: 6 });
+      });
+      return { plans, rp, bp, last };
+    };
+    // Everyone together for the raidwide after, clear of the fire left.
+    const airGather = (tFrom, tEnd, near, from, dLater) => {
+      const gp = clump(fireIn(tFrom, tEnd), near, 1, onSq, { m: 6 })[0], spots = assign(S, clump(fireIn(tFrom, tEnd), gp, 8, onSq, { gap: 0.6, m: 1.4 }));
+      walkTo(from, spots, tFrom + 0.05, dLater);
+      return gp;
+    };
+
+    // ----- Insane Air 1: G1 bait Deep Blue's boards (from the north-west), G2 Red Hot's (from the south-east) -----
+    const airHits = E('Blasting Snap/Plunging Snap/Re-entry Blast').map(e => e.t), airBaits = E('Blasting Snap/Plunging Snap/Re-entry Blast (bait)').map(e => e.t);
+    const ia1End = T("Divers' Dare x2", 0, 229.1);
+    const fourMechs = () => { const tb = Math.floor(Math.random() * 4); return [0, 1, 2, 3].map(k => (k === tb ? 'TB' : Math.random() < 0.5 ? 'P' : 'S')); };
+    const ia1Mech = { red: fourMechs(), blue: fourMechs() };
+    pref(178.9, Object.assign(assign(G1, clump([], [-11, 11], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [11, -11], 4, onSq, { gap: 0.8 }))));
+    bossTo(186, [13, -13]);
+    const ia1 = insaneAir({ hits: airHits.slice(0, 4), baits: airBaits.slice(0, 4), tells: airHits.slice(0, 4).map(t => t - 8.6), end: ia1End,
+      mech: (k, c) => ia1Mech[c][k], group: (k, c) => (c === 'red' ? G2 : G1), target: (k, c, m, g) => ofRole(g, m === 'TB' ? 'T' : 'H') });
+    call(airHits[0] - 12, 'G1 north-west with Deep Blue, G2 south-east with Red Hot', { dur: 5 });
+    const gp1 = airGather(airHits[3], ia1End, [0, 0], ia1.last, 13);
+    bossTo(airHits[3] + 1.5, gp1, 3);
+    divers(0);
+
+
+    // ======================================================== Snaking ===============================================
+    // One light party gets Firesnaking (Red Hot's), the other Watersnaking (Deep Blue's): "G1 near Blue, G2 near Red",
+    // and it can go on either the nearer or the farther four. Drawn for the wave coming from the north (Deep Varial
+    // from the south wall), mirrored north-south when it comes from the south.
+    const tSn = T('Firesnaking/Watersnaking', 0, 244.8), snEnd = T("Divers' Dare x2", 1, 320.5);
+    raid(tSn, 0.45, 'Firesnaking + Watersnaking', 5);
+    label('Firesnaking/Watersnaking', 0, 'Firesnaking + Watersnaking');
+    call(tSn - 5, 'Raidwide; G1 by Deep Blue (west), G2 by Red Hot (east)', { dur: 5 });
+    bossTo(236.5, [5, 0]);
+    pref(236.6, Object.assign(assign(G1, clump([], [-9, 0], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [9, 0], 4, onSq, { gap: 0.8 }))));
+    const FIRE = Math.random() < 0.5 ? G2 : G1, WATER = FIRE === G1 ? G2 : G1;
+    const [fT, fH, fM, fR] = ['T', 'H', 'M', 'R'].map(r => ofRole(FIRE, r)), [wT, wH] = ['T', 'H'].map(r => ofRole(WATER, r));
+    for (const s of FIRE) { debuff(s, 'firesnaking', 'Firesnaking', "Red Hot's target: go to her (east)", tSn, snEnd + 0.4); call(tSn, "Red's target (fire): east", { slot: s, alert: true, dur: 4 }); }
+    for (const s of WATER) { debuff(s, 'watersnaking', 'Watersnaking', "Deep Blue's target: go to her (west)", tSn, snEnd + 0.4); call(tSn, "Blue's target (water): west", { slot: s, alert: true, dur: 4 }); }
+    const sW = pick([1, -1]), My = (p) => [p[0], p[1] * sW], Bw = [-20, pick([10, -10])];
+    bossTo(T('Firesnaking/Watersnaking', 0, 244.8) + 5.2, [10, 0]);
+    // ----- Alley-oop Inferno on fire (a box on the east wall) and Deep Blue's proteans on water (either side of her
+    // along the wall, the tank and healer toward the middle: their cones and Reverse's gaps all miss the box); then
+    // the water players step out of the fan, and fire out of the box the only ways there are -----
+    const tInfA = T('Alley-oop Inferno', 3, 257.4), dblA = Math.random() < 0.5, Mb = (p) => [p[0], Bw[1] < 0 ? p[1] : -p[1]];
+    const BOX = { T: [12.6, 4], H: [18.6, 4], M: [12.6, -4], R: [18.6, -4] }, box = Object.fromEntries(FIRE.map(s => [s, Mb(BOX[ROLE(s)])]));
+    const W_BEAR = { M: 8, T: 30, H: 130, R: 165 };
+    const wTight = Object.fromEntries(WATER.map(s => [s, add(Bw, at(Bw[1] < 0 ? W_BEAR[ROLE(s)] : 180 - W_BEAR[ROLE(s)], 6.5))]));
+    pref(tSn + 0.1, Object.assign({}, box, wTight));
+    spread(tInfA, FIRE, 5, 'Alley-oop Inferno');
+    for (const s of FIRE) {
+      puddle({ shape: 'circle', r: 5, from: 'target', targets: [s] }, tInfA, snEnd, 'Alley-oop Inferno (fire)');
+      fire({ shape: 'circle', at: box[s], r: 5 }, tInfA + 2.4, snEnd, true);
+    }
+    const aoA = alleyOop(Bw, WATER, wTight, aoT(2, 258), aoT(3, 260.6), dblA, aoName(dblA));
+    [2, 3].forEach(k => { if (AO[k]) P.labels.set(AO[k], aoName(dblA) + (k === 3 ? ' (repeat)' : '')); });
+    steam(aoT(2, 258), aoA.first); steam(aoT(3, 260.6), aoA.repeat);
+    pref(aoT(2, 258) + 0.05, assign(WATER, clump(aoA.repeat, Mb([-14, -9]), 4, onSq, { gap: 0.7, m: 1 })));
+    const EXIT = { T: [6.6, 3.5], H: [18.6, 10.4], M: [5.5, -6], R: [18.6, -10.4] }, EXIT2 = { H: [5, 10.4], R: [5, -10.4] };
+    pref(tInfA + 0.05, Object.fromEntries(FIRE.map(s => [s, Mb(EXIT[ROLE(s)])])));
+    pref(aoT(3, 260.6) + 0.05, Object.fromEntries(FIRE.filter(s => EXIT2[ROLE(s)]).map(s => [s, Mb(EXIT2[ROLE(s)])])));
+    call(tSn + 0.5, 'Fire: spreads in a box on the east wall; water: tight proteans by her', { dur: 6 });
+    call(aoT(2, 258) - 5.6, `Water proteans => ${dblA ? 'double-dip' : 'reverse'}: move out after`, { dur: 5 });
+    // ----- Hot Impact: the fire tank holds Red Hot by the middle, the rest of fire north-west of the box -----
+    const tHI2 = T('Hot Impact', 1, 268.8), Rh = [4, 0], hiTank = add(Rh, My([0, -4.6]));
+    bossTo(tInfA + 1, Rh, 3);
+    pref(aoT(3, 260.6) + 2, Object.assign({ [fT]: hiTank }, assign([fH, fM, fR], clump(fireIn(tInfA, tHI2 + 1).concat([{ shape: 'circle', at: hiTank, r: 6.4 }]), My([4.5, 10]), 3, onSq, { gap: 0.8 }))));
+    buster(tHI2, fT, 6, 'Hot Impact');
+    call(tHI2 - 5, 'Tankbuster on the fire tank', { dur: 4 });
+    // ----- Deep Varial: from the wall opposite the wave, a 120-degree cone; water to her west, fire to her east -----
+    const tTether = T('Sick Swell', 2, 262.6), from2 = sW > 0 ? 0 : 180;
+    call(tTether, `Wave ${dirName(from2)} / cone ${dirName(from2 + 180)}`, { dur: 6 });
+    const tDV = T('Deep Varial', 1, 276.8), Bv = My([0, -20]), varial = { shape: 'cone', at: Bv, deg: from2, half: 60, r: 60 };
+    hz(Object.assign({ t: tDV, tell: tDV - 6.8, dmg: 1.4, name: 'Deep Varial' }, varial));
+    steam(tDV, [varial]);
+    const tSp2 = T('Awesome Splash/Awesome Slab', 1, 280), tInfB = T('Alley-oop Inferno', 5, 280.1), splash2 = Math.random() < 0.5;
+    const WS = { T: [-18.6, -11], H: [-18.6, -17.6], M: [-12.5, -18.6], R: [-6.5, -18.8] };
+    const water2 = splash2 ? Object.fromEntries(WATER.map(s => [s, My(WS[ROLE(s)])]))
+      : Object.assign(assign(WATER.filter(s => s !== wH), clump([varial], My([-12.5, -16.5]), 4, onSq, { gap: 0.6 }).slice(1)), { [wH]: My([-12.5, -16.5]) });
+    pref(tHI2 - 2, water2);
+    if (splash2) spread(tSp2, WATER, 5, 'Awesome Splash', { tell: tDV - 3, own: 0.25 });
+    else stack(tSp2, [wH], 6, 4, 4, 'Awesome Slab', { tell: tDV - 3 });
+    label('Awesome Splash/Awesome Slab', 1, splash2 ? 'Awesome Splash (water spreads)' : 'Awesome Slab (water stack)');
+    pref(tHI2 + 0.05, Object.fromEntries(FIRE.map(s => [s, My([5, -9])])));
+    pref(tHI2 + 2.6, assign(FIRE, clump(fireIn(tHI2, tDV + 1).concat([varial]), My([15.5, -16.5]), 4, onSq, { gap: 0.7 })));
+    const IB = { T: [18.6, -16.5], H: [13, -17.5], M: [7.4, -18], R: [1.8, -18.5] }, ib = Object.fromEntries(FIRE.map(s => [s, My(IB[ROLE(s)])]));
+    pref(tDV + 0.05, ib);
+    spread(tInfB, FIRE, 5, 'Alley-oop Inferno', { tell: tInfB - 5 });
+    for (const s of FIRE) {
+      puddle({ shape: 'circle', r: 5, from: 'target', targets: [s] }, tInfB, snEnd, 'Alley-oop Inferno (fire)');
+      fire({ shape: 'circle', at: ib[s], r: 5 }, tInfB + 2.4, snEnd, true);
+    }
+    call(tDV - 6.8, `${dirName(from2 + 180)} + water ${splash2 ? 'spread' : 'stack'} + fire spread`, { alert: true, dur: 6 });
+    // ----- Hot Aerial: four jumps on the fire players in turn (Toxic: tank, healer, melee, ranged on markers 1-4;
+    // nomnom and OCE: far, close to the fire, far, close), each leaving fire; out to the middle after each -----
+    const nomnom = st.snaking !== 'toxic';
+    const tHAc = T('Hot Aerial', 0, 288.5), tHA = [1, 2, 3, 4].map(k => T(`Hot Aerial ${k}`, 0, 288 + 2 * k));
+    const JS = (nomnom ? [[-15.5, 15.5], [5, -11], [-15, -16], [-5, -12.5]] : [[-13, 13], [13, 13], [11, -10.5], [-13, -13]]).map(My);
+    const VIA = nomnom ? {} : { 1: My([4, 9.5]) }, BACK = nomnom ? {} : { 2: My([5, -10]) }, jMid = My(nomnom ? [-3, 3] : [1, 1]);
+    const jumps = JS.map(p => ({ shape: 'circle', at: p, r: 6 })), jOrder = [fT, fH, fM, fR];
+    bossTo(282.7, [0, 0]);
+    pref(tInfB + 0.05, Object.fromEntries(FIRE.map(s => [s, My([5, -11])])));
+    const mids = assign(jOrder, clump(fireIn(tHA[0], tHA[3] + 3).concat(jumps), jMid, 4, onSq, { gap: 0.7, m: 1.4 }));
+    jOrder.forEach((s, k) => {
+      if (VIA[k]) { pref(tInfB + 2.6, { [s]: VIA[k] }); pref(tInfB + 6, { [s]: JS[k] }); } else pref(tInfB + 2.6, { [s]: JS[k] });
+      if (BACK[k]) { pref(tHA[k] + 0.05, { [s]: BACK[k] }); pref(tHA[k] + 1.2, { [s]: mids[s] }); } else pref(tHA[k] + 0.05, { [s]: mids[s] });
+      hz({ t: tHA[k], tell: k ? tHA[k - 1] : tHAc - 5, effect: 'bait', shape: 'circle', from: 'target', targets: [s], r: 6, dmg: 1.1, own: 0.4, status: ['fireResDown', 8], name: 'Hot Aerial' });
+      puddle({ shape: 'circle', r: 6, from: 'target', targets: [s] }, tHA[k], snEnd, 'Hot Aerial (fire)');
+      fire({ shape: 'circle', at: JS[k], r: 6 }, tHA[k] + 2.4, snEnd, true);
+      bossTo(tHA[k] + 0.05, JS[k], 0.4);
+      debuff(s, 'fireResDown', 'Fire Resistance Down II', 'keep out of fire', tHA[k], tHA[3] + 3.4);
+      call(tInfB + 2.6, `Bait Hot Aerial ${ORD[k]}: ${dirName(brg(JS[k]))}${nomnom ? (k % 2 ? ' (close)' : ' (far)') : ''}`, { slot: s, alert: true, dur: 5 });
+    });
+    // ----- The wave and its line, the water stack or spreads, the steam off every fire puddle; everyone already where
+    // Cutback Blaze wants them (fire on her far side, water in the slice to come) -----
+    const tW2 = T('Sick Swell', 3, 301.3), off2 = pick([-15, 15]), W2 = wave(tW2, from2, off2), tSteam2 = tW2 + 4.4;
+    const steamed = fires.filter(f => f.steam && f.t0 - 1.2 <= tW2 && f.t1 > tW2).map(f => ({ shape: 'circle', at: f.shape.at, r: 9 }));
+    steam(tW2, [{ shape: 'rect', a: [-25, -25], b: [25, 25] }]);
+    const tSp3 = T('Awesome Splash/Awesome Slab', 2, 303.7), splash3 = Math.random() < 0.5;
+    label('Awesome Splash/Awesome Slab', 2, splash3 ? 'Awesome Splash (water spreads)' : 'Awesome Slab (water stack)');
+    const tCut2 = T('Cutback Blaze', 3, 307.2), tDI2 = T('Deep Impact', 1, 313.5), Rc2 = My([-2, 1]);
+    bossTo(tHA[3] + 2.5, Rc2, 3);
+    const cutDir = nomnom ? 90 : (sW > 0 ? 180 : 0), slice2 = deg360(cutDir + 180), cutTarget = nomnom ? fT : fH;
+    const after3 = fireIn(tW2, tCut2 + 0.5).concat(steamed);
+    const f3 = assign(FIRE, clump(after3, add(Rc2, at(cutDir, nomnom ? 3.5 : 5)), 4, onSq, { gap: 0.6, m: 1.3 }));
+    const keepF = FIRE.map(s => ({ shape: 'circle', at: f3[s], r: splash3 ? 5.4 : 0.1 }));
+    const wWant = (i) => add(add(Rc2, at(slice2, splash3 ? 5 + 6 * Math.floor(i / 2) : 5)), at(slice2 + 90, splash3 ? (i % 2 ? 3.2 : -3.2) : 0));
+    const w3 = splash3 ? place(Object.fromEntries(WATER.map((s, i) => [s, wWant(i)])), after3.concat(keepF), { gap: 6, m: 1.3 })
+      : Object.assign(assign(WATER, clump(after3.concat(FIRE.map(s => ({ shape: 'circle', at: f3[s], r: 5 }))), wWant(0), 4, onSq, { gap: 0.6, m: 1.3 })));
+    if (!splash3) for (const s of FIRE) if (dist(f3[s], w3[wH]) < 6.4 && B.M10S_DEBUG) B.M10S_DEBUG(`fire ${s} in the water stack`);
+    const splashSpots = Object.assign({}, w3, f3);
+    // (Thrown where the water stack or spreads already work out; then on to those spots before the steam.)
+    const isW = (s) => WATER.includes(s);
+    const gap3 = (a, b) => (splash3 ? (isW(a) && isW(b) ? 6 : isW(a) || isW(b) ? 5.6 : 0.6) : ((a === wH && !isW(b)) || (b === wH && !isW(a)) ? 6.6 : 0.6));
+    const kb2 = placeKB(splashSpots, W2.v, fireIn(tInfB, tW2).concat([W2.line], jumps), fireIn(tW2, tW2 + 2.5), 0.6, gap3);
+    pref(tSp2 + 0.05, Object.fromEntries(WATER.map(s => [s, kb2.pre[s]])));
+    pref(tHA[3] + 0.06, Object.fromEntries(FIRE.map(s => [s, kb2.pre[s]])));
+    pref(tW2 + 0.6, kb2.post);
+    pref(tSp3 + 0.05, splashSpots);
+    if (splash3) spread(tSp3, WATER, 5, 'Awesome Splash', { tell: tW2 - 3, own: 0.25 });
+    else stack(tSp3, [wH], 6, 4, 4, 'Awesome Slab', { tell: tW2 - 3 });
+    call(tW2 - 7, `Knockback from the ${dirName(from2)}; the line ${side(from2, off2)}; then water ${splash3 ? 'spread' : 'stack'}, clear of the steam`, { alert: true, dur: 6 });
+    // ----- Cutback Blaze on a fire player (Toxic, OCE: fire stacked south of her; nomnom: the fire tank far east), all
+    // into its slice after; Deep Impact on the water tank, far out in the slice from Deep Blue -----
+    if (nomnom) pref(tSteam2 + 0.05, { [fT]: clump(fireIn(tSteam2, tCut2), add(Rc2, at(cutDir, 9.5)), 1, onSq, { m: 0.6 })[0] });
+    raid(tCut2, 0.3, 'Cutback Blaze', 5.2);
+    hz({ t: tCut2, tell: tCut2 - 5.2, shape: 'cone', from: 'boss', aim: 'target', targets: [cutTarget], half: 165, r: 60, dmg: 0, quiet: true, name: 'Cutback Blaze' });
+    puddle({ shape: 'cone', from: 'boss', aim: 'target', targets: [cutTarget], half: 165, r: 60 }, tCut2, snEnd, 'Cutback Blaze (fire)');
+    const cone2 = { shape: 'cone', at: Rc2, deg: cutDir, half: 165, r: 60 };
+    fire(cone2, tCut2 + 2.4, snEnd);
+    const Bd = add(Rc2, at(cutDir, 5)), wTank = clump(fireIn(tCut2, snEnd), add(Rc2, at(slice2, 16.5)), 1, onSq, { m: 1.3 })[0];
+    const inSlice = assign(S.filter(s => s !== wT), clump(fireIn(tCut2, snEnd).concat([{ shape: 'circle', at: wTank, r: 6.4 }]), add(Rc2, at(slice2, 8.5)), 7, onSq, { gap: 0.5, m: 1.2 }));
+    pref(tCut2 + 0.05, Object.assign(inSlice, { [wT]: wTank }));
+    buster(tDI2, wT, 6, 'Deep Impact', { tell: tDI2 - 5.1 });
+    throwOff(tDI2, Bd, wT);
+    call(tCut2 - 5.2, nomnom ? 'Fire tank: bait Cutback Blaze far east; everyone into the slice west' : `Fire: stack ${dirName(cutDir)} of her for Cutback Blaze; then into the slice`, { alert: true, dur: 5 });
+    call(tDI2 - 5.1, 'Water tank: bait the buster far out in the slice', { slot: wT, alert: true, dur: 5 });
+    divers(1);
+
+
+    // ======================================================== Deep Aerial: the bubble ===============================
+    // Parallel: the healers take the tower and are held in Watery Grave in the middle (here a step west in it, as the
+    // sim can't make them immune to Red Hot's waves through it); the floor is a circle meanwhile. Six rounds of
+    // tethered Xtreme Waves: Red Hot rides hers from where she is to her target, straight through the bubble; Deep
+    // Blue's runs parallel, clear of it. Everyone else waits east, clear of both.
+    const tDA = T('Deep Aerial (damage + stun)', 0, 334.8), tDAc = T('Deep Aerial (tower)', 0, 328.8), JAIL = ['H1', 'H2'];
+    const FREE = S.filter(s => !JAIL.includes(s)), freed = T('Xtreme Wave 6', 0, 388.3) + 5;
+    pref(tDAc, Object.assign({ H1: [-0.8, 0.4], H2: [0.8, -0.4] }, assign(FREE, clump([{ shape: 'circle', at: [0, 0], r: 6.5 }], [10, 0], 6, onSq, { gap: 0.8 }))));
+    hz({ t: tDA, tell: tDAc, effect: 'tower', shape: 'circle', at: [0, 0], r: 6, soak: [2, 2], dmg: 0.3, fail: 0.9, name: 'Deep Aerial' });
+    call(tDAc, 'Healers: the tower (the bubble); everyone else out', { alert: true, dur: 5 });
+    pref(tDA + 0.05, { H1: [-3.5, 0.8], H2: [-3.5, -0.8] });
+    for (const s of JAIL) {
+      debuff(s, 'stun', 'Stun', 'held', tDA, tDA + 2);
+      debuff(s, 'wateryGrave', 'Watery Grave', 'held in the bubble', tDA + 2.9, freed);
+    }
+    hz({ t: 339.5, tell: tDA, shape: 'donut', at: [0, 0], r0: 20, dmg: 1.5, name: 'Watery Grave (the floor shrinks)' });
+    const s0 = pick([1, -1]), order6 = shuffle(FREE);
+    let redSrc = [14, 14 * s0], blueSrc = [-14, 14 * s0], lastFire = redSrc;
+    bossTo(T('Xtreme Wave 1', 0, 345.7) - 7.8, redSrc);
+    for (let k = 0; k < 6; k++) {
+      const tW = T(`Xtreme Wave ${k + 1}`, 0, 345.7 + 8.5 * k), th = tW + 0.3, tTeth = tW - 5, f = order6[k], w = order6[(k + 3) % 6];
+      const ys = k % 2 ? 1 : -1, fireSpot = k ? [1.5, 18.4 * s0 * ys] : [0.5, -18.4 * s0], waterSpot = k ? [-9, 16.2 * s0 * ys] : [-8, -16.5 * s0];
+      const redLine = { shape: 'line', at: redSrc, deg: brg(sub(fireSpot, redSrc)), len: 60, w: 8 }, blueLine = { shape: 'line', at: blueSrc, deg: brg(sub(waterSpot, blueSrc)), len: 60, w: 8 };
+      const others = FREE.filter(s => s !== f && s !== w);
+      pref(tTeth, Object.assign({ [f]: fireSpot, [w]: waterSpot }, assign(others, clump([redLine, blueLine], [11, 0], 4, onCirc, { gap: 0.8, m: 1.4 }))));
+      hz({ t: th, tell: tTeth, effect: 'bait', shape: 'line', from: 'boss', aim: 'target', targets: [f], len: 60, w: 8, dmg: 1, own: 0.15, tether: 'boss', stretch: 28, name: 'Xtreme Wave' });
+      hz({ t: th, tell: tTeth, effect: 'bait', shape: 'line', from: blueSrc, aim: 'target', targets: [w], len: 60, w: 8, dmg: 1, own: 0.15, tether: blueSrc, stretch: 28, name: 'Xtreme Wave' });
+      check({ t: th, kind: 'spot', slots: [f], spots: { [f]: fireSpot }, r: 4, fail: 0.6, name: 'Xtreme Wave (aim it through the bubble)' });
+      bossTo(th + 0.05, fireSpot, 0.4);
+      raid(T(`Scathing Steam ${k + 1}`, 0, tW + 2.1), 0.2, 'Scathing Steam', 1);
+      call(tTeth, `Red tether: stretch it to the ${dirName(brg(fireSpot))} wall, through the bubble`, { slot: f, alert: true, dur: 5 });
+      call(tTeth, `Blue tether: stretch it to the ${dirName(brg(waterSpot))}, parallel, clear of the bubble`, { slot: w, alert: true, dur: 5 });
+      redSrc = fireSpot; blueSrc = waterSpot; lastFire = fireSpot;
+    }
+    const bEnd = [lastFire[0], lastFire[1] > 0 ? 14 : -14];
+    bossTo(freed - 1.7, bEnd, 1);
+    pref(freed - 1.6, hug(bEnd, lastFire[1] > 0 ? 0 : 180));
+    divers(2);
+    P.arena = [{ t: 0, shape: 'square', half: 20 }, { t: 339.5, shape: 'circle', at: [0, 0], r: 20 }, { t: freed + 0.2, shape: 'square', half: 20 }];
+
+
+    // ======================================================== Arena split ============================================
+    // Red Hot rides Flame Floater down the middle from the north wall (fire there till the phase ends): G1 west, G2
+    // east. Spreads in the corners; Deep Blue on one side does proteans at all eight: her side round her, the other
+    // side's far by the line (its healer and ranged at the ends, its tank and melee either side of west); pair stacks
+    // by the markers; the wave across the split, and light-party stacks.
+    const tSF = T('Flame Floater', 0, 414.3), spEnd = T("Divers' Dare x2", 3, 451.8);
+    bossTo(T("Divers' Dare x2", 2, 398.7) + 8.2, [0, 19.5]);
+    const fromS = pick([90, 270]), splitLine = { shape: 'line', at: [0, 19.5], deg: 180, len: 60, w: 8 };
+    call(T('Sick Swell', 4, 409.9), `Wave from the ${dirName(fromS)} (later)`, { dur: 5 });
+    hz(Object.assign({ t: tSF, tell: tSF - 5, dmg: 1.3, name: 'Flame Floater' }, splitLine));
+    hz(Object.assign({ t: tSF + 2.4, tell: tSF, lasts: spEnd - tSF - 2.4, tick: 1, dmg: 0.8, tickDmg: 0.6, react: 0, name: 'Flame Floater (fire)' }, splitLine));
+    fire(splitLine, tSF + 2.4, spEnd);
+    bossTo(tSF + 0.2, [0, 0], 1.2);
+    pref(tSF - 5, Object.assign(assign(G1, clump([splitLine], [-9, 2], 4, onSq, { gap: 0.8 })), assign(G2, clump([splitLine], [9, 2], 4, onSq, { gap: 0.8 }))));
+    call(tSF - 5, 'E/W groups, out of the middle', { alert: true, dur: 5 });
+    // ----- Alley-oop Inferno in the corners -----
+    const tInfS = T('Alley-oop Inferno', 6, 423.6);
+    const CORNER = { R1: [-18.7, 18.7], MT: [-18.7, 12.3], H1: [-18.7, -18.7], M1: [-18.7, -12.3], R2: [18.7, 18.7], OT: [18.7, 12.3], H2: [18.7, -18.7], M2: [18.7, -12.3] };
+    pref(tInfS - 5, CORNER);
+    spread(tInfS, S, 5, 'Alley-oop Inferno');
+    for (const s of S) {
+      puddle({ shape: 'circle', r: 5, from: 'target', targets: [s] }, tInfS, spEnd, 'Alley-oop Inferno (fire)');
+      fire({ shape: 'circle', at: CORNER[s], r: 5 }, tInfS + 2.4, spEnd, true);
+    }
+    call(tInfS - 5, 'Spread in the corners', { dur: 4 });
+    // ----- Proteans from Deep Blue on one side (drawn for the east) -----
+    const bs = pick([1, -1]), Bs = [12 * bs, 0], NEAR = bs > 0 ? G2 : G1, FAR = bs > 0 ? G1 : G2, Mx = (p) => [p[0] * bs, p[1]];
+    const ray = (deg, d) => add(Bs, at(bs > 0 ? deg : 360 - deg, d));
+    const PNEAR = { R: [12, 7.5], T: [17.2, 3], M: [17.2, -3], H: [12, -7.5] }, PFAR = { H: [-5.3, -18.7], M: [-5.6, -3.7], T: [-5.6, 3.7], R: [-5.3, 18.7] };
+    const pSpot = Object.assign({}, ...NEAR.map(s => ({ [s]: Mx(PNEAR[ROLE(s)]) })), ...FAR.map(s => ({ [s]: Mx(PFAR[ROLE(s)]) })));
+    const DNEAR = { R: [30, 7.5], T: [90, 6], M: [150, 6], H: [150, 7.8] }, DFAR = { H: [240, 22.5], M: [240, 20.3], T: [300, 20.3], R: [300, 22.5] };
+    const aS = [aoT(4, 429.2), aoT(5, 431.8)], dblS = Math.random() < 0.5;
+    const dSpot = dblS ? Object.assign({}, ...NEAR.map(s => ({ [s]: ray(...DNEAR[ROLE(s)]) })), ...FAR.map(s => ({ [s]: ray(...DFAR[ROLE(s)]) })))
+      : Object.assign({}, pSpot, ...FAR.filter(s => ROLE(s) === 'M' || ROLE(s) === 'T').map(s => ({ [s]: ray(270, ROLE(s) === 'M' ? 17.6 : 19.5) })));
+    pref(aS[0] - 5.6, pSpot);
+    const aoS = alleyOop(Bs, S, pSpot, aS[0], aS[1], dblS, aoName(dblS));
+    pref(aS[0] + 0.05, dSpot);
+    steam(aS[0], aoS.first); steam(aS[1], aoS.repeat);
+    [4, 5].forEach(k => { if (AO[k]) P.labels.set(AO[k], aoName(dblS) + (k === 5 ? ' (repeat)' : '')); });
+    call(aS[0] - 5.6, `Proteans from Deep Blue (${bs > 0 ? 'east' : 'west'}) => ${dblS ? 'dodge into the gaps' : 'stay (far melee and tank: to the cardinal)'}`, { alert: true, dur: 6 });
+    // ----- Freaky Pyrotation: pair stacks by the markers -----
+    const tFP = T('Freaky Pyrotation', 0, 436.7), PAIRS = [['MT', 'R1', [-8, 13]], ['OT', 'R2', [8, 13]], ['H1', 'M1', [-8, -13]], ['H2', 'M2', [8, -13]]];
+    const pairSpots = {};
+    for (const [a, b, p] of PAIRS) {
+      pairSpots[a] = p; pairSpots[b] = add(p, [0, 0.8]);
+      puddle({ shape: 'circle', r: 6, from: 'target', targets: [a] }, tFP, spEnd, 'Freaky Pyrotation (fire)');
+      fire({ shape: 'circle', at: p, r: 6 }, tFP + 2.4, spEnd, true);
+      call(tFP - 5.3, `Pair stack with ${b}`, { slot: a, dur: 5 });
+      call(tFP - 5.3, `Pair stack with ${a}`, { slot: b, dur: 5 });
+    }
+    pref(aS[1] + 0.05, pairSpots);
+    stack(tFP, ['MT', 'OT', 'H1', 'H2'], 6, 2, 2, 'Freaky Pyrotation', { tell: tFP - 5.3 });
+    // ----- The wave across the split and its line; light-party stacks -----
+    const tW3 = T('Sick Swell', 5, 444.7), off3 = pick([-15, 15]), W3 = wave(tW3, fromS, off3), kbEast = fromS === 270;
+    steam(tW3, [{ shape: 'rect', a: [-25, -25], b: [25, 25] }]);
+    const xPre = kbEast ? [-16.6, 7] : [-7, 16.6], LPO = { H: [0, 0], T: [0.9, 0.5], M: [-0.9, 0.5], R: [0, -0.9] };
+    const preS = Object.assign({}, ...[G1, G2].map((g, i) => Object.fromEntries(g.map(s => [s, add([xPre[i], 0], LPO[ROLE(s)])]))));
+    pref(tFP + 0.05, preS);
+    pref(tW3 + 0.6, all(s => add(preS[s], W3.v)));
+    stack(T('Awesome Slab', 0, 447.1), ['H1', 'H2'], 6, 4, 4, 'Awesome Slab', { tell: tW3 - 2 });
+    call(tW3 - 7, `Knockback from the ${dirName(fromS)}; the line ${side(fromS, off3)}; then light parties`, { alert: true, dur: 6 });
+    divers(3);
+
+
+    // ======================================================== Insane Air 2 ==========================================
+    // Everyone carries a colour (a light party each, "same proximity bait as Snaking") and baits the board of its own
+    // colour, but in turn each role takes the other colour's bait to cleanse: healers first, then melee, then ranged,
+    // the tanks on the buster round. Toxic and Hector: the healers start at the other colour's boss; OCE: everyone at
+    // their own, the turn's role swapping just before. A 15-yalm Bailout stack on each round's cleansed players after.
+    const tXS2 = T('Xtreme Firesnaking/Xtreme Watersnaking', 0, 467.4), ia2End = T("Divers' Dare x2", 4, 526);
+    raid(tXS2, 0.45, 'Xtreme Firesnaking + Xtreme Watersnaking', 5);
+    label('Xtreme Firesnaking/Xtreme Watersnaking', 0, 'Xtreme Firesnaking + Xtreme Watersnaking');
+    bossTo(T('Epic Brotherhood x2', 4, 460.3) - 1, [5, 0], 1);
+    pref(T('Epic Brotherhood x2', 4, 460.3), Object.assign(assign(G1, clump([], [-9, 0], 4, onSq, { gap: 0.8 })), assign(G2, clump([], [9, 0], 4, onSq, { gap: 0.8 }))));
+    call(tXS2 - 5, 'Raidwide; G1 by Deep Blue (west), G2 by Red Hot (east)', { dur: 5 });
+    const FIRE2 = Math.random() < 0.5 ? G2 : G1, colour = (s) => (FIRE2.includes(s) ? 'red' : 'blue'), other = (c) => (c === 'red' ? 'blue' : 'red');
+    const hits2 = airHits.slice(4, 8), baits2 = airBaits.slice(4, 8), bails = E('Bailout').map(e => e.t);
+    const m2 = ['P'].concat(shuffle(['TB', 'S', 'P'])), rolesLeft = ['H', 'M', 'R'], turn = m2.map(m => (m === 'TB' ? 'T' : rolesLeft.shift()));
+    const ROLE_NAME = { T: 'tanks', H: 'healers', M: 'melee', R: 'ranged' };
+    const pos = all(s => (st.air2 !== 'oce' && ROLE(s) === 'H' ? other(colour(s)) : colour(s))), posAt = [];
+    for (let k = 0; k < 4; k++) {
+      for (const s of S) if (ROLE(s) === turn[k]) pos[s] = other(colour(s));
+      posAt.push(Object.assign({}, pos));
+    }
+    for (const s of S) {
+      const k = turn.indexOf(ROLE(s)), red = colour(s) === 'red';
+      debuff(s, red ? 'xtremeFiresnaking' : 'xtremeWatersnaking', red ? 'Xtreme Firesnaking' : 'Xtreme Watersnaking',
+        `cleanse on Insane Air ${k + 1} at ${red ? 'Deep Blue' : 'Red Hot'}`, tXS2, hits2[k]);
+      call(tXS2, `${red ? 'Red' : 'Blue'} debuff: cleanse ${ORD[k]} (${AIR_CALL[m2[k]].toLowerCase()})`, { slot: s, alert: true, dur: 5 });
+    }
+    const startPos = st.air2 === 'oce' ? all(s => colour(s)) : all(s => (ROLE(s) === 'H' ? other(colour(s)) : colour(s)));
+    pref(tXS2 + 0.1, Object.assign(assign(S.filter(s => startPos[s] === 'blue'), clump([], [-11, 11], 4, onSq, { gap: 0.8 })),
+      assign(S.filter(s => startPos[s] === 'red'), clump([], [11, -11], 4, onSq, { gap: 0.8 }))));
+    bossTo(T('Xtreme Firesnaking/Xtreme Watersnaking', 0, 467.4) + 5.2, [13, -13]);
+    const ia2 = insaneAir({ hits: hits2, baits: baits2, tells: hits2.map((t, k) => t - (k ? 10.4 : 9.6)), end: ia2End, bails,
+      mech: (k) => m2[k], group: (k, c) => S.filter(s => posAt[k][s] === c),
+      target: (k, c, m, g) => g.find(s => ROLE(s) === turn[k]),
+      call: (k) => `${AIR_CALL[m2[k]]} (${ROLE_NAME[turn[k]]} swap)` });
+    bails.slice(0, 4).forEach((t, k) => {
+      const tw = S.filter(s => ROLE(s) === turn[k]);
+      stack(t, tw, 15, 4, 4, 'Bailout', { tell: hits2[k], dmg: 0.25 });
+    });
+    const gp2 = airGather(bails[3] || hits2[3] + 1.5, ia2End, [0, 0], ia2.last, 0);
+    bossTo(hits2[3] + 1.5, gp2, 3);
+    divers(4);
+
+
+    // ======================================================== Double Alley-oop ======================================
+    // Proteans from Deep Blue in the middle with everyone on the markers (Double-dip: dodge clockwise; Reverse: stay)
+    // and spreads that leave fire there; then Pyrotation stacking under Deep Blue and rotating clockwise round Red Hot,
+    // while a tank baits Deep Impact far out between the fires (Toxic, Hector: MT; OCE: OT).
+    const tEndF = T("Divers' Dare x2", 5, 566.5);
+    bossTo(T('Epic Brotherhood x2', 5, 532.2) - 3, [0, 0], 2);
+    pref(T('Epic Brotherhood x2', 5, 532.2) - 1, hug([0, 0], 0));
+    const MARK = { MT: 0, OT: 180, H1: 270, H2: 90, M1: 225, M2: 135, R1: 315, R2: 45 }, Bf = [0, 0];
+    const aF = [aoT(6, 542.1), aoT(7, 544.7)], dblF = Math.random() < 0.5, tInfF = T('Alley-oop Inferno', 7, 544.3);
+    const mark = all(s => at(MARK[s], 17)), drop = all(s => at(MARK[s] + (dblF ? 22.5 : 0), 17));
+    pref(aF[0] - 5.6, mark);
+    alleyOop(Bf, S, mark, aF[0], aF[1], dblF, aoName(dblF));
+    if (dblF) pref(aF[0] + 0.05, drop);
+    [6, 7].forEach(k => { if (AO[k]) P.labels.set(AO[k], aoName(dblF) + (k === 7 ? ' (repeat)' : '')); });
+    spread(tInfF, S, 5, 'Alley-oop Inferno');
+    for (const s of S) {
+      puddle({ shape: 'circle', r: 5, from: 'target', targets: [s] }, tInfF, tEndF, 'Alley-oop Inferno (fire)');
+      fire({ shape: 'circle', at: drop[s], r: 5 }, tInfF + 2.4, tEndF, true);
+    }
+    call(aF[0] - 5.6, `Proteans on the markers + spreads => ${dblF ? 'dodge clockwise' : 'stay'}`, { alert: true, dur: 6 });
+    // ----- Pyrotation and Deep Impact -----
+    const tPyF = T('Pyrotation x3', 1, 552.3), phF = [0.9, 2.9, 4.9].map(d => tPyF + d), tDIF = T('Deep Impact', 2, 553.4);
+    const tbF = st.lastTB, Bp2 = [0, 5.5], tri = [0, 120, 240].map(d => at(d, 5.5));
+    const bis = [0, 1, 2, 3, 4, 5, 6, 7].map(i => at(i * 45 + (dblF ? 0 : 22.5), 18.5)).filter(p => onSq(p) && dist(p, Bp2) >= 13);
+    const tbSpot = bis.reduce((a, b) => (dist(b, drop[tbF]) < dist(a, drop[tbF]) ? b : a));
+    pref(aF[1] + 0.05, { [tbF]: tbSpot });
+    const XF = pick(S.filter(s => s !== tbF)), rest7 = S.filter(s => s !== XF && s !== tbF);
+    phF.forEach((t, k) => {
+      const sp = tri[k], prev = k ? tri[k - 1] : null, hs = fireIn(t - 1, t + 0.3);
+      const pts = clump(hs, sp, 7, (p) => onSq(p) && dist(p, sp) <= 3.6 && (!prev || dist(p, prev) >= 4.9), { gap: 0.45, m: k ? 0.5 : 1.2 });
+      pref(k ? phF[k - 1] + 0.05 : aF[1] + 0.05, Object.assign(assign(rest7, pts.slice(1)), { [XF]: pts[0] }));
+      stack(t, [XF], 6, 6, 7, 'Pyrotation', { tell: k ? phF[k - 1] : tPyF - 4.3, dmg: 0.3 });
+      puddle({ shape: 'circle', r: 6, from: 'target', targets: [XF] }, t, tEndF, 'Pyrotation (fire)');
+      fire({ shape: 'circle', at: sp, r: 6 }, t + 2.4, tEndF, true);
+    });
+    pref(phF[2] + 0.05, assign(rest7.concat([XF]), clump(fireIn(phF[2], tEndF), at(300, 9.4), 7, (p) => onSq(p) && dist(p, at(300, 9.4)) <= 4, { gap: 0.45, m: 0.5 })));
+    buster(tDIF, tbF, 6, 'Deep Impact', { tell: T('Deep Impact (bait)', 2, 553.2) - 4.9 });
+    throwOff(tDIF, Bp2, tbF);
+    call(tPyF - 4.3, `Stack x3 on ${XF}: under Deep Blue, then clockwise round Red Hot`, { alert: true, dur: 8 });
+    call(tInfF, 'Bait the knockback buster far out', { slot: tbF, alert: true, dur: 5 });
+    pref(tEndF + 0.05, hug([0, 0], 0));
+    divers(5);
+    divers(6);
+    label('Over the Falls', 0, 'Over the Falls (enrage)');
     return P;
   }
 

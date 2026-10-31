@@ -116,6 +116,8 @@ def map_chunks():
 
 MAP_INDEX = {}           # map_chunks' listing of every map
 EAGER_MAPS = ("pier",)   # loaded with the page (where you start); the rest when you go there
+# Left off the claude.ai artifact, which holds 256 MB at most (the website has them): M2S, a timeline-only test fight.
+ARTIFACT_SKIP = ("m2s",)
 
 
 def icon_chunks():
@@ -224,10 +226,11 @@ def main():
             continue
         keep[m["path"]] = []
         lazy[k] = {n: v for n, v in m.items() if n != "path"}
-    listing = json.dumps(lazy, separators=(",", ":"))
-    src = src.replace(AUDIO_TAG, f"<script>BLM.MAP_FILES = {listing};</script>\n  " + AUDIO_TAG)
-    page = inline(src, keep=keep)
-    (OUT / "artifact.html").write_text(fragment(page), encoding="utf-8")
+    def listed(d):
+        return src.replace(AUDIO_TAG, f"<script>BLM.MAP_FILES = {json.dumps(d, separators=(',', ':'))};</script>\n  " + AUDIO_TAG)
+    page = inline(listed(lazy), keep=keep)
+    art = {k: v for k, v in lazy.items() if k not in ARTIFACT_SKIP}
+    (OUT / "artifact.html").write_text(fragment(inline(listed(art), keep=keep)), encoding="utf-8")
     site(page, [*icons, *chunks, *maps, *audio])
     sim_lab()
     if audio:
