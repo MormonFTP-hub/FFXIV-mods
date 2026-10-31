@@ -518,7 +518,8 @@
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
-    //   form     [{t, model}]: the boss's model by phase, a name from the zone's `extra` models (a second form)
+    //   form     [{t, model}]: the boss's model by phase, a name from the zone's `extra` models (a second form);
+    //            'none' takes it off the field for a while, null brings back its own
     //   others   [{model, path: [{t, at, move}], shows: [[t0, t1], ...], face}]: other bosses beside it (a zone `extra`
     //            model each), out in their windows; attacks can come `from` one by its model name; `face`: a point
     //            or 'party' (the party's middle, the default) to turn to

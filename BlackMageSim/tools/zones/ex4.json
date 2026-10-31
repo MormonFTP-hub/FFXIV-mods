@@ -15,7 +15,7 @@
     "model": {
       "kind": "monster", "id": 933, "body": 1, "variant": 1, "scale": 1.0,
       "pap": "chara/monster/m0933/animation/a0001/bt_common/resident/monster.pap",
-      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
       "specials": "chara/monster/m0933/animation/a0001/bt_common/mon_sp/m0933/"
     },
     "statuses": {

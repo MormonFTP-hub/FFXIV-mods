@@ -890,7 +890,7 @@
     // Deep Blue beside Red Hot: out from Red Hot's return till the end, but for her Sickest Take-offs and the
     // transition's flight; while she's out alone (88.8-150.6) the boss itself is her (the target is hers then).
     BP.sort((a, b) => a.t - b.t);
-    P.form = [{ t: p1End, model: 'blue' }, { t: 150.6, model: null }];
+    P.form = [{ t: p1End, model: 'blue' }, { t: 150.6, model: null }, { t: 161.7, model: 'none' }, { t: 177.4, model: null }];   // both off for the transition
     const gone = [[T('Sickest Take-off', 2, 292.1), T('Sickest Take-off', 3, 301.3) + 2], [T('Sickest Take-off', 4, 435.8), T('Sickest Take-off', 5, 444.7) + 2]];
     P.others = [{ model: 'blue', path: BP, shows: [[150.6, 161.7], [177.4, gone[0][0]], [gone[0][1], gone[1][0]], [gone[1][1], 700]] }];
     return P;

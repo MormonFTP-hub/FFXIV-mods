@@ -477,7 +477,7 @@
     updateBoss() {
       const fight = this.sc.fightOn && this.sc.fightOn() ? this.sc.app.fight : null;
       const form = fight && fight.mech && fight.mech.formAt(fight.t);
-      const data = fight && ((form && fight.data.extra && fight.data.extra[form]) || fight.data.model);
+      const data = fight && ((form && form !== 'none' && fight.data.extra && fight.data.extra[form]) || fight.data.model);
       this.updateOthers(fight);
       if (data !== this.bossData) {
         if (this.boss) this.boss.group.visible = false;
@@ -501,7 +501,7 @@
       const b = this.boss;
       if (!b) return;
       const e = this.e, an = b.anims;
-      b.group.visible = this.texturesLoaded(b);
+      b.group.visible = form !== 'none' && this.texturesLoaded(b);      // 'none': off the field for a while
       b.group.position.set(B.BOSS.x, 0, B.BOSS.z);           // where the fight has it standing
       const party = this.sc.app.party;
       b.group.rotation.y = party && party.active ? e.facing : Math.atan2(e.pos.x - B.BOSS.x, e.pos.z - B.BOSS.z);     // her tank, or you
