@@ -5,8 +5,9 @@
 // its own. Spots are [east, north] yalms from the arena's middle.
 //
 // Two bosses, one sim target: the sim's boss (its model, target ring and anything aimed from 'boss') is Red Hot, who
-// is up longest (and BossMod's primary actor); in Deep Blue's solo stretch (88.8-151.6) it stands where she does, as
-// the party's target. Deep Blue's attacks come from her own spots (`from` points) wherever she stands. Their HP is
+// is up longest (and BossMod's primary actor); in Deep Blue's solo stretch (88.8-150.6) it is Deep Blue (its form),
+// where she stands. Otherwise Deep Blue stands beside her (plan.others, the zone's `blue` model) wherever the game
+// has her, her attacks coming from those spots, out of sight in her Sickest Take-offs and the transition. Their HP is
 // shared: each has 59,491,502 (FFLogs), and Epic Brotherhood evens the two out every phase, so the kill needs both
 // pools: the sim's target has 118,983,004.
 //
@@ -36,7 +37,7 @@
 //   - Arena split: Flame Floater down the middle (fire till the phase ends), spreads in the corners, proteans from Deep
 //     Blue on one side, pair stacks, the wave across the split and light-party stacks.
 //   - Double Alley-oop: proteans with spreads on the markers, Pyrotation round Red Hot and Deep Impact.
-// Simplified: one boss model; the steam along Flame Floater's split line (its fire is a row of balls in the game) is
+// Simplified: one target for both; the steam along Flame Floater's split line (its fire is a row of balls in the game) is
 // left out; where wtfdig gives no diagram, layouts are this script's own, made to satisfy BossMod's shapes.
 (function (B) {
   const S = B.SLOTS;
