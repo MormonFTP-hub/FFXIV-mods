@@ -25,7 +25,11 @@
   const S = B.SLOTS;
   const all = (f) => Object.fromEntries(S.map(s => [s, f(s)]));
   const at = B.bearing;
-  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  // A spot is [east, north], or a function of the fight's second (a lane that follows the floor).
+  const val = (p, t) => (typeof p === 'function' ? p(t) : p);
+  const mid = (a, b) => (typeof a === 'function' || typeof b === 'function'
+    ? (t) => { const x = val(a, t), y = val(b, t); return [(x[0] + y[0]) / 2, (x[1] + y[1]) / 2]; }
+    : [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
   const G1 = ['MT', 'H1', 'M1', 'R1'], G2 = ['OT', 'H2', 'M2', 'R2'];
   const SUPPORT = ['MT', 'OT', 'H1', 'H2'], DPS = ['M1', 'M2', 'R1', 'R2'];
   const DIR = { N: [0, 1], E: [1, 0], S: [0, -1], W: [-1, 0] };
@@ -99,17 +103,41 @@
   const ROW = { farN: 12, nearN: 3.75, nearS: -3.75, farS: -11 };
   const lane = (e, rows) => Object.fromEntries(Object.entries(rows).map(([s, r]) => [s, [e, ROW[r]]]));
   function waves(strat) {
+    // lanes: which of the two safe lanes each spot keeps to as the snake moves them ('west'/'east', or MR's
+    // 'close'/'far' to the boss).
     if (strat === 'game8') {          // G1 west, G2 east; melee north, ranged south
       return { spots: Object.assign(lane(-12.5, { MT: 'farN', M1: 'nearN', H1: 'nearS', R1: 'farS' }), lane(2.5, { OT: 'farN', M2: 'nearN', H2: 'nearS', R2: 'farS' })),
-        pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']] };
+        pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']], lanes: Object.assign(all(() => 'west'), { OT: 'east', M2: 'east', H2: 'east', R2: 'east' }) };
     }
     if (strat === 'mr') {             // melee in the lane nearer the boss, ranged in the far one; G1 north, G2 south
       return { spots: Object.assign(lane(2.5, { MT: 'farN', M1: 'nearN', OT: 'farS', M2: 'nearS' }), lane(-12.5, { H1: 'farN', R1: 'nearN', H2: 'farS', R2: 'nearS' })),
-        pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']] };
+        pairs: [['MT', 'M1'], ['H1', 'R1'], ['OT', 'M2'], ['H2', 'R2']], lanes: { MT: 'close', M1: 'close', OT: 'close', M2: 'close', H1: 'far', R1: 'far', H2: 'far', R2: 'far' } };
     }
     // Hector, Latte, Toxic: G1 west, G2 east; tanks north close, ranged north far, melee south close, healers south far
     return { spots: Object.assign(lane(-7.5, { MT: 'nearN', R1: 'farN', M1: 'nearS', H1: 'farS' }), lane(2.5, { OT: 'nearN', R2: 'farN', M2: 'nearS', H2: 'farS' })),
-      pairs: [['MT', 'R1'], ['OT', 'R2'], ['H1', 'M1'], ['H2', 'M2']], meet: 'near' };
+      pairs: [['MT', 'R1'], ['OT', 'R2'], ['H1', 'M1'], ['H2', 'M2']], meet: 'near', lanes: Object.assign(all(() => 'west'), { OT: 'east', M2: 'east', H2: 'east', R2: 'east' }) };
+  }
+  // A spot that keeps to its lane: in its row, the safe columns of the next wave split into the two lanes; it takes
+  // the middle of its own (the west or east one, or the one nearer or further from the boss).
+  function inLane(base, which, waves) {
+    const row = Math.max(0, Math.min(7, Math.floor((base[1] + 20) / 5)));
+    return (t) => {
+      const w = waves.find(x => x.t > t) || waves[waves.length - 1];
+      const safe = [0, 1, 2, 3, 4, 5, 6, 7].filter(c => !w.set.has(c + 8 * row));
+      if (safe.length === 8 || !safe.length) return base;
+      const groups = [];
+      for (const c of safe) { const g = groups[groups.length - 1]; if (g && c === g[g.length - 1] + 1) g.push(c); else groups.push([c]); }
+      const E = (g) => -20 + 5 * (g[0] + g[g.length - 1] + 1) / 2;
+      let g = groups[0];
+      if (groups.length > 1) {
+        if (which === 'east') g = groups[groups.length - 1];
+        else if (which === 'close' || which === 'far') {
+          const by = groups.slice().sort((a, b) => Math.abs(E(a)) - Math.abs(E(b)));
+          g = which === 'close' ? by[0] : by[by.length - 1];
+        }
+      }
+      return [E(g), base[1]];
+    };
   }
   // The rows' safe columns, a snake: two lanes (columns 1 and 4, 2 and 5, or 3 and 6), each step through a row wide
   // enough for both.
@@ -252,8 +280,11 @@
           disco1Zone = d.zone;
           pref(t, d.zone);
           P.marks.push(...d.all.map(p => ({ kind: 'spotlight', at: p, r: 2.5, t0: t, t1: t + 33 })));
+          // Who gets the short timer (23.5 s) and who the long (31.5 s) is random each pull (the logs: every role
+          // gets either about half the time); two of each in each light party.
+          const short = new Set([...shuffle(G1).slice(0, 2), ...shuffle(G2).slice(0, 2)]);
           for (const s of S) {
-            const ex = t + (SUPPORT.includes(s) ? 23.5 : 31.5);
+            const ex = t + (short.has(s) ? 23.5 : 31.5);
             pref(ex - 4.5, { [s]: d.lights[s] });
             pref(ex + 0.4, { [s]: d.zone[s] });
             check({ t: ex, kind: 'spotlight', slots: [s], lights: d.all, r: 2.5, fail: 0.9, name: 'Burn Baby Burn' });
@@ -371,11 +402,19 @@
             }
           });
           const line = (d) => all(sl => (order[sl] === undefined ? [0, 0] : d === 'E' || d === 'W' ? [0, along[order[sl]]] : [-along[order[sl]], 0]));
-          pref(t - 4, line(dirs[0]));
+          if (strat === 'latte') {
+            // Latte: the party stacks south; each pair meets north when its debuffs have five seconds left.
+            pref(t - 4, all(() => [0, -4]));
+            merges.slice(0, 4).forEach((m, k) => {
+              const pair = S.filter(sl => order[sl] === k);
+              pref(m.t - 5, Object.fromEntries(pair.map(sl => [sl, [0, 4]])));
+              pref(m.t + 0.3, Object.fromEntries(pair.map(sl => [sl, [0, -4]])));
+            });
+          } else pref(t - 4, line(dirs[0]));
           // Re-forming waits for a merge landing in between, so no one crosses a pair as it merges.
           const ns = (d) => d === 'N' || d === 'S';
           run.forEach((e, k) => {
-            if (!k || ns(dirs[k]) === ns(dirs[k - 1])) return;
+            if (!k || strat === 'latte' || ns(dirs[k]) === ns(dirs[k - 1])) return;
             const m = merges.find(x => x.t > run[k - 1].t && x.t < e.t - 1.3);
             pref(m ? m.t + 0.1 : run[k - 1].t + 0.05, line(dirs[k]));
           });
@@ -386,8 +425,7 @@
         // the south; while the first six come in, the top row is all lit.
         phase = 'waves';
         wavePlan = waves(strat);
-        pref(castOf(ev, 3.5), wavePlan.spots);
-        const first = t + 4, n = 14, rows = snake(7);
+        const first = t + 4, n = 14, rows = snake(7), waveSets = [];
         for (let k = 1; k <= n; k++) {
           const set = new Set();
           for (let r = 0; r < 8; r++) {
@@ -398,7 +436,14 @@
           }
           const tt = first + (k - 1) * 2.1;
           hz({ t: tt, tell: tt - 2.1, shape: 'tiles', set, dmg: 1.2, name, react: 2.1 });
+          waveSets.push({ t: tt, set });
         }
+        // A lane keeps its place as the snake moves it (the west one stays west): MR's close lane is whichever was
+        // nearer the boss in the first row.
+        const closeIsEast = rows[0][1] === 4;
+        const side = (w) => (w === 'close' ? (closeIsEast ? 'east' : 'west') : w === 'far' ? (closeIsEast ? 'west' : 'east') : w);
+        wavePlan.spots = all(s => inLane(wavePlan.spots[s], side(wavePlan.lanes[s]), waveSets));
+        pref(castOf(ev, 3.5), wavePlan.spots);
         call(castOf(ev, 3.5), 'Ride the Waves: follow your lane as it zig-zags down', { alert: true, dur: 6 });
         pref(first + (n - 1) * 2.1 + 0.5, UP);
       } else if (name.includes('Quarter Beats')) {

@@ -145,20 +145,20 @@
         if (e.t > (t === null ? -1 : t)) break;
         if (e.spots[slot]) p = e.spots[slot];
       }
-      return p;
+      return typeof p === 'function' ? p(t === null ? -1 : t) : p;      // a spot that follows the floor (a lane)
     }
 
     // The attacks the bots are dodging at second t: the next to land that's already showing and close enough to
     // need moving for, with anything landing with it. (Aimed attacks, cones and proteans, the strat's spots
     // already keep clear of, and the bots ignore.)
     // (With the next ones close behind, 1.6 s, as `soon`: a spot safe from those too saves a dash between them.)
-    dodging(t, soon) {
+    dodging(t, soon, ahead) {
       if (t === null) return [];
       let first = null;
       const out = [];
       for (const h of this.plan.hazards) {
         if (h.t <= t || h.aimed || !h.shape) continue;
-        if (h.tell > t || h.t - t > (h.react ?? 3)) continue;
+        if (h.tell > t || h.t - t > Math.max(h.react ?? 3, ahead || 0)) continue;
         if (first === null) first = h.t;
         if (h.t - first > (soon ? 1.6 : 0.35)) break;
         out.push(h);
@@ -205,6 +205,20 @@
         if (run > left - 0.1) return this.reachable(pos, 6 * Math.max(0, left - 0.15), hz, best) || this.nearestSafe(pos, hz, 40) || best;
       }
       return best;
+    }
+
+    // The guide's spot for you: like the bots' (the strat's spot, or the nearest ground out of what's coming), but
+    // steadier: it shows the next safe spot as soon as the attack is up (up to 3.5 s ahead, so you can walk it), and
+    // never moves with you (the bots' shortcut when they can't make it in time would make it slide as you run).
+    guideTarget(slot, t) {
+      const pref = this.pref(slot, t), hz = this.dodging(t, false, 3.5);
+      if (!hz.length) return pref;
+      const soon = this.dodging(t, true, 3.5);
+      const key = soon.map(h => h.id).join(',') + '|' + pref[0].toFixed(2) + ',' + pref[1].toFixed(2);
+      if (this.guideMemo && this.guideMemo.key === key) return this.guideMemo.p;
+      const p = (soon.length > hz.length && this.nearestSafe(pref, soon, 20)) || this.nearestSafe(pref, hz, 40) || pref;
+      this.guideMemo = { key, p };
+      return p;
     }
 
     reachable(pos, reach, hz, goal) {
@@ -387,7 +401,11 @@
       // pulsing while you're away from it with a dotted line to it, white-rimmed once you're on it.
       const me = this.app.party.playerSlot();
       if (me && this.app.store.settings.showSpot !== false) {
-        const s = this.target(me, t < 0 ? null : t, this.app.party.compassOf(me));
+        const want = this.guideTarget(me, t < 0 ? null : t), g = this.guide || (this.guide = { p: want.slice(), at: sc.time });
+        const k = Math.min(1, (sc.time - g.at) * 12);              // it glides to a new spot rather than jumping
+        g.at = sc.time;
+        g.p = Math.hypot(want[0] - g.p[0], want[1] - g.p[1]) > 25 ? want.slice() : [g.p[0] + (want[0] - g.p[0]) * k, g.p[1] + (want[1] - g.p[1]) * k];
+        const s = g.p;
         const p = this.app.party.compassOf(me), d = Math.hypot(s[0] - p[0], s[1] - p[1]), on = d < 1.1;
         const col = GUIDE_COLOR[B.SLOT_ROLE[me]], pulse = 0.5 + 0.5 * Math.sin(sc.time * 5);
         this.poly(sc, [ring(s, 1.1, 32)], false, `rgba(${col},${on ? 0.6 : 0.42})`, on ? 'rgba(255,255,255,0.95)' : `rgba(${col},1)`, 3);
