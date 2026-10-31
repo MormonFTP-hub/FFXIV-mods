@@ -1,0 +1,25 @@
+{
+  "name": "The Windward Wilds",
+  "label": "EX6 · Guardian Arkveld",
+  "bg": "bg/ex5/01_xkt_x6/fld/x6ff/",
+  "out": "game-map-ex6.js",
+  "sky": "day",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "The Windward Wilds (Extreme)",
+    "boss": "Guardian Arkveld",
+    "timeline": "07-dt/trial/arkveld-ex",
+    "branches": "main",
+    "hitbox": 7.8,
+    "model": {
+      "kind": "demihuman", "id": 1085, "body": 1, "variant": 1, "scale": 1.3,
+      "pap": "chara/demihuman/d1085/animation/a0001/bt_common/resident/idle.pap",
+      "anims": {"idle": "cbbm_id0"},
+      "specials": "chara/demihuman/d1085/animation/a0001/bt_common/mon_sp/d1085/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "physVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44
+    }
+  }
+}

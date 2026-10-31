@@ -123,6 +123,7 @@ EAGER_MAPS = ("pier",)   # loaded with the page (where you start); the rest when
 ARTIFACTS = {
     "artifact.html": ("m5s", "m6s", "m7s", "m8s", "m9s", "m10s", "m11s", "m12s"),          # the Savage tiers
     "artifact-2.html": ("m4s", "ex1", "ex2", "ex3", "ex4", "ex5", "ex6", "ex7", "ex8", "chaotic"),   # the rest
+    "artifact-3.html": ("fru", "umad", "tea", "ucob"),                                                # the ultimates
 }
 
 

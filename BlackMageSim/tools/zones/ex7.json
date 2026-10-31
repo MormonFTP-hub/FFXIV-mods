@@ -1,0 +1,39 @@
+{
+  "name": "Hell on Rails",
+  "label": "EX7 · Doomtrain",
+  "bg": "bg/ex5/01_xkt_x6/fld/x6fg/",
+  "out": "game-map-ex7.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "_a0_box4a|_a0_stg02[.]sgb|_a0_arf00[.]mdl|_u3_emv01|_w3_wat01",
+  "fight": {
+    "duty": "Hell on Rails (Extreme)",
+    "boss": "Doomtrain",
+    "timeline": "07-dt/trial/doomtrain-ex",
+    "branches": "main",
+    "hitbox": 19.0,
+    "model": {
+      "kind": "monster", "id": 969, "body": 1, "variant": 1, "scale": 0.7,
+      "pap": "chara/monster/m0969/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+      "specials": "chara/monster/m0969/animation/a0001/bt_common/mon_sp/m0969/"
+    },
+    "extra": {
+      "aether": {
+        "kind": "monster", "id": 273, "body": 1, "variant": 107, "scale": 1.5,
+        "pap": "chara/monster/m0273/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0"},
+        "specials": "chara/monster/m0273/animation/a0001/bt_common/mon_sp/m0273/"
+      },
+      "ghost": {
+        "kind": "monster", "id": 969, "body": 2, "variant": 1, "scale": 0.1,
+        "pap": "chara/monster/m0969/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0"}
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "physicalVuln": 2940, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44
+    }
+  }
+}

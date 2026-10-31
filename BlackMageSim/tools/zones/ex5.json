@@ -1,0 +1,26 @@
+{
+  "name": "Necron's arena",
+  "label": "EX5 · Necron",
+  "bg": "bg/ex5/01_xkt_x6/fld/x6fe/",
+  "out": "game-map-ex5.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "The Minstrel's Ballad: Necron's Embrace",
+    "boss": "Necron",
+    "timeline": "07-dt/trial/necron-ex",
+    "branches": "main",
+    "hitbox": 20.0,
+    "model": {
+      "kind": "monster", "id": 946, "body": 1, "variant": 1, "scale": 1.25,
+      "pap": "chara/monster/m0946/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+      "specials": "chara/monster/m0946/animation/a0001/bt_common/mon_sp/m0946/"
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "slow": 3464
+    }
+  }
+}
