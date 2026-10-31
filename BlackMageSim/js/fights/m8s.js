@@ -265,7 +265,8 @@
         call(cs, inn ? '(In later)' : '(Out later)', { dur: 4 });
         call(tJump, inn ? `In: behind him, ${dirName(th + 180)}` : `Out: far side, ${dirName(th)}`, { alert: true, dur: 5 });
         reignEnd = tEnd;
-        end(tEnd + 0.4);
+        // (Straight on to the lanes when Weal of Stone's lines follow.)
+        end(next(i, e => e.name === 'Weal of Stone', 14) ? tEnd + 0.02 : tEnd + 0.4);
 
       // ===== Weal of Stone: three lines =====
       } else if (name === 'Weal of Stone') {
@@ -276,7 +277,7 @@
           const k = (G1.includes(s) ? -1 : 1), j = (G1.includes(s) ? G1 : G2).indexOf(s);
           return add(at(u + 90, 4.5 * k), at(u, -3 + 2 * j));
         });
-        pref(begin(Math.max(t - 5.5, reignEnd + 0.15)), lanes);
+        pref(begin(Math.max(t - 5.5, reignEnd + 0.05)), lanes);
         call(t - 4.5, `Lines: stand in a lane ${ns ? 'east or west' : 'north or south'} of the middle`, { alert: true, dur: 4 });
         end(t + 0.3);
 
@@ -690,7 +691,9 @@
           linger(shape, t0 + 0.5, t0 + 11.7, 'Wind Surge', 2);
         });
         call(rounds[0].t - 7, `Tether starts ${startW ? 'south-west' : 'south-east'}`, { dur: 5 });
-        end(rounds[rounds.length - 1].t + 0.3);
+        // Home again after, clear of the puddles still there.
+        const tLast = rounds[rounds.length - 1].t, still = puddles.filter(p => p.t1 > tLast).map(p => p.shape);
+        end(tLast + 0.3, all(s => clump(still, P2UP[s], 1, onPlat(P2UP[s][0] < 0 ? 'SW' : 'SE', 6.8))[0]));
 
       // ===== Champion's Circuit =====
       } else if (name === "Champion's Circuit") {
@@ -730,7 +733,8 @@
         const [dCT, dFT, dCH, dFH] = shuffle(DPS);
         const north2 = pick(['NW', 'NE']), north1 = north2 === 'NW' ? 'NE' : 'NW';
         // The towers: three south (the healers and the close healer's partner), two north (the close tank's pair),
-        // one each west (the far tank), east (its partner) and north (the far healer's partner).
+        // one each west (the far tank), east (its partner) and north (the far healer's partner). Toxic and Rinon take
+        // the same towers (BossMod's Rinon hints) from the same starts; they differ only in the route there.
         const tw = { S: [farH, closeH, dCH], [north2]: [closeT, dCT], SW: [farT], SE: [dFT], [north1]: [dFH] };
         const spots = {}, groups = [];
         for (const [k, g] of Object.entries(tw)) {

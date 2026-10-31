@@ -228,7 +228,7 @@
   // south; Game8 runs it far and the party stays on the boss.
   const FLARE2 = {
     near: { flare: [9.4, 18.6], other: [8.8, -0.8], rest: { H1: [5, -4.5], H2: [7, -5.6], M1: [8, -3.4], M2: [9.2, -4.6], R1: [5.6, -7], R2: [8, -7.6] } },
-    far: { flare: [-9.6, -16], other: UP2.MT, rest: UP2 },
+    far: { flare: [-9.6, -19.2], other: UP2.MT, rest: UP2 },
   };
   // Strange Seeds, for the boss on the west wall ("boss south"): the spot by the boss the strats keep clear of every
   // star, the two wall tethers' spots, the seed drops (waves 1 and 3, waves 2 and 4) and Killer Seeds' pair spots.
@@ -249,7 +249,7 @@
     // Toxic / MR: G1 left, G2 right facing the boss; tanks front far, melee front close, healers back close, ranged
     // back far. Game8: two lines either side, melee nearest the boss, then tanks, healers, ranged.
     toxic: { MT: [-18, 19], M1: [-9, 18], H1: [-9, 10], R1: [-16, 2], OT: [18, 19], M2: [9, 18], H2: [9, 10], R2: [16, 2] },
-    game8: { M1: [-11, 17], MT: [-11, 9], H1: [-11, 1], R1: [-11, -7], M2: [11, 17], OT: [11, 9], H2: [11, 1], R2: [11, -7] },
+    game8: { M1: [-10, 18.5], MT: [-10, 12], H1: [-10, 5.5], R1: [-10, -1], M2: [10, 18.5], OT: [10, 12], H2: [10, 5.5], R2: [10, -1] },
   };
   P3_GLOWER.mr = P3_GLOWER.toxic;
   // Stoneringers 2's seed markers (the intercards, 10 out): Toxic by colour (red NW, yellow NE, blue SE, purple SW).
@@ -528,7 +528,25 @@
 
     // ---- P3 ----
     const WALL3NAME = { 0: 'north', 90: 'east', 180: 'south', 270: 'west' };
-    const pre3 = (inn, wb) => rotAll(clump(inn ? [0, 15] : [0, -5], 1.3), wb);
+    // Before a P3 swing: the ground nearest each slot's next spot that's inside (or outside) the swing's reach and clear
+    // of anything landing with it.
+    const preNear = (targets, wall, inn, extra) => all(s => {
+      const q = targets[s], ok = (p) => Math.abs(p[0]) < 18.8 && Math.abs(p[1]) < 18.8
+        && (inn ? Math.hypot(p[0] - wall[0], p[1] - wall[1]) < 21.712 - 1.6 : Math.hypot(p[0] - wall[0], p[1] - wall[1]) > 26.6)
+        && !(extra || []).some(h => B.mechInside(h, p, 1.5));
+      for (let r = 0; r <= 40; r += 0.5) {
+        const n = Math.max(1, Math.round(r * 5));
+        let best = null, bd = Infinity;
+        for (let k = 0; k < n; k++) {
+          const a = k / n * 2 * Math.PI, c = [q[0] + Math.sin(a) * r, q[1] + Math.cos(a) * r];
+          if (!ok(c)) continue;
+          const d = Math.hypot(c[0] - wall[0], c[1] - wall[1]);
+          if (d < bd) { bd = d; best = c; }
+        }
+        if (best) return best;
+      }
+      return q;
+    });
     const lariatSpots = (side, wb) => rotAll(clump([side === 'right' ? 14 : -14, 2], 1.6), wb);
     const swing3 = (i, ev) => {
       nSwing3++;
@@ -538,8 +556,17 @@
       if (inn) inDisc(wall, 21.712, t, cs, 'Brutish Swing');
       else hz({ t, tell: cs, shape: 'circle', at: wall, r: 25, dmg: 1.4, name: 'Brutish Swing' });
       bossAt(wall, 19.7, cs + 3, t + 8);
-      pref(Math.max(cs + 0.3, R.hold[k] || 0), pre3(inn, wb));
       const lar = k === 0 ? find(i, e => e.name === 'Lashing Lariat', 9) : null, side = R.hands[weapon];
+      // Where each goes next: the lariat's strip, or (the second swing) Glower Power's spreads or the tank tower.
+      const nextSpots = k === 0 ? lariatSpots(side, wb) : R.n === 1 ? rotAll(P3_GLOWER[V3], wb) : slamSpots(R.n === 1 ? 'MT' : 'OT', rotAll(clump([0, inn ? 15 : -5], 1.3), wb));
+      const te = R.tend[k], extra = te && Math.abs(te.t - t) < 1 ? R.stars[k] : null;
+      // (Stoneringers 2: the stars leave one pocket in the swing's reach, the middle of it; everyone takes that.)
+      const pre = R.n === 2 ? rotAll(clump([0, inn ? 14.6 : -5], 0.4), wb) : preNear(nextSpots, wall, inn, extra);
+      R.last = pre;
+      // The seed holders leave their markers once they've dropped; the rest go as soon as the swing shows.
+      const holders = R.holders[k] || [];
+      pref(cs + 0.3, Object.fromEntries(S.filter(s => !holders.includes(s)).map(s => [s, pre[s]])));
+      if (holders.length) pref(R.hold[k], Object.fromEntries(holders.map(s => [s, pre[s]])));
       const io = `${inn ? 'In at' : 'Out from'} tethered wall (${WALL3NAME[wb]})`;
       let text = io;
       if (R.n === 1) text = k === 0 ? `${io} + Big AoE => Get ${side === 'left' ? 'Left' : 'Right'}` : `${io} => Spread, Away from front`;
@@ -553,7 +580,6 @@
         P.labels.set(lar, `Lashing Lariat (get ${side})`);
         call(lc, side === 'left' ? '<== Get Left' : 'Get Right ==>', { alert: true, dur: 4 });
         pref(t + (R.n === 1 ? 0.2 : (R.tend[0] ? R.tend[0].t - t + 0.1 : 0.4)), lariatSpots(side, wb));
-        R.hold[1] = Math.max(R.hold[1] || 0, lar.t + 0.2);
       }
     };
 
@@ -567,12 +593,13 @@
       return ef ? ef.t : ev.t + 3;
     };
 
-    const slaminator = (ev, after) => {
+    // Slaminator's tower: the tank in the middle, everyone else 10.8 out on the bearing they came from.
+    const slamSpots = (tank, prev) => Object.assign(all(s => at(prev && Math.hypot(prev[s][0], prev[s][1]) > 1 ? brg(prev[s]) : CLOCK[s], 10.8)), { [tank]: [0, 0.3] });
+    const slaminator = (ev, after, prev) => {
       nSlam++;
       const tank = nSlam === 1 ? 'MT' : 'OT', cs = castOf(ev, 5);
       hz({ t: ev.t, tell: cs, shape: 'tankcones', aimed: true, slots: [tank], half: 180, r: 8, dmg: 1.4, buster: 0.5, name: 'Slaminator' });
-      const ringR = (s) => at({ MT: 0, R2: 45, H2: 90, M2: 135, OT: 180, M1: 225, H1: 270, R1: 315 }[s], 10.8);
-      pref(Math.max(cs, after), Object.assign(all(ringR), { [tank]: [0, 0.3] }));
+      pref(Math.max(cs, after), slamSpots(tank, prev));
       check({ t: ev.t, kind: 'spot', slots: [tank], spots: { [tank]: [0, 0.3] }, r: 3, fail: 1.4, name: 'Slaminator' });
       call(cs, 'Get tower (tank buster: invuln)', { slot: tank, alert: true, dur: 5 });
       callEach(cs, S.filter(s => s !== tank), 'Tank tower in the middle: stay out', { dur: 5 });
@@ -708,8 +735,10 @@
         grp.forEach(s => deb(s, null, 'Strange Seed', 'drop it on your marker', d.t - 5, d.t));
         callEach(d.t - 5, grp, 'Drop seed', { alert: true, dur: 5 });
         R.hold[k] = d.t + 0.2;
+        R.holders[k] = grp;
         const te = R.tend[k];
-        if (te) grp.map(s => map[s]).filter((p, j, a) => a.findIndex(q => same(q, p)) === j).forEach(p => hzs(star(p), { t: te.t, tell: te.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }));
+        R.stars[k] = [];
+        if (te) grp.map(s => map[s]).filter((p, j, a) => a.findIndex(q => same(q, p)) === j).forEach(p => { R.stars[k].push(...star(p)); hzs(star(p), { t: te.t, tell: te.t - 3, dmg: 1.3, name: 'Tendrils of Terror' }); });
       });
       call(castOf(ev, 4), 'Seeds on the markers, then in/out from the wall', { dur: 5 });
     };
@@ -777,7 +806,7 @@
         nRing3++;
         const swordLeft = Math.random() < 0.5, first = pick(['in', 'out']);
         const walls = nRing3 === 1 ? (() => { const a = pick([0, 90, 180, 270]); return [a, (a + pick([90, 270])) % 360]; })() : [pick([0, 180]), pick([90, 270])];
-        ring3 = { n: nRing3, first, walls, hands: { sword: swordLeft ? 'left' : 'right', club: swordLeft ? 'right' : 'left' }, hold: [], tend: [] };
+        ring3 = { n: nRing3, first, walls, hands: { sword: swordLeft ? 'left' : 'right', club: swordLeft ? 'right' : 'left' }, hold: [], tend: [], stars: [], holders: [] };
         nSwing3 = 0;
         P.labels.set(ev, `Stoneringers (sword ${swordLeft ? 'left' : 'right'}, club ${swordLeft ? 'right' : 'left'})`);
       } else if (name === 'Brutish Swing' && t > 360 && ring3 && nSwing3 < 2) {
@@ -785,10 +814,10 @@
         if (ring3.n === 1 && nSwing3 === 2) {
           const end = glower3(i, ev, ring3.walls[1]);
           const sl = find(i, e => e.name === 'Slaminator', 12);
-          if (sl) { used.add(sl); slaminator(sl, end + 0.3); }
+          if (sl) { used.add(sl); slaminator(sl, end + 0.3, rotAll(P3_GLOWER[V3], ring3.walls[1])); }
         } else if (ring3.n === 2 && nSwing3 === 2) {
           const sl = find(i, e => e.name === 'Slaminator', 10);
-          if (sl) { used.add(sl); slaminator(sl, (ring3.tend[1] ? ring3.tend[1].t : t) + 0.2); }
+          if (sl) { used.add(sl); slaminator(sl, (ring3.tend[1] ? ring3.tend[1].t : t) + 0.2, ring3.last); }
         }
       } else if (name === 'Debris Deathmatch') debris(i, ev);
       else if (name === 'Strange Seeds' && t > 360) strange3(i, ev);
