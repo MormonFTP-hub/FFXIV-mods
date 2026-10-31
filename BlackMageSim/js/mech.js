@@ -16,7 +16,10 @@
   B.bearing = (deg, r) => [Math.sin(rad(deg)) * r, Math.cos(rad(deg)) * r];
   const wrap = (a) => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
   const tileOf = (v) => Math.max(0, Math.min(7, Math.floor((v + ARENA) / TILE)));
-  const clampArena = (p) => [Math.max(-ARENA + 0.8, Math.min(ARENA - 0.8, p[0])), Math.max(-ARENA + 0.8, Math.min(ARENA - 0.8, p[1]))];
+  // The floor's bounding box (the arena's: Mechanics.fitBox sets it as the arena changes); spots are searched and
+  // shapes drawn within it.
+  let BOX = { x0: -ARENA, x1: ARENA, y0: -ARENA, y1: ARENA };
+  const clampArena = (p) => [Math.max(BOX.x0 + 0.8, Math.min(BOX.x1 - 0.8, p[0])), Math.max(BOX.y0 + 0.8, Math.min(BOX.y1 - 0.8, p[1]))];
 
   // ---------- shapes ----------
   // Whether point p ([E, N]) is in the shape, grown by m yalms (a body's width when it lands; more for the bots, who
@@ -76,25 +79,25 @@
     }
     return out;
   }
-  const SQUARE = [[-ARENA, -ARENA], [ARENA, -ARENA], [ARENA, ARENA], [-ARENA, ARENA]];
-  const toArena = (poly) => clip(clip(clip(clip(poly, 1, 0, -ARENA), -1, 0, -ARENA), 0, 1, -ARENA), 0, -1, -ARENA);
+  const square = () => [[BOX.x0, BOX.y0], [BOX.x1, BOX.y0], [BOX.x1, BOX.y1], [BOX.x0, BOX.y1]];
+  const toArena = (poly) => clip(clip(clip(clip(poly, 1, 0, BOX.x0), -1, 0, -BOX.x1), 0, 1, BOX.y0), 0, -1, -BOX.y1);
   const ring = (at, r, n) => Array.from({ length: n }, (_, i) => [at[0] + Math.sin(i / n * 2 * Math.PI) * r, at[1] + Math.cos(i / n * 2 * Math.PI) * r]);
   function outline(h) {
     const at = h.at || [0, 0];
     switch (h.shape) {
       case 'circle': return [toArena(ring(at, h.r, 48))];
-      case 'donut': return [h.r1 === undefined ? SQUARE : ring(at, h.r1, 64), ring(at, h.r0, 48)];
+      case 'donut': return [h.r1 === undefined ? square() : ring(at, h.r1, 64), ring(at, h.r0, 48)];
       case 'line': {
         const a = rad(h.deg), f = [Math.sin(a), Math.cos(a)], s = [Math.cos(a), -Math.sin(a)], b = h.back || 0, w = h.w / 2;
         const pt = (u, v) => [at[0] + f[0] * u + s[0] * v, at[1] + f[1] * u + s[1] * v];
         return [toArena([pt(-b, -w), pt(h.len, -w), pt(h.len, w), pt(-b, w)])];
       }
       case 'cross': return [0, 90].map(k => outline({ shape: 'line', at, deg: h.deg + k, len: h.len, back: h.len, w: h.w })[0]);
-      case 'half': return [clip(SQUARE, h.dir[0], h.dir[1], h.off || 0)];
+      case 'half': return [clip(square(), h.dir[0], h.dir[1], h.off || 0)];
       case 'wedge': {
         const a = rad(h.deg), w = rad(h.half), far = 80;
         const tri = toArena([[0, 0], [Math.sin(a - w) * far, Math.cos(a - w) * far], [Math.sin(a) * far, Math.cos(a) * far], [Math.sin(a + w) * far, Math.cos(a + w) * far]]);
-        return [SQUARE, tri];
+        return [square(), tri];
       }
       case 'rect': return [toArena([[h.a[0], h.a[1]], [h.b[0], h.a[1]], [h.b[0], h.b[1]], [h.a[0], h.b[1]]])];
       case 'tiles': case 'cols': {
@@ -293,7 +296,17 @@
     update(t) {
       const P = this.plan, party = this.app.party;
       this.t = t;
+      this.fitBox();
       if (t === null) return;
+      // Off a deathwall arena's edge on your own feet: a KO, and back onto the floor (the game's fall).
+      const me = party.playerSlot(), a = this.arena();
+      if (a.deathwall && me && !party.knocked(me) && !this.app.engine.ko) {
+        const p = party.compassOf(me);
+        if (!this.onArena(p, -0.5)) {
+          party.hurt(me, 9, 'the edge', 'fell off the arena', { fail: true });
+          party.push(me, this.toEdge(p, this.arenaMiddle()), 0.3);
+        }
+      }
       // An aimed attack locks in where it's going `snap` seconds before it lands (a bait: then you get out).
       for (let i = this.nextHz; i < P.hazards.length && P.hazards[i].t - t < 15; i++) {
         const h = P.hazards[i];
@@ -573,6 +586,34 @@
       };
       return a.parts ? a.parts.some(on) : on(a);
     }
+    // The floor's box (for searching spots and drawing shapes), from the arena now.
+    fitBox() {
+      const a = this.arena(), parts = a.parts || [a];
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const s of parts) {
+        let b;
+        if (s.shape === 'circle') { const c = s.at || [0, 0]; b = [c[0] - s.r, c[0] + s.r, c[1] - s.r, c[1] + s.r]; }
+        else if (s.shape === 'rect') b = [Math.min(s.a[0], s.b[0]), Math.max(s.a[0], s.b[0]), Math.min(s.a[1], s.b[1]), Math.max(s.a[1], s.b[1])];
+        else { const h = s.half ?? ARENA; b = [-h, h, -h, h]; }
+        x0 = Math.min(x0, b[0]); x1 = Math.max(x1, b[1]); y0 = Math.min(y0, b[2]); y1 = Math.max(y1, b[3]);
+      }
+      BOX = { x0, x1, y0, y1 };
+    }
+    arenaMiddle() {
+      return [(BOX.x0 + BOX.x1) / 2, (BOX.y0 + BOX.y1) / 2];
+    }
+
+    // A phase pushed early (B.Fight.jump): everything the skipped stretch held is passed over, not landed.
+    skipTo(to) {
+      const P = this.plan;
+      while (this.nextHz < P.hazards.length && P.hazards[this.nextHz].t < to) this.nextHz++;
+      while (this.nextCk < P.checks.length && P.checks[this.nextCk].t < to) this.nextCk++;
+      while (this.nextCall < P.calls.length && P.calls[this.nextCall].t < to) this.nextCall++;
+      while (this.nextDeb < P.debuffs.length && P.debuffs[this.nextDeb].t0 < to) this.nextDeb++;
+      this.solved = {};
+      this.guideMemo = null;
+    }
+
     // The floor nearest p, back along the way from c (where it came from).
     toEdge(p, c) {
       c = c || [0, 0];
@@ -679,6 +720,7 @@
     draw(sc, t) {
       if (t === null) t = -1;
       const P = this.plan, ctx = sc.ctx;
+      this.fitBox();
       ctx.save();
       this.drawWaymarks(sc);
       for (const mk of P.marks || []) {

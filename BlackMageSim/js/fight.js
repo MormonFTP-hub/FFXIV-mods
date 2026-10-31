@@ -25,6 +25,8 @@
 
     reset() {
       this.next = 0;
+      this.offset = 0;                           // seconds skipped ahead by phase pushes this pull
+      this.pushed = new Set();
       this.casting = null;
       this.castHeard = null;
       this.over = false;
@@ -59,7 +61,7 @@
         this.draw(null);
         return;
       }
-      const t = this.t = e.now - enc.start;
+      const t = this.t = e.now - enc.start + this.offset;
       while (this.next < this.events.length && this.events[this.next].t <= t) this.fire(this.events[this.next++]);
       this.casting = this.events.find((ev) => ev.cast && t >= ev.t - ev.cast && t < ev.t) || null;
       if (this.casting && this.casting !== this.castHeard) {           // the boss's cast sound, as it starts
@@ -71,6 +73,9 @@
         this.mech.update(t);
         const at = B.toSim(this.mech.bossAt(t));             // the boss walks or leaps where the plan has it
         B.BOSS.x = at.x; B.BOSS.z = at.z;
+        // A boss whose size changes by phase (the plan's `hitbox`: [{t, r}]).
+        const hb = this.mech.plan.hitbox;
+        if (hb) { let r = this.hitbox; for (const k of hb) if (k.t <= t) r = k.r; B.DUMMY_RADIUS = r; }
       }
       if (this.maxHp) {
         // Adds that soak damage (script.adds: [{from, to, hp, share, name}]): in each window that share of what the
@@ -83,6 +88,15 @@
           if (take > 0) { this.addsTaken[k] += take; this.soaked += take; }
         });
         this.hp = Math.max(0, this.maxHp - (dealt - this.soaked));
+        // Phase pushes (script.pushes: [{from, to, dealt | adds}]): deal `dealt` to the boss this pull (or kill the
+        // adds of window `adds`) between `from` and `to` and the fight skips ahead to `to`, as the game's HP-driven
+        // phases do; otherwise the timeline gets there on its own.
+        for (const [k, p] of (this.script.pushes || []).entries()) {
+          if (this.pushed.has(k) || t < p.from || t >= p.to) continue;
+          const done = p.dealt !== undefined ? dealt - this.soaked >= p.dealt
+            : p.adds !== undefined ? this.addsTaken[p.adds] >= this.script.adds[p.adds].hp - 1 : false;
+          if (done) { this.pushed.add(k); this.jump(p.to, p.name); return; }
+        }
         if (!this.over && this.hp <= 0) {
           this.over = true;
           app.ui.log(`${this.name} is defeated!`, 'gain', 'battle');
@@ -97,6 +111,16 @@
         app.endEncounter(enc.start + this.data.enrage, 'time');
       }
       this.draw(t);
+    }
+
+    // Skip ahead to second `to` (a phase pushed early): the abilities and mechanics in between never happen.
+    jump(to, name) {
+      const t = this.t;
+      if (t === null || to <= t) return;
+      this.offset += to - t;
+      while (this.next < this.events.length && this.events[this.next].t < to) this.next++;
+      if (this.mech) this.mech.skipTo(to);
+      this.app.ui.log(`${name || 'Phase pushed'}: the fight moves on to ${mmss(to)}.`, 'gain', 'battle');
     }
 
     fire(ev) {
