@@ -535,7 +535,6 @@
           const n = Math.max(1, Math.round(r * 6));
           for (let k = 0; k < n; k++) { const c = add(want, at(k / n * 360, r)), fc = faults(c, owner, prev, taken, ahead); if (fc < bf) { bf = fc; best = c; } }
         }
-        if (bf >= 1 && B.m7sDbg) B.m7sDbg.push({ want, best, bf, owner, prev, taken });
         return best;
       };
       // Plan every wave's drops first (each clear of the wave before's stars).
