@@ -151,7 +151,7 @@
     recentUses: [],
     keybindMode: false,
     held: new Set(),
-    mouse: { left: false, right: false, x: 0, y: 0, moved: 0 },
+    mouse: { left: false, right: false, x: 0, y: 0, moved: 0, owned: false },
     cd: null,
     cdEndedAt: null,
     noNewUntil: 0,
@@ -530,14 +530,26 @@
 
       // The mouse, as in the game's standard controls. Left drag turns the camera; right drag turns the camera
       // and your character with it, and while the right button is down A/D strafe and S backpedals; both
-      // buttons run forward; the wheel zooms. A click without a drag targets the dummy.
+      // buttons run forward; the wheel zooms. A click without a drag targets the dummy. Only a press that starts on
+      // the scene turns the camera (dragging an action off the hotbar across it doesn't). While you turn, the
+      // cursor stays where it was (pointer lock, as the game hides it), so it can't run off the screen; it's back
+      // there when you let go. Settings -> Camera turns that off.
       const canvas = document.getElementById('scene');
       const mouse = this.mouse;
       const setButtons = (ev) => { mouse.left = !!(ev.buttons & 1); mouse.right = !!(ev.buttons & 2); };
+      const locked = () => document.pointerLockElement === canvas;
+      const lock = () => {
+        if (locked() || !canvas.requestPointerLock || this.store.settings.lockCursor === false) return;
+        try {
+          const p = canvas.requestPointerLock();
+          if (p && p.catch) p.catch(() => { /* refused (some embeds): the cursor just moves */ });
+        } catch (e) { /* the same */ }
+      };
       const release = () => {
-        mouse.left = mouse.right = false; mouse.moved = 0;
+        mouse.left = mouse.right = false; mouse.moved = 0; mouse.owned = false;
         this.scene.dragging = false;
         document.body.classList.remove('camdrag');
+        if (locked()) document.exitPointerLock();
       };
       canvas.addEventListener('contextmenu', ev => ev.preventDefault());
       canvas.addEventListener('pointerdown', ev => {
@@ -548,17 +560,21 @@
         }
         ev.preventDefault();
         if (!mouse.left && !mouse.right) { mouse.moved = 0; try { canvas.setPointerCapture(ev.pointerId); } catch (e) { /* ok */ } }
+        mouse.owned = true;
         setButtons(ev);
         mouse.x = ev.clientX; mouse.y = ev.clientY;
       });
       canvas.addEventListener('pointermove', ev => {
         if (ev.pointerType !== 'mouse' && ev.pointerType !== 'pen') return;
+        if (!mouse.owned) return;    // a press that began elsewhere (an action dragged off the hotbar)
         setButtons(ev);              // a second button pressed or let go mid-drag arrives as a move
         if (!mouse.left && !mouse.right) { if (this.scene.dragging) release(); return; }
-        const dx = ev.clientX - mouse.x, dy = ev.clientY - mouse.y;
+        // Locked, the cursor doesn't move: the mouse's own movement turns the camera.
+        const dx = locked() ? ev.movementX : ev.clientX - mouse.x, dy = locked() ? ev.movementY : ev.clientY - mouse.y;
         mouse.x = ev.clientX; mouse.y = ev.clientY;
         mouse.moved += Math.abs(dx) + Math.abs(dy);
         if (mouse.moved > 3) {
+          if (!this.scene.dragging) lock();
           this.scene.dragging = true;
           document.body.classList.add('camdrag');
           this.scene.turnCamera(dx, dy);

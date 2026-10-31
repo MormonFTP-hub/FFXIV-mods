@@ -353,7 +353,7 @@ window.BLM = window.BLM || {};
     ['KeyQ', 'KeyE', 'KeyR', 'KeyF', 'KeyT', 'KeyG', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyY'],
   ];
 
-  B.SIM_VERSION = '2.46.0';      // the README changelog's newest entry (shown in the debug log)
+  B.SIM_VERSION = '2.47.0';      // the README changelog's newest entry (shown in the debug log)
 
   B.DEFAULT_SETTINGS = {
     name: 'Warrior of Light',
@@ -373,6 +373,7 @@ window.BLM = window.BLM || {};
     dummy: 'thavnair',
     dummies: 1,
     cameraFollow: false,  // swing the camera round to keep the dummy in view (off: the game's free camera)
+    lockCursor: true,     // the cursor stays put while you turn the camera (pointer lock)
     mouseSpeed: 1,        // camera turn speed for mouse drags
     jobView: 'expanded',  // the Job window: 'expanded' cards, or 'condensed' (every version on one grid)
   };

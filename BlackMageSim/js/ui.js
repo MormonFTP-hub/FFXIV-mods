@@ -804,6 +804,7 @@ ${job.helpHtml(seq, ic)}
       bind('#s-models', 'gameModels', el => el.checked);
       bind('#s-map', 'gameMap', el => el.checked);
       bind('#s-follow', 'cameraFollow', el => el.checked);
+      bind('#s-lock', 'lockCursor', el => el.checked);
       bind('#s-mouse', 'mouseSpeed', el => parseFloat(el.value), 'input');
       const dummies = (B.GAME_MODELS && B.GAME_MODELS.dummies) || {};
       $('#s-dummy').innerHTML = Object.entries(dummies).map(([k, d]) => `<option value="${k}">${esc(d.label)} Striking Dummy</option>`).join('')
@@ -834,6 +835,7 @@ ${job.helpHtml(seq, ic)}
       $('#s-map').checked = s.gameMap;
       $('#s-map').disabled = !(window.THREE && B.GAME_MAP);
       $('#s-follow').checked = s.cameraFollow;
+      $('#s-lock').checked = s.lockCursor;
       $('#s-mouse').value = String(s.mouseSpeed);
       $('#s-models').disabled = !(B.GAME_MODELS && window.THREE);
       $('#s-dummy').value = s.dummy;
