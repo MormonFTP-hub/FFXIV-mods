@@ -280,6 +280,21 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   check('a turned cleave', r.hurt.length === 1 && r.hurt[0].slot === 'R2', r.hurt);
 }
 
+// Stand still / keep moving, judged by whether you're walking as it lands.
+{
+  let r = run({ hazards: [{ t: 5, effect: 'still', dmg: 0.5, name: 'Pyretic' }], spots: { R2: [0, -10] } });
+  check('standing still under Pyretic', !r.hurt.length, r.hurt);
+  r = run({ hazards: [{ t: 5, effect: 'moving', dmg: 0.5, name: 'Freezing' }], spots: { R2: [0, -10] } });
+  check('standing still under Freezing', whys(r, 'R2')[0] === 'stood still', r.hurt);
+}
+
+// A gaze with a reach: far enough away, looking at it is fine.
+{
+  const g = { t: 5, effect: 'gaze', from: 'boss', range: 8, dmg: 0.5 };
+  const r = run({ hazards: [g], spots: { R2: [0, -12] }, facing: 0 });
+  check('a gaze out of reach', !r.hurt.length, r.hurt);
+}
+
 // A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.
 {
   const hz = [{ t: 3, shape: 'circle', r: 5, at: [0, -10], name: 'skipped' }, { t: 8, shape: 'circle', r: 5, at: [0, -10], name: 'kept' }];

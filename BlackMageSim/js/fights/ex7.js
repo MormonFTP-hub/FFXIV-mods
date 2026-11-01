@@ -29,15 +29,21 @@
 //   - Arcane Revelation: Hail of Thunder, a 16-yalm circle at one of four points (north, west, south, east of the
 //     car's middle), moved two, three or four steps round them each time, three times in car 4, twice in car 6; with
 //     it Hyperconductive Plasma, 13-yalm stacks on a tank and a healer (tanks and melee together, healers and ranged
-//     together). Game8's cheese: tanks north-west, everyone else north-east, taking the Hail with mitigation.
+//     together). Game8's cheese: tanks north-west, everyone else north-east, taking the Hail with mitigation (the bots
+//     stand in it; in the sim it also leaves Damage Down, as anything you stand in does).
 //   - Psychokinesis: Plummet, 8-yalm spreads on two, three, five (car 5) and four (car 6) players; car 5's crates go
 //     a few at a time before each (one of two mirrored patterns).
 // Simplified: one floor level: the platforms are floor you walk onto (no teleport pads), standing on one is "up";
-// the fences and crates stop knockbacks and lasers but the sim's floor doesn't stop you walking through them. Where
-// Hector's tanks, melee and ranged take Windpipe with Arm's Length or Surecast, the sim's spots hide everyone behind
-// a fence or crate instead. The Aether is drawn as a mark (its model is all effects); which tank and healer get
-// Hyperconductive Plasma is random, and Game8's cheese shares the tanks' stack between the two of them. The crates the
-// map shows can't vanish one at a time: car 2's, and car 5's once they start going, are marks on the floor.
+// the fences and crates stop knockbacks and lasers but the sim's floor doesn't stop you walking through them (the
+// pushes are bands of the car, each pushed as far as its stop). Where Hector's tanks, melee and ranged take Windpipe
+// with Arm's Length or Surecast, the sim's spots hide everyone behind a fence or crate instead (you can still use
+// yours). wtfdig's spots are car 1's: elsewhere (cars 2 and 6's stored mechanics, the turrets, the pushes,
+// Psychokinesis' two and three spreads, car 6's Arcane Revelation) the spots are this script's own, the strat's where
+// they can be reached in time, worked out each pull from the obstacles. The Aether is drawn as a mark (its model is all
+// effects); its enrage (Runaway Train, if it lives) isn't: the fight moves on to car 3 either way. Which tank and
+// healer get Hyperconductive Plasma is random, and Game8's cheese shares the tanks' stack between the two of them.
+// The crates the map shows can't vanish one at a time: car 2's (the map also has the normal mode's there), and car
+// 5's once they start going, are marks on the floor.
 (function (B) {
   const S = B.SLOTS;
   const at = B.bearing;
@@ -246,21 +252,23 @@
 
     // The floor, the map's look and the crates' marks, car by car.
     const SCENERY = ['a0_arf07', 'a0_brg', 'a0_lin', 'a0_rai', 'a0_stc01', 'a0_stc03', 'a1_', 'a2_'];
-    const TRAIN = ['a0_stg', 'a0_fen02', 'a0_fen03', 'a0_fen04', 'a0_arf05', 'a0_arf06', 'a0_wal0r'];
+    // The train's cars (car 3's and 5's plain deck, a0_stg01, only while on them: the map has the normal mode's cars
+    // too, whose plain decks lie over the other cars' own).
+    const TRAIN = ['a0_stg00', 'a0_stg02', 'a0_stg03', 'a0_stg04', 'a0_stg05', 'a0_stg0r', 'a0_fen02', 'a0_fen03', 'a0_fen04', 'a0_arf05', 'a0_arf06', 'a0_wal0r'];
     const look = (t, car, extra) => P.looks.push({ t: +t.toFixed(2), show: [...TRAIN, ...SCENERY, ...extra], shift: [0, 50 * (car - 1)] });
     const floor = (t, obs) => P.arena.push({ t: +t.toFixed(2), parts: floorRects(obs) });
     const crateMarks = (obs, t0, t1) => { for (const o of obs) if (o.kind === 'crate') mark({ shape: 'rect', a: [Math.max(-W, o.x0), Math.max(-L, o.y0)], b: [Math.min(W, o.x1), Math.min(L, o.y1)] }, t0, t1, 'rgba(120,110,255,0.42)'); };
     const PLATS = ['a0_arf02', 'a0_arf03', 'a0_arf04', 'a0_warp', 'a0_fen01'];
     look(0, 1, PLATS); floor(0, obsAt(0));
     look(T.c2, 2, PLATS); floor(T.c2, obsAt(T.c2)); crateMarks(obsAt(T.c2), T.c2, T.c3);
-    look(T.c3, 3, ['a0_arf02', 'a0_arf03', 'a0_arf04', 'a0_warp0', 'a0_fen01']); floor(T.c3, []);
+    look(T.c3, 3, ['a0_stg01', 'a0_arf02', 'a0_arf03', 'a0_arf04', 'a0_warp0', 'a0_fen01']); floor(T.c3, []);
     P.looks.push({ t: +T.int.toFixed(2), show: ['a3_emv01', 'a0_stc04'], shift: [500, -500], lift: 900 });
     P.arena.push({ t: +T.int.toFixed(2), shape: 'circle', at: [0, 0], r: 14.5 });
-    look(T.back, 3, ['a0_arf02', 'a0_arf03', 'a0_arf04', 'a0_warp0', 'a0_fen01']); floor(T.back, []);
+    look(T.back, 3, ['a0_stg01', 'a0_arf02', 'a0_arf03', 'a0_arf04', 'a0_warp0', 'a0_fen01']); floor(T.back, []);
     look(T.c4, 4, PLATS); floor(T.c4, obsAt(T.c4));
-    look(T.c5, 5, ['a0_box01']); floor(T.c5, obsAt(T.c5));
+    look(T.c5, 5, ['a0_stg01', 'a0_box01']); floor(T.c5, obsAt(T.c5));
     for (let k = 1; k < c5Stage.length; k++) {
-      look(c5Stage[k], 5, []); floor(c5Stage[k], obsAt(c5Stage[k]));
+      look(c5Stage[k], 5, ['a0_stg01']); floor(c5Stage[k], obsAt(c5Stage[k]));
       crateMarks(obsAt(c5Stage[k]), c5Stage[k], k + 1 < c5Stage.length ? c5Stage[k + 1] : T.c6);
     }
     look(T.c6, 6, [...PLATS, 'a0_box01']); floor(T.c6, obsAt(T.c6));
@@ -747,7 +755,9 @@
       const car = carAt(ev.t), clump = car === 5 ? [0, 12.4] : car === 6 ? [-1.5, 7.5] : [2, 6.2];
       // Gathered once whatever's landing just before is done.
       const busy = P.hazards.filter(h => !h.hidden && !h.raidwide && h.t > ev.t - 3.5 && h.t <= ev.t + 0.6).map(h => h.t);
-      const goT = Math.max(ev.t - 3, ...busy.map(t => t + 0.1));
+      let goT = Math.max(ev.t - 3, ...busy.map(t => t + 0.1));
+      // After whatever sends the party back to its places meanwhile.
+      goT = Math.max(goT, ...P.prefs.filter(p => p.t >= goT && p.t <= ev.t + 0.5).map(p => p.t + 0.01));
       pref(goT, nudge(Object.fromEntries(S.map((s, i) => [s, r2(add(clump, i ? at(i * 360 / 7, 1.0) : [0, 0]))])), ev.t));
       hz({ t: tDet, tell: ev.t - 0.5, shape: 'circle', r: 4, from: 'target', targets: S.slice(), snap: tDet - ev.t - 1.0, dmg: 0.8, name: 'Third Rail' });
       call(ev.t - 2, 'Bait Puddles', { dur: 2 });

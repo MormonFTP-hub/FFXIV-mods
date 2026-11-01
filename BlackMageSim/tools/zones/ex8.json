@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "_a1_arf11|_u1_|_a1_plr|_a2_(nat|arf|plr|stg02)|_u2_(nat|arf)|_a0_stg",
+  "exclude": "_a1_arf11|_a1_nat07|_u1_|_a1_plr|_a2_(nat|arf|plr|stg02)|_u2_(nat|arf)|_u[23]_emv|_a0_stg",
   "fight": {
     "duty": "The Unmaking (Extreme)",
     "boss": "Enuo",

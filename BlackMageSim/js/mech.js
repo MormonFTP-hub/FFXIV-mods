@@ -503,7 +503,10 @@
     //                        point moves; Arm's Length and Surecast stop it (unless `unstoppable`); `immune`: the bots
     //                        that use them. Off the floor is a KO with the arena's `deathwall`, else its edge stops you
     //            'pull'      toward its point, `dist` at most, stopping `minDist` short of it
-    //            'gaze'      look away: whoever faces it (its point within 45 degrees of where they face) is hit
+    //            'gaze'      look away: whoever faces it (its point within 45 degrees of where they face) is hit;
+    //                        `range`: only within that many yalms of it
+    //            'still'     stand still as it lands (Pyretic, chains); 'moving': keep moving (Freezing Up); with
+    //                        `targets`, only they're checked
     //   status   [key, seconds]: a status it leaves on whoever it hits
     //   lasts    it stays that long (a puddle), hitting whoever's in it every `tick` seconds (1) for `tickDmg`
     //   tether   a point (usually 'boss'): a line from it to each target while it's coming; `stretch`: the target must
@@ -778,11 +781,21 @@
     effectOn(h, m, p) {
       const party = this.app.party, eff = h.effect || 'hit';
       const ps = this.parts(h);
+      if (eff === 'still' || eff === 'moving') {
+        // Pyretic and the like (stand still as it lands) or Freezing (keep moving): the bots do; you're checked by
+        // whether you're walking as it lands (the self-check's perfect player does what it says).
+        if (m.slot !== party.playerSlot() || this.app.qa) return null;
+        if (h.targets && !ps.some(s => s.owner === m.slot)) return null;
+        const moving = !!this.app.engine.moving;
+        if (eff === 'still' ? moving : !moving) return { dmg: h.dmg, why: eff === 'still' ? 'moved' : 'stood still', fail: true, status: h.status };
+        return null;
+      }
       if (eff === 'gaze') {
         if (m.slot !== party.playerSlot()) return null;          // the bots look away
         const face = this.playerFacing();
         const look = ps.some(s => {
           if (s.owner === m.slot) return false;                  // the gaze's own target is spared, as in the game
+          if (h.range && Math.hypot(s.at[0] - p[0], s.at[1] - p[1]) > h.range) return false;   // out of its reach
           const d = Math.atan2(s.at[0] - p[0], s.at[1] - p[1]) * 180 / Math.PI;
           return Math.abs(((d - face + 540) % 360) - 180) < 45;
         });
@@ -1027,6 +1040,7 @@
     if (!f || !f.mech) return null;
     const strats = opts.strats || Object.keys(f.script.strats), slots = opts.slots || B.SLOTS, reps = opts.reps || 1;
     const keep = { strats: Object.assign({}, st.strats), slot: st.partySlot, dmg: st.takeDamage, pos: Object.assign({}, e.pos) };
+    app.qa = true;                    // the perfect player does what movement checks ask
     if (app.enc) app.endEncounter(e.now, 'idle');
     const hurt = P.hurt, issues = [];
     let runs = 0;
@@ -1055,6 +1069,7 @@
       }
     } finally {
       P.hurt = hurt;
+      app.qa = false;
       st.strats = keep.strats; st.partySlot = keep.slot; st.takeDamage = keep.dmg;
       f.t = null; f.reset(); P.setup(); app.placeStart();
     }

@@ -59,6 +59,7 @@ else {
 
 // The app, cut down to what the mechanics, the party and the fight touch.
 const app = {
+  qa: true,                 // a perfect player: does what movement checks ask (stand still, keep moving)
   store: { settings: { strats: {}, partySlot: 'auto', takeDamage: true, showSpot: true } },
   engine: { pos: { x: 0, y: 0, z: -8 }, now: 0, maxHp: 100000, hp: 100000, job: { role: 'caster', id: 'blm' }, facing: Math.PI, ko: false, untargetable: false, interrupt() {}, has: () => false, queue: [], outMult: 1 },
   ui: { log() {}, callout() {}, fly() {}, count() {} },

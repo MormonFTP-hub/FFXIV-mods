@@ -326,7 +326,7 @@
       const tails = (side) => [{ shape: 'line', at: r2(o), deg: deg360(f), len: 40, w: 4 }, { shape: 'line', at: r2(o), deg: deg360(f + 15 * side), len: 40, w: 4 }];
       const cleave = (side) => ({ shape: 'line', at: r2(rel(o, f, 0, 9 * side)), deg: deg360(f), len: 80, back: 40, w: 28 });
       const steps = [];
-      const put = (t, tell, sh, dmg, name) => { hz(Object.assign({ t: +t.toFixed(2), tell: +tell.toFixed(2), dmg, name, react: 2.5 }, sh)); steps.push({ t: +t.toFixed(2), shapes: [sh] }); };
+      const put = (t, tell, sh, dmg, name) => { hz(Object.assign({ t: +t.toFixed(2), tell: +tell.toFixed(2), dmg, name, react: 2.5, aimed: o2.spots === false }, sh)); steps.push({ t: +t.toFixed(2), shapes: [sh] }); };
       [first, -first].forEach((side, j) => {
         const tb = j ? t2 : ev1.t, tell = j ? tSide1 : cs, [a, b] = tails(side);
         put(tb, tell, a, 1.0, 'Chainblade Blow');
@@ -372,7 +372,7 @@
     const stackSpots = (kind, fr) => (kind === 'white' ? { G1: fr.pt(6, -9.5), G2: fr.pt(18, 9.5) } : { G1: fr.pt(9.6, 0), G2: fr.pt(22, 0) });
     function dashHazards(ev, kind, from, to, tS, steps) {
       const fast = ev.t > 300, cs = ev.t - (fast ? 4 : 5), dir = brg(sub(to, from));
-      const put = (o) => { const h = hz(Object.assign({ react: 2.5 }, o)); if (steps) steps.push({ t: h.t, shapes: [{ shape: h.shape, at: h.at, deg: h.deg, len: h.len, w: h.w }] }); return h; };
+      const put = (o) => { const h = hz(Object.assign({ react: 2.5, aimed: !!steps }, o)); if (steps) steps.push({ t: h.t, shapes: [{ shape: h.shape, at: h.at, deg: h.deg, len: h.len, w: h.w }] }); return h; };
       put({ t: ev.t, tell: cs, shape: 'line', at: from, deg: dir, len: 40, w: 4, dmg: 1.2, name: 'Siegeflight' });
       put({ t: +(ev.t + 1.6).toFixed(2), tell: cs, shape: 'line', at: from, deg: dir, len: 40, w: 8, dmg: 1.2, name: 'Siegeflight' });
       if (kind === 'white') put({ t: tS, tell: cs, shape: 'line', at: from, deg: dir, len: 40, w: 16, dmg: 1.4, name: 'Guardian Resonance' });
@@ -406,7 +406,7 @@
       const waveDir = brg(sub(fromA, toA)), steps = [];
       for (let k = 0; k < 5; k++) {
         const tt = +(tR + 2.5 + 2.585 * k).toFixed(2), sh = { shape: 'line', at: r2(add(toA, at(waveDir, 8 * k))), deg: waveDir, len: 8, w: 40 };
-        hz(Object.assign({ t: tt, tell: k >= 2 ? +(tt - 2 * 2.585).toFixed(2) : tR, dmg: 1.2, name: "Wyvern's Radiance (the wave)", react: 2.4 }, sh));
+        hz(Object.assign({ t: tt, tell: k >= 2 ? +(tt - 2 * 2.585).toFixed(2) : tR, dmg: 1.2, name: "Wyvern's Radiance (the wave)", react: 2.4, aimed: true }, sh));
         steps.push({ t: tt, shapes: [sh] });
       }
       // The second puddles: just past the first wave, each light party its own side.
@@ -444,13 +444,13 @@
       const tR = [r1.t, r2_ ? r2_.t : r1.t + 2.1, r3 ? r3.t : r1.t + 4.15], steps = [];
       pts.forEach((p, j) => {
         const from = j ? pts[j - 1] : rushStart[k], sh = { shape: 'line', at: r2(from), deg: brg(sub(p, from)), len: dist(from, p), w: 12 };
-        hz(Object.assign({ t: tR[j], tell: cs + 2 * j, dmg: 1.3, name: 'Rush', react: 2.5 }, sh));
+        hz(Object.assign({ t: tR[j], tell: cs + 2 * j, dmg: 1.3, name: 'Rush', react: 2.5, aimed: true }, sh));
         steps.push({ t: tR[j], shapes: [sh] });
         const t0 = r1.t + 1.52 + 2.03 * j;
         [[0, 8], [8, 14], [14, 20], [20, 26]].forEach(([a, b], i) => {
           const s = a ? { shape: 'donut', at: r2(p), r0: a, r1: b } : { shape: 'circle', at: r2(p), r: b };
           const tt = +(t0 + 2 * i).toFixed(2);
-          hz(Object.assign({ t: tt, tell: i ? +(tt - 2).toFixed(2) : cs + 2 * j, dmg: 1.2, name: "Wyvern's Radiance (quake)", react: 2 }, s));
+          hz(Object.assign({ t: tt, tell: i ? +(tt - 2).toFixed(2) : cs + 2 * j, dmg: 1.2, name: "Wyvern's Radiance (quake)", react: 2, aimed: true }, s));
           steps.push({ t: tt, shapes: [s] });
         });
       });
@@ -555,9 +555,9 @@
     const crystalMarks = (L, T, ct) => {
       ct.forEach(c => { if (c.t !== null) mark({ shape: 'circle', at: c.at, r: c.big ? 1.2 : 0.7 }, T + 0.1, c.t, 'rgba(150,225,255,0.85)'); });
     };
-    const crystalHazards = (ct, t0) => ct.forEach(c => {
+    const crystalHazards = (ct, t0, aimed) => ct.forEach(c => {
       if (c.t === null) return;
-      hz({ t: c.t, tell: +Math.max(t0, c.t - 2.5).toFixed(2), shape: 'circle', at: c.at, r: c.big ? 12 : 6, dmg: c.big ? 1.4 : 1.0, name: "Wyvern's Radiance (crystal)", react: 2.4 });
+      hz({ t: c.t, tell: +Math.max(t0, c.t - 2.5).toFixed(2), shape: 'circle', at: c.at, r: c.big ? 12 : 6, dmg: c.big ? 1.4 : 1.0, name: "Wyvern's Radiance (crystal)", react: 2.4, aimed: !!aimed });
     });
 
     // ===== The first exaflares: Wyvern's Vengeance from the middle, spreads =====
@@ -569,12 +569,12 @@
       sets.forEach((ts, k) => {
         for (let d = k % 2 ? 45 : 0; d < 360; d += 90) for (let j = 0; j < 3; j++) {
           const tt = +(ts + [0, 1.12, 2.18][j]).toFixed(2), sh = { shape: 'circle', at: r2(at(d, 6 + 8 * j)), r: 6 };
-          hz(Object.assign({ t: tt, tell: +Math.max(ts - 5, tt - 2.3).toFixed(2), dmg: 1.0, name: "Wyvern's Vengeance", react: 2.2 }, sh));
+          hz(Object.assign({ t: tt, tell: +Math.max(ts - 5, tt - 2.3).toFixed(2), dmg: 1.0, name: "Wyvern's Vengeance", react: 2.2, aimed: k < 2 }, sh));
           exa.push({ t: tt, shape: sh, delay: 1.6 });
         }
       });
       const ct = crystalTimes(crystalsOf(TOWERS1), exa);
-      crystalHazards(ct, sets[0] - 3);
+      crystalHazards(ct, sets[0] - 3, true);
       crystalMarks(TOWERS1, T, ct);
       // Supports spread on the intercardinals, DPS beyond them; then the DPS on the cardinals, supports beyond.
       const IC = { MT: 315, H2: 45, OT: 135, H1: 225, R1: 315, R2: 45, M2: 135, M1: 225 };
@@ -678,7 +678,7 @@
     if (wrath) {
       const tm = +(wrath.t + 2.5).toFixed(2), beta = brg(X), steps = [];
       const lineAt = (axis, off, w) => ({ shape: 'line', at: r2(at(axis + 90, off)), deg: deg360(axis), len: 40, back: 40, w });
-      const put = (t, tell, sh) => { hz(Object.assign({ t: +t.toFixed(2), tell: +tell.toFixed(2), dmg: 1.2, name: "Wyvern's Radiance (Wrathful Rattle)", react: 2.2 }, sh)); steps.push({ t: +t.toFixed(2), shapes: [sh] }); };
+      const put = (t, tell, sh) => { hz(Object.assign({ t: +t.toFixed(2), tell: +tell.toFixed(2), dmg: 1.2, name: "Wyvern's Radiance (Wrathful Rattle)", react: 2.2, aimed: true }, sh)); steps.push({ t: +t.toFixed(2), shapes: [sh] }); };
       const outT = [0, 2.58, 5.21, 7.83, 10.46].map(d => tm + d);
       for (const ax of [beta, beta + 90]) {
         put(tm, wrath.t - 1.0, lineAt(ax, 0, 8));
@@ -716,12 +716,12 @@
       PAIRS.forEach((pr, k) => pr.forEach(y => {
         for (let j = 0; j < 6; j++) {
           const tt = +(T0 + [0, 3.03, 6.01][k] + 1.078 * j).toFixed(2), sh = { shape: 'circle', at: r2(rot([20 - 8 * j, y * flip], side - 90)), r: 6 };
-          hz(Object.assign({ t: tt, tell: +Math.max(T0 - 8, tt - 2.2).toFixed(2), dmg: 1.0, name: "Wyvern's Vengeance", react: 2.0 }, sh));
+          hz(Object.assign({ t: tt, tell: +Math.max(T0 - 8, tt - 2.2).toFixed(2), dmg: 1.0, name: "Wyvern's Vengeance", react: 2.0, aimed: true }, sh));
           exa.push({ t: tt, shape: sh, delay: 1.6 });
         }
       }));
       const ct = crystalTimes(crystalsOf(TOWERS1), exa);
-      crystalHazards(ct, T0 - 3);
+      crystalHazards(ct, T0 - 3, true);
       crystalMarks(TOWERS1, T, ct);
       const evC = EA('Chainblade Charge', T0, T0 + 25).find(e => loneStack.has(e)), lone = evC && loneStack.get(evC);
       const steps = mergeSteps([...exa.map(e => ({ t: e.t, shapes: [e.shape] })), ...ct.filter(c => c.t !== null).map(c => ({ t: c.t, shapes: [{ shape: 'circle', at: c.at, r: c.big ? 12 : 6 }] }))]);

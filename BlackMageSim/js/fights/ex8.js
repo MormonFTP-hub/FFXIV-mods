@@ -506,7 +506,8 @@
       P.form = [{ t: afn.t + 0.6, model: 'none' }, { t: tLE - 5, model: 'shadow' }, { t: 296, model: 'none' }, { t: 494.7, model: null }];
       P.hitbox.push({ t: tLE - 5, r: 12.5 }, { t: 296, r: 5 }, { t: 494.7, r: 6 });
       P.arena = [{ t: 0, shape: 'circle', at: [0, 0], r: 20 }, { t: afn.t + 0.6, shape: 'square', half: 30 }, { t: 494.7, shape: 'circle', at: [0, 0], r: 20 }];
-      P.looks.push({ t: 0, show: ['a1_stg00', 'a1_stg01', 'a1_nat', 'a1_arf10'] }, { t: afn.t + 0.6, show: ['a3', 'u3'] }, { t: 494.7, show: ['a2', 'u2', 'a1_nat', 'a1_arf10'] });
+      // The void's floor (the game's has no collision out past the stage): a flat floor (an unmoved `shift`) meanwhile.
+      P.looks.push({ t: 0, show: ['a1_stg00', 'a1_stg01', 'a1_nat', 'a1_arf10'] }, { t: afn.t + 0.6, show: ['a3'], shift: [0, 0] }, { t: 494.7, show: ['a2', 'a1_nat', 'a1_arf10'] });
       P.boss.push({ t: 486.2, at: [0, 20] }, { t: 505.7, at: [0, 4.6], move: 8 }, { t: 523.1, at: [0, 0] });
       pref(486.4, shift(UP, [0, 6]));
       pref(510, UP);
