@@ -1,0 +1,4544 @@
+{
+ "id": "dmu",
+ "name": "Dancing Mad (Ultimate)",
+ "short": "DMU",
+ "duties": [
+  "Dancing Mad (Ultimate)"
+ ],
+ "source": {
+  "title": "Ikuya Mit",
+  "author": "Ikuya Kirishima",
+  "version": "Version 6.3 (4 Oct)",
+  "url": "https://tinyurl.com/ikuyamittydmu",
+  "via": "NAUR · naurffxiv.com/ultimate/kefka"
+ },
+ "about": [
+  "All mechanics require shields.",
+  "Times are phase times (fight time in the tooltip)."
+ ],
+ "slots": [
+  {
+   "key": "MT",
+   "label": "MT",
+   "role": "tank"
+  },
+  {
+   "key": "OT",
+   "label": "OT",
+   "role": "tank"
+  },
+  {
+   "key": "WHM",
+   "label": "White Mage",
+   "jobs": [
+    "WHM"
+   ]
+  },
+  {
+   "key": "AST",
+   "label": "Astrologian",
+   "jobs": [
+    "AST"
+   ]
+  },
+  {
+   "key": "SCH",
+   "label": "Scholar",
+   "jobs": [
+    "SCH"
+   ]
+  },
+  {
+   "key": "SGE",
+   "label": "Sage",
+   "jobs": [
+    "SGE"
+   ]
+  },
+  {
+   "key": "D1",
+   "label": "D1 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "D2",
+   "label": "D2 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "D3",
+   "label": "D3 (ranged)",
+   "role": "ranged"
+  },
+  {
+   "key": "D4",
+   "label": "D4 (caster)",
+   "role": "caster"
+  },
+  {
+   "key": "Extras",
+   "label": "Extras",
+   "role": "extras"
+  }
+ ],
+ "phases": [
+  {
+   "name": "P1 · Kefka",
+   "clock": "p1",
+   "hits": [
+    {
+     "name": "Mystery Magic",
+     "time": "0:38",
+     "t": 38,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit ¹"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole ²",
+         "Zoe Shields"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit ¹"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Mystery Magic"
+     ]
+    },
+    {
+     "name": "Wave Cannon",
+     "time": "0:43",
+     "t": 43,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit (WAR/PLD)"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Holos"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Wave Cannon"
+     ]
+    },
+    {
+     "name": "Double-Trouble Trap",
+     "time": "0:50",
+     "t": 50,
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Double-trouble Trap"
+     ]
+    },
+    {
+     "name": "Light of Judgment",
+     "time": "1:03",
+     "t": 63,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Light of Judgment"
+     ]
+    },
+    {
+     "name": "Gravitas II (Part I)",
+     "time": "1:28",
+     "t": 88,
+     "cells": {
+      "AST": [
+       {
+        "items": [
+         "Macrocosmos"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil",
+         "Seraphism ⁴"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Gravitas"
+     ]
+    },
+    {
+     "name": "Gravitas II (Part II)",
+     "time": "1:46",
+     "t": 106,
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Liturgy of the Bell ³"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Serpah",
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Philosophia"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Gravitas"
+     ]
+    },
+    {
+     "name": "Double-Trouble Trap",
+     "time": "1:58",
+     "t": 118,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Sacred Soil"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Seraph",
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Panhaima",
+         "Zoe Shields"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Double-trouble Trap"
+     ]
+    },
+    {
+     "name": "Light of Judgment",
+     "time": "2:12",
+     "t": 132,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Light of Judgment"
+     ]
+    },
+    {
+     "name": "Double-Trouble Trap",
+     "time": "2:45",
+     "t": 165,
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Double-trouble Trap"
+     ]
+    },
+    {
+     "name": "Indulgent Will",
+     "time": "2:53",
+     "t": 173,
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Indulgent Will"
+     ]
+    },
+    {
+     "name": "Mystery Magic",
+     "time": "3:07",
+     "t": 187,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Mystery Magic"
+     ]
+    }
+   ],
+   "notes": [
+    "All mechanics requires shields! | ➔ Indicates Carry Over",
+    "Mitigation for the first Mystery Magic should carry over till the first Double-Trouble trap unless there is a different usage timing below. Targeted mitigation does not work on Wave Cannon, but does apply to Double-Trouble Trap.",
+    "Use mitigation for Light of Judgement late into the castbar so it will cover Hyperdrive.",
+    "¹ Use your 90s party mitigation as Kefka re-centres to cast the first Graven Image (WAR/PLD can use after Revolting Ruin III finishes).",
+    "² Use your 30s mitigation for the first Mystery Magic after the Graven Image castbar.",
+    "³ You can alternatively use Bell just before the first set of puddles which will provide an immediate heal when the second set of puddles occurs as the Bell will expire shortly after.",
+    "⁴ If you plan to use Dissipation in your opener, use it before Aetherflow. If you use the first Spreadlo earlier, you will get it back for the Double-Trouble Trap in the second Graven Image and be able to use Seraphism earlier/later."
+   ]
+  },
+  {
+   "name": "P2 · Forsaken Kefka",
+   "clock": "p2",
+   "hits": [
+    {
+     "name": "Ultimate Embrace",
+     "time": "0:24",
+     "t": 24,
+     "fightTime": "3:41",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Assist Tanks ¹"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo ²"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Holos ³"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultimate Embrace"
+     ]
+    },
+    {
+     "name": "Forsaken",
+     "time": "0:39",
+     "t": 39,
+     "fightTime": "3:57",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Spreadlo"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Zoe Shields"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken"
+     ]
+    },
+    {
+     "name": "Towers I",
+     "time": "0:53",
+     "t": 53,
+     "fightTime": "4:10",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph",
+         "Fey Illumination"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Panhaima"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers II (Past/Future's End)",
+     "time": "1:03",
+     "t": 63,
+     "fightTime": "4:20",
+     "cells": {
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Fey Illumuniation"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers III (All Things Ending)",
+     "time": "1:14",
+     "t": 74,
+     "fightTime": "4:31",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Macrocosmos"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers IV (Past/Future's End)",
+     "time": "1:24",
+     "t": 84,
+     "fightTime": "4:41",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers V (All Things Ending)",
+     "time": "1:35",
+     "t": 95,
+     "fightTime": "4:52",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Temperance",
+         "Divine Caress"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers VI (Past/Future's End)",
+     "time": "1:45",
+     "t": 105,
+     "fightTime": "5:02",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraphism"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Philosophia"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers VII (All Things Ending)",
+     "time": "1:55",
+     "t": 115,
+     "fightTime": "5:12",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Liturgy of the Bell"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers VIII (Past/Future's End)",
+     "time": "2:06",
+     "t": 126,
+     "fightTime": "5:23",
+     "cells": {
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Liturgy of the Bell"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Light of Judgement",
+     "time": "2:26",
+     "t": 146,
+     "fightTime": "5:43",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Holos ³",
+         "Zoe Shields"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Light of Judgment"
+     ]
+    },
+    {
+     "name": "Wings of Destruction",
+     "time": "2:54",
+     "t": 174,
+     "fightTime": "6:11",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit ⁴"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination",
+         "Seraph"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Wings of Destruction"
+     ]
+    },
+    {
+     "name": "Ultimate Embrace",
+     "time": "3:01",
+     "t": 181,
+     "fightTime": "6:18",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination",
+         "Seraph"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultimate Embrace"
+     ]
+    }
+   ],
+   "notes": [
+    "All mechanics requires shields! | ➔ Indicates Carry Over",
+    "¹ Provide single target mitigation and GCD shield both tanks in the phase transition for Ultimate Embrace. Also assist tanks with the last Ultimate Embrace.",
+    "² Prepare Spreadlo either on the OT shortly beforehand or the MT during Ultimate Embrace to assist the tanks.",
+    "³ Use Holos during the first Ultimate Embrace so it is back for Light of Judgement and provides mitigation to the tanks. Alternatively, you can use Holos for the Wings of Destruction + Ultimate Embrace.",
+    "⁴ Use early to avoid shaking off mitigation if playing WAR."
+   ]
+  },
+  {
+   "name": "P3 · Exdeath & Chaos",
+   "clock": "p3",
+   "hits": [
+    {
+     "name": "Bowels of Agony (Chaos)",
+     "time": "1:08",
+     "t": 68,
+     "fightTime": "7:30",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal ⁵"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil ¹"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole ¹"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint (Chaos)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Bowels of Agony"
+     ]
+    },
+    {
+     "name": "Stray Flames/Tsunami",
+     "time": "1:28",
+     "t": 88,
+     "fightTime": "7:50",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo ⁹",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields ⁹",
+         "Kerachole"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Stray Flames",
+      "Tsunami"
+     ]
+    },
+    {
+     "name": "Thunder III (1st Set)",
+     "time": "1:36",
+     "t": 96,
+     "fightTime": "7:58",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient ²"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Holos ²"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle (Exdeath)"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Thunder"
+     ]
+    },
+    {
+     "name": "Stray Flames/Tsunami",
+     "time": "1:55",
+     "t": 115,
+     "fightTime": "8:17",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Stray Flames",
+      "Tsunami"
+     ]
+    },
+    {
+     "name": "Ultima Blaster",
+     "time": "2:05",
+     "t": 125,
+     "fightTime": "8:27",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination",
+         "Seraphism"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint (Chaos)"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultima Blaster"
+     ]
+    },
+    {
+     "name": "Vacuum Wave",
+     "time": "2:12",
+     "t": 132,
+     "fightTime": "8:34",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "LB3 ⁶"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "LB3 ⁶"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Vacuum Wave"
+     ]
+    },
+    {
+     "name": "Cyclone",
+     "time": "2:16",
+     "t": 136,
+     "fightTime": "8:38",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Cyclone"
+     ]
+    },
+    {
+     "name": "The Decisive Battle",
+     "time": "2:43",
+     "t": 163,
+     "fightTime": "9:05",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal (Exdeath)"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo ⁸"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "The Decisive Battle"
+     ]
+    },
+    {
+     "name": "Accretions ⁴",
+     "info": [
+      "Healer Accretion 1st | DPS Accretion 2nd",
+      "Tanks and DPS should not use any abilities that boosts HP such as Second Wind and Curing Waltz."
+     ]
+    },
+    {
+     "name": "Earthquake",
+     "time": "2:57",
+     "t": 177,
+     "fightTime": "9:19",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Macrocosmos"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Philosophia ¹²"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint (Chaos)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Earthquake"
+     ]
+    },
+    {
+     "name": "Shocking Impact/Shockwave",
+     "time": "3:16",
+     "t": 196,
+     "fightTime": "9:38",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit (WAR/PLD)"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Shocking Impact",
+      "Shockwave"
+     ]
+    },
+    {
+     "name": "Shocking Impact/Shockwave",
+     "time": "3:47",
+     "t": 227,
+     "fightTime": "10:09",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Liturgy of the Bell"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient",
+         "Seraph",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Shocking Impact",
+      "Shockwave"
+     ]
+    },
+    {
+     "name": "Black Holes II (3rd Tether Set)",
+     "time": "3:54",
+     "t": 234,
+     "fightTime": "10:16",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Party Mit (WAR/PLD)"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient",
+         "Scared Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Black Hole"
+     ]
+    },
+    {
+     "name": "Black Holes II (4th Tether Set)",
+     "time": "3:59",
+     "t": 239,
+     "fightTime": "10:21",
+     "cells": {
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Expedient",
+         "Scared Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Black Hole"
+     ]
+    },
+    {
+     "name": "Black Holes II (5th Tether Set)",
+     "time": "4:04",
+     "t": 244,
+     "fightTime": "10:26",
+     "cells": {
+      "SCH": [
+       {
+        "items": [
+         "Fey Illumination"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Black Hole"
+     ]
+    },
+    {
+     "name": "Thunder III (5th Set)",
+     "time": "4:15",
+     "t": 255,
+     "fightTime": "10:37",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Temperance ¹¹"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect ¹¹"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Sacred Soil"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields",
+         "Panhaima ¹¹",
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint (Chaos)"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle (Exdeath)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Thunder"
+     ]
+    },
+    {
+     "name": "Black Holes III (6th Tether Set)",
+     "time": "4:28",
+     "t": 268,
+     "fightTime": "10:50",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign (7-8th Set)"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (7-8th Set)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Black Hole"
+     ]
+    },
+    {
+     "name": "Shocking Impact/Shockwave",
+     "time": "4:55",
+     "t": 295,
+     "fightTime": "11:17",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Shocking Impact",
+      "Shockwave"
+     ]
+    },
+    {
+     "name": "Stomp-a-Mole + Knock Down ¹⁰",
+     "time": "5:23",
+     "t": 323,
+     "fightTime": "11:45",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal ³",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal ³"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraphism ⁷",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint (Chaos)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Stomp-a-Mole",
+      "Knock Down"
+     ]
+    }
+   ],
+   "notes": [
+    "All mechanics requires shields! | ➔ Indicates Carry Over",
+    "Targeted mitigation must be on your firewalled target unless the firewall is down. For the most part, most targeted mitigation is mostly filler and does not work on raidwides. It is mainly used for minimizing tank autos and/or busters.",
+    "Both tanks will get attacked for moderately high damage throughout the entire phase, ensure you are rolling mitigation and heals on them.",
+    "¹ At the beginning of the phase, use 30s mitigation after (when the textbox disappears) Kefka says, \"Oh! What other toys can I throw in here...\" to get tank autos and the raidwide + an additional usage for Stray Flames/Tsunami.",
+    "² There is a very small period where you can cover both hits of Thunder III and the next Stray Flames/Tsumani, if you miss the timing, you can use it next GCD.",
+    "³ Use if holding Chaos, otherwise use at the beginning of P4 for autos.",
+    "⁴ Non-healers should avoid using any healing abilities that may cause their Accretion to pop early such as Second Wind, Curing Waltz or Divine Veil. If both Accretions are activated in a short amount of time, it will cause a wipe.",
+    "Healers will need to manage HP burst accordingly to ensure that Accretions are not popped together. The H1 and H2 can throw single target heals at whoever has the Accretion between them.",
+    "If playing AST, I recommend popping Macrocosmos immediately for the top-up as this will also take care of the tanks. WHM can use Benediction (if not used earlier) to instantly pop the healer Accretion.",
+    "⁵ If you are holding Exdeath instead of Chaos at the beginning, use Reprisal on both before The Decisive Battle finishes.",
+    "⁶ Use LB3 at the W of Vacuum Wave. Either tank can press it, discuss beforehand.",
+    "⁷ Seraphism can be shifted to P4 if you feel you have sufficient mitigation.",
+    "⁸ Prepare Spreadlo on the tanks, prioritizing WAR > DRK > GNB/PLD.",
+    "⁹ Prepare immediately after Bowels of Agony.",
+    "¹⁰ Both healers should have instant cast heals prepared to top up the party between the first and second set of stomps.",
+    "¹¹ If you are holding at the end of P3, you can send this for the 6th Tether set.",
+    "¹² Philosophia should be used after both Accretions resolves to avoid accidentally popping both at the same time."
+   ]
+  },
+  {
+   "name": "P4 · Kefka Says",
+   "clock": "p4",
+   "hits": [
+    {
+     "name": "Grand Cross",
+     "time": "0:29",
+     "t": 29,
+     "fightTime": "12:43",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole",
+         "Philosophia",
+         "Holos"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint ¹"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grand Cross"
+     ]
+    },
+    {
+     "name": "Inferno/Tsunami",
+     "time": "0:35",
+     "t": 35,
+     "fightTime": "12:49",
+     "cells": {
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole",
+         "Holos"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Inferno",
+      "Tsunami"
+     ]
+    },
+    {
+     "name": "Grand Cross",
+     "time": "0:44",
+     "t": 44,
+     "fightTime": "12:58",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient",
+         "Fey Illumination"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Panhaima"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grand Cross"
+     ]
+    },
+    {
+     "name": "Inferno/Tsunami",
+     "time": "0:49",
+     "t": 49,
+     "fightTime": "13:03",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient",
+         "Fey Illumuniation"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Inferno",
+      "Tsunami"
+     ]
+    },
+    {
+     "name": "Grand Cross",
+     "time": "0:59",
+     "t": 59,
+     "fightTime": "13:13",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Party Mit (WAR/PLD)"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient",
+         "Fey Illumuniation"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grand Cross"
+     ]
+    },
+    {
+     "name": "Flood of Naught",
+     "time": "1:11",
+     "t": 71,
+     "fightTime": "13:25",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Liturgy of the Bell"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Macrocosmos"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil ²"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole ²"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Flood of Naught"
+     ]
+    },
+    {
+     "name": "Death Bolt/Wave",
+     "time": "1:21",
+     "t": 81,
+     "fightTime": "13:35",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Death Bolt"
+     ]
+    },
+    {
+     "name": "Ultima Upsurge",
+     "time": "1:39",
+     "t": 99,
+     "fightTime": "13:53",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultima Upsurge"
+     ]
+    },
+    {
+     "name": "Death Bolt/Wave",
+     "time": "1:46",
+     "t": 106,
+     "fightTime": "14:00",
+     "cells": {
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Death Bolt"
+     ]
+    },
+    {
+     "name": "Ultima Upsurge",
+     "time": "2:18",
+     "t": 138,
+     "fightTime": "14:32",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultima Upsurge"
+     ]
+    }
+   ],
+   "notes": [
+    "All mechanics requires shields! | ➔ Indicates Carry Over",
+    "Targeted mitigation (Reprisal, Addle, etc) only works on Ultima Upsurge, the rest is used to assist in mitigating tank auto attacks.",
+    "¹ Use at the beginning of the phase for autos.",
+    "² Use when Neo Exdeath reappears to cast Flood of Naught."
+   ]
+  },
+  {
+   "name": "P5 · Kefka Reimagined",
+   "clock": "p5",
+   "hits": [
+    {
+     "name": "Ultima Repeater",
+     "time": "0:49",
+     "t": 49,
+     "fightTime": "15:11",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit ¹"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields",
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit ¹"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultima Repeater"
+     ]
+    },
+    {
+     "name": "Fell Forces (3x)",
+     "time": "0:54",
+     "t": 54,
+     "fightTime": "15:16",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Fell Forces"
+     ]
+    },
+    {
+     "name": "Chaotic Flood",
+     "time": "1:06",
+     "t": 66,
+     "fightTime": "15:28",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Panhaima"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Holos"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Chaotic Flood"
+     ]
+    },
+    {
+     "name": "Maddening Orchestra",
+     "time": "1:18",
+     "t": 78,
+     "fightTime": "15:40",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Maddening Orchestra"
+     ]
+    },
+    {
+     "name": "Fell Forces (2x) ²",
+     "time": "1:31",
+     "t": 91,
+     "fightTime": "15:53",
+     "cells": {
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil",
+         "Fey Illumination"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Fell Forces"
+     ]
+    },
+    {
+     "name": "Celestriad",
+     "time": "1:49",
+     "t": 109,
+     "fightTime": "16:11",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph ⁴"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Celestriad"
+     ]
+    },
+    {
+     "name": "Ultima Repeater",
+     "time": "2:11",
+     "t": 131,
+     "fightTime": "16:33",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit ¹"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint ⁵"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit ¹"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle ⁵"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ultima Repeater"
+     ]
+    },
+    {
+     "name": "Fell Forces (2x)",
+     "time": "2:16",
+     "t": 136,
+     "fightTime": "16:38",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Fell Forces"
+     ]
+    },
+    {
+     "name": "Stray Entropy",
+     "time": "2:42",
+     "t": 162,
+     "fightTime": "17:04",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal ³"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Stray Entropy"
+     ]
+    },
+    {
+     "name": "Maddening Orchestra",
+     "time": "2:51",
+     "t": 171,
+     "fightTime": "17:13",
+     "cells": {
+      "SCH": [
+       {
+        "items": [
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Maddening Orchestra"
+     ]
+    },
+    {
+     "name": "Fell Forces (3x)",
+     "time": "3:03",
+     "t": 183,
+     "fightTime": "17:25",
+     "cells": {
+      "WHM": [
+       {
+        "items": [
+         "Assist Tanks ²"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Fell Forces"
+     ]
+    },
+    {
+     "name": "Forsaken",
+     "info": [
+      "For Forsaken, use any timed mitigation as late as possible unless otherwise noted.",
+      "It is important that the new round of mitigation for the 5th hit are applied as the first round of mitigation will fall off."
+     ]
+    },
+    {
+     "name": "Forsaken (1st Hit)",
+     "time": "3:20",
+     "t": 200,
+     "fightTime": "17:42",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Temperance",
+         "Liturgy of the Bell"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Neutral Sect",
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Spreadlo",
+         "Fey Illumination",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Zoe Shields",
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "Extras": [
+       {
+        "items": [
+         "✔"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken"
+     ]
+    },
+    {
+     "name": "Forsaken Bonds (2nd Hit)",
+     "time": "3:25",
+     "t": 205,
+     "fightTime": "17:47",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraphism"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Fey Illumuniation",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Philosophia"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken Bonds"
+     ]
+    },
+    {
+     "name": "Forsaken (3rd Hit)",
+     "time": "3:28",
+     "t": 208,
+     "fightTime": "17:50",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Macrocosmos"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect",
+         "Collective Unconscious"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Expedient"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Fey Illumuniation",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Panhaima"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Kerachole"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken"
+     ]
+    },
+    {
+     "name": "Forsaken Bonds (4th Hit)",
+     "time": "3:34",
+     "t": 214,
+     "fightTime": "17:56",
+     "cells": {
+      "MT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Fey Illumuniation",
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D2": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken Bonds"
+     ]
+    },
+    {
+     "name": "Forsaken (5th Hit)",
+     "time": "3:37",
+     "t": 217,
+     "fightTime": "17:59",
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Divine Caress"
+        ]
+       },
+       {
+        "carry": true,
+        "items": [
+         "Temperance"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Holos",
+         "Panhaima"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken"
+     ]
+    },
+    {
+     "name": "Forsaken Bonds (6th Hit)",
+     "time": "3:42",
+     "t": 222,
+     "fightTime": "18:04",
+     "cells": {
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "carry": true,
+        "items": [
+         "Expedient"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken Bonds"
+     ]
+    },
+    {
+     "name": "Forsaken (7th Hit)",
+     "time": "3:45",
+     "t": 225,
+     "fightTime": "18:07",
+     "cells": {
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "carry": true,
+        "items": [
+         "Panhaima"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken"
+     ]
+    },
+    {
+     "name": "Forsaken Bonds (8th Hit)",
+     "time": "3:50",
+     "t": 230,
+     "fightTime": "18:12",
+     "cells": {
+      "OT": [
+       {
+        "carry": true,
+        "items": [
+         "Reprisal",
+         "Party Mit (GNB/DRK)"
+        ]
+       }
+      ],
+      "WHM": [
+       {
+        "carry": true,
+        "items": [
+         "Plenary Indulgence"
+        ]
+       }
+      ],
+      "AST": [
+       {
+        "carry": true,
+        "items": [
+         "Sun Sign"
+        ]
+       }
+      ],
+      "SCH": [
+       {
+        "items": [
+         "Seraph",
+         "Sacred Soil"
+        ]
+       }
+      ],
+      "SGE": [
+       {
+        "items": [
+         "Kerachole"
+        ]
+       }
+      ],
+      "D1": [
+       {
+        "carry": true,
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "D3": [
+       {
+        "carry": true,
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "D4": [
+       {
+        "carry": true,
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken Bonds"
+     ]
+    },
+    {
+     "name": "Forsaken Null",
+     "time": "4:24",
+     "t": 264,
+     "fightTime": "18:46",
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Enrage!"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Forsaken Null"
+     ]
+    }
+   ],
+   "notes": [
+    "All mechanics requires shields! | ➔ Indicates Carry Over",
+    "For Forsaken, use any timed mitigation as late as possible unless otherwise noted.",
+    "¹ Use when Kefka's text box circle duration is at halfway through \"I'll raze to the ground with a smile!\", example here. | The subsequent usages should be pressed immediately off cooldown.",
+    "² Healers should monitor the tanks during Maddening Orchestra (especially the Flare tank) and Fell Forces. For WAR/DRK, you will need to have single target burst healing prepared after their invulnerability expires so they can survive the 3rd auto.",
+    "³ Use two GCDs after the Stray Apocalypse castbar is completed so it is back for Forsaken.",
+    "⁴ Use during the Celestriad castbar.",
+    "⁵ Use after the third towers in Celestriad resolves."
+   ]
+  }
+ ],
+ "tankCooldowns": [
+  {
+   "phase": "Phase 1: Kefka",
+   "columns": [
+    "MT",
+    "OT"
+   ],
+   "rows": [
+    {
+     "name": "Revolting Ruin III ¹",
+     "time": "0:16",
+     "a": [
+      {
+       "items": [
+        "Kitchen Sink"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Buddy Mit",
+        "Provoke During Castbar"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Hyperdrive (3x) ²",
+     "time": "1:05",
+     "a": [
+      {
+       "items": [
+        "Buddy Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Kitchen Sink"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Revolting Ruin III ¹",
+     "time": "1:38",
+     "a": [
+      {
+       "items": [
+        "Provoke During Castbar"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Invulnerability"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Hyperdrive (3x) ²",
+     "time": "2:16",
+     "a": [
+      {
+       "items": [
+        "Invulnerability ³"
+       ]
+      }
+     ],
+     "b": []
+    }
+   ],
+   "notes": [
+    "¹ Revolting Ruin III targets first in enmity and retargets to second in emity when the castbar ends.",
+    "² Hyperdrive does not have a castbar and occurs immediately after Light of Judgement.",
+    "³ WAR can alternatively kitchen sink this and Holmgang the first Ultimate Embrace, let your party know if you plan to do this."
+   ]
+  },
+  {
+   "phase": "Phase 2: Kefka",
+   "columns": [
+    "MT",
+    "OT"
+   ],
+   "rows": [
+    {
+     "name": "Ultimate Embrace",
+     "time": "3:40",
+     "a": [
+      {
+       "items": [
+        "Kitchen Sink"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Kitchen Sink"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Wings of Destruction ¹ ³",
+     "time": "6:11",
+     "a": [
+      {
+       "items": [
+        "Rampart",
+        "40%",
+        "90s (Close)"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Rampart",
+        "40%",
+        "90s (Far)"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Ultimate Embrace ²",
+     "time": "6:18",
+     "a": [
+      {
+       "items": [
+        "Short Mit"
+       ]
+      },
+      {
+       "carry": true,
+       "items": [
+        "Rampart",
+        "40%",
+        "90s"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Short Mit"
+       ]
+      },
+      {
+       "carry": true,
+       "items": [
+        "Rampart",
+        "40%",
+        "90s"
+       ]
+      }
+     ]
+    }
+   ],
+   "notes": [
+    "¹ Rampart end of first Wings of Destruction (halfroom) cast, 40% two GCDs later and 10s mitigation at the end of second Wings of Destruction cast.",
+    "² Short mitigation before Ultimate Embrace finishes casting.",
+    "³ PLD can take the Wings of Destruction at the wall to assist their co-tank with no downtime (discuss beforehand if MT)."
+   ]
+  },
+  {
+   "phase": "P3: Chaos and Exdeath",
+   "columns": [
+    "Chaos (WAR > DRK > GNB > PLD)",
+    "Exdeath (PLD > GNB > DRK > WAR)"
+   ],
+   "rows": [
+    {
+     "name": "Thunder III",
+     "time": "7:59",
+     "a": [
+      {
+       "items": [
+        "First Hit"
+       ]
+      },
+      {
+       "items": [
+        "Rampart ¹",
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Second Hit"
+       ]
+      },
+      {
+       "items": [
+        "Rampart ¹",
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Thunder III",
+     "time": "8:56",
+     "a": [
+      {
+       "items": [
+        "Invulnerability"
+       ]
+      }
+     ],
+     "b": []
+    },
+    {
+     "name": "Thunder III",
+     "time": "9:14",
+     "a": [
+      {
+       "items": [
+        "Second Hit"
+       ]
+      },
+      {
+       "items": [
+        "40%",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "First Hit"
+       ]
+      },
+      {
+       "items": [
+        "40%",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Thunder III",
+     "time": "9:55",
+     "a": [],
+     "b": [
+      {
+       "items": [
+        "Invulnerability"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Thunder III",
+     "time": "10:37",
+     "a": [
+      {
+       "items": [
+        "Second Hit"
+       ]
+      },
+      {
+       "items": [
+        "Rampart",
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "First Hit"
+       ]
+      },
+      {
+       "items": [
+        "Rampart",
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Black Holes IV (10th Tether Set)",
+     "time": "11:31",
+     "a": [
+      {
+       "items": [
+        "40%",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "40%",
+        "Short Mit"
+       ]
+      }
+     ]
+    }
+   ],
+   "notes": [
+    "Regardless of who is MT or OT, the invulnerability priority overrides this. You will still mitigate (Reprisal & Party Mit) based on whether you are MT or OT on the main page. This is for middle Exdeath only.",
+    "Tanks should use their short mitigation for the autos in between busters throughout the phase (WAR use Nascent).",
+    "¹ Use Rampart to also cover the Stray Flames."
+   ]
+  },
+  {
+   "phase": "P4: Kefka Says",
+   "columns": [
+    "MT",
+    "OT"
+   ],
+   "rows": [
+    {
+     "name": "Autos",
+     "time": "12:13+",
+     "a": [
+      {
+       "items": [
+        "Rampart",
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Buddy Mit"
+       ]
+      }
+     ]
+    }
+   ],
+   "notes": [
+    "Kefka does not do any busters throughout the phase, but he does continously auto the main threat dealing around 75k without any mitigation. Ensure CDs are available for P5."
+   ]
+  },
+  {
+   "phase": "Phase 5: Kefka Reimagined",
+   "columns": [
+    "WAR > DRK > GNB > PLD",
+    "PLD > GNB > DRK > WAR (Start With Boss) ¹"
+   ],
+   "rows": [
+    {
+     "name": "Fell Forces (3x)",
+     "time": "15:16",
+     "a": [
+      {
+       "items": [
+        "40% ⁶",
+        "Short"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "40% ⁶",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Maddening Orchestra",
+     "time": "15:40",
+     "a": [
+      {
+       "items": [
+        "Rampart",
+        "Short Mit",
+        "Provoke ²"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Rampart",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Flare/Holy",
+     "time": "15:48",
+     "a": [
+      {
+       "items": [
+        "Invulnerability ⁴"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "carry": true,
+       "items": [
+        "Rampart",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Fell Forces (2x)",
+     "time": "15:53",
+     "a": [
+      {
+       "carry": true,
+       "items": [
+        "Invulnerability (Solo)"
+       ]
+      }
+     ],
+     "b": []
+    },
+    {
+     "name": "Fell Forces (2x)",
+     "time": "16:38",
+     "a": [
+      {
+       "items": [
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "90s",
+        "Short Mit"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Maddening Orchestra",
+     "time": "17:13",
+     "a": [
+      {
+       "items": [
+        "Rampart ⁵",
+        "40%"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Rampart ⁵",
+        "40%",
+        "Short Mit (PLD/DRK)",
+        "Provoke ²"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Flare/Holy",
+     "time": "17:20",
+     "a": [
+      {
+       "carry": true,
+       "items": [
+        "Rampart",
+        "40%"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Invulnerability ⁴"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Fell Forces I",
+     "time": "17:25",
+     "a": [],
+     "b": [
+      {
+       "carry": true,
+       "items": [
+        "Invulnerability (Solo)"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Fell Forces II",
+     "time": "17:28",
+     "a": [],
+     "b": [
+      {
+       "carry": true,
+       "items": [
+        "Invulnerability (Solo)"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Fell Forces III ³",
+     "time": "17:31",
+     "a": [
+      {
+       "items": [
+        "Rampart ⁵",
+        "Short Mit"
+       ]
+      }
+     ],
+     "b": [
+      {
+       "items": [
+        "Rampart ⁵",
+        "Short Mit"
+       ]
+      }
+     ]
+    }
+   ],
+   "notes": [
+    "Regardless of who is MT or OT, the invulnerability priority overrides this. You will still mitigate (Reprisal & Party Mit) based on whether you are MT or OT on the main page. If playing WAR/DRK, you can swap invulnerabilities as WAR has more tools to heal between the 2nd and 3rd auto. Discuss beforehand.",
+    "¹ The tank who is not invulning first must have main threat to not get Holy.",
+    "² The invulning tank should Provoke as soon Flare/Holy is applied so Kefka is not pulled and they get main threat for the autos.",
+    "³ The third auto must be shared as invulnerabilities will run out.",
+    "⁴ Invulnerabilities should be used just before the Flare/Holy debuffs expire so that they can cover two autos.",
+    "⁵ Rampart shoud be pressed just before the Maddening Orchestra cast is complete so it carries over to the 3rd auto.",
+    "⁶ Use at the end of the Ultima Repeater cast or it will not be available for the beginning of the second Maddening Orchestra."
+   ]
+  }
+ ]
+}

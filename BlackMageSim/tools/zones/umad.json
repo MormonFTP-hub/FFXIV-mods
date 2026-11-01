@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "",
+  "exclude": "_a7_grk1|_a7_grk2[ab]|_a8_gar01|_a0_shk01",
   "fight": {
     "duty": "Dancing Mad (Ultimate)",
     "boss": "Kefka",
@@ -43,27 +43,21 @@
         "pap": "chara/monster/m0418/animation/a0001/bt_common/resident/monster.pap",
         "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
         "specials": "chara/monster/m0418/animation/a0001/bt_common/mon_sp/m0418/"
-      },
-      "ultima": {
-        "kind": "monster", "id": 1005, "body": 1, "variant": 1, "scale": 3.0,
-        "pap": "chara/monster/m1005/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
-        "specials": "chara/monster/m1005/animation/a0001/bt_common/mon_sp/m1005/"
       }
     },
     "statuses": {
       "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44, "bind": 2518,
       "sleep": 4894, "confused": 1283, "doubleTroubleTrap": 5078,
       "telePortentN": 4876, "telePortentS": 4877, "telePortentE": 4878, "telePortentW": 4879,
-      "spellsTrouble": 5083,
+      "epicHero": 4192, "fatedHero": 4194,
       "entropy": 1600, "dynamicFluid": 1601, "headwind": 1602, "tailwind": 1603,
       "windResDown": 1052, "lightningResDown": 2998,
       "accretion": 1604, "primordialCrust": 5454, "firstInLine": 3004, "secondInLine": 3005, "thirdInLine": 3006,
-      "earthResDown": 3372, "unbecoming": 5452, "meanestExistence": 5453,
+      "earthResDown": 3372,
       "cursedShriek": 5543, "forkedLightning": 5544, "compressedWater": 5545, "accelerationBomb": 5546,
       "entropyP4": 5547, "dynamicFluidP4": 5548, "allaganField": 454, "whiteWound": 5541, "blackWound": 5542,
       "beyondDeath": 1382, "petrification": 3007,
-      "surpriseFlare": 5350, "surpriseHoly": 5351, "fireResDown": 2902, "iceResDown": 2903
+      "fireResDown": 2902, "iceResDown": 2903
     }
   }
 }

@@ -1,0 +1,591 @@
+{
+ "id": "m9s",
+ "name": "M9S · Vamp Fatale",
+ "short": "M9S",
+ "duties": [
+  "AAC Heavyweight M1 (Savage)"
+ ],
+ "source": {
+  "title": "AAC Heavyweight Mitsheet",
+  "author": "Silacy Alaseia (Odin)",
+  "url": "https://na.finalfantasyxiv.com/lodestone/character/30004232/blog/5650059/",
+  "via": "Phases from Exia's DT raid timelines"
+ },
+ "about": [
+  "Silacy's personal preferences from week 1 PF, not the most optimal way to mitigate.",
+  "The healer columns are written for a Scholar shield healer; ask your healers where they want your mits."
+ ],
+ "slots": [
+  {
+   "key": "MT",
+   "label": "MT",
+   "role": "tank"
+  },
+  {
+   "key": "OT",
+   "label": "OT",
+   "role": "tank"
+  },
+  {
+   "key": "Pure",
+   "label": "Pure healer",
+   "jobs": [
+    "WHM",
+    "AST"
+   ]
+  },
+  {
+   "key": "Shield",
+   "label": "Shield healer (written for SCH)",
+   "jobs": [
+    "SCH",
+    "SGE"
+   ]
+  },
+  {
+   "key": "M1",
+   "label": "M1 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "M2",
+   "label": "M2 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "R1",
+   "label": "R1 (phys ranged)",
+   "role": "ranged"
+  },
+  {
+   "key": "R2",
+   "label": "R2 (caster)",
+   "role": "caster"
+  },
+  {
+   "key": "Parking",
+   "label": "Parking lot",
+   "role": "extras"
+  }
+ ],
+ "notes": [],
+ "phases": [
+  {
+   "name": "It's A10 Again",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Prepull",
+     "time": "00:00",
+     "t": 0,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "fish crit spreadlo"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Blast Beat > Rain + Screech",
+     "time": "0:42–1:01",
+     "t": 42,
+     "tEnd": 61,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "reci-spreadlo",
+         "Soil",
+         "Seraph"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Blast Beat",
+      "Sadistic Screech"
+     ]
+    },
+    {
+     "name": "Deadwake + Screech",
+     "time": "2:06–2:18",
+     "t": 126,
+     "tEnd": 138,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD",
+         "Illum"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Dead Wake",
+      "Sadistic Screech"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "More Buzz Saws",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Crowd Kill + Fatale",
+     "time": "2:27–2:51",
+     "t": 147,
+     "tEnd": 171,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Spreadlo",
+         "Expedience"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crowd Kill",
+      "Finale Fatale"
+     ]
+    },
+    {
+     "name": "Aetherletting",
+     "time": "2:58–3:33",
+     "t": 178,
+     "tEnd": 213,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Whisp",
+         "Blessing"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Aetherletting"
+     ]
+    },
+    {
+     "name": "Blast Beat",
+     "time": "3:52–4:02",
+     "t": 232,
+     "tEnd": 242,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "reci-Concitation"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Blast Beat"
+     ]
+    },
+    {
+     "name": "Rain + Thirst > Screech",
+     "time": "4:12–4:44",
+     "t": 252,
+     "tEnd": 284,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "Soil",
+         "Whisp"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Insatiable Thirst",
+      "Sadistic Screech"
+     ]
+    },
+    {
+     "name": "Gravegrazer",
+     "time": "4:48–5:33",
+     "t": 288,
+     "tEnd": 333,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit halfway"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraphism",
+         "Expedience",
+         "Soil",
+         "GCD whenever"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint boss cast"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Hell in a Cell",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Crowd Kill + Fatale",
+     "time": "5:51–6:11",
+     "t": 351,
+     "tEnd": 371,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "reci-Spreadlo"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crowd Kill",
+      "Finale Fatale"
+     ]
+    },
+    {
+     "name": "Hell in a Cell",
+     "time": "6:36–7:18",
+     "t": 396,
+     "tEnd": 438,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "1st set Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "2nd set Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "Soil",
+         "Illum/Whisp"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint either set"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Hell in a Cell"
+     ]
+    },
+    {
+     "name": "Sanguine Scratch",
+     "time": "7:38–8:09",
+     "t": 458,
+     "tEnd": 489,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "100% hp keep topped"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Sanguine Scratch"
+     ]
+    },
+    {
+     "name": "Beat Blast",
+     "time": "8:34–8:43",
+     "t": 514,
+     "tEnd": 523,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Everything remaining"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Enrage 1",
+     "time": "9:25–9:31",
+     "t": 565,
+     "tEnd": 571,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Whatevers left",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Enrage 2",
+     "time": "9:39–9:45",
+     "t": 579,
+     "tEnd": 585,
+     "note": "EVERY SINGLE REMAINING MITIGATION AT ONCE",
+     "cells": {}
+    },
+    {
+     "name": "Enrage",
+     "time": "10:05",
+     "t": 605,
+     "info": []
+    }
+   ],
+   "notes": []
+  }
+ ]
+}

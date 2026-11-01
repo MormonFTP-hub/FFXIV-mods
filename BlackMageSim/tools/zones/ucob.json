@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [0.0, 0.0, 0.0],
   "facing": 0.0,
+  "exclude": "_q2_|_b1_end01|_m2_|_b1_wpaa3|_b1_wpat9",
   "fight": {
     "duty": "The Unending Coil of Bahamut (Ultimate)",
     "boss": "Twintania",

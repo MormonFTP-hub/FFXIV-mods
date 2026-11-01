@@ -1,0 +1,791 @@
+{
+ "id": "m10s",
+ "name": "M10S · Red Hot and Deep Blue",
+ "short": "M10S",
+ "duties": [
+  "AAC Heavyweight M2 (Savage)"
+ ],
+ "source": {
+  "title": "AAC Heavyweight Mitsheet",
+  "author": "Silacy Alaseia (Odin)",
+  "url": "https://na.finalfantasyxiv.com/lodestone/character/30004232/blog/5650059/",
+  "via": "Phases from Exia's DT raid timelines"
+ },
+ "about": [
+  "Silacy's personal preferences from week 1 PF, not the most optimal way to mitigate.",
+  "The healer columns are written for a Scholar shield healer; ask your healers where they want your mits."
+ ],
+ "slots": [
+  {
+   "key": "MT",
+   "label": "MT",
+   "role": "tank"
+  },
+  {
+   "key": "OT",
+   "label": "OT",
+   "role": "tank"
+  },
+  {
+   "key": "Pure",
+   "label": "Pure healer",
+   "jobs": [
+    "WHM",
+    "AST"
+   ]
+  },
+  {
+   "key": "Shield",
+   "label": "Shield healer (written for SCH)",
+   "jobs": [
+    "SCH",
+    "SGE"
+   ]
+  },
+  {
+   "key": "M1",
+   "label": "M1 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "M2",
+   "label": "M2 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "R1",
+   "label": "R1 (phys ranged)",
+   "role": "ranged"
+  },
+  {
+   "key": "R2",
+   "label": "R2 (caster)",
+   "role": "caster"
+  },
+  {
+   "key": "Parking",
+   "label": "Parking lot",
+   "role": "extras"
+  }
+ ],
+ "notes": [
+  "Xtreme spectacular doesn't hit much so just gcd spam and you can shuffle the party mits to other places.",
+  "Shake it Off is very good utility for Insane Airs."
+ ],
+ "phases": [
+  {
+   "name": "1 on 1",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Prepull",
+     "time": "00:00",
+     "t": 0,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD Tanks"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Cutback Blaze / Pyrotation x3",
+     "time": "00:58–1:19",
+     "t": 58,
+     "tEnd": 79,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Wisp",
+         "Soil",
+         "Seraph",
+         "Blessing"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Cutback Blaze",
+      "Pyrotation"
+     ]
+    },
+    {
+     "name": "Sick Swell (hit)",
+     "time": "1:34–1:37",
+     "t": 94,
+     "tEnd": 97,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD (on downtime)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Sick Swell"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Insane Air",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Xtreme Spectacular",
+     "time": "2:37–2:54",
+     "t": 157,
+     "tEnd": 174,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD Spam"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Xtreme Spectacular"
+     ]
+    },
+    {
+     "name": "Insane Air 1 Hits 1/2",
+     "time": "3:09–3:25",
+     "t": 189,
+     "tEnd": 205,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Spreadlo",
+         "Soil pre-1"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Insane Air"
+     ]
+    },
+    {
+     "name": "Hits 3/4",
+     "time": "3:26–3:40",
+     "t": 206,
+     "tEnd": 220,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Expedience",
+         "Soil on 4"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Snaking",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Fire/Water Snaking",
+     "time": "4:00–4:05",
+     "t": 240,
+     "tEnd": 245,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD",
+         "Seraph Veil"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Watersnaking"
+     ]
+    },
+    {
+     "name": "Fire Baits",
+     "time": "4:44–4:51",
+     "t": 284,
+     "tEnd": 291,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Spreadlo"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Blaze + Impact + Dare",
+     "time": "5:03–5:22",
+     "t": 303,
+     "tEnd": 322,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD on downtime",
+         "Soil"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit LATE (Cutback Blaze + TB + Divers Dare)"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Cutback Blaze"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Xtreme Waves",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Deep Aerial",
+     "time": "5:30–5:36",
+     "t": 330,
+     "tEnd": 336,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Deep Aerial"
+     ]
+    },
+    {
+     "name": "Dash 1-2",
+     "time": "5:42–5:56",
+     "t": 342,
+     "tEnd": 356,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Seraphism",
+         "Soil"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Dash 3-4",
+     "time": "5:59–6:13",
+     "t": 359,
+     "tEnd": 373,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Whisp"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Dash 5-6",
+     "time": "6:17–6:30",
+     "t": 377,
+     "tEnd": 390,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Blessing",
+         "GCD",
+         "Soil"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Tubular",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Arena Split",
+     "time": "6:49–6:57",
+     "t": 409,
+     "tEnd": 417,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Pair Stacks",
+     "time": "7:01–7:06",
+     "t": 421,
+     "tEnd": 426,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Veil 2",
+         "Spreadlo"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit LATE (Covers LP Stacks)"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Light Party Stacks",
+     "time": "7:14–7:19",
+     "t": 434,
+     "tEnd": 439,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Divers' Dare x2",
+     "time": "7:29–7:34",
+     "t": 449,
+     "tEnd": 454,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Expedience",
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Divers' Dare"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Xtreme Snaking",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Extreme Snaking",
+     "time": "7:45–7:50",
+     "t": 465,
+     "tEnd": 470,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD (inherit exp + soil)"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Insane Air 2 Hits 1/2",
+     "time": "7:58–8:18",
+     "t": 478,
+     "tEnd": 498,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "reci-Concitation"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Insane Air"
+     ]
+    },
+    {
+     "name": "Hits 3/4",
+     "time": "8:19–8:39",
+     "t": 499,
+     "tEnd": 519,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Whispering",
+         "Blessing",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Alley-oop Double",
+     "time": "9:00–9:05",
+     "t": 540,
+     "tEnd": 545,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD",
+         "Soil"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "PartyMit"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Pyrotation x4",
+     "time": "9:11–9:16",
+     "t": 551,
+     "tEnd": 556,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraphism",
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Pyrotation"
+     ]
+    },
+    {
+     "name": "Enrage 1",
+     "time": "9:25–9:30",
+     "t": 565,
+     "tEnd": 570,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Enrage 2",
+     "time": "9:34–9:39",
+     "t": 574,
+     "tEnd": 579,
+     "note": "EVERY SINGLE REMAINING MITIGATION AT ONCE",
+     "cells": {}
+    },
+    {
+     "name": "Enrage",
+     "time": "10:00",
+     "t": 600,
+     "info": []
+    }
+   ],
+   "notes": []
+  }
+ ]
+}

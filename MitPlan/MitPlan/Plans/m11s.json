@@ -1,0 +1,940 @@
+{
+ "id": "m11s",
+ "name": "M11S · The Tyrant",
+ "short": "M11S",
+ "duties": [
+  "AAC Heavyweight M3 (Savage)"
+ ],
+ "source": {
+  "title": "AAC Heavyweight Mitsheet",
+  "author": "Silacy Alaseia (Odin)",
+  "url": "https://na.finalfantasyxiv.com/lodestone/character/30004232/blog/5650059/",
+  "via": "Phases from Exia's DT raid timelines"
+ },
+ "about": [
+  "Silacy's personal preferences from week 1 PF, not the most optimal way to mitigate.",
+  "The healer columns are written for a Scholar shield healer; ask your healers where they want your mits."
+ ],
+ "slots": [
+  {
+   "key": "MT",
+   "label": "MT",
+   "role": "tank"
+  },
+  {
+   "key": "OT",
+   "label": "OT",
+   "role": "tank"
+  },
+  {
+   "key": "Pure",
+   "label": "Pure healer",
+   "jobs": [
+    "WHM",
+    "AST"
+   ]
+  },
+  {
+   "key": "Shield",
+   "label": "Shield healer (written for SCH)",
+   "jobs": [
+    "SCH",
+    "SGE"
+   ]
+  },
+  {
+   "key": "M1",
+   "label": "M1 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "M2",
+   "label": "M2 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "R1",
+   "label": "R1 (phys ranged)",
+   "role": "ranged"
+  },
+  {
+   "key": "R2",
+   "label": "R2 (caster)",
+   "role": "caster"
+  },
+  {
+   "key": "Parking",
+   "label": "Parking lot",
+   "role": "extras"
+  }
+ ],
+ "notes": [
+  "Recommended buff/pot windows: 0 (tincture) > 6 (tincture) > 10:30 (DELAYED RAIDBUFFS + tinctures)",
+  "You can do inv > inv > kitchen sink if you wish, we did inv > inv > full party.",
+  "Talk what mech your healers want more/less mits!",
+  "BIIIIIIG NOTICE: MOST OF THE HITS IN THIS FIGHT ARE PHYSICAL, BULLY YOUR MELEES TO USE THEIR FEINTS CORRECTLY!!!!!",
+  "Any mitigation 15s can be used 50% into weapon casts to cover the entire duration of the cleaves. Rep/Soil/Kera are good examples to get full utility."
+ ],
+ "phases": [
+  {
+   "name": "Toy Weapons",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Prepull",
+     "time": "00:00",
+     "t": 0,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "crit fish",
+         "spreadlo"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "+5s in fight Addle (redundant)"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Raw Steel Trophy 1",
+     "time": "0:15–0:17",
+     "t": 15,
+     "tEnd": 17,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Expedience",
+         "Soil asap"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Raw Steel Trophy"
+     ]
+    },
+    {
+     "name": "Assault Evolved 1",
+     "time": "0:41–1:00",
+     "t": 41,
+     "tEnd": 60,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal 50% cast"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "reci-GCD",
+         "Illum",
+         "Wisp",
+         "Soil",
+         "Blessing"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Assault Evolved"
+     ]
+    },
+    {
+     "name": "Assault Evolved 2",
+     "time": "1:27–1:45",
+     "t": 87,
+     "tEnd": 105,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal 50% cast"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "Soil",
+         "Indom after 1"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint at 50% cast"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Assault Evolved"
+     ]
+    },
+    {
+     "name": "Stack / Spread",
+     "time": "1:50–1:56",
+     "t": 110,
+     "tEnd": 116,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Fey Blessing",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Crown of Arcadia",
+     "time": "1:57–2:02",
+     "t": 117,
+     "tEnd": 122,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crown of Arcadia"
+     ]
+    },
+    {
+     "name": "Dance of Domination",
+     "time": "2:12–2:21",
+     "t": 132,
+     "tEnd": 141,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "inherit party mit or leave to here only"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "prep reci-spreadlo before 2mins",
+         "Soil"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Dance of Domination"
+     ]
+    },
+    {
+     "name": "Raw Steel Trophy 2",
+     "time": "2:35–2:37",
+     "t": 155,
+     "tEnd": 157,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "100%",
+         "GCD"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Raw Steel Trophy"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Charybdistopia",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Charybdistopia",
+     "time": "2:54–2:59",
+     "t": 174,
+     "tEnd": 179,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Wisp",
+         "Emergency GCD"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Charybdistopia"
+     ]
+    },
+    {
+     "name": "Ultimate Weapon Trophy",
+     "time": "3:02–3:05",
+     "t": 182,
+     "tEnd": 185,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD pre-1"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Weapons 1-2-3",
+     "time": "3:08–3:25",
+     "t": 188,
+     "tEnd": 205,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal before 1st weapon"
+        ]
+       }
+      ],
+      "Pure": [
+       {
+        "items": [
+         "Neutral Sect"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Expedience after 1",
+         "Indom after 2"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint before 1st weapon"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Weapons 4-5-6",
+     "time": "3:25–3:40",
+     "t": 205,
+     "tEnd": 220,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal before 4th weapon"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD",
+         "Blessing",
+         "Soil when up"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint before 4th weapon"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "One and Only",
+     "time": "3:52–4:01",
+     "t": 232,
+     "tEnd": 241,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "reci-Spreadlo"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "One and Only"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Meteorain",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Meteorain 1",
+     "time": "4:48–5:01",
+     "t": 288,
+     "tEnd": 301,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal before 1st line"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "Soil",
+         "Illum",
+         "Wisp"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Meteorain"
+     ]
+    },
+    {
+     "name": "Meteorain 2",
+     "time": "5:05–5:11",
+     "t": 305,
+     "tEnd": 311,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal after 2nd line"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Expedience Seraphism GCD",
+         "Veil 1"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Meteorain"
+     ]
+    },
+    {
+     "name": "Meteorain 3",
+     "time": "5:15–5:21",
+     "t": 315,
+     "tEnd": 321,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Can Party Mit if healers wish for it"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "Indom",
+         "GCD",
+         "Veil 2"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Meteorain"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Majestic Meteor",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Majestic Meteor",
+     "time": "6:12–6:17",
+     "t": 372,
+     "tEnd": 377,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Majestic Meteor"
+     ]
+    },
+    {
+     "name": "Tower set 1",
+     "time": "6:36–6:45",
+     "t": 396,
+     "tEnd": 405,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "reci-Spreadlo during puddles",
+         "Indom after"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Tower set 2",
+     "time": "7:08–7:17",
+     "t": 428,
+     "tEnd": 437,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Wisp",
+         "Soil",
+         "GCD during puddles"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Massive Meteor x5",
+     "time": "7:21–7:27",
+     "t": 441,
+     "tEnd": 447,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "Indom",
+         "GCD as necessary"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Massive Meteor"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Ecliptic Stampede",
+   "clock": "fight",
+   "hits": [
+    {
+     "name": "Crown of Arcadia",
+     "time": "7:56–8:01",
+     "t": 476,
+     "tEnd": 481,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crown of Arcadia"
+     ]
+    },
+    {
+     "name": "Omen > Crown of Arcadia",
+     "time": "8:21–8:44",
+     "t": 501,
+     "tEnd": 524,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD for safety (dont let ppl die to clip)"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crown of Arcadia"
+     ]
+    },
+    {
+     "name": "Ecliptic Stampede",
+     "time": "8:51–8:56",
+     "t": 531,
+     "tEnd": 536,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "GCD",
+         "Soil"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Ecliptic Stampede"
+     ]
+    },
+    {
+     "name": "Meteor Hits",
+     "time": "9:03–9:17",
+     "t": 543,
+     "tEnd": 557,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraphism and GCD as necessary"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers",
+     "time": "9:18–9:20",
+     "t": 558,
+     "tEnd": 560,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD",
+         "Expedience"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Tether > Fireballs",
+     "time": "9:27–9:33",
+     "t": 567,
+     "tEnd": 573,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph Veils",
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Crown of Arcadia",
+     "time": "9:37–9:42",
+     "t": 577,
+     "tEnd": 582,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Crown of Arcadia"
+     ]
+    },
+    {
+     "name": "Enrage tower 1 5 hits",
+     "time": "9:50–9:56",
+     "t": 590,
+     "tEnd": 596,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "MAIN TANK INVULN"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Enrage tower 2 6 hits",
+     "time": "10:09–10:15",
+     "t": 609,
+     "tEnd": 615,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Pop mit and soak final hit together"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "OFF TANK INVULN"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Enrage tower 3 7 hits",
+     "time": "10:30–10:36",
+     "t": 630,
+     "tEnd": 636,
+     "note": "!!!ALL PARTY GOES IN AND TAKES TOGETHER!!! EVERY SINGLE REMAINING MITIGATION AT ONCE",
+     "cells": {}
+    },
+    {
+     "name": "Enrage",
+     "time": "11:02",
+     "t": 662,
+     "info": []
+    }
+   ],
+   "notes": []
+  }
+ ]
+}

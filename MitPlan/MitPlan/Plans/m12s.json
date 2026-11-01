@@ -1,0 +1,1273 @@
+{
+ "id": "m12s",
+ "name": "M12S · Lindwurm",
+ "short": "M12S",
+ "duties": [
+  "AAC Heavyweight M4 (Savage)"
+ ],
+ "source": {
+  "title": "AAC Heavyweight Mitsheet",
+  "author": "Silacy Alaseia (Odin)",
+  "url": "https://na.finalfantasyxiv.com/lodestone/character/30004232/blog/5650059/",
+  "via": "Phases from Exia's DT raid timelines"
+ },
+ "about": [
+  "Silacy's personal preferences from week 1 PF, not the most optimal way to mitigate.",
+  "The healer columns are written for a Scholar shield healer; ask your healers where they want your mits."
+ ],
+ "slots": [
+  {
+   "key": "MT",
+   "label": "MT",
+   "role": "tank"
+  },
+  {
+   "key": "OT",
+   "label": "OT",
+   "role": "tank"
+  },
+  {
+   "key": "Pure",
+   "label": "Pure healer",
+   "jobs": [
+    "WHM",
+    "AST"
+   ]
+  },
+  {
+   "key": "Shield",
+   "label": "Shield healer (written for SCH)",
+   "jobs": [
+    "SCH",
+    "SGE"
+   ]
+  },
+  {
+   "key": "M1",
+   "label": "M1 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "M2",
+   "label": "M2 (melee)",
+   "role": "melee"
+  },
+  {
+   "key": "R1",
+   "label": "R1 (phys ranged)",
+   "role": "ranged"
+  },
+  {
+   "key": "R2",
+   "label": "R2 (caster)",
+   "role": "caster"
+  },
+  {
+   "key": "Parking",
+   "label": "Parking lot",
+   "role": "extras"
+  }
+ ],
+ "notes": [
+  "Scholar can pop whispering down when not mentioned to help with tank aoes. Remember the aetherpact too. Excog the tank autos when off CD."
+ ],
+ "phases": [
+  {
+   "name": "Door · Act 1",
+   "clock": "door",
+   "hits": [
+    {
+     "name": "Prepull",
+     "time": "00:00",
+     "t": 0,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "-10s reci",
+         "prot spreadlo / +5s soil"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Mortal Slayer",
+     "time": "0:29–0:50",
+     "t": 29,
+     "tEnd": 50,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "soil (when off cd) > expedience"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint (not needed)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Mortal Slayer"
+     ]
+    },
+    {
+     "name": "Grotesquerie Act 1",
+     "time": "1:07–1:37",
+     "t": 67,
+     "tEnd": 97,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "reci/prot spreadlo during puddles"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grotesquerie: Act"
+     ]
+    },
+    {
+     "name": "Stack + Fixer",
+     "time": "1:37–1:47",
+     "t": 97,
+     "tEnd": 107,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit (PLD Wings if exists)"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraph",
+         "Soil",
+         "Illum | veil each"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit(Only stack)"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "The Fixer"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Door · Act 2",
+   "clock": "door",
+   "hits": [
+    {
+     "name": "Grotesquerie Act 2",
+     "time": "1:57–2:00",
+     "t": 117,
+     "tEnd": 120,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Seraphism during 1st pop"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grotesquerie: Act"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Door · Act 3",
+   "clock": "door",
+   "hits": [
+    {
+     "name": "Splattershed",
+     "time": "3:03–3:08",
+     "t": 183,
+     "tEnd": 188,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "100% hp"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Splattershed"
+     ]
+    },
+    {
+     "name": "Grotesquerie Act 3",
+     "time": "3:23–3:26",
+     "t": 203,
+     "tEnd": 206,
+     "cells": {},
+     "sync": [
+      "Grotesquerie: Act"
+     ]
+    },
+    {
+     "name": "Dragon Baits",
+     "time": "3:49–3:51",
+     "t": 229,
+     "tEnd": 231,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "Seraph/Veil",
+         "Illum"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "The Fixer",
+     "time": "3:56–4:01",
+     "t": 236,
+     "tEnd": 241,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit (PLD Wings if exists)"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "2nd Veil",
+         "Inherit previous mit"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "The Fixer"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Door · Curtain Call",
+   "clock": "door",
+   "hits": [
+    {
+     "name": "Grotesquerie Curtain Call",
+     "time": "4:10–4:13",
+     "t": 250,
+     "tEnd": 253,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "reci/prot spreadlo during puddles"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit(+spread)"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Grotesquerie: Curtain Call"
+     ]
+    },
+    {
+     "name": "Debuff Spreads",
+     "time": "4:17–4:28",
+     "t": 257,
+     "tEnd": 268,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "expedience",
+         "soil"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Splattershed",
+     "time": "4:44–4:50",
+     "t": 284,
+     "tEnd": 290,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "100% hp"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Splattershed"
+     ]
+    },
+    {
+     "name": "Mortal Slayer",
+     "time": "5:03–5:25",
+     "t": 303,
+     "tEnd": 325,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "Concitation"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Mortal Slayer"
+     ]
+    },
+    {
+     "name": "Slaughtershed",
+     "time": "5:37–5:40",
+     "t": 337,
+     "tEnd": 340,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "Concitation"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Slaughtershed"
+     ]
+    },
+    {
+     "name": "Stack / Spread 1",
+     "time": "5:40–5:51",
+     "t": 340,
+     "tEnd": 351,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Concitation",
+         "Seraph"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Slaughtershed",
+     "time": "6:06–6:09",
+     "t": 366,
+     "tEnd": 369,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "reci spreadlo"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Slaughtershed"
+     ]
+    },
+    {
+     "name": "Stack / Spread 2",
+     "time": "6:09–6:20",
+     "t": 369,
+     "tEnd": 380,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Seraphism",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Slaughtershed",
+     "time": "6:35–6:40",
+     "t": 395,
+     "tEnd": 400,
+     "note": "check with healers which slaughtershed they want tank mits on",
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Expedience",
+         "Soil",
+         "GCD"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Slaughtershed"
+     ]
+    },
+    {
+     "name": "Stack / Spread 3",
+     "time": "6:40–6:49",
+     "t": 400,
+     "tEnd": 409,
+     "note": "EVERY SINGLE REMAINING MITIGATION AT ONCE",
+     "cells": {}
+    },
+    {
+     "name": "Enrage",
+     "time": "7:08",
+     "t": 428,
+     "info": []
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Final · Replication 1",
+   "clock": "final",
+   "hits": [
+    {
+     "name": "Prepull",
+     "time": "00:00",
+     "t": 0,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "+5s Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Divine Veil"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "-10s reci",
+         "prot spreadlo / +5s soil"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "syncAt": [
+      {
+       "name": "Arcadia Aflame",
+       "at": 15
+      }
+     ]
+    },
+    {
+     "name": "Replication 1",
+     "time": "0:25–0:28",
+     "t": 25,
+     "tEnd": 28,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Rep for Busters"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Replication"
+     ]
+    },
+    {
+     "name": "Clone Bait",
+     "time": "0:58–1:02",
+     "t": 58,
+     "tEnd": 62,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum",
+         "Whispering",
+         "Expedience",
+         "GCD"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Final · Replication 2",
+   "clock": "final",
+   "hits": [
+    {
+     "name": "Staging / Replication 2",
+     "time": "1:28–1:45",
+     "t": 88,
+     "tEnd": 105,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD",
+         "Seraph"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Staging",
+      "Replication"
+     ]
+    },
+    {
+     "name": "Stack 1",
+     "time": "2:02–2:15",
+     "t": 122,
+     "tEnd": 135,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "1st Veil"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Near/Far Baits",
+     "time": "2:34–2:40",
+     "t": 154,
+     "tEnd": 160,
+     "cells": {
+      "OT": [
+       {
+        "items": [
+         "Reprisal"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "2nd Veil"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Dismantle"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Stack 2/3",
+     "time": "2:44–2:53",
+     "t": 164,
+     "tEnd": 173,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Seraphism GCD each stack"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Final · Blood Mana",
+   "clock": "final",
+   "hits": [
+    {
+     "name": "Blood Mana",
+     "time": "3:07–3:10",
+     "t": 187,
+     "tEnd": 190,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Illum reci/prot dissipation spreadlo",
+         "expedience soil"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Blood Mana"
+     ]
+    },
+    {
+     "name": "Near/Far Baits",
+     "time": "3:43–3:50",
+     "t": 223,
+     "tEnd": 230,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Arcadian Aflame",
+     "time": "3:51–3:56",
+     "t": 231,
+     "tEnd": 236,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Rep for Busters",
+         "Party Mit for Raidwide"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Arcadia Aflame"
+     ]
+    }
+   ],
+   "notes": []
+  },
+  {
+   "name": "Final · Idyllic Dream",
+   "clock": "final",
+   "hits": [
+    {
+     "name": "Idyllic Dream",
+     "time": "4:25–4:30",
+     "t": 265,
+     "tEnd": 270,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "reci-Concitation"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Idyllic Dream"
+     ]
+    },
+    {
+     "name": "Lindwurm's Meteor",
+     "time": "5:31–5:44",
+     "t": 331,
+     "tEnd": 344,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Lindwurm's Meteor"
+     ]
+    },
+    {
+     "name": "Arcadian Arcanum",
+     "time": "5:53–5:57",
+     "t": 353,
+     "tEnd": 357,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Fey Blessing"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Arcadian Arcanum"
+     ]
+    },
+    {
+     "name": "Stack / Defam 1",
+     "time": "6:12–6:16",
+     "t": 372,
+     "tEnd": 376,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Party Mits here week 3 onwards"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "Seraphism",
+         "Soil",
+         "Expedience",
+         "Seraph"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Stack / Defam 2",
+     "time": "6:22–6:26",
+     "t": 382,
+     "tEnd": 386,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "GCD",
+         "2nd Veil"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Towers",
+     "time": "6:31–6:35",
+     "t": 391,
+     "tEnd": 395,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "100% hp pre-soak"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Debuff Baits",
+     "time": "6:39–6:50",
+     "t": 399,
+     "tEnd": 410,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "100% hp"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Stacks 1",
+     "time": "7:14–7:20",
+     "t": 434,
+     "tEnd": 440,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Soil",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Stacks 2",
+     "time": "7:30–7:41",
+     "t": 450,
+     "tEnd": 461,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Fey Illum",
+         "GCD"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "name": "Idyllic Dream",
+     "time": "7:47–7:52",
+     "t": 467,
+     "tEnd": 472,
+     "cells": {
+      "MT": [
+       {
+        "items": [
+         "Reprisal",
+         "Party Mit"
+        ]
+       }
+      ],
+      "OT": [
+       {
+        "items": [
+         "Rep for Busters",
+         "Party Mit for Raidwide"
+        ]
+       }
+      ],
+      "Shield": [
+       {
+        "items": [
+         "reci-Spreadlo",
+         "Soil"
+        ]
+       }
+      ],
+      "M1": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Dismantle"
+        ]
+       }
+      ],
+      "R2": [
+       {
+        "items": [
+         "Addle"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Idyllic Dream"
+     ]
+    },
+    {
+     "name": "Arcadian Hell 1",
+     "time": "8:30–8:35",
+     "t": 510,
+     "tEnd": 515,
+     "cells": {
+      "Shield": [
+       {
+        "items": [
+         "Expedience 80% cast",
+         "GCD"
+        ]
+       }
+      ],
+      "M2": [
+       {
+        "items": [
+         "Feint"
+        ]
+       }
+      ],
+      "R1": [
+       {
+        "items": [
+         "Party Mit half of cast"
+        ]
+       }
+      ]
+     },
+     "sync": [
+      "Arcadian Hell"
+     ]
+    },
+    {
+     "name": "Arcadian Hell 2",
+     "time": "8:46–8:51",
+     "t": 526,
+     "tEnd": 531,
+     "note": "EVERY SINGLE REMAINING MITIGATION AT ONCE",
+     "cells": {},
+     "sync": [
+      "Arcadian Hell"
+     ]
+    },
+    {
+     "name": "Enrage",
+     "time": "9:14",
+     "t": 554,
+     "info": []
+    }
+   ],
+   "notes": []
+  }
+ ]
+}

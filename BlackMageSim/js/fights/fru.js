@@ -176,8 +176,14 @@
     const ctx = { P, hz, pref, call, debuff, mark, label, E, EA, tOf, castOf, raid, spreads, stack, buster, events };
 
     phase1(ctx);
+    phase2(ctx);
+    phase3(ctx);
+    phase4(ctx);
 
     P.prefs.sort((a, b) => a.t - b.t);
+    P.boss.sort((a, b) => a.t - b.t);
+    P.form.sort((a, b) => a.t - b.t);
+    P.hitbox.sort((a, b) => a.t - b.t);
     P.looks.sort((a, b) => a.t - b.t);
     return P;
   }
@@ -430,6 +436,708 @@
       soak.forEach((g, i) => g.forEach(s => call(castOf(bs, 6.5) + 0.5, `Tower ${['north', 'middle', 'south'][i]} (${need[i]})`, { slot: s, alert: true, dur: 5 })));
       pref(tTow + 1.2, UP);
     }
+  }
+
+  // ===== P2: Usurper of Frost, and the intermission =====
+  function phase2(c) {
+    const { P, hz, pref, call, debuff, mark, label, E, EA, tOf, castOf, raid, spreads, stack, buster, events } = c;
+    const UP = uptime(HB.p2);
+    const t0 = 196;
+    P.form.push({ t: t0, model: 'shiva' });
+    P.hitbox.push({ t: t0, r: HB.p2 });
+    P.boss.push({ t: t0, at: [0, 0] });
+    P.untargetable.push([160.4, 204.1]);
+    pref(t0, UP);
+    // --- raidwides ---
+    for (const n of ['Diamond Dust', 'Light Rampant']) { const ev = E(n, t0, 392); raid(ev, 0.5, n); if (ev) call(castOf(ev, 5), 'Raidwide', { dur: 3 }); }
+    // --- Quadruple Slap: a buster on the main tank, the second after the swap on the other ---
+    const qs1 = E('Quadruple Slap 1', t0, 230), qs2 = E('Quadruple Slap 2', t0, 230);
+    if (qs1) { buster(qs1.t, ['MT'], 1.2, 'Quadruple Slap', { tell: castOf(qs1, 5) }); call(castOf(qs1, 5), 'Tank buster => swap', { dur: 4 }); }
+    if (qs2) { buster(qs2.t, ['OT'], 1.2, 'Quadruple Slap', { tell: castOf(qs2, 2.5) }); call(castOf(qs2, 2.5), 'Provoke: take the second hit', { slot: 'OT', alert: true, dur: 3 }); }
+
+    // --- Diamond Dust ---
+    const mi = E('Mirror Image', t0, 240), dd = E('Diamond Dust', t0, 245);
+    if (dd) {
+      const kick = E('Axe Kick/Scythe Kick', dd.t, dd.t + 15), tK = tOf(kick, dd.t + 8.7), kc = tK - 6;
+      const tHoL = tK + 0.8, tStone = tOf(E('Frigid Stone', dd.t, dd.t + 15), tK + 2.6);
+      const tKb = tOf(E('Heavenly Strike', dd.t, dd.t + 20), tK + 6.9), tNeedle = tOf(E('Frigid Needle', dd.t, dd.t + 25), tKb + 2.7);
+      const holy = [1, 2, 3, 4].map(k => tOf(E(`Sinbound Holy ${k} (puddles)`, dd.t, dd.t + 30), [255.5, 256.9, 258.5, 260.1][k - 1] - 235.9 + dd.t));
+      const tGaze = tOf(E('Shining Armor + Frost Armor', dd.t, dd.t + 35), holy[3] + 3.8);
+      const tw1 = E('Twin Stillness/Twin Silence', dd.t, dd.t + 40), tw2 = E('Twin Silence/Twin Stillness', dd.t, dd.t + 42);
+      const tT1 = tOf(tw1, tGaze + 6.6), tT2 = tOf(tw2, tT1 + 2.1);
+      const axe = Math.random() < 0.5, dpsMarked = Math.random() < 0.5, card = Math.random() < 0.5, rot = pick([45, -45]);
+      const marked = dpsMarked ? DPS : SUP, unmarked = dpsMarked ? SUP : DPS;
+      const th0 = pick(card ? [0, 90] : [45, 135]);           // the first circles' axis
+      label(kick, axe ? 'Axe Kick (out)' : 'Scythe Kick (in)');
+      label(dd, `Diamond Dust (${axe ? 'out' : 'in'}, first circles on the ${card ? 'cardinals' : 'intercardinals'})`);
+      // The clone in the middle; the Usurper jumps south, back to the middle for the knockback.
+      P.others.push({ model: 'ryne', path: [{ t: 0, at: [0, 0] }], shows: [[tOf(mi, dd.t - 7.1), tT2 + 3]], face: [0, -10] });
+      P.boss.push({ t: tOf(mi, dd.t - 7) - 4, at: [0, -16], move: 1 }, { t: tKb - 3, at: [0, 0] });
+      // Each colour pair a letter and a number: the unmarked bait on the first circles' kind (close), the marked
+      // on the other; the cone baiters close in after Axe Kick, the marked out to drop their stones.
+      const mkOf = (s) => { const [l, n] = COLOUR[s], kindCard = unmarked.includes(s) === card; return MARK[kindCard ? l : n]; };
+      const r0 = (s) => (axe ? 0 : 0) + (unmarked.includes(s) ? (axe ? 17 : 1.2) : (axe ? 19 : 3.2));
+      pref(kc + 0.5, all(s => r2(at(mkOf(s), r0(s)))));
+      hz(axe ? { t: tK, tell: kc, shape: 'circle', at: [0, 0], r: 16, dmg: 1.4, name: 'Axe Kick' } : { t: tK, tell: kc, shape: 'donut', at: [0, 0], r0: 4, r1: 20, dmg: 1.4, name: 'Scythe Kick' });
+      // House of Light: a cone at each of the four nearest the clone.
+      hz({ t: tHoL, tell: kc, effect: 'bait', shape: 'cone', from: [0, 0], aim: 'target', targets: { nearest: 4 }, half: 15, r: 60, dmg: 0.9, own: 0.3, name: 'House of Light' });
+      pref(tK + 0.1, all(s => r2(at(mkOf(s), unmarked.includes(s) ? (axe ? 4 : 1.2) : (axe ? 19 : 8)))));
+      for (const s of marked) {
+        debuff(s, 'prey', 'Frigid Stone', axe ? 'drop the stone at the edge' : 'drop the stone on the inner ring', kc, tStone);
+        hz({ t: tStone, tell: kc, effect: 'bait', shape: 'circle', from: 'target', targets: [s], r: 5, snap: 0.6, dmg: 0.9, own: 0.3, name: 'Frigid Stone' });
+      }
+      const stoneAt = Object.fromEntries(marked.map(s => [s, r2(at(mkOf(s), axe ? 19 : 8))]));
+      // Frigid Needle: the stones go off.
+      for (const s of marked) hz({ t: tNeedle, tell: tStone, shape: 'circle', at: stoneAt[s], r: 5, dmg: 1.1, name: 'Frigid Needle', react: 2 });
+      // Icicle Impact: three pairs of circles (10) at 14 out, four seconds apart, from the first axis turning 45
+      // degrees a pair (the last on the axis across the first).
+      const tIc = EA('Icicle Impact', dd.t, dd.t + 25).map(e => e.t);
+      while (tIc.length < 3) tIc.push((tIc[tIc.length - 1] || tStone + 0.4) + 3.95);
+      tIc.slice(0, 3).forEach((t, k) => [0, 180].forEach(o => hz({ t, tell: t - 9, shape: 'circle', at: r2(at(th0 + rot * k + o, 16)), r: 10, dmg: 1.2, name: 'Icicle Impact', react: k ? 2 : 1.5 })));
+      // Into the middle out of the first circles, then each group to 6 out on the first axis (G1 the end
+      // counterclockwise from north) for Heavenly Strike's 12 to throw it into the first circles' spots.
+      const g1End = (th0 === 0 || th0 === 45) ? (th0 === 0 ? 0 : 225) : (th0 === 90 ? 270 : 315), g2End = deg360(g1End + 180);
+      const endOf = (s) => (G1.includes(s) ? g1End : g2End);
+      pref(tHoL + 0.1, all(s => (marked.includes(s) ? r2(at(mkOf(s), axe ? 19 : 8)) : r2(at(endOf(s), 1.5)))));
+      pref(tStone - 0.55, all(s => r2(at(endOf(s), 2.2))));
+      pref(tIc[0] + 0.1, Object.assign(clumpAt(G1, at(g1End, 6)), clumpAt(G2, at(g2End, 6))));
+      hz({ t: tKb, tell: tKb - 4, effect: 'knockback', at: [0, 0], dist: 12, dmg: 0, name: 'Heavenly Strike' });
+      // Sinbound Holy: four light-party stacks on the healers, each group walking away from the turning circles to
+      // the last pair's spots (inside the stones dropped at the edge, outside those on the inner ring).
+      const wr = axe ? 13 : 17.6, sg = -Math.sign(rot);
+      const way = [[sg * 22, wr], [sg * 38, wr], [sg * 55, 15], [sg * 72, 16.5], [sg * 90, 17]];
+      const camp = (k) => Object.assign(clumpAt(G1, at(g1End + way[k][0], way[k][1])), clumpAt(G2, at(g2End + way[k][0], way[k][1])));
+      pref(tKb + 0.6, camp(0));
+      pref(tNeedle + 0.1, camp(1));
+      holy.forEach((t, k) => {
+        stack(t, ['H1', 'H2'], 6, 4, 'Sinbound Holy', { tell: t - (k ? 1.5 : 5), dmg: 0.25 });
+        if (k < 3) pref(t + 0.1, camp(k + 2));
+      });
+      call(kc + 0.3, `${axe ? 'Out' : 'In'}: ${unmarked === SUP ? 'supports' : 'DPS'} bait the cones (${card ? 'letters' : 'numbers'})`, { alert: true, dur: 6 });
+      call(tStone + 0.2, 'Middle => knockback to the first circles', { alert: true, dur: 4 });
+      call(tKb + 0.4, `Light parties: rotate ${rot > 0 ? 'counterclockwise' : 'clockwise'} with the stacks`, { dur: 5 });
+      // Shining Armor: look away from the Usurper (outside the arena); then Twin Stillness/Silence from the clone,
+      // facing phi: 270 degrees in front and 90 behind, one then the other.
+      const phi = pick([0, 45, 90, 135, 180, 225, 270, 315]), still = Math.random() < 0.5;
+      const gazeAt = r2(at(pick([300, 330, 0, 30, 60]), 23));
+      P.boss.push({ t: holy[3] + 0.5, at: gazeAt }, { t: tT2 + 3, at: [0, 0] });
+      hz({ t: tGaze, tell: tGaze - 4, effect: 'gaze', from: 'boss', dmg: 0.8, status: ['stun', 3], name: 'Shining Armor' });
+      call(tGaze - 4, 'Look away from the Usurper', { alert: true, dur: 4 });
+      const back = deg360(phi + 180);
+      const front = { shape: 'cone', at: [0, 0], deg: phi, half: 135, r: 30 }, rear = { shape: 'cone', at: [0, 0], deg: back, half: 45, r: 40 };
+      const [h1, h2] = still ? [front, rear] : [rear, front];
+      hz(Object.assign({ t: tT1, tell: tT1 - 3.5, dmg: 1.4, name: still ? 'Twin Stillness' : 'Twin Silence', react: 1.2 }, h1));
+      hz(Object.assign({ t: tT2, tell: tT1, dmg: 1.4, name: still ? 'Twin Stillness' : 'Twin Silence', react: 1.6 }, h2));
+      label(tw1, still ? 'Twin Stillness (front, then back)' : 'Twin Silence (back, then front)');
+      label(tw2, still ? 'Twin Stillness (back)' : 'Twin Silence (front)');
+      // The two groups on the rear cone's two edges: inside it for the front cone, a step out for the rear one.
+      const inn = 36, out = 55;
+      const spot = (g, a) => clumpAt(g, at(back + (g === G1 ? -a : a), 15), { m: 0 });
+      pref(holy[3] + 0.2, Object.assign(spot(G1, still ? inn : out), spot(G2, still ? inn : out)));
+      pref(tT1 + 0.05, Object.assign(spot(G1, still ? out : inn), spot(G2, still ? out : inn)));
+      call(tT1 - 3.4, still ? 'Behind the clone, then slide out' : 'Beside the clone, then slide behind', { alert: true, dur: 4 });
+      pref(tT2 + 0.2, UP);
+    }
+
+    // --- Hallowed Ray: a line stack from the boss at someone ---
+    const hr = E('Hallowed Ray', 270, 300);
+    if (hr) {
+      const tgt = pick(S), deg = pick([135, 180, 225]);
+      hz({ t: hr.t + 0.6, tell: castOf(hr, 5), effect: 'share', shape: 'line', from: 'boss', aim: 'target', targets: [tgt], len: 65, w: 6, min: 8, dmg: 0.25, name: 'Hallowed Ray' });
+      pref(castOf(hr, 5) + 0.3, Object.assign(place(S.filter(s => s !== tgt).map(s => [s, at(deg, 9.5), 0.5]), { m: 0, keep: [r2(at(deg, 11))], keepSep: 0.5 }), { [tgt]: r2(at(deg, 11)) }));
+      call(castOf(hr, 5) + 0.3, `Line stack on ${tgt}`, { alert: true, dur: 5 });
+      pref(hr.t + 1, UP);
+    }
+
+    // --- Mirror Mirror ---
+    const mm = E('Mirror, Mirror', 280, 310);
+    if (mm) {
+      const sk = E('Scythe Kick', mm.t, mm.t + 20), tS = tOf(sk, mm.t + 14.1), tP1 = tS + 0.7;
+      const red = E('Reflected Scythe Kick', mm.t, mm.t + 30), tR = tOf(red, tS + 10.1), tP2 = tR + 0.6;
+      const ban = E('Banish III', mm.t, mm.t + 40), tBan = tOf(ban, tR + 6.1);
+      const b = pick([0, 45, 90, 135, 180, 225, 270, 315]), d = pick([90, 135]);
+      const shiva = r2(at(b + 180, 16.5)), blue = r2(at(b, 20));
+      const reds = [deg360(b + d), deg360(b - d)];
+      // Each group to the red mirror clockwise of it (the nearest; clockwise when two are as near).
+      const cwFrom = (a) => reds.slice().sort((x, y) => deg360(x - a) - deg360(y - a))[0];
+      const redG1 = cwFrom(b + 180), redG2 = reds.find(x => x !== redG1);
+      label(mm, `Mirror, Mirror (blue mirror ${dir8(b)}, red ${dir8(reds[0])} and ${dir8(reds[1])})`);
+      P.boss.push({ t: mm.t + 1, at: shiva, move: 1.2 }, { t: tOf(E('Light Rampant', mm.t, mm.t + 60), tBan + 9.4) - 6, at: [0, 0], move: 1 });
+      // G1 with the Usurper, G2 with the blue mirror, 3.5 out of each, their cones pointing out and to the sides.
+      const ring = (g, src, inward, offs) => assign(g, offs.map(o => r2(add(src, at(inward + o, 3.4)))));
+      const OFFS = [-140, 140, -95, 95];
+      pref(mm.t + 1.5, Object.assign(ring(G1, shiva, b, OFFS), ring(G2, blue, b + 180, [-45, 45, -85, 85])));
+      hz({ t: tS, tell: castOf(sk, 6), shape: 'donut', from: 'boss', r0: 4, r1: 20, dmg: 1.4, name: 'Scythe Kick' });
+      hz({ t: tS, tell: castOf(sk, 6), shape: 'donut', at: blue, r0: 4, r1: 20, dmg: 1.4, name: 'Reflected Scythe Kick' });
+      hz({ t: tP1, tell: castOf(sk, 6), effect: 'bait', shape: 'cone', from: 'boss', aim: 'target', targets: { nearest: 4 }, half: 15, r: 60, dmg: 0.9, own: 0.3, name: 'House of Light' });
+      hz({ t: tP1, tell: castOf(sk, 6), effect: 'bait', shape: 'cone', from: blue, aim: 'target', targets: { nearest: 4, of: blue }, half: 15, r: 60, dmg: 0.9, own: 0.3, name: 'House of Light' });
+      // Then each to its red mirror: its donut and four cones.
+      const rG1 = r2(at(redG1, 20)), rG2 = r2(at(redG2, 20));
+      // (Their cones fan out to the side away from the other red mirror.)
+      const away = (a, other) => { const rel = ((brg(sub(at(other, 20), at(a, 20))) - (a + 180)) % 360 + 540) % 360 - 180; return [10, -15, -45, -75].map(o => o * Math.sign(rel || 1)); };
+      const fan = (a, other) => (Math.abs(deg360(other - a) - 180) < 20 ? [-55, -25, 25, 55] : away(a, other));
+      pref(tP1 + 0.2, Object.assign(ring(G1, rG1, redG1 + 180, fan(redG1, redG2)), ring(G2, rG2, redG2 + 180, fan(redG2, redG1))));
+      for (const [p, a] of [[rG1, redG1], [rG2, redG2]]) {
+        hz({ t: tR, tell: castOf(red || { t: tR }, 10), shape: 'donut', at: p, r0: 4, r1: 20, dmg: 1.4, name: 'Reflected Scythe Kick' });
+        hz({ t: tP2, tell: castOf(red || { t: tR }, 10), effect: 'bait', shape: 'cone', from: p, aim: 'target', targets: { nearest: 4, of: p }, half: 15, r: 60, dmg: 0.9, own: 0.3, name: 'House of Light' });
+      }
+      call(mm.t + 1, `G1 to the Usurper (${dir8(b + 180)}), G2 to the blue mirror (${dir8(b)})`, { alert: true, dur: 6 });
+      call(tP1 + 0.2, `Red mirrors: G1 ${dir8(redG1)}, G2 ${dir8(redG2)}`, { alert: true, dur: 6 });
+      // Banish III: pairs (supports with their partner) or spreads, round each red mirror.
+      const pairs = Math.random() < 0.5;
+      label(ban, pairs ? 'Banish III (pairs)' : 'Banish III Divided (spread)');
+      const PART = { MT: 'M1', H1: 'R1', OT: 'M2', H2: 'R2' };
+      const g2pos = (g, rp, a) => {
+        const inw = a + 180;
+        if (pairs) {
+          const [s1, s2] = g.filter(isSup), out = {};
+          [[s1, -40], [s2, 40]].forEach(([s, o]) => { const p = add(rp, at(inw + o, 7)); out[s] = r2(p); out[PART[s]] = r2(add(p, at(inw, 0.8))); });
+          return out;
+        }
+        return assign(g, [-70, -23, 23, 70].map(o => r2(add(rp, at(inw + o, 7.5)))));
+      };
+      pref(tP2 + 0.3, Object.assign(g2pos(G1, rG1, redG1), g2pos(G2, rG2, redG2)));
+      if (pairs) stack(tBan, SUP, 5, 2, 'Banish III', { tell: castOf(ban || { t: tBan }, 5) });
+      else spreads(tBan, S, 5, 'Banish III Divided', { tell: castOf(ban || { t: tBan }, 5) });
+      call(castOf(ban || { t: tBan }, 5), pairs ? 'Pairs' : 'Spread', { alert: true, dur: 4 });
+      pref(tBan + 0.3, UP);
+    }
+
+    // --- Light Rampant ---
+    const lr = E('Light Rampant', 320, 345);
+    if (lr) {
+      const ham = [1, 2, 3, 4, 5].map(k => tOf(E(`Luminous Hammer ${k}`, lr.t, lr.t + 20), lr.t + 8 + 1.6 * (k - 1)));
+      const tTow = tOf(E('Bright Hunger (solo towers)', lr.t, lr.t + 20), lr.t + 11.3), tPL = tOf(E('Powerful Light', lr.t, lr.t + 25), lr.t + 17.1);
+      const tB1 = tOf(E('Burst 1', lr.t, lr.t + 30), lr.t + 19.5), tB2 = tOf(E('Burst 2', lr.t, lr.t + 30), tB1 + 3);
+      const tMid = tOf(E('Bright Hunger (group tower)', lr.t, lr.t + 30), lr.t + 26.1), ban = E('Banish III', lr.t, lr.t + 40), tBan = tOf(ban, lr.t + 29.2);
+      const hol = E('The House of Light', lr.t + 30, lr.t + 50), tHoL = tOf(hol, tBan + 8.9);
+      // Two puddle baiters; the other six tethered, one to each tower (16 out): the conga north (supports, healers
+      // west) and south (DPS, ranged west), turned to fill three a side.
+      const bait = shuffle(S).slice(0, 2);
+      const N = ['H1', 'H2', 'MT', 'OT'].filter(s => !bait.includes(s)), Sth = ['R1', 'R2', 'M1', 'M2'].filter(s => !bait.includes(s));
+      while (N.length > 3) Sth.push(N.pop());                 // (four supports: OT turns clockwise to the south)
+      while (Sth.length > 3) N.unshift(Sth.shift());          // (four DPS: R1 turns clockwise to the north)
+      const towers = { NW: 300, N: 0, NE: 60, SW: 240, S: 180, SE: 120 };
+      const towerOf = {};
+      ['NW', 'N', 'NE'].forEach((k, i) => { towerOf[N[i]] = towers[k]; });
+      ['SW', 'S', 'SE'].forEach((k, i) => { towerOf[Sth[i]] = towers[k]; });
+      const [bN, bS] = bait;
+      for (const s of S) if (!bait.includes(s)) debuff(s, 'chainsOfLight', 'Chains of Everlasting Light', `your tower: ${dir8(towerOf[s])}`, lr.t + 3, tTow);
+      for (const s of bait) debuff(s, 'lightsteeped', 'Luminous Hammer', `bait five puddles ${s === bN ? 'north' : 'south'}, toward the middle then left`, lr.t + 3, ham[4]);
+      pref(lr.t + 3, Object.assign(all(s => (bait.includes(s) ? null : r2(at(towerOf[s], 16.6)))), { [bN]: [0, 10.2], [bS]: [0, -10.2] }));
+      // The puddle baiters' walk: toward the middle, then left after the third.
+      const PN = [[0, 10.2], [0, 6.6], [0, 3.6], [4.2, 4], [7.8, 5]], PS = PN.map(p => [-p[0], -p[1]]);
+      ham.forEach((t, k) => {
+        hz({ t, tell: t - 1.6, effect: 'bait', shape: 'circle', from: 'target', targets: bait, r: 6, snap: 0.3, dmg: 0.9, own: 0.25, name: 'Luminous Hammer' });
+        if (k) pref(ham[k - 1] + 0.05, { [bN]: PN[k], [bS]: PS[k] });
+      });
+      pref(tTow - 4, Object.fromEntries(S.filter(s => !bait.includes(s)).map(s => [s, r2(at(towerOf[s], 16.6))])));
+      for (const [k, a] of Object.entries(towers)) hz({ t: tTow, tell: tTow - 8, effect: 'tower', shape: 'circle', at: r2(at(a, 16)), r: 4, soak: 1, dmg: 0.4, fail: 1.2, name: 'Bright Hunger' });
+      call(lr.t + 3, 'Tethers to towers; puddles toward the middle, then left', { alert: true, dur: 6 });
+      // Powerful Light: a 4-stack north and south (one target each side).
+      const nGrp = N.concat([bN]), sGrp = Sth.concat([bS]);
+      const sN = pick(nGrp), sS = pick(sGrp);
+      const camps = Object.assign(clumpAt(nGrp, [0, 17]), clumpAt(sGrp, [0, -17]));
+      pref(tTow + 0.2, Object.fromEntries(Object.entries(camps).filter(([s]) => !bait.includes(s))));
+      pref(ham[4] + 0.1, { [bN]: camps[bN], [bS]: camps[bS] });
+      stack(tPL, [sN, sS], 5, 4, 'Powerful Light', { tell: tTow });
+      // The orbs (11): three, then three more; out north and south they don't reach.
+      const orbs1 = [60, 240].map(a => r2(at(a, 9))), orbs2 = [120, 300].map(a => r2(at(a, 9)));
+      orbs1.forEach(p => hz({ t: tB1, tell: tB1 - 5, shape: 'circle', at: p, r: 11, dmg: 1.2, name: 'Holy Light Burst', react: 1.5 }));
+      orbs2.forEach(p => hz({ t: tB2, tell: tB2 - 5, shape: 'circle', at: p, r: 11, dmg: 1.2, name: 'Holy Light Burst', react: 1.5 }));
+      // The middle tower: those who soaked a tower (two stacks); the puddle baiters stay out.
+      const mid = S.filter(s => !bait.includes(s));
+      hz({ t: tMid, tell: tB2 - 1, effect: 'tower', shape: 'circle', at: [0, 0], r: 4, soak: [1, 8], only: mid, dmg: 0.3, fail: 1.2, name: 'Bright Hunger' });
+      pref(tB2 + 0.1, Object.assign(clumpAt(mid, [0, 0]), { [bN]: [0, 12], [bS]: [0, -12] }));
+      call(tB2, 'Two stacks: into the middle tower', { dur: 3 });
+      for (const s of bait) call(tB2, 'Stay out of the middle tower', { slot: s, alert: true, dur: 3 });
+      // Banish III: clock spots (MT N, R2 NE, H2 E, M2 SE, OT S, M1 SW, H1 W, R1 NW); pairs: supports 45 degrees
+      // counterclockwise onto their DPS.
+      const pairs = Math.random() < 0.5;
+      label(ban, pairs ? 'Banish III (pairs)' : 'Banish III Divided (spread)');
+      const CL = { MT: 0, R2: 45, H2: 90, M2: 135, OT: 180, M1: 225, H1: 270, R1: 315 };
+      pref(tMid + 0.1, all(s => r2(at(CL[s] - (pairs && isSup(s) ? 45 : 0), pairs ? 10 : 13))));
+      if (pairs) stack(tBan, SUP, 5, 2, 'Banish III', { tell: castOf(ban || { t: tBan }, 5) });
+      else spreads(tBan, S, 5, 'Banish III Divided', { tell: castOf(ban || { t: tBan }, 5) });
+      call(castOf(ban || { t: tBan }, 5), pairs ? 'Pairs (supports CCW)' : 'Spread', { alert: true, dur: 4 });
+      // The House of Light: a protean at everyone from the boss; clock spots.
+      pref(tBan + 0.2, all(s => r2(at(CL[s], near(s) ? 6.8 : 10))));
+      hz({ t: tHoL + 0.6, tell: castOf(hol || { t: tHoL }, 5), shape: 'protean', half: 15, r: 60, dmg: 0.8, own: 0.25, name: 'The House of Light' });
+      call(castOf(hol || { t: tHoL }, 5), 'Proteans: clock spots', { dur: 4 });
+      pref(tHoL + 1, UP);
+    }
+
+    // --- Absolute Zero; the intermission ---
+    const az = events.find(e => e.name === 'Absolute Zero' && e.t > 380 && e.t < 400);
+    if (az) {
+      hz({ t: az.t, tell: az.t - 10, raidwide: true, dmg: 0.5, name: 'Absolute Zero' });
+      label(az, 'Absolute Zero (the Usurper under 20%: raidwide, else enrage)');
+      call(az.t - 10, 'Raidwide => knockback', { dur: 4 });
+    }
+    const sf = E('Swelling Frost', 385, 400), tSF = tOf(sf, 392.4);
+    P.untargetable.push([tOf(az, 390.1) - 10, 514.3]);
+    pref(tSF - 4, clumpAt(S, [0, -3]));
+    hz({ t: tSF, tell: tSF - 3, effect: 'knockback', at: [0, 0], dist: 10, dmg: 0.3, status: ['stun', 2], name: 'Swelling Frost' });
+    // Crystals of Light on the cardinals (15 out), of Darkness on the intercardinals (8): tanks and melee out on
+    // the cardinals baiting the puddles (MT N, OT E, M1 S, M2 W), healers and ranged on the intercardinals baiting
+    // the cones (R2 NE, H2 SE, H1 SW, R1 NW).
+    const tUp = 411.4, tEnd = 488.8;
+    const CARD = { MT: 0, OT: 90, M1: 180, M2: 270 }, INTER = { R2: 45, H2: 135, H1: 225, R1: 315 };
+    for (const a of [0, 90, 180, 270]) mark({ shape: 'circle', at: r2(at(a, 15)), r: 1.6 }, tUp - 3, tEnd, 'rgba(160,230,255,0.55)');
+    for (const a of [45, 135, 225, 315]) mark({ shape: 'circle', at: r2(at(a, 8)), r: 1.6 }, tUp - 3, tEnd, 'rgba(150,90,220,0.55)');
+    mark({ shape: 'circle', at: [0, 0], r: 5 }, tSF, tEnd, 'rgba(170,220,255,0.3)');
+    pref(tSF + 1.5, Object.assign(Object.fromEntries(Object.entries(CARD).map(([s, a]) => [s, r2(at(a, 17.5))])),
+      Object.fromEntries(Object.entries(INTER).map(([s, a]) => [s, r2(at(a, 9.5))]))));
+    // Hiemal Storm: a puddle (7) on each cardinal's baiter; Sinbound Blizzard: a cone at each dark crystal's
+    // nearest. (Killed in time, they stop: the adds window's push.)
+    for (const ev of EA('Hiemal Storm', 420, 455)) {
+      for (const [s, a] of Object.entries(CARD)) hz({ t: ev.t, tell: ev.t - 3.3, shape: 'circle', from: 'target', targets: [s], r: 7, snap: 2.6, dmg: 0.9, name: 'Hiemal Storm', ifAlive: 1, react: 2.5 });
+    }
+    for (const ev of EA('Sinbound Blizzard III', 420, 455)) {
+      for (const [s, a] of Object.entries(INTER)) hz({ t: ev.t, tell: ev.t - 3.3, effect: 'bait', shape: 'cone', from: r2(at(a, 8)), aim: 'target', targets: [s], half: 10, r: 50, dmg: 0.9, own: 0.3, snap: 3.3, name: 'Sinbound Blizzard III', ifAlive: 1 });
+    }
+    // The cardinals' baiters circle their crystal a little each puddle.
+    const storms = EA('Hiemal Storm', 420, 455);
+    storms.forEach((ev, k) => pref(ev.t - 2.5, Object.fromEntries(Object.entries(CARD).map(([s, a]) => [s, r2(at(a + (k % 2 ? 22 : -22), 17.5))]))));
+    call(tUp - 2, 'Tanks and melee out on the cardinals, healers and ranged in on the intercardinals: kill the light crystals', { alert: true, dur: 6 });
+    const eia = events.find(e => e.name === 'Endless Ice Age' && e.kind === 'enrage');
+    label(eia, 'Endless Ice Age (enrage: break the Ice Veil before it)');
+    pref(tEnd + 0.5, clumpAt(S, [0, -6]));
+  }
+
+  // ===== P3: Oracle of Darkness =====
+  function phase3(c) {
+    const { P, hz, pref, call, debuff, mark, label, E, EA, tOf, castOf, raid, spreads, stack, buster, events } = c;
+    const t0 = 488.8, UP = uptime(HB.p3);
+    const jn = E('Junction', t0, 510), hj = E('Hell\'s Judgment', t0, 530);
+    if (jn) { raid(jn, 0.5, 'Junction', { tell: jn.t - 3 }); call(jn.t - 3, 'Raidwide', { dur: 3 }); }
+    P.form.push({ t: t0, model: 'shiva' }, { t: tOf(jn, 500) + 0.5, model: 'none' }, { t: tOf(hj, 518.3) - 4.5, model: 'oracle' });
+    P.hitbox.push({ t: tOf(hj, 518.3) - 4.5, r: HB.p3 });
+    P.boss.push({ t: t0, at: [0, 0] });
+    if (hj) { hz({ t: hj.t, tell: castOf(hj, 4), raidwide: true, dmg: 0.55, name: 'Hell\'s Judgment' }); call(castOf(hj, 4), 'HP to 1: heal up', { dur: 4 }); }
+    pref(tOf(hj, 518.3) - 4, UP);
+
+    // --- Ultimate Relativity ---
+    const ur = E('Ultimate Relativity', 520, 545);
+    if (ur) {
+      const tF = [544.2, 554.3, 564.3].map(t => t - 532.4 + ur.t);
+      const fireEvs = events.filter(e => /^Dark Fire III/.test(e.name) && e.t > ur.t && e.t < ur.t + 40);
+      fireEvs.forEach((e, k) => { tF[k] = e.t; });
+      const melt = [1, 2, 3].map(k => tOf(E(`Sinbound Meltdown ${k} (x10)`, ur.t, ur.t + 45), [549.4, 559.4, 570.4][k - 1] - 532.4 + ur.t));
+      const tRew = tOf(E('(stun + rewind)', ur.t, ur.t + 45), ur.t + 40.8), tRes = tOf(E('Shadoweye/Dark Water III/Dark Eruption', ur.t, ur.t + 50), tRew + 3);
+      raid(ur, 0.5, 'Ultimate Relativity', { tell: castOf(ur, 10) });
+      call(castOf(ur, 10), 'Raidwide => relativity', { dur: 4 });
+      // Relative north: the three yellow hourglasses' middle one. Supports: fire 10 s north, 20 s west, 30 s
+      // north-east (tank) and north-west (healer); DPS: 10 s south-east (melee) and south-west (ranged), 20 s east,
+      // 30 s south. (Two of one role on a pair of spots: G2 keeps its side, G1 swaps.)
+      const north = pick([0, 45, 90, 135, 180, 225, 270, 315]);
+      const shuf = (a) => shuffle(a);
+      const sup = shuf(SUP), dps = shuf(DPS);
+      const fire = {}, dir = {};
+      fire[sup[0]] = 1; fire[sup[1]] = 2; fire[sup[2]] = 3; fire[sup[3]] = 3;
+      fire[dps[0]] = 1; fire[dps[1]] = 1; fire[dps[2]] = 2; fire[dps[3]] = 3;
+      const pairSide = (pair, eastOk) => {
+        // eastOk(s): whether s naturally takes the east spot of the pair (tanks NE, melee SE).
+        const [a, b] = pair, ea = eastOk(a), eb = eastOk(b);
+        if (ea !== eb) return ea ? [a, b] : [b, a];
+        return G2.includes(a) === ea ? [a, b] : [b, a];         // both alike: G2 keeps its natural side
+      };
+      const [supE, supW] = pairSide([sup[2], sup[3]], s => TANKS.includes(s));
+      const [dpsE, dpsW] = pairSide([dps[0], dps[1]], s => s === 'M1' || s === 'M2');
+      dir[sup[0]] = 0; dir[sup[1]] = 270; dir[supE] = 45; dir[supW] = 315;
+      dir[dpsE] = 135; dir[dpsW] = 225; dir[dps[2]] = 90; dir[dps[3]] = 180;
+      const abs = (s) => deg360(north + dir[s]);
+      // Blizzard on the 10 s support and the 30 s DPS; Eruption on the 20 s pair; Dark Water on a 10 s DPS; eyes on
+      // the 30 s three.
+      const bliz = [sup[0], dps[3]], erupt = [sup[1], dps[2]], water = dps[0], eyes = [supE, supW, dps[3]];
+      const laser = (s) => (fire[s] === 3 ? 1 : fire[s] === 1 ? 2 : 3);
+      const FIRE_HINT = { 1: '10 s', 2: '20 s', 3: '30 s' };
+      for (const s of S) {
+        debuff(s, 'darkFire', 'Spell-in-Waiting: Dark Fire III', `${FIRE_HINT[fire[s]]}: out to ${dirName(abs(s))}`, ur.t + 1.8, tF[fire[s] - 1]);
+        call(ur.t + 2, `${FIRE_HINT[fire[s]]} fire: ${dir8(dir[s])} (relative), laser ${laser(s)}`, { slot: s, alert: true, dur: 8 });
+      }
+      for (const s of bliz) debuff(s, 'darkBlizzard', 'Spell-in-Waiting: Dark Blizzard III', 'in the middle with the stack', ur.t + 1.8, tF[1]);
+      for (const s of erupt) debuff(s, 'darkEruption', 'Spell-in-Waiting: Dark Eruption', 'rewind at your hourglass', ur.t + 1.8, tRes);
+      debuff(water, 'darkWater', 'Spell-in-Waiting: Dark Water III', 'rewind in the middle', ur.t + 1.8, tRes);
+      for (const s of eyes) debuff(s, 'shadoweye', 'Spell-in-Waiting: Shadoweye', 'rewind just out of the middle', ur.t + 1.8, tRes);
+      label(ur, `Ultimate Relativity (north is ${dirName(north)})`);
+      // The hourglasses: 9.5 out at the eight directions; yellow (relative NE, NW, S) fire first, then N, SE, SW,
+      // then purple (E, W). Each laser (5 wide) from its hourglass at its baiter, turning 15 degrees a hit, ten hits.
+      const HG = { 1: [45, 315, 180], 2: [0, 135, 225], 3: [90, 270] };
+      for (const [k, list] of Object.entries(HG)) {
+        for (const rd of list) {
+          const a = deg360(north + rd), hp = r2(at(a, 9.5)), spin = pick([1, -1]);
+          mark({ shape: 'circle', at: hp, r: 1 }, ur.t, tRes + 1, k === '1' ? 'rgba(255,230,90,0.6)' : k === '3' ? 'rgba(190,110,255,0.6)' : 'rgba(220,220,220,0.5)');
+          // Baited from beside it, 67.5 degrees round from out against its turn, so it sweeps the outside only.
+          const baiter = S.find(s => laser(s) === +k && dir[s] === rd);
+          const d0 = deg360(a - spin * 67.5), bait = r2(add(hp, at(d0, 1.8)));
+          const t1 = melt[k - 1];
+          if (baiter) pref(t1 - 4.5, { [baiter]: bait });
+          for (let n = 0; n < 10; n++) {
+            hz({ t: +(t1 + n * 1.02).toFixed(2), tell: n ? t1 + (n - 1) * 1.02 : t1 - 3, shape: 'line', at: hp, deg: d0 + spin * 15 * n, len: n ? 50 : 60, w: 5, dmg: 1.1, name: 'Sinbound Meltdown', react: n ? 1.2 : 2 });
+          }
+        }
+      }
+      // Each round's fire spreads (8) out at 13 in their direction, Unholy Darkness's stack on the rest in the middle.
+      const mid = (slots) => clumpAt(slots, [0, 0], { m: 0 });
+      const spot = (s, r) => r2(at(abs(s), r));
+      [1, 2, 3].forEach((k) => {
+        const t = tF[k - 1], out = S.filter(s => fire[s] === k), rest = S.filter(s => fire[s] !== k);
+        pref(t - 4.2, Object.assign(mid(rest), Object.fromEntries(out.map(s => [s, spot(s, 13.5)]))));
+        spreads(t, out, 8, 'Dark Fire III', { tell: t - 5 });
+        stack(t, [rest.find(s => !bliz.includes(s)) || rest[0]], 6, rest.length, 'Unholy Darkness', { tell: t - 5, max: 8 });
+        if (k === 2) for (const s of bliz) hz({ t, tell: t - 5, effect: 'bait', shape: 'donut', from: 'target', targets: [s], r0: 4, r1: 12, dmg: 1.0, own: 0, name: 'Dark Blizzard III' });
+      });
+      // The rewinds: the 20 s pair (eruption) at their hourglass's inner side, the 10 s ones in the middle, as the first
+      // lasers go; the eyes just out of the middle as the second go. (Your rewind is where you stand then.)
+      const rew = {};
+      for (const s of S) rew[s] = laser(s) === 1 ? spot(s, 2.2) : erupt.includes(s) ? spot(s, 8.6) : r2(mul(at(abs(s), 1), 0.6));
+      pref(melt[0] - 0.8, Object.fromEntries(S.filter(s => laser(s) !== 1).map(s => [s, rew[s]])));
+      pref(melt[0] + 0.3, Object.fromEntries(S.filter(s => laser(s) !== 1 && laser(s) !== 2).map(s => [s, mid([s])[s]])));
+      pref(melt[1] - 0.8, Object.fromEntries(S.filter(s => laser(s) === 1).map(s => [s, rew[s]])));
+      // Back in after baiting (behind the hourglass, out of its sweep).
+      for (const k of [1, 2, 3]) pref(melt[k - 1] + 0.25, Object.fromEntries(S.filter(s => laser(s) === k).map(s => [s, k === 1 ? rew[s] : spot(s, 2.5)])));
+      // The rewind: back to where each placed it; then Dark Eruption (6) at the pair's, Dark Water on the middle,
+      // the eyes' gazes (look out).
+      pref(tRew - 0.2, rew);
+      spreads(tRes, erupt, 6, 'Dark Eruption', { tell: tRew });
+      stack(tRes, [water], 6, 4, 'Dark Water III', { tell: tRew, max: 8 });
+      // (Shadoweye's gazes: everyone in the middle looks out, past the eyes; the sim calls it rather than checking
+      // your facing.)
+      call(tRew, 'Rewind: look out, away from the eyes', { alert: true, dur: 3 });
+      pref(tRes + 0.2, UP);
+    }
+    // --- Shell Crusher, Shockwave Pulsar, Black Halo ---
+    const sc = E('Shell Crusher', 575, 590);
+    if (sc) {
+      const tRes = tOf(E('Shadoweye/Dark Water III/Dark Eruption', 560, 590), sc.t - 3.9);
+      stack(sc.t, ['MT'], 6, 8, 'Shell Crusher', { tell: castOf(sc, 3) - 1 });
+      pref(tRes + 0.3, clumpAt(S, [0, HB.p3 + 1]));
+      call(castOf(sc, 3), 'Stack', { dur: 3 });
+      pref(sc.t + 0.3, UP);
+    }
+    for (const ev of EA('Shockwave Pulsar', t0, 680)) { raid(ev, 0.5, 'Shockwave Pulsar'); call(castOf(ev, 5), 'Raidwide', { dur: 3 }); }
+    const bh = E('Black Halo', 590, 600);
+    if (bh) {
+      hz({ t: bh.t + 0.2, tell: castOf(bh, 5), effect: 'share', shape: 'cone', from: 'boss', aim: 'MT', targets: ['MT'], half: 45, r: 60, min: 2, max: 2, dmg: 0.55, name: 'Black Halo' });
+      pref(castOf(bh, 5), Object.assign({}, UP, { MT: [-0.6, HB.p3 + 0.6], OT: [0.6, HB.p3 + 0.6] }));
+      call(castOf(bh, 5), 'Shared tank buster', { slot: 'MT', dur: 4 });
+      call(castOf(bh, 5), 'Shared tank buster', { slot: 'OT', dur: 4 });
+    }
+
+    // --- Apocalypse ---
+    const ap = E('Apocalypse', 610, 630);
+    if (ap) {
+      const dw = EA('Dark Water III', ap.t, ap.t + 35).map(e => e.t), st = E('Spirit Taker', ap.t, ap.t + 10), tSt = tOf(st, ap.t + 5.1) + 0.3;
+      while (dw.length < 3) dw.push([624.8, 643.7, 652.8][dw.length] - 621.2 + ap.t);
+      const tA = tOf(E('Apocalypse (x6)', ap.t, ap.t + 20), ap.t + 14), steps = [0, 1, 2, 3, 4, 5].map(k => +(tA + 2 * k).toFixed(2));
+      const tEr = tOf(E('Dark Eruption', ap.t, ap.t + 25), steps[1] + 0.7);
+      const tJump = tOf(E('Darkest Dance (jump)', ap.t, ap.t + 30), steps[5] + 0.8), tKb = tOf(E('Darkest Dance (knockback)', ap.t, ap.t + 30), tJump + 2.9);
+      // Dark Water on six, two at each timer, one of each per light party (G1 left, G2 right; swaps by priority).
+      const groups = { L: G1.slice(), Rt: G2.slice() };
+      // (After the swaps by priority, T1 > T2 > H1 > H2 | M1 > M2 > R1 > R2, each group has one of each timer.)
+      const wOf = {};
+      for (const g of ['L', 'Rt']) shuffle(groups[g]).slice(0, 3).forEach((s, k) => { wOf[s] = k; });
+      const tgts = [0, 1, 2].map(k => S.filter(s => wOf[s] === k));
+      for (const s of Object.keys(wOf)) debuff(s, 'darkWater', 'Spell-in-Waiting: Dark Water III', `stack ${wOf[s] + 1}`, ap.t - 15, dw[wOf[s]]);
+      // The lights: from the start axis S0 turning R a step, three steps going off at once (and the middle first).
+      const s0 = pick([0, 45, 90, 135]), R = pick([45, -45]);
+      const axis = (k) => deg360(s0 + R * k);
+      const A3 = axis(3), A0 = axis(4);
+      // G1 takes the end counterclockwise from north (N, NW, W, SW), G2 the other.
+      const g2side = (a) => { const x = deg360(a); return x > 20 && x <= 200; };
+      const endFor = (a, g) => ((g === 'Rt') === g2side(a) ? deg360(a) : deg360(a + 180));
+      const eL = (a) => endFor(a, 'L'), eR = (a) => endFor(a, 'Rt');
+      label(ap, `Apocalypse (starting ${dir8(s0)}, turning ${R > 0 ? 'clockwise' : 'counterclockwise'})`);
+      // Water 1: the groups west and east of the middle (G1 west).
+      pref(ap.t - 14, Object.assign(clumpAt(groups.L, [-6, 0]), clumpAt(groups.Rt, [6, 0])));
+      stack(dw[0], tgts[0], 6, 4, 'Dark Water III', { tell: dw[0] - 5 });
+      // Spirit Taker: spread in the boxes.
+      const box = (g, x) => assign(groups[g], [[x * 6, 5], [x * 6, -5], [x * 14, 7], [x * 14, -7]]);
+      pref(dw[0] + 0.15, Object.assign(box('L', -1), box('Rt', 1)));
+      const stT = pick(S);
+      hz({ t: tSt, tell: tSt - 3, effect: 'bait', shape: 'circle', from: 'target', targets: [stT], r: 5, dmg: 0.8, own: 0.4, name: 'Spirit Taker' });
+      hz({ t: tSt + 0.05, tell: tSt - 3, effect: 'knockback', shape: 'circle', from: stT, r: 5, dist: 40, dmg: 0, name: 'Spirit Taker', hidden: true, react: 0 });
+      P.boss.push({ t: tSt, at: [0, 0] });
+      // The circles (9): pairs 14 out on axis k, and the middle on the first two steps.
+      steps.forEach((t, j) => {
+        for (const k of [j, j - 1, j - 2]) {
+          if (k < 0 || k > 5) continue;
+          for (const o of [0, 180]) hz({ t, tell: t - 4, shape: 'circle', at: r2(at(axis(k) + o, 14)), r: 9, dmg: 1.3, name: 'Apocalypse', react: 1.8 });
+        }
+        if (j <= 1) hz({ t, tell: t - 4, shape: 'circle', at: [0, 0], r: 9, dmg: 1.3, name: 'Apocalypse', react: 1.8 });
+      });
+      // First lights: each group at its end of A3 (safe for three steps); Dark Eruption (6) on two a group: one 19
+      // out a little to each side of it, the rest at 10; then into the middle before A3's turn.
+      const erL = shuffle(groups.L).slice(0, 2), erR = shuffle(groups.Rt).slice(0, 2);
+      const lightSpots = (g, e, ers) => {
+        const out = {}, rest = groups[g].filter(s => !ers.slice(0, 2).includes(s));
+        out[ers[0]] = r2(at(e - 11, 18.5)); out[ers[1]] = r2(at(e + 11, 18.5));
+        return out;
+      };
+      const restOf = (g, ers) => groups[g].filter(s => !ers.includes(s));
+      pref(tSt + 0.4, Object.assign(clumpAt(groups.L, at(eL(A3), 11)), clumpAt(groups.Rt, at(eR(A3), 11))));
+      pref(steps[0] + 0.2, Object.assign(lightSpots('L', eL(A3), erL), lightSpots('Rt', eR(A3), erR)));
+      pref(steps[1] + 0.1, Object.assign(clumpAt(restOf('L', erL), at(eL(A3), 7)), clumpAt(restOf('Rt', erR), at(eR(A3), 7))));
+      for (const s of erL.slice(0, 2).concat(erR.slice(0, 2))) debuff(s, 'darkEruption', 'Dark Eruption', 'spread out at your end', tA - 3, tEr);
+      spreads(tEr, erL.slice(0, 2).concat(erR.slice(0, 2)), 6, 'Dark Eruption', { tell: tEr - 5 });
+      // Into the middle; Water 2 at 4.5 out on the start axis (each group its end); Darkest Dance: the main tank
+      // baits it far (19) on the left group's end, then everyone close to the Oracle where she lands.
+      pref(tEr + 0.1, Object.assign(clumpAt(erL, at(eL(A3), 2.5)), clumpAt(erR, at(eR(A3), 2.5))));
+      pref(steps[2] + 0.1, Object.assign(clumpAt(groups.L, at(eL(A3), 2)), clumpAt(groups.Rt, at(eR(A3), 2))));
+      const a0c = [0, 180].map(o => ({ shape: 'circle', at: r2(at(A0 + o, 14)), r: 9 }));
+      const w2 = Object.assign(clumpAt(groups.L, at(eL(A0), 4.5), { avoid: a0c, m: 0.5 }), clumpAt(groups.Rt, at(eR(A0), 4.5), { avoid: a0c, m: 0.5 }));
+      pref(steps[3] + 0.15, w2);
+      stack(dw[1], tgts[1], 6, 4, 'Dark Water III', { tell: dw[1] - 5 });
+      // (Out along the axis the lights just left, after sharing the water.)
+      const A2 = axis(2), mtEnd = groups.L.includes('MT') ? eL(A2) : eR(A2), oracle = r2(at(mtEnd, 14));
+      pref(dw[1] + 0.1, { MT: oracle });
+      hz({ t: tJump, tell: dw[1], effect: 'bait', shape: 'circle', from: 'target', targets: { farthest: 1, of: [0, 0] }, r: 8, dmg: 1.4, own: 0.55, buster: true, name: 'Darkest Dance' });
+      P.boss.push({ t: tJump, at: oracle }, { t: tKb + 6, at: [0, 0], move: 1.5 });
+      // Close to her, a group either side, for the knockback (21) to throw each across the middle.
+      const inward = deg360(mtEnd + 180);
+      const kbSpot = (g, sgn) => clumpAt(groups[g], add(oracle, at(inward + sgn * 20, 2.6)), { m: 0 });
+      const left = eL(A0) === mtEnd ? 'L' : 'Rt', right = left === 'L' ? 'Rt' : 'L';
+      pref(tJump + 0.15, Object.assign(kbSpot(left, -1), kbSpot(right, 1)));
+      hz({ t: tKb, tell: tJump, effect: 'knockback', from: 'boss', dist: 21, dmg: 0, name: 'Darkest Dance' });
+      // Water 3 where they land.
+      const land = (g, sgn) => clumpAt(groups[g], add(oracle, at(inward + sgn * 20, 23)), { m: 0 });
+      pref(tKb + 0.7, Object.assign(land(left, -1), land(right, 1)));
+      stack(dw[2], tgts[2], 6, 4, 'Dark Water III', { tell: dw[2] - 5 });
+      call(ap.t - 14, 'Dark Water: G1 west, G2 east (one of each timer a group)', { alert: true, dur: 6 });
+      call(steps[0] - 3, `Lights: ${dir8(eL(A3))} / ${dir8(eR(A3))} safe`, { alert: true, dur: 5 });
+      call(steps[2], 'Into the middle', { alert: true, dur: 3 });
+      call(dw[1] + 0.1, 'Darkest Dance: bait it far', { slot: 'MT', alert: true, dur: 4 });
+      call(tJump, 'Close to the Oracle => knockback across', { alert: true, dur: 3 });
+      pref(dw[2] + 0.3, UP);
+    }
+    const me = events.find(e => e.name === 'Memory\'s End' && e.kind === 'enrage');
+    if (me) { hz({ t: me.t, tell: me.t - 10, raidwide: true, dmg: 0.5, name: 'Memory\'s End' }); label(me, 'Memory\'s End (the Oracle under 20%: raidwide, else enrage)'); }
+    P.untargetable.push([tOf(me, 672) + 3.4, 680.8]);
+  }
+
+  // ===== P4: the Usurper of Frost and the Oracle of Darkness =====
+  function phase4(c) {
+    const { P, hz, pref, call, debuff, mark, label, E, EA, tOf, castOf, raid, spreads, stack, buster, events } = c;
+    const t0 = 680.8, end = 856.5;
+    // The Usurper (the sim's target: the zone's `ryne`) in the middle, the Oracle (`oracle`) beside her, south.
+    const ORACLE = [0, -4];
+    P.form.push({ t: 675.4, model: 'none' }, { t: t0, model: 'ryne' }, { t: end + 0.5, model: 'none' });
+    P.hitbox.push({ t: t0, r: HB.p4 });
+    P.boss.push({ t: t0, at: [0, 2] });
+    const OP = [{ t: 0, at: ORACLE }];
+    const UP = { MT: [-1, 8.7], OT: [1, 8.7], M1: [-3, -9.5], M2: [3, -9.5], H1: [-7, -12], H2: [7, -12], R1: [-11, -6], R2: [11, -6] };
+    pref(t0, UP);
+    for (const ev of events.filter(e => /^Edge of Oblivion/.test(e.name))) { raid(ev, 0.3, 'Edge of Oblivion'); }
+    const dds = E('Darklit Dragonsong', t0, 730), ct = E('Crystallize Time', 760, 790);
+    for (const ev of [dds, ct]) if (ev) { raid(ev, 0.5, ev.name); call(castOf(ev, 5), 'Raidwide', { dur: 3 }); }
+
+    // --- Akh Rhai: everyone in the middle baits a puddle (4) that keeps going off; out to the Darklit spots ---
+    const da = E('Drachen Armor', t0, 710), ar = E('Akh Rhai', t0, 710);
+    const DARK = { H1: [-9, 9], H2: [-11, 7], MT: [9, 9], OT: [11, 7], R1: [-9, -9], R2: [-11, -7], M1: [9, -9], M2: [11, -7] };
+    if (ar) {
+      const tA = ar.t;
+      pref(tOf(da, tA - 2.5) - 4, clumpAt(S, [0, -9.5]));
+      for (let k = 0; k < 10; k++) hz({ t: +(tA + 0.2 + k * 0.5).toFixed(2), tell: tA - 2.5, shape: 'circle', from: 'target', targets: S, r: 4, snap: 2.6 + k * 0.5, dmg: 0.5, name: 'Akh Rhai', react: k ? 0 : 2.5, quiet: k > 0 });
+      pref(tA - 2.45, DARK);
+      call(tOf(da, tA - 2.5) - 4, 'Stack south => out to your Darklit spot as the wings sprout', { alert: true, dur: 6 });
+    }
+
+    // --- Darklit Dragonsong ---
+    if (dds) {
+      const tTow = tOf(E('Bright Hunger', dds.t, dds.t + 20), dds.t + 11.2), tPath = tOf(E('The Path of Light', dds.t, dds.t + 20), tTow + 0.9);
+      const tSt = tOf(E('Spirit Taker', dds.t, dds.t + 20), tPath + 2.5), tWing = tOf(E('Dark Water III + Hallowed Wings', dds.t, dds.t + 25), tSt + 4.6);
+      const tSD1 = tOf(E('Somber Dance (far)', dds.t, dds.t + 30), tWing + 3.6), tSD2 = tOf(E('Somber Dance (close)', dds.t, dds.t + 30), tSD1 + 3.3);
+      // Four tethered: a healer, a tank and two DPS. They soak the towers (north and south of the middle, 8 out),
+      // two each; the four others bait Path of Light from the Usurper at 4 out on the diagonals (untethered tank east,
+      // healer west).
+      const h = pick(['H1', 'H2']), tk = pick(TANKS), d2 = shuffle(DPS).slice(0, 2);
+      const teth = [h, tk, ...d2], free = S.filter(s => !teth.includes(s));
+      const water = [pick(teth), pick(free)];
+      // Towers: the tethered healer and one DPS north, the tank and the other south (a bowtie: no swaps).
+      const towN = [h, d2[0]], towS = [tk, d2[1]];
+      const baitAt = {};
+      const fTank = free.find(s => TANKS.includes(s)), fHeal = free.find(s => s[0] === 'H');
+      if (fTank) baitAt[fTank] = 60; if (fHeal) baitAt[fHeal] = 300;
+      const restAngles = [120, 240, 60, 300].filter(a => !Object.values(baitAt).includes(a));
+      free.filter(s => baitAt[s] === undefined).forEach((s, i) => { baitAt[s] = restAngles[i]; });
+      for (const s of teth) debuff(s, 'chainsOfLight', 'Chains of Everlasting Light', `soak the ${towN.includes(s) ? 'north' : 'south'} tower`, dds.t, tTow);
+      for (const s of water) debuff(s, 'darkWater', 'Spell-in-Waiting: Dark Water III', 'a stack on the safe side', dds.t, tWing);
+      const spots = {};
+      towN.forEach((s, i) => { spots[s] = [i ? 1.8 : -1.8, 9.5]; });
+      towS.forEach((s, i) => { spots[s] = [i ? 1.8 : -1.8, -9.5]; });
+      for (const s of free) spots[s] = r2(add([0, 2], at(baitAt[s], 4.2)));
+      pref(dds.t + 0.5, spots);
+      for (const p of [[0, 8], [0, -8]]) hz({ t: tTow, tell: dds.t + 1, effect: 'tower', shape: 'circle', at: p, r: 4, soak: 2, only: teth, dmg: 0.4, fail: 1.2, name: 'Bright Hunger' });
+      hz({ t: tPath, tell: tTow - 2, effect: 'bait', shape: 'cone', from: 'boss', aim: 'target', targets: free, half: 30, r: 60, dmg: 0.9, own: 0.35, name: 'The Path of Light' });
+      call(dds.t + 0.5, 'Tethers: towers north/south; the rest bait the proteans close', { alert: true, dur: 6 });
+      // Spirit Taker: spread (tethered on the intercardinals, untethered DPS in, supports out).
+      const SPR = {};
+      const tethI = [315, 45, 225, 135];
+      [h, d2[0], d2[1], tk].forEach((s, i) => { SPR[s] = r2(at(tethI[i], 15)); });
+      const fD = free.filter(s => !isSup(s));
+      if (fTank) SPR[fTank] = [16, 0];
+      if (fHeal) SPR[fHeal] = [-16, 0];
+      fD.forEach((s, i) => { SPR[s] = [i ? -7.5 : 7.5, -1]; });
+      free.forEach((s, i) => { if (!SPR[s]) SPR[s] = [i % 2 ? -16 : 16, 0]; });
+      pref(tPath + 0.1, SPR);
+      const stT = pick(S);
+      hz({ t: tSt, tell: tSt - 3, effect: 'bait', shape: 'circle', from: 'target', targets: [stT], r: 5, dmg: 0.8, own: 0.4, name: 'Spirit Taker' });
+      OP.push({ t: tSt - 0.4, at: ORACLE });
+      // Hallowed Wings: the Usurper's half of the room (east or west); Dark Water stacks on the safe side, north
+      // and south number markers.
+      const safeE = Math.random() < 0.5, xs = safeE ? 1 : -1;
+      hz({ t: tWing, tell: tWing - 5, shape: 'rect', a: [safeE ? -R - 2 : 0, -R - 2], b: [safeE ? 0 : R + 2, R + 2], dmg: 1.5, name: 'Hallowed Wings' });
+      label(E('Dark Water III + Hallowed Wings', dds.t, dds.t + 25), `Dark Water III + Hallowed Wings (${safeE ? 'east' : 'west'} safe)`);
+      const [nW, sW] = SPR[water[0]][1] >= SPR[water[1]][1] ? water : [water[1], water[0]];
+      const north = new Set([nW]), south = new Set([sW]);
+      for (const s of S.filter(x => !water.includes(x)).sort((a, b) => SPR[b][1] - SPR[a][1])) (north.size < 4 ? north : south).add(s);
+      const camps = Object.assign(clumpAt([...north], [xs * 9.5, 8.5]), clumpAt([...south], [xs * 9.5, -8.5]));
+      pref(tSt + 0.4, camps);
+      stack(tWing, [nW, sW], 6, 4, 'Dark Water III', { tell: tWing - 5 });
+      call(tWing - 5, `${safeE ? 'East' : 'West'} safe: water stacks north and south`, { alert: true, dur: 5 });
+      // Somber Dance: the farthest from the Oracle, then the nearest (8): MT far across, OT close; the rest away.
+      const far = r2([-xs * 15, -9]), close = r2(add(ORACLE, [xs * 1.5, 0]));
+      const restS = S.filter(s => !TANKS.includes(s));
+      pref(tWing + 0.2, Object.assign({ MT: far, OT: close }, clumpAt(restS, [xs * 8, 4])));
+      hz({ t: tSD1, tell: tWing, effect: 'bait', shape: 'circle', from: 'target', targets: { farthest: 1, of: ORACLE }, r: 8, dmg: 1.4, own: 0.55, buster: true, name: 'Somber Dance' });
+      hz({ t: tSD2, tell: tSD1, effect: 'bait', shape: 'circle', from: 'target', targets: { nearest: 1, of: ORACLE }, r: 8, dmg: 1.4, own: 0.55, buster: true, name: 'Somber Dance' });
+      call(tWing, 'Somber Dance: far, then close', { slot: 'MT', alert: true, dur: 4 });
+      call(tWing, 'Somber Dance: stay close to the Oracle', { slot: 'OT', alert: true, dur: 4 });
+      pref(tSD2 + 0.2, UP);
+    }
+
+    // --- Akh Morn (7-1) and Morn Afah ---
+    const akh = (ev, solo) => {
+      if (!ev) return;
+      const n = 5, tS = castOf(ev, 4);
+      const rest = S.filter(s => s !== solo), host = solo === 'MT' ? 'OT' : 'MT';
+      pref(tS + 0.2, Object.assign({ [solo]: [0, 16] }, clumpAt(rest, [0, -4.5])));
+      for (let k = 0; k < n; k++) {
+        const t = +(ev.t + k * 0.97).toFixed(2);
+        hz({ t, tell: tS, effect: 'share', shape: 'circle', from: 'target', targets: [solo], r: 4, min: 1, max: 1, dmg: 0.45, name: 'Akh Morn', quiet: k > 0 });
+        hz({ t, tell: tS, effect: 'share', shape: 'circle', from: 'target', targets: [host], r: 4, min: 7, max: 7, dmg: 0.3, name: 'Akh Morn', quiet: k > 0 });
+      }
+      call(tS, `Akh Morn: ${solo} out alone, the party stacks`, { alert: true, dur: 5 });
+      label(ev, `Akh Morn (x5; ${solo} solo)`);
+    };
+    const morn = (ev) => {
+      if (!ev) return;
+      pref(castOf(ev, 6) + 0.3, clumpAt(S, [0, -4.5]));
+      stack(ev.t + 0.9, ['OT'], 4, 8, 'Morn Afah', { tell: castOf(ev, 6), dmg: 0.4 });
+      call(castOf(ev, 6), 'Morn Afah: everyone stack', { alert: true, dur: 5 });
+    };
+    const akhs = EA('Akh Morn (x5)', t0, end), morns = EA('Morn Afah', t0, end);
+    akh(akhs[0], 'MT'); morn(morns[0]);
+    akh(akhs[1], 'OT'); morn(morns[1]);
+    if (morns[0]) pref(morns[0].t + 1.2, UP);
+
+    // --- Crystallize Time ---
+    if (ct) {
+      const tFast = tOf(E('Maelstrom (fast)', ct.t, ct.t + 20), ct.t + 12), tWater = tOf(E('Dark Water III', ct.t, ct.t + 20), tFast + 1);
+      const tAero = tOf(E('Dark Blizzard III + Dark Eruption + Dark Aero III', ct.t, ct.t + 20), tWater + 2), tNorm = tOf(E('Maelstrom (normal)', ct.t, ct.t + 25), tAero + 2.6);
+      const tUnh = tOf(E('Unholy Darkness', ct.t, ct.t + 25), tNorm + 0.4), tSlow = tOf(E('Maelstrom (slow)', ct.t, ct.t + 30), tNorm + 4.9);
+      const tides = EA('Tidal Light (x4)', ct.t, ct.t + 35).map(e => e.t);
+      while (tides.length < 2) tides.push((tides[0] || tUnh + 3.4) + 6.3);
+      const tQ = tOf(E('Quietus', ct.t, ct.t + 40), ct.t + 31.9), tDrop = tOf(E('(rewind drop)', ct.t, ct.t + 40), tQ + 2);
+      const tSt = tOf(E('Spirit Taker', ct.t, ct.t + 45), tQ + 5.6), tRet = tOf(E('(stun + rewind)', ct.t, ct.t + 45), tSt + 3.4);
+      const tW1 = tOf(E('Hallowed Wings 1', ct.t, ct.t + 50), tRet + 2.2), tW2 = tOf(E('Hallowed Wings 2', ct.t, ct.t + 55), tW1 + 4.6);
+      if (tQ) { hz({ t: tQ, tell: tQ - 3, raidwide: true, dmg: 0.4, name: 'Quietus' }); }
+      // The debuffs: claws (red) on four, fangs (blue) on the other four; red: two Aero, two Ice; blue: Eruption,
+      // Ice, Unholy, Water.
+      const order = shuffle(S), red = order.slice(0, 4), blue = order.slice(4);
+      const PRI = ['MT', 'OT', 'H1', 'H2', 'M1', 'M2', 'R1', 'R2'];
+      const pr = (a) => a.slice().sort((x, y) => PRI.indexOf(x) - PRI.indexOf(y));
+      const rIce = shuffle(red).slice(0, 2), rAero = red.filter(s => !rIce.includes(s));
+      const [bErupt, bIce, bUnh, bWater] = shuffle(blue);
+      // Ice reds east and west (supports west, DPS east; two of one role: G1 swaps), aeros south-east and
+      // south-west (DPS east); the purple (slow) hourglasses on one diagonal: eruption at its north end, the other
+      // blues with an aero at its south end.
+      const sideSplit = (pair, westFirst) => { const [a, b] = pr(pair); const wa = westFirst(a), wb = westFirst(b); return wa !== wb ? (wa ? [a, b] : [b, a]) : [a, b]; };
+      const [iceW, iceE] = sideSplit(rIce, isSup), [aeroW, aeroE] = sideSplit(rAero, isSup);
+      const purpleNE = Math.random() < 0.5;                     // purple on NE + SW, else NW + SE
+      const pN = purpleNE ? 45 : 315, pS = deg360(pN + 180);
+      const aeroWithGroup = pS === 225 ? aeroW : aeroE, aeroAlone = aeroWithGroup === aeroW ? aeroE : aeroW;
+      for (const s of red) debuff(s, 'wyrmclaw', 'Wyrmclaw', rAero.includes(s) ? 'Dark Aero III: intercept a head' : 'Dark Blizzard III: intercept a head', ct.t + 1, tW2);
+      for (const s of blue) debuff(s, 'wyrmfang', 'Wyrmfang', 'cleanse in a head\'s puddle', ct.t + 1, tW2);
+      for (const s of rAero) debuff(s, 'darkAero', 'Spell-in-Waiting: Dark Aero III', 'knockback (15)', ct.t + 1, tAero);
+      for (const s of rIce.concat([bIce])) debuff(s, 'darkBlizzard', 'Spell-in-Waiting: Dark Blizzard III', 'a donut round you', ct.t + 1, tAero);
+      debuff(bErupt, 'darkEruption', 'Spell-in-Waiting: Dark Eruption', 'spread (6)', ct.t + 1, tAero);
+      debuff(bWater, 'darkWater', 'Spell-in-Waiting: Dark Water III', 'the stack (4)', ct.t + 1, tWater);
+      debuff(bUnh, 'unholyDarkness', 'Spell-in-Waiting: Unholy Darkness', 'the stack (5)', ct.t + 1, tUnh);
+      // The hourglasses (12): yellow north and south first, then the other diagonal, then purple.
+      const HG = (a) => r2(at(a, 17));
+      const nd = purpleNE ? [315, 135] : [45, 225];
+      for (const a of [0, 180]) hz({ t: tFast, tell: tFast - 6, shape: 'circle', at: HG(a), r: 12, dmg: 1.4, name: 'Maelstrom', react: 2 });
+      for (const a of nd) hz({ t: tNorm, tell: tNorm - 6, shape: 'circle', at: HG(a), r: 12, dmg: 1.4, name: 'Maelstrom', react: 2 });
+      for (const a of [pN, pS]) hz({ t: tSlow, tell: tSlow - 6, shape: 'circle', at: HG(a), r: 12, dmg: 1.4, name: 'Maelstrom', react: 2 });
+      for (const a of [0, 180, ...nd, pN, pS]) mark({ shape: 'circle', at: HG(a), r: 1.2 }, ct.t + 3, a === pN || a === pS ? tSlow : nd.includes(a) ? tNorm : tFast,
+        a === 0 || a === 180 ? 'rgba(255,230,90,0.6)' : a === pN || a === pS ? 'rgba(190,110,255,0.6)' : 'rgba(220,220,220,0.5)');
+      label(ct, `Crystallize Time (purple ${dir8(pN)} and ${dir8(pS)})`);
+      // Opening spots (out of the first, north and south).
+      const grp = [bWater, bIce, bUnh, aeroWithGroup];
+      const gIn = at(pS, 17.2), gOut = at(pS, 19.3);
+      const open = Object.assign({ [iceW]: [-18.5, 0], [iceE]: [18.5, 0], [aeroAlone]: r2(at(pS === 225 ? 135 : 225, 18.5)), [bErupt]: r2(at(pN, 18.5)) },
+        clumpAt([bWater, bIce, bUnh], gIn), { [aeroWithGroup]: r2(gOut) });
+      pref(ct.t + 3.5, open);
+      stack(tWater, [bWater], 6, 4, 'Dark Water III', { tell: tWater - 5, max: 4 });
+      spreads(tAero, [bErupt], 6, 'Dark Eruption', { tell: tAero - 4 });
+      for (const s of rIce.concat([bIce])) hz({ t: tAero, tell: tAero - 4, effect: 'bait', shape: 'donut', from: 'target', targets: [s], r0: 4, r1: 12, dmg: 1.1, own: 0, name: 'Dark Blizzard III' });
+      // Dark Aero (15, knockback 30): the group's aero throws the water stack across; the other's throws nobody.
+      for (const s of rAero) hz({ t: tAero, tell: tAero - 4, effect: 'knockback', shape: 'circle', from: s, targets: [s], r: 15, dist: 30, dmg: 0.2, name: 'Dark Aero III', react: 0 });
+      const across = at(pN, 13);
+      // After landing: Unholy Darkness (5) on the thrown group with the eruption and the ice on that side, at the
+      // north purple corner; the rest out of the normal hourglasses.
+      const iceNear = pN === 45 ? iceE : iceW, iceFar = iceNear === iceE ? iceW : iceE;
+      const unhGrp = [bWater, bIce, bUnh, bErupt, iceNear];
+      pref(tAero + 0.7, Object.assign(clumpAt(unhGrp, at(pN, 13.5)), { [iceFar]: r2(at(iceFar === iceW ? 270 : 90, 18)), [aeroWithGroup]: r2(at(pS === 225 ? 195 : 165, 18)), [aeroAlone]: r2(at(pS === 225 ? 165 : 195, 18)) }));
+      stack(tUnh, [bUnh], 6, 5, 'Unholy Darkness', { tell: tAero, max: 5 });
+      // Tidal Light: waves 10 deep across the floor, one way from a side, then the other (north to south or back);
+      // the party walks into each wave's first row once it has gone off, clear of the purple hourglasses.
+      const ew = pick([1, -1]), ns = pick([1, -1]);
+      const rows = [];
+      for (let k = 0; k < 4; k++) {
+        rows.push({ t: +(tides[0] + 2 * k).toFixed(2), shapes: [{ shape: 'rect', a: [ew * (20 - 10 * k), -22], b: [ew * (10 - 10 * k), 22] }] });
+        rows.push({ t: +(tides[1] + 2 * k).toFixed(2), shapes: [{ shape: 'rect', a: [-22, ns * (20 - 10 * k)], b: [22, ns * (10 - 10 * k)] }] });
+      }
+      rows.sort((a, b) => a.t - b.t);
+      for (const r of rows) hz(Object.assign({ t: r.t, tell: r.t - 3, dmg: 1.4, name: 'Tidal Light', react: 0 }, r.shapes[0]));
+      const slowC = [pN, pS].map(a => ({ shape: 'circle', at: HG(a), r: 12 }));
+      const steps = rows.map(r => ({ t: r.t, shapes: r.t > tSlow - 0.6 && r.t < tSlow + 0.6 ? r.shapes.concat(slowC) : r.shapes }));
+      steps.push({ t: tSlow, shapes: slowC });
+      steps.sort((a, b) => a.t - b.t);
+      const tidePath = safePath(steps, at(pN, 13.5), () => [ew * 6, ns * -4], { m: 1.6, t0: tUnh + 0.3 }) || [];
+      const tideKeys = [tUnh + 0.3].concat(steps.slice(0, -1).map(s => s.t + 0.05));
+      tidePath.forEach((p, i) => pref(tideKeys[i], clumpAt(S, p, { m: 0 })));
+      call(tides[0] - 3, `Waves from the ${ew > 0 ? 'east' : 'west'}: into the first row once it goes off`, { alert: true, dur: 5 });
+      call(tides[1] - 3, `Waves from the ${ns > 0 ? 'north' : 'south'}`, { alert: true, dur: 4 });
+      for (const s of blue) call(tides[0], 'Cleanse in a head\'s puddle', { slot: s, dur: 4 });
+      // The rewinds (placed after Quietus): G1 west, G2 east of the middle; Spirit Taker spread from them; back to
+      // them; Hallowed Wings from the north, then the south (knockback 20, the tanks in front).
+      const rw = {};
+      [G1, G2].forEach((g, j) => { const x = j ? 1 : -1; g.forEach((s, i) => { rw[s] = TANKS.includes(s) ? [x * 3, 9] : [x * (3 + 2.5 * (i % 2)), 6 - 2.6 * Math.floor(i / 2)]; }); });
+      pref(tides[1] + 6.2, rw);
+      for (const s of S) debuff(s, 'return', 'Return', 'back here at the rewind', tDrop, tRet);
+      const sp = {};
+      [G1, G2].forEach((g, j) => { const x = j ? 1 : -1; g.forEach((s, i) => { sp[s] = r2([x * (5 + 6 * (i % 2)), 12 - 7.5 * Math.floor(i / 2) - (i === 0 || i === 1 ? 0 : 0)]); }); });
+      pref(tDrop + 0.2, sp);
+      const stT = pick(S);
+      hz({ t: tSt, tell: tSt - 3, effect: 'bait', shape: 'circle', from: 'target', targets: [stT], r: 5, dmg: 0.8, own: 0.4, name: 'Spirit Taker' });
+      pref(tSt + 0.2, rw);
+      // The Usurper at the north edge, then the south: each wing a 50-wide sweep that throws everyone 20.
+      P.boss.push({ t: tQ, at: [0, 17] }, { t: tW1 + 1, at: [0, -17] }, { t: tW2 + 3, at: [0, 2] });
+      hz({ t: tW1, tell: tRet - 1, effect: 'knockback', at: [0, 17], dist: 20, dir: 180, shape: 'rect', a: [-25, -22], b: [25, 17], dmg: 0.3, name: 'Hallowed Wings', react: 0 });
+      hz({ t: tW1, tell: tRet - 1, effect: 'bait', shape: 'circle', from: 'target', targets: ['MT', 'OT'], r: 1, dmg: 1.2, own: 0.5, buster: true, name: 'Hallowed Wings', quiet: true });
+      const rw2 = Object.fromEntries(S.map(s => [s, r2([rw[s][0], -rw[s][1]])]));
+      pref(tW1 + 0.6, rw2);
+      hz({ t: tW2, tell: tW1, effect: 'knockback', at: [0, -17], dist: 20, dir: 0, shape: 'rect', a: [-25, -17], b: [25, 22], dmg: 0.3, name: 'Hallowed Wings', react: 0 });
+      hz({ t: tW2, tell: tW1, effect: 'bait', shape: 'circle', from: 'target', targets: ['MT', 'OT'], r: 1, dmg: 1.2, own: 0.5, buster: true, name: 'Hallowed Wings', quiet: true });
+      call(tRet - 1, 'Hallowed Wings: knocked south, then back north', { alert: true, dur: 5 });
+      pref(tW2 + 0.7, UP);
+    }
+    const enr = events.find(e => e.name === 'Memory\'s End + Absolute Zero');
+    label(enr, 'Memory\'s End + Absolute Zero (P4\'s enrage: push the pair before it)');
+    P.others.push({ model: 'oracle', path: OP, shows: [[tOf(E('Akh Rhai', t0, 710), 702.9) + 3.3, end + 0.5]] });
   }
 
   B.FIGHT_SCRIPTS = B.FIGHT_SCRIPTS || {};

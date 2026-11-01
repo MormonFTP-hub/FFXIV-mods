@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_u0_|_a2_ivy02|_a2_zon|_a2_nat02|_a0_nvi|_a2_col01",
   "fight": {
     "duty": "The Cloud of Darkness (Chaotic)",
     "boss": "Cloud of Darkness",
@@ -17,14 +18,6 @@
       "pap": "chara/monster/m0130/animation/a0001/bt_common/resident/monster.pap",
       "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_id0"},
       "specials": "chara/monster/m0130/animation/a0001/bt_common/mon_sp/m0130/"
-    },
-    "extra": {
-      "shadow": {
-        "kind": "monster", "id": 684, "body": 1, "variant": 1, "scale": 2.5,
-        "pap": "chara/monster/m0684/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
-        "specials": "chara/monster/m0684/animation/a0001/bt_common/mon_sp/m0684/"
-      }
     },
     "statuses": {
       "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,

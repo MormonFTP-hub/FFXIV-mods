@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>Arcadia</Author>
+    <Name>Mit Plan</Name>
+    <Punchline>Keeps your mitigation for the fight open, hit by hit, for the job you're on.</Punchline>
+    <Description>Shows the NA community mit plans for Dancing Mad, Futures Rewritten and M9S-M12S, split into phases and hits.
+It picks the fight from the duty you're in and your column from your job (MT/OT and D1-D4 are a click away), names your own buttons with their icons, and follows the boss's casts to switch phase and highlight the hit coming up.</Description>
+    <Tags>mitigation;mit;raid;savage;ultimate;cooldowns;plan</Tags>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Plans\*.json" LogicalName="MitPlan.Plans.%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

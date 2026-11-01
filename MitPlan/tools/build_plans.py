@@ -1,0 +1,477 @@
+"""Builds Mit Plan's fight files (MitPlan/Plans/*.json) from the NA community mit sheets.
+
+Sources (all public Google Sheets, read as CSV):
+  Dancing Mad (Ultimate)   Ikuya Kirishima's "Ikuya Mit", the sheet NAUR lists for DMU
+  Futures Rewritten        Fae Nightwolf & Valiaa Masume's "FRU Mit But Good", the one NAUR says NA PF tanks use
+  M9S-M12S                 Silacy Alaseia's AAC Heavyweight mitsheet, phases from Exia's DT raid timeline sheet
+
+Boss cast names for the in-game follow mode come from cactbot's timelines (github.com/OverlayPlugin/cactbot,
+Apache-2.0): each hit gets the casts that start it, checked against the names the game actually uses.
+
+    python tools/build_plans.py            use cached sheets in work/sheets, fetch what's missing
+    python tools/build_plans.py --refresh  fetch every sheet again
+"""
+import csv
+import io
+import json
+import re
+import sys
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "MitPlan" / "Plans"
+WORK = ROOT / "work"
+SIM_TIMELINES = ROOT.parent / "BlackMageSim" / "work" / "timelines"
+REFRESH = "--refresh" in sys.argv
+
+IKUYA = "10C3ytfH3irHqkb45rchIq5oqdAs-v_OKTj57M-Twi3k"
+FMBG = "1M1LHe4mpb1lyxkLWJxrDwe_JH897nickG3XLTtwnI90"
+SILACY = "1Pf2skmZvjjW-_lA5wwS8U0wHny5txsvRjPPw_4kg9cY"
+EXIA = "1oG1SwNQ_Ncz2-1pOZrE9Y_A-2yECKD2ULNGpwvKtKho"
+
+SUPERSCRIPTS = "¹²³⁴⁵⁶⁷⁸⁹⁰"
+
+
+# ---------------------------------------------------------------- fetching
+
+def sheet(doc, gid, name):
+    path = WORK / "sheets" / f"{name}.csv"
+    if REFRESH or not path.exists():
+        url = f"https://docs.google.com/spreadsheets/d/{doc}/export?format=csv&gid={gid}"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with urllib.request.urlopen(url, timeout=30) as r:
+            path.write_bytes(r.read())
+        print(f"  fetched {name}")
+    return list(csv.reader(io.StringIO(path.read_text(encoding="utf-8"))))
+
+
+def cactbot(name):
+    """Every ability name in a cactbot timeline, split into the separate names the game uses."""
+    path = SIM_TIMELINES / f"{name.replace('/', '_')}.txt"
+    if not path.exists():
+        path = WORK / "timelines" / f"{name.replace('/', '_')}.txt"
+        if REFRESH or not path.exists():
+            url = f"https://raw.githubusercontent.com/OverlayPlugin/cactbot/main/ui/raidboss/data/{name}.txt"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with urllib.request.urlopen(url, timeout=30) as r:
+                path.write_bytes(r.read())
+    names = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r'^\s*[\d.]+\s+"([^"]+)"', line)
+        if not m or m.group(1).startswith("--"):
+            continue
+        for part in re.sub(r"\s*\([^)]*\)", "", m.group(1)).split("/"):
+            part = re.sub(r"\s+x\d+$", "", part.strip().rstrip("?"))
+            if part:
+                names.add(part)
+    return names
+
+
+# ---------------------------------------------------------------- cell parsing
+
+def secs(text):
+    m = re.match(r"^\s*(\d+):(\d\d)", text or "")
+    return int(m.group(1)) * 60 + int(m.group(2)) if m else None
+
+
+def split_items(line, seps):
+    """Splits a cell line on the sheet's separators, but never inside brackets."""
+    items, depth, cur, i = [], 0, "", 0
+    while i < len(line):
+        ch = line[i]
+        depth += ch == "("
+        depth -= ch == ")"
+        hit = next((s for s in seps if depth == 0 and line.startswith(s, i)), None)
+        if hit:
+            items.append(cur)
+            cur, i = "", i + len(hit)
+            continue
+        cur += ch
+        i += 1
+    items.append(cur)
+    return [re.sub(r"\s+", " ", x).strip() for x in items if x.strip()]
+
+
+def cell(text, seps=(" + ",)):
+    """A sheet cell as lines of items. A line starting with ➔ is mitigation carried over from the hit above."""
+    lines = []
+    for raw in (text or "").replace("\r", "").split("\n"):
+        raw = raw.strip()
+        if not raw:
+            continue
+        if raw.startswith("+") and lines:
+            lines[-1]["items"] += split_items(raw[1:], seps)
+            continue
+        carry = raw.startswith("➔")
+        items = split_items(raw.lstrip("➔ ").strip(), seps)
+        if items:
+            lines.append({"carry": carry, "items": items} if carry else {"items": items})
+    return lines
+
+
+def note_lines(text):
+    out = []
+    for line in (text or "").replace("\r", "").split("\n"):
+        line = line.strip()
+        if line:
+            out.append(line)
+    return out
+
+
+# ---------------------------------------------------------------- boss cast names
+
+def norm(s):
+    """A cast name as Mit Plan compares them: letters only, no trailing number (the plugin does the same)."""
+    s = re.sub(r"(\s+([0-9]+|[ivx]+))+$", "", s.lower().strip())
+    return re.sub(r"[^a-z]", "", s.replace("judgement", "judgment"))
+
+
+def close(a, b):
+    """True when two names are the same apart from one typo (sheets misspell boss names)."""
+    if a == b:
+        return True
+    if min(len(a), len(b)) < 8 or abs(len(a) - len(b)) > 1:
+        return False
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        row = [i]
+        for j, cb in enumerate(b, 1):
+            row.append(min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = row
+    return prev[-1] <= 1
+
+
+def sync_names(hit_name, casts):
+    """The boss casts a sheet row is named after, as the game spells them."""
+    name = re.sub(r"\([^)]*\)", " ", hit_name)
+    name = re.sub(SUPERSCRIPT_RE, "", name)
+    parts = re.split(r"\s*(?:\+|>|/|&|\bthen\b)\s*", name)
+    found = []
+    for part in parts:
+        part = re.sub(r"\b(x\d+|\d+(st|nd|rd|th)?|#\d+|[IVX]+|set|sets|hits?|start|end|cast|part)\b", " ", part, flags=re.I)
+        part = re.sub(r"\s+", " ", part).strip(" -:")
+        if len(part) < 4:
+            continue
+        p = norm(part)
+        best = next((c for c in sorted(casts) if norm(c) == p), None)
+        best = best or next((c for c in sorted(casts) if close(p, norm(c))), None)
+        if not best and len(p) >= 5:
+            # "Screech" for Sadistic Screech: a whole-word end or start of exactly one cast name.
+            def ends(c):
+                words = c.lower().split()
+                return p in {norm(" ".join(words[k:])) for k in range(len(words))} | {norm(" ".join(words[:k + 1])) for k in range(len(words))}
+            hits = sorted({c for c in casts if ends(c)}, key=norm)
+            hits = list({norm(c): c for c in hits}.values())
+            best = hits[0] if len(hits) == 1 else None
+        if best:
+            best = re.sub(r"(\s+([0-9]+|[IVX]+))+$", "", best) if norm(best) == norm(re.sub(r"(\s+([0-9]+|[IVX]+))+$", "", best)) else best
+        if best and best not in found:
+            found.append(best)
+    return found
+
+
+SUPERSCRIPT_RE = f"[{SUPERSCRIPTS}*]+"
+
+
+# ---------------------------------------------------------------- Ikuya (Dancing Mad)
+
+def build_ikuya():
+    tabs = [(161526414, "p1"), (583362985, "p2"), (247845947, "p3"), (2072785902, "p4"), (696382883, "p5")]
+    keys = {"MT": "MT", "OT": "OT", "White Mage": "WHM", "Astrologian": "AST", "Scholar": "SCH", "Sage": "SGE",
+            "D1": "D1", "D2": "D2", "D3": "D3", "D4": "D4", "Extras": "Extras"}
+    casts = cactbot("07-dt/ultimate/dancing_mad")
+    changelog = sheet(IKUYA, 1790462410, "dmu_changelog")
+    version = next((c.strip() for r in changelog for c in r if c.strip().startswith("Version ")), "")
+    phases = []
+    for gid, tab in tabs:
+        rows = sheet(IKUYA, gid, f"dmu_{tab}")
+        title = next(c.strip() for r in rows for c in r if re.match(r"^Phase \d", c.strip()))
+        head = next(i for i, r in enumerate(rows) if "MT" in r and "OT" in r)
+        cols = {keys[c.strip()]: j for j, c in enumerate(rows[head]) if c.strip() in keys}
+        tcol = rows[head].index("Time")
+        hits, notes = [], []
+        for r in rows[head + 1:]:
+            name = r[1].strip() if len(r) > 1 else ""
+            if not name:
+                continue
+            name = name.replace("Embrance", "Embrace").replace("\n", " ")
+            name = re.sub(r"\s+", " ", name)
+            if name == "Notes":
+                notes += note_lines(r[tcol])
+                continue
+            when = r[tcol].strip()
+            if secs(when) is None:
+                # A row of instructions rather than a hit (e.g. Accretions, how to play Forsaken).
+                hits.append({"name": name, "info": note_lines(when)})
+                continue
+            hit = {"name": name, "time": when, "t": secs(r[tcol + 1]) if secs(r[tcol + 1]) is not None else secs(when)}
+            if r[tcol + 1].strip() and r[tcol + 1].strip() != when:
+                hit["fightTime"] = when
+                hit["time"] = r[tcol + 1].strip()
+            hit["cells"] = {k: cell(r[j]) for k, j in cols.items() if cell(r[j])}
+            hit["sync"] = sync_names(name, casts)
+            hits.append(hit)
+        n = re.match(r"Phase (\d+): (.*)", title)
+        phases.append({"name": f"P{n.group(1)} · {n.group(2)}", "clock": f"p{n.group(1)}", "hits": hits, "notes": notes})
+
+    # Ikuya's Omnitank tab: personal tank cooldowns by hit, as its own section per phase.
+    omni = sheet(IKUYA, 1548551521, "dmu_omnitank")
+    tank_notes = parse_omnitank(omni)
+    return {
+        "id": "dmu",
+        "name": "Dancing Mad (Ultimate)",
+        "short": "DMU",
+        "duties": ["Dancing Mad (Ultimate)"],
+        "source": {"title": "Ikuya Mit", "author": "Ikuya Kirishima", "version": version,
+                   "url": "https://tinyurl.com/ikuyamittydmu", "via": "NAUR · naurffxiv.com/ultimate/kefka"},
+        "about": ["All mechanics require shields.", "Times are phase times (fight time in the tooltip)."],
+        "slots": [
+            {"key": "MT", "label": "MT", "role": "tank"},
+            {"key": "OT", "label": "OT", "role": "tank"},
+            {"key": "WHM", "label": "White Mage", "jobs": ["WHM"]},
+            {"key": "AST", "label": "Astrologian", "jobs": ["AST"]},
+            {"key": "SCH", "label": "Scholar", "jobs": ["SCH"]},
+            {"key": "SGE", "label": "Sage", "jobs": ["SGE"]},
+            {"key": "D1", "label": "D1 (melee)", "role": "melee"},
+            {"key": "D2", "label": "D2 (melee)", "role": "melee"},
+            {"key": "D3", "label": "D3 (ranged)", "role": "ranged"},
+            {"key": "D4", "label": "D4 (caster)", "role": "caster"},
+            {"key": "Extras", "label": "Extras", "role": "extras"},
+        ],
+        "phases": phases,
+        "tankCooldowns": tank_notes,
+    }
+
+
+def parse_omnitank(rows):
+    """Ikuya's per-phase tank cooldown tables (personal mits, invulns, provokes)."""
+    out, cur = [], None
+    for r in rows:
+        cells = [c.strip() for c in r]
+        title = next((c for c in cells if re.match(r"^(Phase \d|P\d)", c)), None)
+        if title and len([c for c in cells if c]) == 1:
+            cur = {"phase": title, "columns": [], "rows": [], "notes": []}
+            out.append(cur)
+            continue
+        if cur is None:
+            continue
+        if len(cells) > 3 and cells[3] == "Time":
+            cur["columns"] = [c for c in cells[4:] if c]
+            continue
+        if len(cells) > 1 and cells[1] == "Notes":
+            cur["notes"] = note_lines(r[3])
+            continue
+        if len(cells) > 1 and cells[1] and cur["columns"]:
+            vals = [c for c in r[4:]]
+            mt = vals[0] if vals else ""
+            ot = vals[4] if len(vals) > 4 else ""
+            cur["rows"].append({"name": re.sub(r"\s+", " ", cells[1]), "time": cells[3],
+                                "a": cell(mt), "b": cell(ot)})
+    return out
+
+
+# ---------------------------------------------------------------- FMBG (Futures Rewritten)
+
+def build_fmbg():
+    tabs = [(598251485, "p1"), (370065642, "p2"), (810381878, "p3"), (1274743541, "p4"), (69044699, "p5")]
+    keys = {"Tank 1": "MT", "Tank 2": "OT", "Scholar": "SCH", "Sage": "SGE", "White Mage": "WHM", "Astro": "AST",
+            "Melee 1": "D1", "Melee 2": "D2", "Phys Range": "D3", "Caster": "D4", "Extras": "Extras"}
+    casts = cactbot("07-dt/ultimate/futures_rewritten")
+    phases = []
+    for gid, tab in tabs:
+        rows = sheet(FMBG, gid, f"fru_{tab}")
+        title, cur, cols, ncol, prefix = None, None, {}, 1, ""
+        for i, r in enumerate(rows):
+            cells = [c.strip() for c in r]
+            filled = [c for c in cells if c]
+            if len(filled) == 1 and len(filled[0]) > 3 and filled[0] not in ("Lingering Mits", "Conditional Mits") and cur is None:
+                title = filled[0]
+                continue
+            if "Tank 1" in cells:
+                cols = {keys[c]: j for j, c in enumerate(cells) if c in keys}
+                ncol = cells.index("Tank 1") - 1
+                m = re.match(r"^(P\d): (.*)", title or "")
+                if m:
+                    prefix = m.group(1)
+                    name = f"{m.group(1)} · {m.group(2)}"
+                else:
+                    name = f"{prefix} · {title}"
+                cur = {"name": name, "clock": prefix.lower(), "hits": [], "notes": []}
+                phases.append(cur)
+                continue
+            if cur is None:
+                continue
+            name = cells[ncol] if len(cells) > ncol else ""
+            if name == "Notes":
+                cur["notes"] = note_lines(r[ncol + 1])
+                cur = None
+                continue
+            if not name and cells and secs(cells[0]) is not None and cur["hits"]:
+                cur["hits"][-1]["time"] = cells[0]
+                cur["hits"][-1]["t"] = secs(cells[0])
+                continue
+            if not name:
+                continue
+            hit = {"name": name, "cells": {}}
+            for k, j in cols.items():
+                text = r[j].replace("Seraph/ism", "Seraph/Seraphism")
+                c = cell(text, seps=("/",))
+                if c:
+                    hit["cells"][k] = c
+            hit["sync"] = sync_names(name, casts)
+            cur["hits"].append(hit)
+    # Hits the sheet gives no time take the time of the hit before them, for ordering.
+    for p in phases:
+        last = 0
+        for h in p["hits"]:
+            if h.get("t") is None:
+                h["t"] = last
+            last = h["t"]
+    return {
+        "id": "fru",
+        "name": "Futures Rewritten (Ultimate)",
+        "short": "FRU",
+        "duties": ["Futures Rewritten (Ultimate)"],
+        "source": {"title": "FRU Mit But Good", "author": "Fae Nightwolf & Valiaa Masume",
+                   "url": "http://mit.lesb.in/", "via": "NAUR · naurffxiv.com/ultimate/fru"},
+        "about": ["The sheet NAUR says NA PF tanks use; party mits are mix and match.",
+                  "Slashes in the sheet mean \"and\": each one is a separate button."],
+        "slots": [
+            {"key": "MT", "label": "Tank 1", "role": "tank"},
+            {"key": "OT", "label": "Tank 2", "role": "tank"},
+            {"key": "WHM", "label": "White Mage", "jobs": ["WHM"]},
+            {"key": "AST", "label": "Astrologian", "jobs": ["AST"]},
+            {"key": "SCH", "label": "Scholar", "jobs": ["SCH"]},
+            {"key": "SGE", "label": "Sage", "jobs": ["SGE"]},
+            {"key": "D1", "label": "Melee 1", "role": "melee"},
+            {"key": "D2", "label": "Melee 2", "role": "melee"},
+            {"key": "D3", "label": "Phys Range", "role": "ranged"},
+            {"key": "D4", "label": "Caster", "role": "caster"},
+            {"key": "Extras", "label": "Extras", "role": "extras"},
+        ],
+        "phases": phases,
+    }
+
+
+# ---------------------------------------------------------------- Silacy (M9S-M12S)
+
+SAVAGE = [
+    # id, name, duty, cactbot timeline, [(silacy gid, clock, [(phase name, start s)])]
+    ("m9s", "M9S · Vamp Fatale", "AAC Heavyweight M1 (Savage)", "07-dt/raid/r9s",
+     [(871196336, "fight", [("It's A10 Again", 0), ("More Buzz Saws", 147), ("Hell in a Cell", 365)])]),
+    ("m10s", "M10S · Red Hot and Deep Blue", "AAC Heavyweight M2 (Savage)", "07-dt/raid/r10s",
+     [(984942427, "fight", [("1 on 1", 0), ("Insane Air", 152), ("Snaking", 238), ("Xtreme Waves", 328),
+                            ("Tubular", 409), ("Xtreme Snaking", 463)])]),
+    ("m11s", "M11S · The Tyrant", "AAC Heavyweight M3 (Savage)", "07-dt/raid/r11s",
+     [(65834755, "fight", [("Toy Weapons", 0), ("Charybdistopia", 174), ("Meteorain", 262),
+                           ("Majestic Meteor", 357), ("Ecliptic Stampede", 476)])]),
+    ("m12s", "M12S · Lindwurm", "AAC Heavyweight M4 (Savage)", "07-dt/raid/r12s",
+     [(1056663241, "door", [("Door · Act 1", 0), ("Door · Act 2", 117), ("Door · Act 3", 183), ("Door · Curtain Call", 250)]),
+      (1402650805, "final", [("Final · Replication 1", 0), ("Final · Replication 2", 88), ("Final · Blood Mana", 181),
+                             ("Final · Idyllic Dream", 241)])]),
+]
+
+# Casts that start a part of a fight with no sheet row named after them (the clock syncs to them).
+SAVAGE_EXTRA_SYNC = {
+    ("m12s", "final", "Prepull"): [{"name": "Arcadia Aflame", "at": 15}],
+}
+
+
+def build_silacy():
+    plans = []
+    for pid, name, duty, tl, parts in SAVAGE:
+        casts = cactbot(tl)
+        phases, notes = [], []
+        enrage = None
+        for gid, clock, bounds in parts:
+            rows = sheet(SILACY, gid, f"{pid}_{clock}")
+            head = rows[0]
+            cols = {c.strip(): j for j, c in enumerate(head) if c.strip() in ("MT", "OT", "Pure", "Shield", "M1", "M2", "R1", "R2", "Parking Lot")}
+            part = [{"name": b[0], "clock": clock, "hits": [], "notes": []} for b in bounds]
+            in_notes = False
+            for r in rows[1:]:
+                when, label = r[0].strip(), (r[1].strip() if len(r) > 1 else "")
+                if when.lower().startswith("enrage"):
+                    enrage = (re.findall(r"\d+:\d\d", when) or [when])[-1]
+                    part[-1]["hits"].append({"name": "Enrage", "time": enrage, "t": secs(enrage), "info": []})
+                    in_notes = True
+                if in_notes:
+                    notes += [c.strip() for c in r[2:] if c.strip()]
+                    continue
+                if not label:
+                    continue
+                times = re.findall(r"\d+:\d\d", when)
+                start = secs(times[0]) if times else 0
+                end = secs(times[-1]) if times else start
+                hit = {"name": re.sub(r"\s+", " ", label), "time": re.sub(r"\s*-\s*", "–", when) if times else when,
+                       "t": start}
+                if end != start:
+                    hit["tEnd"] = end
+                cells = {}
+                for k, j in cols.items():
+                    text = r[j] if j < len(r) else ""
+                    if k == "MT" and re.search(r"EVERY SINGLE REMAINING|^NOTE:", text):
+                        hit["note"] = re.sub(r"^NOTE:\s*", "", text.strip())
+                        continue
+                    c = cell(text)
+                    if c:
+                        cells["Parking" if k == "Parking Lot" else k] = c
+                hit["cells"] = cells
+                hit["sync"] = sync_names(label, casts)
+                extra = SAVAGE_EXTRA_SYNC.get((pid, clock, label))
+                if extra:
+                    hit["syncAt"] = extra
+                # A row belongs to the phase its last hit lands in.
+                idx = max(i for i, b in enumerate(bounds) if end >= b[1])
+                part[idx]["hits"].append(hit)
+            phases += part
+        number = pid.upper()
+        plans.append({
+            "id": pid,
+            "name": name,
+            "short": number,
+            "duties": [duty],
+            "source": {"title": "AAC Heavyweight Mitsheet", "author": "Silacy Alaseia (Odin)",
+                       "url": "https://na.finalfantasyxiv.com/lodestone/character/30004232/blog/5650059/",
+                       "via": "Phases from Exia's DT raid timelines"},
+            "about": ["Silacy's personal preferences from week 1 PF, not the most optimal way to mitigate.",
+                      "The healer columns are written for a Scholar shield healer; ask your healers where they want your mits."],
+            "slots": [
+                {"key": "MT", "label": "MT", "role": "tank"},
+                {"key": "OT", "label": "OT", "role": "tank"},
+                {"key": "Pure", "label": "Pure healer", "jobs": ["WHM", "AST"]},
+                {"key": "Shield", "label": "Shield healer (written for SCH)", "jobs": ["SCH", "SGE"]},
+                {"key": "M1", "label": "M1 (melee)", "role": "melee"},
+                {"key": "M2", "label": "M2 (melee)", "role": "melee"},
+                {"key": "R1", "label": "R1 (phys ranged)", "role": "ranged"},
+                {"key": "R2", "label": "R2 (caster)", "role": "caster"},
+                {"key": "Parking", "label": "Parking lot", "role": "extras"},
+            ],
+            "notes": notes,
+            "phases": [p for p in phases if p["hits"]],
+        })
+    return plans
+
+
+# ---------------------------------------------------------------- main
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    plans = [build_ikuya(), build_fmbg()] + build_silacy()
+    for plan in plans:
+        hits = [h for p in plan["phases"] for h in p["hits"] if "cells" in h]
+        synced = [h for h in hits if h.get("sync") or h.get("syncAt")]
+        for h in hits:
+            if not h.get("sync"):
+                h.pop("sync", None)
+        path = OUT / f"{plan['id']}.json"
+        path.write_text(json.dumps(plan, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"{plan['id']:5} {len(plan['phases'])} phases, {len(hits)} hits, {len(synced)} with boss casts -> {path.relative_to(ROOT)}")
+        missing = [h["name"] for h in hits if not h.get("sync") and not h.get("syncAt")]
+        if missing:
+            print(f"      no cast: {', '.join(missing)}")
+
+
+if __name__ == "__main__":
+    main()
