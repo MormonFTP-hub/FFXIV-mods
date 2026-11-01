@@ -380,18 +380,18 @@
       pref(cB + 0.2, clumpSafe(S, p1, cones, 1.6));
       puddle(p1, tG1, pick(S));
       // Vitrophyre: everyone spreads (5), G1 west and G2 east, 10.5 or more from the puddles.
-      const vitro = (t0, t, puddles, ay) => {
+      const vitro = (t0, t, puddles, from) => {
         const spots = {}, done = [];
         [[G1, -1], [G2, 1]].forEach(([grp, sx]) => {
           const ok = (p) => floorR(1.2)(p) && p[0] * sx > 2 && puddles.every(q => dist(p, q) > 10.6);
-          const pts = spreadIn(4, ok, [8 * sx, ay], 6.2, done).sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+          const pts = spreadIn(4, ok, r2(add(from, mul(unit([sx, from[1] > 0 ? -0.5 : 0.5]), 11.5))), 6.2, done).sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
           done.push(...pts);
           Object.assign(spots, assign(grp.slice().sort((a, b) => 'MTOTM1M2'.includes(b) - 'MTOTM1M2'.includes(a)), pts));
         });
         pref(t0 + 0.1, spots);
         spreads(t, S, 5, 'Vitrophyre', { tell: t0 });
       };
-      vitro(tG1, tV1, [p1], p1[1] - 10);
+      vitro(tG1, tV1, [p1], p1);
       // Revolting Ruin, then the half room: the tanks' cones lean away from the party's safe half.
       const rr2 = E('Revolting Ruin III 1', tV1, tW1);
       const half1 = pick([-1, 1]);                        // the half hit: west -1, east 1
@@ -407,7 +407,7 @@
       // Gravitas 2 south, Vitrophyre 2 clear of both puddles.
       pref(tW1 + 0.1, clumpAt(S, p2));
       puddle(p2, tG2, pick(S));
-      vitro(tG2, tV2, [p1, p2], -3);
+      vitro(tG2, tV2, [p1, p2], p2);
       // The second half room: supports north, DPS south, on the safe side.
       const half2 = pick([-1, 1]), sx2 = -half2;
       hz(Object.assign({ t: tW2, tell: tW2 - 5.2, dmg: 1.3, name: 'Gravitational Wave' }, halfShape(half2)));

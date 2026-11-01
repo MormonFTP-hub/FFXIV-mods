@@ -712,12 +712,12 @@
       const spots = {};
       for (const s of S) {
         const z = zoneOf(s, t), cur = prefAt(s, t0), ok0 = okFor(s, t0, t + 0.5, 0.6);
-        const sep = (p) => Object.values(spots).every(q => dist(q, p) >= 1.05);
+        const sep = (p, k = 1.05) => Object.values(spots).every(q => dist(q, p) >= k);
         let want, ok;
         if (isPlat(z)) {
           const sx = z === 'W' ? -1 : 1, sy = cur[1] >= 0 ? 1 : -1;
           if (kind === 'cross') { want = [27.5 * sx, 23.5 * sy]; ok = (p) => ok0(p) && !inside(shape, p, 1.4) && sep(p); }
-          else { want = [19.75 * sx, Math.max(-3, Math.min(3, cur[1]))]; ok = (p) => ok0(p) && !inside(shape, p, 0.45) && sep(p); }
+          else { want = [19.75 * sx, Math.max(-2.4, Math.min(2.4, cur[1]))]; ok = (p) => ok0(p) && !inside(shape, p, 0.45) && sep(p, 0.82); }
         } else {
           const [sx, sy] = CORNER[z];
           if (kind === 'cross') {
@@ -1030,7 +1030,8 @@
             && Object.entries(spots).every(([o, q]) => o === m || o === x || dist(q, p) >= 1.2), 20);
           hold(m, fe.t - 5, tEnd + 0.3, spots[m]);
         }
-        if (chosen.worst < 3.8) P.notes.push(`Feint ${c}: the chaser comes within ${chosen.worst.toFixed(1)}`);
+        const close = Math.min(...chosen.trail.map((q, k) => Math.min(...S.filter(o => o !== x).map(o => dist(q, mates.includes(o) ? spots[o] : prefAt(o, tF0 + every * k))))));
+        if (close < 3.8) P.notes.push(`Feint ${c}: the chaser comes within ${close.toFixed(1)}`);
         let prevH = null;
         for (let k = 0; k < n; k++) {
           const t = +(tF0 + every * k).toFixed(2);
@@ -1108,16 +1109,23 @@
     // ===== Placed last, once every spot is known =====
     // The lasers: each away from the middle, turned off anyone it would catch.
     for (const L of laserPlan) for (const s of L.who) {
-      const p = prefAt(s, L.t - 0.4), others = S.filter(o => o !== s).flatMap(o => [L.t - 0.7, L.t - 0.4, L.t - 0.2, L.t, L.t + 0.1].map(tt => prefAt(o, tt))), out = brg(p);
-      let best = null;
-      for (const m of [1.4, 0.7]) {
-        for (const d of Array.from({ length: 36 }, (_, k) => (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 10)) {
-          const deg = deg360(out + d), cone = { shape: 'cone', at: p, deg, half: 7.5, r: 25 };
-          if (others.every(q => !inside(cone, q, m))) { best = deg; break; }
+      let p = prefAt(s, L.t - 0.4);
+      const others = S.filter(o => o !== s).flatMap(o => [L.t - 0.7, L.t - 0.4, L.t - 0.2, L.t, L.t + 0.1].map(tt => prefAt(o, tt)));
+      const aim = (q, ms) => {
+        for (const m of ms) for (const d of Array.from({ length: 36 }, (_, k) => (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 10)) {
+          const deg = deg360(brg(q) + d), cone = { shape: 'cone', at: q, deg, half: 7.5, r: 25 };
+          if (others.every(o => !inside(cone, o, m))) return deg;
         }
-        if (best !== null) break;
+        return null;
+      };
+      let best = aim(p, [1.4, 0.7, 0.4]);
+      if (best === null) {
+        // Too crowded where it stands: a step aside first.
+        const ok = okFor(s, L.t - 3, L.t + 0.2);
+        const q = findSpot(p, (q) => dist(q, p) <= 4 && ok(q) && segOk(p, q, ok, true) && others.every(o => dist(o, q) > 1.5) && aim(q, [0.9]) !== null, 5);
+        if (aim(q, [0.9]) !== null) { override(s, +(L.t - 3).toFixed(2), +(L.t + 0.2).toFixed(2), q); p = q; best = aim(q, [0.9]); }
       }
-      if (best === null) { best = out; P.notes.push(`laser ${s} at ${L.t}: no clear way`); }
+      if (best === null) { best = brg(p); P.notes.push(`laser ${s} at ${L.t}: no clear way`); }
       hz({ t: L.t, tell: L.t - 4, effect: 'bait', shape: 'cone', from: 'target', targets: [s], deg: best, half: 7.5, r: 25, snap: 0.4, dmg: 0.9, own: 0, name: 'Dark-energy Particle Beam' });
       debuff(s, 'curseOfDarkness', 'Curse of Darkness', 'your laser fires as it runs out: point it away from everyone', L.curse, L.t);
       call(L.t - 4, 'Your laser: face away from everyone', { slot: s, alert: true, dur: 4 });
