@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "_a0_box4a|_a0_stg02[.]sgb|_a0_arf00[.]mdl|_u3_emv01|_w3_wat01",
+  "exclude": "_a0_box4a|_a0_stg02[.]sgb|_a0_arf00[.]mdl|_u3_emv01|_w3_wat01|_a2_nat03|_u1_nat0|_a0_stc0[25]|_a0_brg1[2-5]|_a0_rai11|_a0_arf17|_a2_cry1[12]|_a0_lin0[34]|_a2_nat02|_a1_nat01",
   "fight": {
     "duty": "Hell on Rails (Extreme)",
     "boss": "Doomtrain",
@@ -20,12 +20,6 @@
       "specials": "chara/monster/m0969/animation/a0001/bt_common/mon_sp/m0969/"
     },
     "extra": {
-      "aether": {
-        "kind": "monster", "id": 273, "body": 1, "variant": 107, "scale": 1.5,
-        "pap": "chara/monster/m0273/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0"},
-        "specials": "chara/monster/m0273/animation/a0001/bt_common/mon_sp/m0273/"
-      },
       "ghost": {
         "kind": "monster", "id": 969, "body": 2, "variant": 1, "scale": 0.1,
         "pap": "chara/monster/m0969/animation/a0001/bt_common/resident/monster.pap",

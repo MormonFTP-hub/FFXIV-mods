@@ -1,0 +1,66 @@
+{
+  "name": "The Epic of Alexander",
+  "label": "TEA · The Epic of Alexander (Ultimate)",
+  "bg": "bg/ex1/02_dra_d2/alx/d2az/",
+  "out": "game-map-tea.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "d2a9_|d2az_al_|d2a0_ac_|d2az_p3_|d2az_p4_|d2az_a0_env|d2az_p2_boss2|d2a0_a3_wat02",
+  "fight": {
+    "duty": "The Epic of Alexander (Ultimate)",
+    "boss": "Living Liquid",
+    "timeline": "05-shb/ultimate/the_epic_of_alexander",
+    "branches": "main",
+    "hitbox": 3.5,
+    "model": {
+      "kind": "monster", "id": 260, "body": 1, "variant": 1, "scale": 3.5,
+      "pap": "chara/monster/m0260/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "cast": "cbbm_mgc_thm_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0260/animation/a0001/bt_common/mon_sp/m0260/"
+    },
+    "extra": {
+      "hand": {
+        "kind": "monster", "id": 261, "body": 2, "variant": 1, "scale": 1.6,
+        "pap": "chara/monster/m0261/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "cast": "cbbm_mgc_thm_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0261/animation/a0001/bt_common/mon_sp/m0261/"
+      },
+      "bj": {
+        "kind": "monster", "id": 300, "body": 1, "variant": 1, "scale": 0.45,
+        "pap": "chara/monster/m0300/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0300/animation/a0001/bt_common/mon_sp/m0300/"
+      },
+      "cc": {
+        "kind": "monster", "id": 361, "body": 1, "variant": 1, "scale": 0.85,
+        "pap": "chara/monster/m0361/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0361/animation/a0001/bt_common/mon_sp/m0361/"
+      },
+      "ap": {
+        "kind": "monster", "id": 354, "body": 1, "variant": 1, "scale": 0.9,
+        "pap": "chara/monster/m0354/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0354/animation/a0001/bt_common/mon_sp/m0354/"
+      },
+      "pa": {
+        "kind": "monster", "id": 598, "body": 1, "variant": 1, "scale": 0.9,
+        "pap": "chara/monster/m0598/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0598/animation/a0001/bt_common/mon_sp/m0598/"
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44, "physicalVuln": 695,
+      "throttle": 700,
+      "compressedWater": 2142, "compressedLightning": 2143,
+      "decreeAlpha": 2222, "decreeBeta": 2223, "decreeGamma": 2137, "decreeDelta": 2138,
+      "judgmentAlpha": 2224, "judgmentBeta": 2225, "judgmentGamma": 2139, "judgmentDelta": 2140,
+      "temporalDisplacement": 1119, "aggravatedAssault": 1121, "sharedSentence": 1122, "houseArrest": 1123, "restrainingOrder": 1124,
+      "contactProhibition": 2152, "contactRegulation": 2153, "escapeProhibition": 2154, "escapeDetection": 2155,
+      "contactProhibitionOrdained": 3055, "contactRegulationOrdained": 3056, "escapeProhibitionOrdained": 3057, "escapeDetectionOrdained": 3058,
+      "temporalPrison": 2165, "enigmaCodex": 2146
+    }
+  }
+}

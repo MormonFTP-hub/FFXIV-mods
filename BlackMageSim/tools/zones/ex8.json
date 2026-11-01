@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_a1_arf11|_u1_|_a1_plr|_a2_(nat|arf|plr|stg02)|_u2_(nat|arf)|_a0_stg",
   "fight": {
     "duty": "The Unmaking (Extreme)",
     "boss": "Enuo",
@@ -21,12 +22,6 @@
     "extra": {
       "shadow": {
         "kind": "monster", "id": 1020, "body": 1, "variant": 1, "scale": 5.0,
-        "pap": "chara/monster/m1020/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0"},
-        "specials": "chara/monster/m1020/animation/a0001/bt_common/mon_sp/m1020/"
-      },
-      "hand": {
-        "kind": "monster", "id": 1020, "body": 1, "variant": 1, "scale": 2.0,
         "pap": "chara/monster/m1020/animation/a0001/bt_common/resident/monster.pap",
         "anims": {"idle": "cbbm_id0"},
         "specials": "chara/monster/m1020/animation/a0001/bt_common/mon_sp/m1020/"

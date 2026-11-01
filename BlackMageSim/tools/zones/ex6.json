@@ -6,6 +6,7 @@
   "sky": "day",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_m1_|bgplate/00(0[0-9]|1[0-4]|17|[2-5][0-9])[.]|_a1_(clf0[1236]|rck(0[789]|1[13]|1[89]|2[0-3])|trn0[12])[.]|_p1_(cac|plt|tre)",
   "fight": {
     "duty": "The Windward Wilds (Extreme)",
     "boss": "Guardian Arkveld",

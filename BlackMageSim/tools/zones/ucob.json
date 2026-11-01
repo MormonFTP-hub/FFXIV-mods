@@ -1,0 +1,72 @@
+{
+  "name": "The Unending Coil of Bahamut",
+  "label": "UCoB · The Unending Coil of Bahamut (Ultimate)",
+  "bg": "bg/ffxiv/fst_f1/bah/f1bz/",
+  "out": "game-map-ucob.js",
+  "sky": "arena",
+  "dummy": [0.0, 0.0, 0.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "The Unending Coil of Bahamut (Ultimate)",
+    "boss": "Twintania",
+    "timeline": "04-sb/ultimate/unending_coil_ultimate",
+    "branches": "main",
+    "hitbox": 3.96,
+    "model": {
+      "kind": "monster", "id": 60, "body": 2, "variant": 1, "scale": 1.1,
+      "pap": "chara/monster/m0060/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "cast": "cbbm_sp_a_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0060/animation/a0001/bt_common/mon_sp/m0060/"
+    },
+    "extra": {
+      "nael": {
+        "kind": "monster", "id": 196, "body": 1, "variant": 1, "scale": 1.5,
+        "pap": "chara/monster/m0196/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_d_1", "cast": "cbbm_sp_d_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0196/animation/a0001/bt_common/mon_sp/m0196/"
+      },
+      "bahamut": {
+        "kind": "monster", "id": 117, "body": 1, "variant": 4, "scale": 0.7,
+        "pap": "chara/monster/m0117/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "cast": "cbbm_sp_a_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0117/animation/a0001/bt_common/mon_sp/m0117/"
+      },
+      "golden": {
+        "kind": "monster", "id": 117, "body": 1, "variant": 3, "scale": 0.7,
+        "pap": "chara/monster/m0117/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "cast": "cbbm_sp_a_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0117/animation/a0001/bt_common/mon_sp/m0117/"
+      },
+      "firehorn": {
+        "kind": "monster", "id": 163, "body": 1, "variant": 4, "scale": 0.8,
+        "pap": "chara/monster/m0163/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"}
+      },
+      "iceclaw": {
+        "kind": "monster", "id": 163, "body": 1, "variant": 3, "scale": 0.8,
+        "pap": "chara/monster/m0163/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"}
+      },
+      "thunderwing": {
+        "kind": "monster", "id": 163, "body": 1, "variant": 1, "scale": 0.8,
+        "pap": "chara/monster/m0163/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"}
+      },
+      "tail": {
+        "kind": "monster", "id": 163, "body": 1, "variant": 6, "scale": 0.8,
+        "pap": "chara/monster/m0163/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"}
+      },
+      "fang": {
+        "kind": "monster", "id": 163, "body": 3, "variant": 1, "scale": 0.8,
+        "pap": "chara/monster/m0163/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "run": "cbbm_02f_lp0"}
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "doom": 210, "neurolink": 344, "firescorched": 464, "icebitten": 465, "thunderstruck": 466,
+      "downForTheCount": 783, "slashingResDown": 1272, "manaHypersensitivity": 1434, "paralysis": 216
+    }
+  }
+}

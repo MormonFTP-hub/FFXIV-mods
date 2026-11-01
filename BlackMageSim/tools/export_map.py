@@ -495,23 +495,45 @@ def main_line(text):
             src, starts = first
             k = min(starts)
             gap, known, way = rows[k][0] - rows[src][0], set(starts), []
+            alts = set(starts) - {k}                # the ways not taken: falling into one ends the way being followed
+            on = True
             k += 1
+            resync = False
             while k < len(rows):
                 if rows[k][1] == "label":
                     if k >= max(known) and k not in starts:      # past every block: the fight goes on from here
                         break
+                    if k in alts:
+                        on = False
                     k += 1
                     continue
+                # Past the last block, a line cactbot re-syncs to from anywhere (a wide window: a phase starting
+                # whichever way it came) is where they all go on, if no label is.
+                w = re.search(r"\bwindow\s+(\d+(?:\.\d+)?)", rows[k][3])
+                if k > max(known) and w and float(w.group(1)) >= 60:
+                    resync = True
+                    break
                 tg = target(k)
                 if tg is None:
-                    way.append((round(rows[k][0] - offset - gap, 1), rows[k][2], rows[k][3]))
+                    if on:
+                        way.append((round(rows[k][0] - offset - gap, 1), rows[k][2], rows[k][3]))
                     k += 1
                     continue
-                known |= jumps_at(k)
+                if not on:                          # a jump inside a way not taken: it only tells where things go
+                    known |= jumps_at(k)
+                    k += 1
+                    continue
+                group = jumps_at(k)
+                known |= group
+                alts |= group - {tg}
                 gap += rows[tg][0] - rows[k][0]
                 k = tg
             if k >= len(rows):
                 break
+            if resync:                            # it follows the first way's last line, a few seconds on
+                end = max([r[0] for r in way if r[0] < rows[k][0] - offset - gap] or [rows[src][0] - offset])
+                gap = rows[k][0] - offset - (end + 3)
+                way = [r for r in way if r[0] <= end]
             rejoin = round(rows[k][0] - offset - gap, 1)
             # The main line's own lines for the branches: generic ones ("A/B?") the sim can pick between. When they stop
             # well short of where the branches rejoin (the branches hold the whole act), the first way's lines stand in.
@@ -523,7 +545,7 @@ def main_line(text):
             # The main line's generic lines running past the rejoin stood in for what follows it: the real lines now.
             out = [r for r in out if r[0] < rejoin]
             first = None
-            i = k + 1
+            i = k if resync else k + 1               # a re-sync line is itself the next event
             continue
         if target(i) is not None and (first is None or rows[first[0]][0] != t):
             first = (i, jumps_at(i))

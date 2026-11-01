@@ -6,6 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
+  "exclude": "_x2_|_a4_|x6d8_a0_(wal|plr|lsf)|x6d8_b3_plr|_x0_wal|_x1_strs|_x1_rsn|_a0_nat02|sgbg_x6d8_b3",
   "fight": {
     "duty": "The Minstrel's Ballad: Necron's Embrace",
     "boss": "Necron",

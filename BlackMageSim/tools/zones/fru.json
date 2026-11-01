@@ -1,0 +1,127 @@
+{
+  "name": "Eden's ruins",
+  "label": "FRU · Futures Rewritten",
+  "bg": "bg/ex3/01_nvt_n4/goe/n4gw/",
+  "out": "game-map-fru.js",
+  "sky": "arena",
+  "dummy": [
+    100.0,
+    0.0,
+    100.0
+  ],
+  "facing": 0.0,
+  "exclude": "/n4g[wz]_(?!a1_stg0[12]|a1_dmg00|a1_flo01|a2_ome|a8_flo01|a0_wall1|a0_spa01|a3_spa01)[^/]*[.]mdl$",
+  "fight": {
+    "duty": "Futures Rewritten (Ultimate)",
+    "boss": "Fatebreaker",
+    "timeline": "07-dt/ultimate/futures_rewritten",
+    "branches": "main",
+    "hitbox": 5.0,
+    "model": {
+      "kind": "monster",
+      "id": 683,
+      "body": 1,
+      "variant": 1,
+      "scale": 3.6,
+      "pap": "chara/monster/m0683/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {
+        "idle": "cbbm_id0",
+        "castStart": "cbbm_sp_b_1",
+        "cast": "cbbm_sp_b_2lp",
+        "run": "cbbm_02f_lp0"
+      },
+      "specials": "chara/monster/m0683/animation/a0001/bt_common/mon_sp/m0683/"
+    },
+    "extra": {
+      "shiva": {
+        "kind": "monster",
+        "id": 640,
+        "body": 1,
+        "variant": 1,
+        "scale": 3.5,
+        "pap": "chara/monster/m0640/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {
+          "idle": "cbbm_id0",
+          "castStart": "cbbm_sp_b_1",
+          "cast": "cbbm_sp_b_2lp",
+          "run": "cbbm_02f_lp0"
+        },
+        "specials": "chara/monster/m0640/animation/a0001/bt_common/mon_sp/m0640/"
+      },
+      "ryne": {
+        "kind": "monster",
+        "id": 640,
+        "body": 2,
+        "variant": 1,
+        "scale": 3.5,
+        "pap": "chara/monster/m0640/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {
+          "idle": "cbbm_id0",
+          "castStart": "cbbm_sp_b_1",
+          "cast": "cbbm_sp_b_2lp",
+          "run": "cbbm_02f_lp0"
+        }
+      },
+      "oracle": {
+        "kind": "demihuman",
+        "id": 1049,
+        "body": 1,
+        "variant": 1,
+        "scale": 3.2,
+        "pap": "chara/demihuman/d1049/animation/a0001/bt_common/resident/idle.pap",
+        "anims": {
+          "idle": "cbnm_id0"
+        },
+        "specials": "chara/demihuman/d1049/animation/a0001/bt_common/mon_sp/d1049/"
+      },
+      "pandora": {
+        "kind": "monster",
+        "id": 914,
+        "body": 1,
+        "variant": 1,
+        "scale": 3.5,
+        "pap": "chara/monster/m0914/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {
+          "idle": "cbbm_id0",
+          "castStart": "cbbm_sp_b_1",
+          "cast": "cbbm_sp_b_2lp",
+          "run": "cbbm_02f_lp0"
+        },
+        "specials": "chara/monster/m0914/animation/a0001/bt_common/mon_sp/m0914/"
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941,
+      "physVuln": 2940,
+      "damageDown": 2911,
+      "bleeding": 2088,
+      "weakness": 43,
+      "brinkOfDeath": 44,
+      "powderMarkTrail": 4166,
+      "prey": 1051,
+      "fatedBurnMark": 4165,
+      "floatingFetters": 2304,
+      "markOfMortality": 4372,
+      "thinIce": 911,
+      "chainsOfLight": 4157,
+      "curseOfLight": 4158,
+      "weightOfLight": 4159,
+      "lightsteeped": 2257,
+      "unholyDarkness": 2454,
+      "darkFire": 2455,
+      "shadoweye": 2456,
+      "darkEruption": 2460,
+      "darkWater": 2461,
+      "darkBlizzard": 2462,
+      "darkAero": 2463,
+      "spellReturn": 2464,
+      "return": 2452,
+      "stun": 4163,
+      "wyrmclaw": 3263,
+      "wyrmfang": 3264,
+      "quietus": 4174,
+      "lightResDown": 4164,
+      "darkResDown": 3323
+    }
+  }
+}

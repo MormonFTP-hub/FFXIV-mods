@@ -1,0 +1,69 @@
+{
+  "name": "Kefka's arena (Dancing Mad)",
+  "label": "DMU · Kefka (Ultimate)",
+  "bg": "bg/ex2/05_zon_z3/ome/z3oy/",
+  "out": "game-map-umad.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "exclude": "",
+  "fight": {
+    "duty": "Dancing Mad (Ultimate)",
+    "boss": "Kefka",
+    "timeline": "07-dt/ultimate/dancing_mad",
+    "branches": "main",
+    "hitbox": 6.0,
+    "model": {
+      "kind": "monster", "id": 462, "body": 1, "variant": 1, "scale": 3.0,
+      "pap": "chara/monster/m0462/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+      "specials": "chara/monster/m0462/animation/a0001/bt_common/mon_sp/m0462/"
+    },
+    "extra": {
+      "god": {
+        "kind": "monster", "id": 459, "body": 1, "variant": 1, "scale": 3.5,
+        "pap": "chara/monster/m0459/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0459/animation/a0001/bt_common/mon_sp/m0459/"
+      },
+      "chaos": {
+        "kind": "monster", "id": 295, "body": 2, "variant": 1, "scale": 1.0,
+        "pap": "chara/monster/m0295/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0295/animation/a0001/bt_common/mon_sp/m0295/"
+      },
+      "exdeath": {
+        "kind": "monster", "id": 109, "body": 1, "variant": 1, "scale": 3.8,
+        "pap": "chara/monster/m0109/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0109/animation/a0001/bt_common/mon_sp/m0109/"
+      },
+      "neoexdeath": {
+        "kind": "monster", "id": 418, "body": 1, "variant": 1, "scale": 1.5,
+        "pap": "chara/monster/m0418/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
+        "specials": "chara/monster/m0418/animation/a0001/bt_common/mon_sp/m0418/"
+      },
+      "ultima": {
+        "kind": "monster", "id": 1005, "body": 1, "variant": 1, "scale": 3.0,
+        "pap": "chara/monster/m1005/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m1005/animation/a0001/bt_common/mon_sp/m1005/"
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44, "bind": 2518,
+      "sleep": 4894, "confused": 1283, "doubleTroubleTrap": 5078,
+      "telePortentN": 4876, "telePortentS": 4877, "telePortentE": 4878, "telePortentW": 4879,
+      "spellsTrouble": 5083,
+      "entropy": 1600, "dynamicFluid": 1601, "headwind": 1602, "tailwind": 1603,
+      "windResDown": 1052, "lightningResDown": 2998,
+      "accretion": 1604, "primordialCrust": 5454, "firstInLine": 3004, "secondInLine": 3005, "thirdInLine": 3006,
+      "earthResDown": 3372, "unbecoming": 5452, "meanestExistence": 5453,
+      "cursedShriek": 5543, "forkedLightning": 5544, "compressedWater": 5545, "accelerationBomb": 5546,
+      "entropyP4": 5547, "dynamicFluidP4": 5548, "allaganField": 454, "whiteWound": 5541, "blackWound": 5542,
+      "beyondDeath": 1382, "petrification": 3007,
+      "surpriseFlare": 5350, "surpriseHoly": 5351, "fireResDown": 2902, "iceResDown": 2903
+    }
+  }
+}

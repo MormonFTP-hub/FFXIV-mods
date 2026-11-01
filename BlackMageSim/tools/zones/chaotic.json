@@ -1,0 +1,35 @@
+{
+  "name": "The Cloud of Darkness's arena",
+  "label": "Chaotic · The Cloud of Darkness",
+  "bg": "bg/ffxiv/lak_l1/rad/l1rz/",
+  "out": "game-map-chaotic.js",
+  "sky": "arena",
+  "dummy": [100.0, 0.0, 100.0],
+  "facing": 0.0,
+  "fight": {
+    "duty": "The Cloud of Darkness (Chaotic)",
+    "boss": "Cloud of Darkness",
+    "timeline": "07-dt/alliance/cloud_of_darkness_chaotic",
+    "branches": "main",
+    "hitbox": 23.0,
+    "model": {
+      "kind": "monster", "id": 130, "body": 2, "variant": 1, "scale": 2.0,
+      "pap": "chara/monster/m0130/animation/a0001/bt_common/resident/monster.pap",
+      "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_id0"},
+      "specials": "chara/monster/m0130/animation/a0001/bt_common/mon_sp/m0130/"
+    },
+    "extra": {
+      "shadow": {
+        "kind": "monster", "id": 684, "body": 1, "variant": 1, "scale": 2.5,
+        "pap": "chara/monster/m0684/animation/a0001/bt_common/resident/monster.pap",
+        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
+        "specials": "chara/monster/m0684/animation/a0001/bt_common/mon_sp/m0684/"
+      }
+    },
+    "statuses": {
+      "magicVuln": 2941, "damageDown": 2911, "bleeding": 2088, "weakness": 43, "brinkOfDeath": 44,
+      "deadlyEmbrace": 4181, "innerDarkness": 4177, "outerDarkness": 4178, "curseOfDarkness": 2387,
+      "lightningResDown": 4386, "thornyVine": 445
+    }
+  }
+}
