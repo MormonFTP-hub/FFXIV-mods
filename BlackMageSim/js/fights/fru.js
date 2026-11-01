@@ -997,9 +997,9 @@
       stack(tWing, [nW, sW], 6, 4, 'Dark Water III', { tell: tWing - 5 });
       call(tWing - 5, `${safeE ? 'East' : 'West'} safe: water stacks north and south`, { alert: true, dur: 5 });
       // Somber Dance: the farthest from the Oracle, then the nearest (8): MT far across, OT close; the rest away.
-      const far = r2([-xs * 15, -9]), close = r2(add(ORACLE, [xs * 1.5, 0]));
+      const far = r2([xs * 17, -4]), close = r2(add(ORACLE, [xs * 1.5, 0]));
       const restS = S.filter(s => !TANKS.includes(s));
-      pref(tWing + 0.2, Object.assign({ MT: far, OT: close }, clumpAt(restS, [xs * 8, 4])));
+      pref(tWing + 0.2, Object.assign({ MT: far, OT: close }, clumpAt(restS, [-xs * 6, 6])));
       hz({ t: tSD1, tell: tWing, effect: 'bait', shape: 'circle', from: 'target', targets: { farthest: 1, of: ORACLE }, r: 8, dmg: 1.4, own: 0.55, buster: true, name: 'Somber Dance' });
       hz({ t: tSD2, tell: tSD1, effect: 'bait', shape: 'circle', from: 'target', targets: { nearest: 1, of: ORACLE }, r: 8, dmg: 1.4, own: 0.55, buster: true, name: 'Somber Dance' });
       call(tWing, 'Somber Dance: far, then close', { slot: 'MT', alert: true, dur: 4 });
@@ -1077,7 +1077,7 @@
       // Opening spots (out of the first, north and south).
       const grp = [bWater, bIce, bUnh, aeroWithGroup];
       const gIn = at(pS, 17.2), gOut = at(pS, 19.3);
-      const open = Object.assign({ [iceW]: [-18.5, 0], [iceE]: [18.5, 0], [aeroAlone]: r2(at(pS === 225 ? 135 : 225, 18.5)), [bErupt]: r2(at(pN, 18.5)) },
+      const open = Object.assign({ [iceW]: r2(at(285, 18.5)), [iceE]: r2(at(75, 18.5)), [aeroAlone]: r2(at(pS === 225 ? 135 : 225, 19.3)), [bErupt]: r2(at(pN, 18.5)) },
         clumpAt([bWater, bIce, bUnh], gIn), { [aeroWithGroup]: r2(gOut) });
       pref(ct.t + 3.5, open);
       stack(tWater, [bWater], 6, 4, 'Dark Water III', { tell: tWater - 5, max: 4 });
@@ -1119,7 +1119,7 @@
       pref(tides[1] + 6.2, rw);
       for (const s of S) debuff(s, 'return', 'Return', 'back here at the rewind', tDrop, tRet);
       const sp = {};
-      [G1, G2].forEach((g, j) => { const x = j ? 1 : -1; g.forEach((s, i) => { sp[s] = r2([x * (5 + 6 * (i % 2)), 12 - 7.5 * Math.floor(i / 2) - (i === 0 || i === 1 ? 0 : 0)]); }); });
+      [G1, G2].forEach((g, j) => { const x = j ? 1 : -1; g.forEach((s, i) => { sp[s] = r2([x * (4 + 8 * (i % 2)), [13, 11, 4, 3][i]]); }); });
       pref(tDrop + 0.2, sp);
       const stT = pick(S);
       hz({ t: tSt, tell: tSt - 3, effect: 'bait', shape: 'circle', from: 'target', targets: [stT], r: 5, dmg: 0.8, own: 0.4, name: 'Spirit Taker' });
