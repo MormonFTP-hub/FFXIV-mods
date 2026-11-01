@@ -528,6 +528,7 @@
     //   face     [{t, deg | at}]: which way the boss faces from then (a bearing, or a point or slot to face); null: its
     //            main tank again (the default)
     //   untargetable [[t0, t1], ...]: windows the boss can't be targeted, besides cactbot's
+    //   walls    shapes (or [{t, walls}]) you can't stand in, walk through or be thrown through: fences, crates
     //   form     [{t, model}]: the boss's model by phase, a name from the zone's `extra` models (a second form);
     //            'none' takes it off the field for a while, null brings back its own
     //   others   [{model, path: [{t, at, move}], shows: [[t0, t1], ...], face}]: other bosses beside it (a zone `extra`
@@ -661,7 +662,22 @@
       }
       return a || DEFAULT_ARENA;
     }
+    // The walls standing at second t (the plan's `walls`: shapes, or a list of {t, walls}): fences, crates, pillars
+    // you can't stand in or be thrown through.
+    wallsAt(t) {
+      const w = this.plan && this.plan.walls;
+      if (!w || !w.length) return [];
+      if (w[0].walls === undefined) return w;
+      const now = t ?? this.t ?? 0;
+      let cur = [];
+      for (const x of w) if (x.t <= now) cur = x.walls;
+      return cur;
+    }
+    inWall(p, m = 0, t) {
+      return this.wallsAt(t).some(s => inside(s, p, m));
+    }
     onArena(p, m = 0, t) {
+      if (this.plan && this.plan.walls && this.inWall(p, m, t)) return false;
       const a = this.arena(t);
       const on = (s) => {
         if (s.shape === 'circle') { const c = s.at || [0, 0]; return Math.hypot(p[0] - c[0], p[1] - c[1]) < s.r - m; }
@@ -737,14 +753,22 @@
           v = [dx / d, dy / d];
           if (h.effect === 'pull') { v = [-v[0], -v[1]]; dist = Math.min(dist, d - (h.minDist || 0)); }
         }
-        if (dist > 0) q = [q[0] + v[0] * dist, q[1] + v[1] * dist];
+        if (dist > 0) {
+          if (this.plan && this.plan.walls && this.wallsAt().length) {      // a wall stops it short
+            let d = 0;
+            while (d < dist && !this.inWall([q[0] + v[0] * Math.min(dist, d + 0.25), q[1] + v[1] * Math.min(dist, d + 0.25)], 0.3)) d = Math.min(dist, d + 0.25);
+            dist = d;
+          }
+          q = [q[0] + v[0] * dist, q[1] + v[1] * dist];
+        }
       }
       return q;
     }
     knock(h) {
       const party = this.app.party, me = party.playerSlot(), e = this.app.engine, a = this.arena();
       for (const m of party.members()) {
-        const immune = !h.unstoppable && (m.slot === me ? (e.has('armsLength') || e.has('surecast')) : (h.immune || []).includes(m.slot));
+        const immune = !h.unstoppable && (m.slot === me ? (e.has('armsLength') || e.has('surecast') || (this.app.qa && (h.immune || []).includes(me)))
+          : (h.immune || []).includes(m.slot));
         if (immune) continue;
         const p = party.compassOf(m.slot), q = this.knockOf(h, p, m.slot);
         if (Math.hypot(q[0] - p[0], q[1] - p[1]) < 0.05) continue;

@@ -205,16 +205,20 @@
       // Proteans at everyone (23 degrees each), the same again, then turning 22.5 and 45 degrees clockwise.
       hz({ t: t1, tell: cs + 0.5, shape: 'protean', half: 11.5, r: 60, dmg: 0.7, own: 0.25, name: 'Cyclonic Break' });
       [[t2, 0], [t3, 22.5], [t4, 45]].forEach(([t, off], k) => {
-        for (const s of S) hz({ t, tell: k ? t - 2 : t1, shape: 'cone', at: [0, 0], deg: CB_CLOCK[s] + off, half: 11.5, r: 60, dmg: 0.7, name: 'Cyclonic Break', react: 1.8 });
+        for (const s of S) hz({ t, tell: k ? t - 2 : t1, shape: 'cone', at: [0, 0], deg: CB_CLOCK[s] + off, half: 11.5, r: 60, dmg: 0.7, name: 'Cyclonic Break', react: 0 });
       });
       // With the second: supports counterclockwise, DPS clockwise; pairs (fire) together, spreads (lightning) in and out.
       pref(t1 + 0.1, all(s => spot(s, isSup(s) ? -22.5 : 22.5, fire ? 6 : rad(s))));
       if (fire) stack(t2, SUP, 6, 2, 'Sinsmoke', { tell: cs + 0.5 });
       else spreads(t2, S, 6, 'Sinsmite', { tell: cs + 0.5 });
+      // Back to the spots for the third (turned 22.5 onto the gaps), out to the gaps again for the fourth (45: onto
+      // the spots).
       pref(t2 + 0.1, all(s => spot(s, 0)));
+      pref(t3 + 0.1, all(s => spot(s, isSup(s) ? -22.5 : 22.5, fire ? 6 : rad(s))));
       call(cs + 0.5, fire ? 'Clock spots => Pairs' : 'Clock spots => Spread', { alert: true, dur: 6 });
       call(t1 + 0.1, fire ? 'Supports CCW, DPS CW: pair up' : 'Supports CCW, DPS CW: spread', { dur: 2 });
       call(t2 + 0.1, 'Back to your spot', { dur: 2 });
+      call(t3 + 0.1, 'Out to the gap again', { dur: 2 });
       return t4;
     };
     const cbs = EA('Cyclonic Break 1 (targeted)', 0, 200);
@@ -288,8 +292,9 @@
       label(toh, `Turn of the Heavens (${fireTurn ? 'fire: lightning halos' : 'lightning: fire halos'} safe, ${side > 0 ? 'east' : 'west'})`);
       // Lines north to south through the middle: 10 wide, then 20 wide; then 10 wide again and the knockback.
       const line = (w) => ({ shape: 'rect', a: [-w / 2, -R - 2], b: [w / 2, R + 2] });
-      hz(Object.assign({ t: tL1, tell: toh.t - 6, dmg: 1.3, name: 'Burnt Strike' }, line(10)));
-      hz(Object.assign({ t: tOut, tell: toh.t - 4, dmg: 1.3, name: 'Burnout' }, line(20)));
+      const cbEnd = toh.t - 1.2;
+      hz(Object.assign({ t: tL1, tell: cbEnd + 0.05, dmg: 1.3, name: 'Burnt Strike' }, line(10)));
+      hz(Object.assign({ t: tOut, tell: cbEnd + 0.05, dmg: 1.3, name: 'Burnout' }, line(20)));
       hz(Object.assign({ t: tL3, tell: tOut, dmg: 1.3, name: 'Burnt Strike', react: 2 }, line(10)));
       hz({ t: tKb, tell: tOut, effect: 'knockback', at: [0, 0], dist: 15, dir: side > 0 ? 90 : 270, shape: 'rect', a: [side > 0 ? 0 : -R - 2, -R - 2], b: [side > 0 ? R + 2 : 0, R + 2], dmg: 0, name: 'Blastburn', react: 3 });
       hz({ t: tKb, tell: tOut, effect: 'knockback', at: [0, 0], dist: 15, dir: side > 0 ? 270 : 90, shape: 'rect', a: [side > 0 ? -R - 2 : 0, -R - 2], b: [side > 0 ? 0 : R + 2, R + 2], dmg: 0, name: 'Blastburn', react: 3, hidden: true });
@@ -313,12 +318,13 @@
       while (south.size > 4) { const s = [...south].find(x => x !== tS && isSup(x)) || [...south].find(x => x !== tS); south.delete(s); north.add(s); }
       const lane = (s) => (north.has(s) ? 5.4 : -5.4);
       for (const s of tt) debuff(s, 'floatingFetters', 'Floating Fetters', `the ${s === tN ? 'north' : 'south'} lane's stack`, tFet, tStk);
-      pref(toh.t - 6.5, all(s => r2([side * 12.5, lane(s) + (lane(s) > 0 ? 1 : -1) * (S.indexOf(s) % 4) * 0.01])));
+      // (The clone's proteans end first: then out of the line's 20 on your own side, across to the safe side after it.)
+      pref(cbEnd + 0.1, all(s => { const b = CB_CLOCK[s], x = Math.abs(Math.sin(b * Math.PI / 180)) < 0.3 ? side : Math.sign(Math.sin(b * Math.PI / 180)); return r2([x * 12.5, lane(s)]); }));
       pref(tOut + 0.15, all(s => r2([side * 6.2, lane(s)])));
       pref(tL3 + 0.1, all(s => r2([side * 2.8, lane(s)])));
       pref(tKb + 0.6, Object.assign(clumpAt([...north], [side * 16.5, 6.6]), clumpAt([...south], [side * 16.5, -6.6])));
       stack(tStk, [tN, tS], 6, 4, 'Sinsmoke', { tell: tKb });
-      call(toh.t - 6.5, `${side > 0 ? 'East' : 'West'} safe: out of the line, in your lane`, { alert: true, dur: 5 });
+      call(cbEnd + 0.1, `Out of the line => ${side > 0 ? 'east' : 'west'} safe, in your lane`, { alert: true, dur: 5 });
       call(tOut + 0.1, 'In => knockback', { alert: true, dur: 3 });
       for (const s of tt) call(tKb - 3, `Fire tether: ${s === tN ? 'north' : 'south'} lane stack`, { slot: s, alert: true, dur: 5 });
       pref(tStk + 0.2, UP);

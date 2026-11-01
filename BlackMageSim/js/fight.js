@@ -81,6 +81,8 @@
         this.mech.update(t);
         const at = B.toSim(this.mech.bossAt(t));             // the boss walks or leaps where the plan has it
         B.BOSS.x = at.x; B.BOSS.z = at.z;
+        // The fight's walls stop you walking (js/engine.js asks B.blocked).
+        B.blocked = this.mech.plan.walls ? (pos) => this.mech.inWall(B.toCompass(pos), 0.4) : null;
         this.showLooks(t);
         // A boss whose size changes by phase (the plan's `hitbox`: [{t, r}]).
         const hb = this.mech.plan.hitbox;
@@ -188,6 +190,8 @@
 
     // Back to the striking dummy.
     static clear() {
+      B.blocked = null;                           // no fight walls at the pier
+      B.BOSS.x = 0; B.BOSS.z = 0;
       $('#t-name').textContent = 'Striking Dummy';
       $('#t-cast').classList.remove('show');
       $('#fight-tl').classList.remove('show');

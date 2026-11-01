@@ -32,6 +32,7 @@ B.jobIcon = () => '';
 B.GAME_MODELS = { jobs: {} };
 
 // A fight whose plan is whatever the test sets (PLAN), with the party at the spots the test gives.
+let PLAN_WALLS = null;
 let PLAN = () => ({ start: Object.fromEntries(B.SLOTS.map(s => [s, [0, -10]])), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [] });
 B.FIGHT_SCRIPTS = { toolkit: { hp: 1e9, defaultStrat: 'test', strats: { test: { label: 'test' } }, plan: () => PLAN() } };
 const statuses = new Set();
@@ -55,7 +56,7 @@ const F = app.fight, P = app.party;
 // One scenario: the plan's hazards, everyone's spot ([E, N]; the player is R2), then the fight run to `until`.
 function run({ hazards = [], spots = {}, until = 10, arena, boss, move = false, facing }) {
   const start = Object.assign(Object.fromEntries(B.SLOTS.map((s, i) => [s, B.bearing(i * 45, 30)])), spots);
-  PLAN = () => ({ start, prefs: [], hazards: hazards.map(h => Object.assign({ name: 'test', dmg: 0.3, tell: 0 }, h)), checks: [], calls: [], marks: [], labels: new Map(), debuffs: [], arena, boss });
+  PLAN = () => ({ start, prefs: [], hazards: hazards.map(h => Object.assign({ name: 'test', dmg: 0.3, tell: 0 }, h)), checks: [], calls: [], marks: [], labels: new Map(), debuffs: [], arena, boss, walls: PLAN_WALLS || undefined });
   F.reset(); P.setup();
   for (const b of P.bots) b.pos = start[b.slot].slice();
   const me = B.toSim(start.R2); app.engine.pos.x = me.x; app.engine.pos.z = me.z;
@@ -293,6 +294,14 @@ const whys = (r, slot) => r.hurt.filter(h => h.slot === slot).map(h => h.why);
   const g = { t: 5, effect: 'gaze', from: 'boss', range: 8, dmg: 0.5 };
   const r = run({ hazards: [g], spots: { R2: [0, -12] }, facing: 0 });
   check('a gaze out of reach', !r.hurt.length, r.hurt);
+}
+
+// A wall stops a knockback short.
+{
+  PLAN_WALLS = [{ shape: 'rect', a: [-5, -12], b: [5, -11] }];
+  const r = run({ hazards: [{ t: 5, effect: 'knockback', from: 'boss', dist: 10 }], spots: { R2: [0, -5] } });
+  PLAN_WALLS = null;
+  check('a wall stops a knockback', r.at('R2')[1] > -11 && r.at('R2')[1] < -9.5, r.at('R2'));
 }
 
 // A phase push: skipping from second 2 to 6 passes over the attack at 3 and keeps the one at 8.

@@ -581,6 +581,11 @@
         this.faceYaw = Math.atan2(sx, sz);                   // the way you run (for a fight's gazes)
         if (w) w.walk(this.pos, sx, sz);
         else { this.pos.x += sx; this.pos.z += sz; }
+        // A fight's walls (B.blocked): step back out, sliding along whichever way is free.
+        if (B.blocked && B.blocked(this.pos)) {
+          this.pos.x -= sx;
+          if (B.blocked(this.pos)) { this.pos.x += sx; this.pos.z -= sz; if (B.blocked(this.pos)) this.pos.x -= sx; }
+        }
         // Keep a little space from the dummy's hitbox (a fight's boss you can walk under: B.DUMMY_KEEP).
         const bx = this.pos.x - B.BOSS.x, bz = this.pos.z - B.BOSS.z;
         const d = Math.hypot(bx, bz), keep = B.DUMMY_KEEP || B.DUMMY_RADIUS + 0.6;
