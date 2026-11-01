@@ -187,7 +187,12 @@ public sealed partial class MainWindow : Window
         var right = ImGui.GetContentRegionMax().X;
         var viewWidth = ImGui.CalcTextSize("Party").X + ImGui.CalcTextSize("Mine").X + ImGui.GetStyle().FramePadding.X * 4 + ImGui.GetStyle().ItemSpacing.X;
         var cogWidth = ImGui.GetFrameHeight();
-        ImGui.SameLine(right - viewWidth - cogWidth - ImGui.GetStyle().ItemSpacing.X * 2);
+        var start = right - viewWidth - cogWidth - ImGui.GetStyle().ItemSpacing.X * 2;
+        ImGui.SameLine();
+        // A narrow window puts the view buttons on their own line rather than over the column picker.
+        if (ImGui.GetCursorPosX() > start)
+            ImGui.NewLine();
+        ImGui.SetCursorPosX(start);
         if (Toggle("Mine", !Config.PartyView))
             SetPartyView(false);
         ImGui.SameLine(0, 2 * scale);
@@ -527,7 +532,7 @@ public sealed partial class MainWindow : Window
 
     private static string ButtonText(MitButton b) => b.ForYou || b.OnlyFor == null ? b.Label : $"{b.Label} ({b.OnlyFor})";
 
-    private static string RefText(MitItem item) => string.Join("", item.Refs.Select(r => $"[{Display(r)}]"));
+    private static string RefText(MitItem item) => string.Join("", item.Refs.Select(r => r.StartsWith('*') ? $"[{r}]" : Display(r)));
 
     private void FlowBegin()
     {
@@ -773,15 +778,21 @@ public sealed partial class MainWindow : Window
         ImGui.Image(wrap.Handle, new Vector2(size), Vector2.Zero, Vector2.One, dim ? new Vector4(1, 1, 1, 0.35f) : Vector4.One);
     }
 
-    /// <summary>Swaps characters the game's fonts may not have (superscript footnotes, arrows, ticks) for plain ones.</summary>
+    [GeneratedRegex("[¹²³⁴⁵⁶⁷⁸⁹⁰]+")]
+    private static partial Regex Superscript();
+
+    /// <summary>
+    /// Swaps characters the game's fonts may not have for plain ones: a superscript footnote mark becomes [n], so
+    /// "Reprisal ⁵" reads "Reprisal [5]" rather than "Reprisal 5".
+    /// </summary>
     public static string Display(string s)
     {
+        s = Superscript().Replace(s, m => "[" + string.Concat(m.Value.Select(c => (char)('0' + "⁰¹²³⁴⁵⁶⁷⁸⁹".IndexOf(c)))) + "]");
         var sb = new StringBuilder(s.Length);
         foreach (var c in s)
         {
             sb.Append(c switch
             {
-                '¹' => "1", '²' => "2", '³' => "3", '⁴' => "4", '⁵' => "5", '⁶' => "6", '⁷' => "7", '⁸' => "8", '⁹' => "9", '⁰' => "0",
                 '➔' or '→' => "->",
                 '✔' => "yes",
                 '–' => "-",

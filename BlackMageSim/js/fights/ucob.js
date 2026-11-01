@@ -32,10 +32,13 @@
 //      Bahamut waiting at the north edge: Plummet and Bahamut's Claw, Liquid Hell, three Hatches with twisters, two
 //      triple quotes, Megaflare, Death Sentence and Ravensbeak.
 //   5. Golden Bahamut: Teraflare, Morn Afah (everyone's stack), Akh Morn (the tanks' shared buster, 4 to 7 hits),
-//      Exaflares from the edge.
+//      Exaflares (three lines out from beside him, one after another).
 // Simplified: tank swaps aren't played (the MT keeps Twintania, Nael and Bahamut; the OT Nael in the adds phase);
-// Liquid Hell, Hypernova and Earth Shaker voidzones hit as they land and don't stay; the Iceclaw's iceballs and
-// Thunderwing's paralysis, Twister's knock-up and Teraflare's wipe-and-revive are plain damage; enrages are labels.
+// Liquid Hell, Targeted Fire, Hypernova and Earth Shaker voidzones hit as they land and don't stay; the Iceclaw's
+// iceballs, Thunderwing's paralysis, Raven Dive's and Tempest Wing's knockbacks and Twister's knock-up aren't played
+// (their hits are); Teraflare's wipe-and-revive is a raidwide; the enrages are labels; the divebomb dragons sit at
+// five evenly spaced spots on the edge and their baiters stand 36 degrees clockwise of them; Grand Octet's dives all
+// lock on the party as it runs (the game's markers pick who).
 (function (B) {
   const S = B.SLOTS;
   const at = B.bearing;

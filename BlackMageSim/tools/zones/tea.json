@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "d2a9_|d2az_a0_env|d2a0_a3_wat02",
+  "exclude": "d2a9_|d2az_a0_env|d2a0_a3_wat02|d2az_al_|d2a0_ac_dst2|d2az_p4_have[456]",
   "fight": {
     "duty": "The Epic of Alexander (Ultimate)",
     "boss": "Alexander",

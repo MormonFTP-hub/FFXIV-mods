@@ -103,12 +103,12 @@
 
   // The arena's looks, the game's four boss layers (each model's tag after its zone prefix): phase 1's chamber (the
   // common a1 and a3 parts, its own p1 room), phase 2's hall (a4 to a8 with a1's pipes and fires, the p2 floor and
-  // shell), phase 3's sky platform (p3, the clouds and sky ac), phase 4's clockwork heaven (p4, the great Alexander
-  // round it, al).
+  // shell), phase 3's sky platform (p3, its sky and gears ac), phase 4's clockwork heaven (p4). (Left out for the
+  // map's size: the great Alexander round phases 3 and 4, phase 3's far clouds, phase 4's outermost rings.)
   const LOOK1 = ['a1', 'a3', 'p1'];
   const LOOK2 = ['a1_flam1', 'a1_pip03', 'a1_pip10', 'a1_pip11', 'a1_shaf3', 'a4', 'a5', 'a6', 'a7', 'a8', 'p2'];
   const LOOK3 = ['p3', 'ac'];
-  const LOOK4 = ['p4', 'al'];
+  const LOOK4 = ['p4'];
 
   // When each phase gives way (the pushes' seconds; the timeline's own lines otherwise).
   const P1_END = 194.8;          // 5.2 s before the first Hawk Blaster (BossMod's P2Intermission)
