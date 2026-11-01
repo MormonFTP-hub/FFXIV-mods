@@ -118,7 +118,7 @@ def map_chunks():
 MAP_INDEX = {}           # map_chunks' listing of every map
 EAGER_MAPS = ("pier",)   # loaded with the page (where you start); the rest when you go there
 # The claude.ai copies: each holds 256 MB at most, so the fights are split between them (the website has them all).
-# Each page lists only its own fights; the shared files (models, icons, the pier, the jobs' sounds) are in both, and
+# Each page lists only its own fights; the shared files (models, icons, the pier, the jobs' sounds) are in each, and
 # artifact-files.json says which files each needs. M2S, a timeline-only test fight, is on neither.
 ARTIFACTS = {
     "artifact.html": ("m5s", "m6s", "m7s", "m8s", "m9s", "m10s", "m11s", "m12s"),          # the Savage tiers
