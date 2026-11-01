@@ -381,7 +381,7 @@ def build_silacy():
             rows = sheet(SILACY, gid, f"{pid}_{clock}")
             head = rows[0]
             cols = {c.strip(): j for j, c in enumerate(head) if c.strip() in ("MT", "OT", "Pure", "Shield", "M1", "M2", "R1", "R2", "Parking Lot")}
-            part = [{"name": b[0], "clock": clock, "hits": [], "notes": []} for b in bounds]
+            part = [{"name": b[0], "clock": clock, "start": b[1], "hits": [], "notes": []} for b in bounds]
             in_notes = False
             for r in rows[1:]:
                 when, label = r[0].strip(), (r[1].strip() if len(r) > 1 else "")
@@ -466,7 +466,10 @@ def cast_events(plan_id):
         return None
     events = []
     for e in json.loads(path.read_text(encoding="utf-8"))["fight"]["events"]:
+        if e["name"].startswith("-"):
+            continue
         for part in re.sub(r"\s*\([^)]*\)", "", e["name"]).split("/"):
+            part = re.sub(r"\s+x\d+$", "", part.strip())
             if norm(part):
                 events.append((e["t"], norm(part)))
     return events
@@ -551,6 +554,8 @@ def align(plan):
             h.pop("sync", None)
             if h.get("t") is not None:
                 prev = h["t"]
+                h["_drift"] = drift
+                h["_ct"] = h.get("tSync", h["t"]) + drift
     # Keep the sheet's order: a row never lights up before the one above it.
     for hits in clocks.values():
         last = None
@@ -562,6 +567,12 @@ def align(plan):
                 h["tSync"] = last
                 when = last
             last = when
+    phase_syncs(plan, events)
+    # A phase sharing its clock with the one before it (FRU's Light Rampant after Shiva) starts just before its first row.
+    for prev, p in zip(plan["phases"], plan["phases"][1:]):
+        times = [h.get("tSync", h.get("t")) for h in p["hits"] if h.get("tSync", h.get("t")) is not None]
+        if p["clock"] == prev["clock"] and "start" not in p and times:
+            p["start"] = round(min(times) - 5, 1)
     # Anything still untimed sorts with the row before it.
     for p in plan["phases"]:
         last = 0
@@ -570,6 +581,60 @@ def align(plan):
                 h["t"] = last
                 h["tEst"] = True
             last = h["t"]
+            h.pop("_drift", None)
+            h.pop("_ct", None)
+
+
+def phase_syncs(plan, events):
+    """
+    Every boss ability cactbot has in each phase, at its time on the phase's clock, so the plugin can follow the
+    fight between the sheet's rows and tell which phase you're in from any cast. A phase runs in cactbot's time from
+    a little before its first row (half the gap after the phase before, at most 20 s) to the next phase. A cast only
+    ever used in one phase is that phase's "entry": seeing it means you're in that phase, even after joining mid-fight.
+    A cast used once in the whole fight is an "anchor": it puts the clock at its time wherever the clock was.
+    """
+    rows = [[(h["_ct"], h["_drift"]) for h in p["hits"] if "_ct" in h] for p in plan["phases"]]
+    starts = []
+    for k, r in enumerate(rows):
+        if not r:
+            starts.append(None)
+            continue
+        first = min(ct for ct, _ in r)
+        before = max((ct for ct, _ in rows[k - 1]), default=None) if k > 0 else None
+        gap = first - before if before is not None else 40
+        starts.append(first - min(20, max(gap, 0) / 2))
+    spans = []
+    for k, start in enumerate(starts):
+        end = next((x for x in starts[k + 1:] if x is not None), 1e9)
+        spans.append((start, end))
+
+    def phase_of(t):
+        return next((k for k, (a, b) in enumerate(spans) if a is not None and a <= t < b), None)
+
+    where = {}
+    count = {}
+    for t, name in events:
+        where.setdefault(name, set()).add(phase_of(t))
+        count[name] = count.get(name, 0) + 1
+    for k, p in enumerate(plan["phases"]):
+        if spans[k][0] is None:
+            continue
+        syncs, seen = [], set()
+        for t, name in events:
+            if phase_of(t) != k or not name:
+                continue
+            drift = min(rows[k], key=lambda r: abs(r[0] - t))[1]
+            at = round(t - drift, 1)
+            if (name, at) in seen:
+                continue
+            seen.add((name, at))
+            s = {"name": name, "at": at}
+            if where[name] == {k}:
+                s["entry"] = True
+            if count[name] == 1:
+                s["anchor"] = True
+            syncs.append(s)
+        p["syncs"] = syncs
 
 
 def main():

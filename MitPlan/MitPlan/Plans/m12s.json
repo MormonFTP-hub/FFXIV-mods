@@ -75,6 +75,7 @@
   {
    "name": "Door · Act 1",
    "clock": "door",
+   "start": 0,
    "hits": [
     {
      "name": "Prepull",
@@ -231,11 +232,88 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "thefixer",
+     "at": 13.1
+    },
+    {
+     "name": "mortalslayer",
+     "at": 38.4
+    },
+    {
+     "name": "mortalslayer",
+     "at": 41.4
+    },
+    {
+     "name": "mortalslayer",
+     "at": 44.4
+    },
+    {
+     "name": "mortalslayer",
+     "at": 47.4
+    },
+    {
+     "name": "grotesquerieact",
+     "at": 67.5
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 76.7
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 78.7
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 80.7
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 82.7
+    },
+    {
+     "name": "ravenousreach",
+     "at": 85.2
+    },
+    {
+     "name": "hemorrhagicprojection",
+     "at": 85.5
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 85.5
+    },
+    {
+     "name": "fourthwallfusion",
+     "at": 85.5
+    },
+    {
+     "name": "burst",
+     "at": 94.2
+    },
+    {
+     "name": "visceralburst",
+     "at": 94.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "fourthwallfusion",
+     "at": 94.8
+    },
+    {
+     "name": "thefixer",
+     "at": 104.8
+    }
+   ]
   },
   {
    "name": "Door · Act 2",
    "clock": "door",
+   "start": 117,
    "hits": [
     {
      "name": "Grotesquerie Act 2",
@@ -260,11 +338,76 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "grotesquerieact",
+     "at": 117.0
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 126.2
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 128.2
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 130.2
+    },
+    {
+     "name": "cruelcoil",
+     "at": 132.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 132.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 138.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 143.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 148.2
+    },
+    {
+     "name": "roilingmass",
+     "at": 150.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 153.2
+    },
+    {
+     "name": "roilingmass",
+     "at": 155.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 158.2
+    },
+    {
+     "name": "roilingmass",
+     "at": 160.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 163.2
+    }
+   ]
   },
   {
    "name": "Door · Act 3",
    "clock": "door",
+   "start": 183,
    "hits": [
     {
      "name": "Splattershed",
@@ -401,11 +544,88 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "roilingmass",
+     "at": 165.2
+    },
+    {
+     "name": "skinsplitter",
+     "at": 168.2
+    },
+    {
+     "name": "constrictor",
+     "at": 174.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "splattershed",
+     "at": 183.3
+    },
+    {
+     "name": "splattershed",
+     "at": 185.7
+    },
+    {
+     "name": "grotesquerieact",
+     "at": 203.4
+    },
+    {
+     "name": "feralfission",
+     "at": 208.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "grandentrance",
+     "at": 209.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "bringdownthehouse",
+     "at": 213.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 215.5
+    },
+    {
+     "name": "metamitosis",
+     "at": 215.7,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "splitscourge",
+     "at": 224.4,
+     "entry": true
+    },
+    {
+     "name": "splitscourge",
+     "at": 225.5,
+     "entry": true
+    },
+    {
+     "name": "venomousscourge",
+     "at": 227.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "thefixer",
+     "at": 237.1
+    }
+   ]
   },
   {
    "name": "Door · Curtain Call",
    "clock": "door",
+   "start": 250,
    "hits": [
     {
      "name": "Grotesquerie Curtain Call",
@@ -678,11 +898,288 @@
      "info": []
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "grotesqueriecurtaincall",
+     "at": 249.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 253.2
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 255.1
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 257.1
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 259.1
+    },
+    {
+     "name": "phagocytespotlight",
+     "at": 261.1
+    },
+    {
+     "name": "ravenousreach",
+     "at": 264.0
+    },
+    {
+     "name": "cellshedding",
+     "at": 264.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 264.3
+    },
+    {
+     "name": "burst",
+     "at": 276.9
+    },
+    {
+     "name": "splattershed",
+     "at": 283.6
+    },
+    {
+     "name": "splattershed",
+     "at": 286.0
+    },
+    {
+     "name": "mortalslayer",
+     "at": 311.9
+    },
+    {
+     "name": "mortalslayer",
+     "at": 314.9
+    },
+    {
+     "name": "mortalslayer",
+     "at": 317.9
+    },
+    {
+     "name": "mortalslayer",
+     "at": 320.9
+    },
+    {
+     "name": "slaughtershed",
+     "at": 336.0,
+     "entry": true
+    },
+    {
+     "name": "slaughtershed",
+     "at": 338.4,
+     "entry": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 347.1
+    },
+    {
+     "name": "fourthwallfusion",
+     "at": 347.1
+    },
+    {
+     "name": "burst",
+     "at": 347.5
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 352.6,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 352.6,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 353.6,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 353.6,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 357.3,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 357.3,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 358.3,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 358.3,
+     "entry": true
+    },
+    {
+     "name": "slaughtershed",
+     "at": 364.9,
+     "entry": true
+    },
+    {
+     "name": "slaughtershed",
+     "at": 367.3,
+     "entry": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 376.0
+    },
+    {
+     "name": "fourthwallfusion",
+     "at": 376.0
+    },
+    {
+     "name": "burst",
+     "at": 376.4
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 381.5,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 381.5,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 382.3,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 382.3,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 386.1,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 386.1,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 386.9,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 386.9,
+     "entry": true
+    },
+    {
+     "name": "slaughtershed",
+     "at": 393.7,
+     "entry": true
+    },
+    {
+     "name": "slaughtershed",
+     "at": 396.1,
+     "entry": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 404.8
+    },
+    {
+     "name": "fourthwallfusion",
+     "at": 404.8
+    },
+    {
+     "name": "burst",
+     "at": 405.2
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 410.3,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 410.3,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 411.3,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 411.3,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 415.0,
+     "entry": true
+    },
+    {
+     "name": "raptorknuckles",
+     "at": 415.0,
+     "entry": true
+    },
+    {
+     "name": "serpentinescourge",
+     "at": 416.0,
+     "entry": true
+    },
+    {
+     "name": "knockback",
+     "at": 416.0,
+     "entry": true
+    },
+    {
+     "name": "thefixer",
+     "at": 430.5
+    },
+    {
+     "name": "refreshingoverkill",
+     "at": 535.7,
+     "entry": true
+    },
+    {
+     "name": "refreshingoverkill",
+     "at": 535.8,
+     "entry": true
+    },
+    {
+     "name": "downforthecount",
+     "at": 572.5,
+     "entry": true,
+     "anchor": true
+    }
+   ]
   },
   {
    "name": "Final · Replication 1",
    "clock": "final",
+   "start": 0,
    "hits": [
     {
      "name": "Prepull",
@@ -797,11 +1294,68 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "arcadiaaflame",
+     "at": 15.3
+    },
+    {
+     "name": "replication",
+     "at": 27.6
+    },
+    {
+     "name": "toptierslam",
+     "at": 39.3,
+     "entry": true
+    },
+    {
+     "name": "wingedscourge",
+     "at": 40.1,
+     "entry": true
+    },
+    {
+     "name": "mightymagic",
+     "at": 40.3,
+     "entry": true
+    },
+    {
+     "name": "snakingkick",
+     "at": 44.9
+    },
+    {
+     "name": "toptierslam",
+     "at": 60.6,
+     "entry": true
+    },
+    {
+     "name": "wingedscourge",
+     "at": 61.4,
+     "entry": true
+    },
+    {
+     "name": "mightymagic",
+     "at": 61.7,
+     "entry": true
+    },
+    {
+     "name": "doublesobat",
+     "at": 69.0
+    },
+    {
+     "name": "doublesobat",
+     "at": 69.6
+    },
+    {
+     "name": "doublesobat",
+     "at": 74.2
+    }
+   ]
   },
   {
    "name": "Final · Replication 2",
    "clock": "final",
+   "start": 88,
    "hits": [
     {
      "name": "Staging / Replication 2",
@@ -919,11 +1473,86 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "esotericfinisher",
+     "at": 76.6
+    },
+    {
+     "name": "staging",
+     "at": 90.8
+    },
+    {
+     "name": "replication",
+     "at": 105.0
+    },
+    {
+     "name": "firefallsplash",
+     "at": 127.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "scaldingwaves",
+     "at": 128.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "manaburst",
+     "at": 129.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "heavyslam",
+     "at": 135.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "grotesquerie",
+     "at": 136.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "hemorrhagicprojection",
+     "at": 136.9
+    },
+    {
+     "name": "snakingkick",
+     "at": 140.7
+    },
+    {
+     "name": "reenactment",
+     "at": 150.9
+    },
+    {
+     "name": "netherwrathnear",
+     "at": 159.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "netherwrathfar",
+     "at": 159.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "timelessspite",
+     "at": 160.2,
+     "entry": true,
+     "anchor": true
+    }
+   ]
   },
   {
    "name": "Final · Blood Mana",
    "clock": "final",
+   "start": 181,
    "hits": [
     {
      "name": "Blood Mana",
@@ -1023,11 +1652,90 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "mutatingcells",
+     "at": 183.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "bloodmana",
+     "at": 189.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "bloodyburst",
+     "at": 200.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 201.8
+    },
+    {
+     "name": "bloodwakening",
+     "at": 216.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "blackhole",
+     "at": 217.9,
+     "entry": true
+    },
+    {
+     "name": "blackhole",
+     "at": 222.9,
+     "entry": true
+    },
+    {
+     "name": "netherworldnear",
+     "at": 227.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "netherworldfar",
+     "at": 227.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "wailingwave",
+     "at": 228.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "dramaticlysis",
+     "at": 231.4
+    },
+    {
+     "name": "arcadiaaflame",
+     "at": 235.4
+    },
+    {
+     "name": "doublesobat",
+     "at": 244.6
+    },
+    {
+     "name": "doublesobat",
+     "at": 245.2
+    },
+    {
+     "name": "doublesobat",
+     "at": 249.8
+    }
+   ]
   },
   {
    "name": "Final · Idyllic Dream",
    "clock": "final",
+   "start": 241,
    "hits": [
     {
      "name": "Idyllic Dream",
@@ -1362,7 +2070,273 @@
      "info": []
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "esotericfinisher",
+     "at": 252.2
+    },
+    {
+     "name": "idyllicdream",
+     "at": 268.4,
+     "entry": true
+    },
+    {
+     "name": "staging",
+     "at": 274.6
+    },
+    {
+     "name": "twistedvision",
+     "at": 289.7,
+     "entry": true
+    },
+    {
+     "name": "replication",
+     "at": 295.8
+    },
+    {
+     "name": "twistedvision",
+     "at": 308.2,
+     "entry": true
+    },
+    {
+     "name": "powergusher",
+     "at": 309.2,
+     "entry": true
+    },
+    {
+     "name": "snakingkick",
+     "at": 309.2
+    },
+    {
+     "name": "replication",
+     "at": 314.3
+    },
+    {
+     "name": "twistedvision",
+     "at": 333.9,
+     "entry": true
+    },
+    {
+     "name": "snakingkick",
+     "at": 338.3
+    },
+    {
+     "name": "powergusher",
+     "at": 338.5,
+     "entry": true
+    },
+    {
+     "name": "lindwurmsmeteor",
+     "at": 342.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "downfall",
+     "at": 348.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "arcadianarcanum",
+     "at": 354.6,
+     "entry": true
+    },
+    {
+     "name": "arcadianarcanum",
+     "at": 355.8,
+     "entry": true
+    },
+    {
+     "name": "twistedvision",
+     "at": 362.6,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 369.2,
+     "entry": true
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 370.4,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 374.2,
+     "entry": true
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 375.4,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 379.2,
+     "entry": true
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 380.4,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 384.2,
+     "entry": true
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 385.4,
+     "entry": true
+    },
+    {
+     "name": "twistedvision",
+     "at": 393.2,
+     "entry": true
+    },
+    {
+     "name": "cosmickiss",
+     "at": 397.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "lindwurmsdark",
+     "at": 398.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "lindwurmsstone",
+     "at": 403.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "lindwurmsthunder",
+     "at": 408.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "lindwurmsglare",
+     "at": 408.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "temporalcurtain",
+     "at": 416.7,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "twistedvision",
+     "at": 429.2,
+     "entry": true
+    },
+    {
+     "name": "powergusher",
+     "at": 430.2,
+     "entry": true
+    },
+    {
+     "name": "snakingkick",
+     "at": 430.2
+    },
+    {
+     "name": "reenactment",
+     "at": 435.3
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 438.6,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 438.8,
+     "entry": true
+    },
+    {
+     "name": "twistedvision",
+     "at": 444.4,
+     "entry": true
+    },
+    {
+     "name": "snakingkick",
+     "at": 448.8
+    },
+    {
+     "name": "powergusher",
+     "at": 449.0,
+     "entry": true
+    },
+    {
+     "name": "twistedvision",
+     "at": 451.9,
+     "entry": true
+    },
+    {
+     "name": "clonemanaburst",
+     "at": 459.4,
+     "entry": true
+    },
+    {
+     "name": "cloneheavyslam",
+     "at": 459.6,
+     "entry": true
+    },
+    {
+     "name": "powergusher",
+     "at": 464.4,
+     "entry": true
+    },
+    {
+     "name": "idyllicdream",
+     "at": 470.3,
+     "entry": true
+    },
+    {
+     "name": "doublesobat",
+     "at": 478.4
+    },
+    {
+     "name": "doublesobat",
+     "at": 479.2
+    },
+    {
+     "name": "doublesobat",
+     "at": 483.8
+    },
+    {
+     "name": "esotericfinisher",
+     "at": 486.2
+    },
+    {
+     "name": "replication",
+     "at": 499.4
+    },
+    {
+     "name": "arcadianhell",
+     "at": 512.8,
+     "entry": true
+    },
+    {
+     "name": "arcadianhell",
+     "at": 529.0,
+     "entry": true
+    },
+    {
+     "name": "arcadianhell",
+     "at": 551.9,
+     "entry": true
+    }
+   ]
   }
  ]
 }

@@ -52,9 +52,16 @@
 //   - Feint Particle Beam: a chaser on one player of each tile corner (18 puddles, 2.1 yalms a step).
 // Simplified: the strats' platform spots come from wtfdig's descriptions (the diagrams' masks put them, but not to the
 // yalm); spots wtfdig doesn't give (where to stand for the cleaves, Phaser, the cross, Active-pivot, the vines, the
-// chased player's run) are this script's own, solved each pull on the floor the player is on. Thorny Vine's tethers
-// are on the seeds' planters and break at 25 yalms (BossMod's chain length). The tiles' crumbling (a tile stood on for
-// 44 s breaks) isn't modelled. The boss's damage is counted as the party's alone: see `pushes` below.
+// chased player's run, the diamond phases) are this script's own, solved each pull on the floor each spot is on and
+// walked round the void (the bots never fall, so the script never sends them over it). The hands, lasers and the
+// Shadows' cleaves face where the script points them (the boss; away from everyone; the Shadow's tank), not where you
+// turn. Thorny Vine's tethers are on the seeds' planters and break at 25 yalms (BossMod's chain length). Blade of
+// Darkness's hands stand 13 out to either side of her, 9 in front; the Razing-volley lanes and the Third Art's orders
+// are random (FFLogs shows the patterns, not the rule); the Sinister Eyes stand either side of the diamond (FFLogs puts
+// one at the arena's middle, which looks like a helper's resting spot). The Shadows are discs on the floor (their model,
+// with the boss's whole animation list, doubled the map). The diamond is a turned square, so its cut-off north tip is
+// floor here. The tiles' crumbling (a tile stood on for 44 s breaks) isn't modelled. The boss's HP is all twenty-four's
+// and only the party's damage counts: see `pushes` below.
 (function (B) {
   const S = B.SLOTS;
   const at = B.bearing;
@@ -1122,7 +1129,8 @@
       if (best === null) {
         // Too crowded where it stands: a step aside first.
         const ok = okFor(s, L.t - 3, L.t + 0.2);
-        const q = findSpot(p, (q) => dist(q, p) <= 4 && ok(q) && segOk(p, q, ok, true) && others.every(o => dist(o, q) > 1.5) && aim(q, [0.9]) !== null, 5);
+        const lands = P.hazards.filter(h => h.shape && !h.from && !h.targets && !h.raidwide && h.t >= L.t - 3 && h.t <= L.t + 0.3);
+        const q = findSpot(p, (q) => dist(q, p) <= 4 && ok(q) && segOk(p, q, ok, true) && lands.every(h => !inside(h, q, 1.3)) && others.every(o => dist(o, q) > 1.5) && aim(q, [0.9]) !== null, 5);
         if (aim(q, [0.9]) !== null) { override(s, +(L.t - 3).toFixed(2), +(L.t + 0.2).toFixed(2), q); p = q; best = aim(q, [0.9]); }
       }
       if (best === null) { best = brg(p); P.notes.push(`laser ${s} at ${L.t}: no clear way`); }
@@ -1160,11 +1168,12 @@
   B.FIGHT_SCRIPTS = B.FIGHT_SCRIPTS || {};
   B.FIGHT_SCRIPTS.chaotic = {
     // FFLogs' max HP in a kill (report ha4c9WMqF3J2b7yQ, and nmyZKRaVNkd3cYth the same): the Cloud of Darkness
-    // 294,173,558, for all twenty-four. The sim counts only the eight's damage (about a third of that; the Shadows'
-    // damage goes to her anyway, at Evaporation), so a pull here runs on to the enrage with her near two thirds: no
-    // push stands in for the others, since every phase change in this fight is on the clock (cactbot's timeline has no
-    // HP-pushed phases), and the timeline plays out as in the game. Clearing it needs the whole alliance; the party's
-    // job here is the mechanics.
+    // 294,173,558, for all twenty-four (kills take 500-590 s: some 530,000 a second, the eight's share a third). The sim
+    // counts only the eight's damage (the Shadows' goes to her anyway, at Evaporation), so a pull here runs on to the
+    // enrage with her a little over half. No push stands in for the other sixteen: every phase change in this fight is
+    // on the clock (cactbot's timeline has no HP-pushed phases), so the timeline plays out as in the game whatever the
+    // damage, and a push could only skip mechanics, not make up the missing damage. Clearing it takes the whole
+    // alliance; the party's job here is the mechanics.
     hp: 294173558,
     pushes: [],
     defaultStrat: 'raidplan',

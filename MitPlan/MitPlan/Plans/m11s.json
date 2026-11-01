@@ -79,6 +79,7 @@
   {
    "name": "Toy Weapons",
    "clock": "fight",
+   "start": 0,
    "hits": [
     {
      "name": "Prepull",
@@ -332,11 +333,215 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "crownofarcadia",
+     "at": 5.4
+    },
+    {
+     "name": "rawsteeltrophyaxe",
+     "at": 12.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "rawsteel",
+     "at": 18.8,
+     "entry": true
+    },
+    {
+     "name": "impact",
+     "at": 19.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "trophyweapons",
+     "at": 33.2,
+     "entry": true
+    },
+    {
+     "name": "assaultevolved",
+     "at": 43.0
+    },
+    {
+     "name": "weapon",
+     "at": 45.1
+    },
+    {
+     "name": "assaultevolved",
+     "at": 45.2
+    },
+    {
+     "name": "weapon",
+     "at": 50.2
+    },
+    {
+     "name": "assaultevolved",
+     "at": 50.3
+    },
+    {
+     "name": "weapon",
+     "at": 55.3
+    },
+    {
+     "name": "assaultevolved",
+     "at": 55.4
+    },
+    {
+     "name": "trophyweapons",
+     "at": 67.5,
+     "entry": true
+    },
+    {
+     "name": "voidstardust",
+     "at": 74.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "cometite",
+     "at": 78.7,
+     "entry": true
+    },
+    {
+     "name": "comet",
+     "at": 84.7,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "assaultevolved",
+     "at": 87.5
+    },
+    {
+     "name": "weapon",
+     "at": 89.6
+    },
+    {
+     "name": "assaultevolved",
+     "at": 89.7
+    },
+    {
+     "name": "weapon",
+     "at": 94.7
+    },
+    {
+     "name": "assaultevolved",
+     "at": 94.8
+    },
+    {
+     "name": "weapon",
+     "at": 99.8
+    },
+    {
+     "name": "assaultevolved",
+     "at": 99.9
+    },
+    {
+     "name": "cometite",
+     "at": 105.0,
+     "entry": true
+    },
+    {
+     "name": "cometite",
+     "at": 107.0,
+     "entry": true
+    },
+    {
+     "name": "cometite",
+     "at": 109.0,
+     "entry": true
+    },
+    {
+     "name": "crushingcomet",
+     "at": 111.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "crownofarcadia",
+     "at": 117.0
+    },
+    {
+     "name": "danceofdominationtrophy",
+     "at": 129.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 136.1,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 136.8,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 137.4,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 138.0,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 138.6,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 139.2,
+     "entry": true
+    },
+    {
+     "name": "danceofdomination",
+     "at": 140.3,
+     "entry": true
+    },
+    {
+     "name": "eyeofthehurricane",
+     "at": 145.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "explosion",
+     "at": 145.5
+    },
+    {
+     "name": "explosion",
+     "at": 145.9
+    },
+    {
+     "name": "rawsteeltrophyscythe",
+     "at": 151.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "heavyhitter",
+     "at": 158.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "rawsteel",
+     "at": 158.6,
+     "entry": true
+    }
+   ]
   },
   {
    "name": "Charybdistopia",
    "clock": "fight",
+   "start": 174,
    "hits": [
     {
      "name": "Charybdistopia",
@@ -483,11 +688,122 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "charybdistopia",
+     "at": 173.7,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "ultimatetrophyweapons",
+     "at": 179.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "assaultapex",
+     "at": 187.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "weapon",
+     "at": 189.3
+    },
+    {
+     "name": "assaultevolved",
+     "at": 189.4
+    },
+    {
+     "name": "weapon",
+     "at": 194.4
+    },
+    {
+     "name": "assaultevolved",
+     "at": 194.5
+    },
+    {
+     "name": "weapon",
+     "at": 199.5
+    },
+    {
+     "name": "assaultevolved",
+     "at": 199.6
+    },
+    {
+     "name": "weapon",
+     "at": 204.6
+    },
+    {
+     "name": "assaultevolved",
+     "at": 204.7
+    },
+    {
+     "name": "weapon",
+     "at": 209.7
+    },
+    {
+     "name": "assaultevolved",
+     "at": 209.8
+    },
+    {
+     "name": "weapon",
+     "at": 214.8
+    },
+    {
+     "name": "assaultevolved",
+     "at": 214.9
+    },
+    {
+     "name": "powerfulgust",
+     "at": 221.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "immortalreign",
+     "at": 222.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "oneandonly",
+     "at": 235.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 247.4
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 247.6
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 250.8
+    },
+    {
+     "name": "explosion",
+     "at": 251.4
+    },
+    {
+     "name": "explosion",
+     "at": 254.6
+    },
+    {
+     "name": "orbitalomen",
+     "at": 260.9
+    }
+   ]
   },
   {
    "name": "Meteorain",
    "clock": "fight",
+   "start": 262,
    "hits": [
     {
      "name": "Meteorain 1",
@@ -577,11 +893,124 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "fireandfury",
+     "at": 269.6
+    },
+    {
+     "name": "orbitalomen",
+     "at": 270.0
+    },
+    {
+     "name": "fireandfury",
+     "at": 270.6
+    },
+    {
+     "name": "orbitalomen",
+     "at": 271.6
+    },
+    {
+     "name": "orbitalomen",
+     "at": 273.2
+    },
+    {
+     "name": "orbitalomen",
+     "at": 274.6
+    },
+    {
+     "name": "meteorain",
+     "at": 286.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "fearsomefireball",
+     "at": 294.9,
+     "entry": true
+    },
+    {
+     "name": "cosmickiss",
+     "at": 296.1
+    },
+    {
+     "name": "foregonefatality",
+     "at": 304.1,
+     "entry": true
+    },
+    {
+     "name": "fearsomefireball",
+     "at": 305.0,
+     "entry": true
+    },
+    {
+     "name": "cosmickiss",
+     "at": 306.2
+    },
+    {
+     "name": "explosion",
+     "at": 308.8
+    },
+    {
+     "name": "foregonefatality",
+     "at": 314.1,
+     "entry": true
+    },
+    {
+     "name": "fearsomefireball",
+     "at": 315.0,
+     "entry": true
+    },
+    {
+     "name": "cosmickiss",
+     "at": 316.2
+    },
+    {
+     "name": "explosion",
+     "at": 318.8
+    },
+    {
+     "name": "foregonefatality",
+     "at": 324.1,
+     "entry": true
+    },
+    {
+     "name": "fearsomefireball",
+     "at": 325.0,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 328.8
+    },
+    {
+     "name": "tripletyrannhilation",
+     "at": 337.7,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "shockwave",
+     "at": 338.8,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 340.2,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 341.6,
+     "entry": true
+    }
+   ]
   },
   {
    "name": "Majestic Meteor",
    "clock": "fight",
+   "start": 357,
    "hits": [
     {
      "name": "Majestic Meteor",
@@ -692,20 +1121,118 @@
        }
       ]
      },
-     "tSync": 440.1,
+     "tSync": 441.2,
      "syncAt": [
       {
        "name": "Massive Meteor",
-       "at": 440.1
+       "at": 441.2
       }
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "flatliner",
+     "at": 356.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 370.7,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 383.8
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 394.8,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 396.8,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteowrath",
+     "at": 398.7
+    },
+    {
+     "name": "majesticmeteorain",
+     "at": 398.7,
+     "entry": true
+    },
+    {
+     "name": "firebreath",
+     "at": 398.7,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 398.9,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 415.9
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 426.9,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 428.9,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteowrath",
+     "at": 430.8
+    },
+    {
+     "name": "majesticmeteorain",
+     "at": 430.8,
+     "entry": true
+    },
+    {
+     "name": "firebreath",
+     "at": 430.8,
+     "entry": true
+    },
+    {
+     "name": "majesticmeteor",
+     "at": 430.9,
+     "entry": true
+    },
+    {
+     "name": "massivemeteor",
+     "at": 440.1,
+     "entry": true
+    },
+    {
+     "name": "massivemeteor",
+     "at": 441.2,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 453.6
+    },
+    {
+     "name": "arcadionavalanche",
+     "at": 453.9
+    }
+   ]
   },
   {
    "name": "Ecliptic Stampede",
    "clock": "fight",
+   "start": 476,
    "hits": [
     {
      "name": "Crown of Arcadia",
@@ -974,7 +1501,264 @@
      "info": []
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "arcadionavalanche",
+     "at": 463.5
+    },
+    {
+     "name": "crownofarcadia",
+     "at": 474.2
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 485.3
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 485.5
+    },
+    {
+     "name": "greatwalloffire",
+     "at": 488.7
+    },
+    {
+     "name": "explosion",
+     "at": 489.3
+    },
+    {
+     "name": "explosion",
+     "at": 492.5
+    },
+    {
+     "name": "orbitalomen",
+     "at": 498.8
+    },
+    {
+     "name": "fireandfury",
+     "at": 507.5
+    },
+    {
+     "name": "orbitalomen",
+     "at": 507.9
+    },
+    {
+     "name": "fireandfury",
+     "at": 508.5
+    },
+    {
+     "name": "orbitalomen",
+     "at": 509.5
+    },
+    {
+     "name": "orbitalomen",
+     "at": 511.1
+    },
+    {
+     "name": "orbitalomen",
+     "at": 512.5
+    },
+    {
+     "name": "crownofarcadia",
+     "at": 516.6
+    },
+    {
+     "name": "eclipticstampede",
+     "at": 528.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "mammothmeteor",
+     "at": 536.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 536.0,
+     "entry": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 539.0,
+     "entry": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 542.0,
+     "entry": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 545.0,
+     "entry": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 548.0,
+     "entry": true
+    },
+    {
+     "name": "atomicimpact",
+     "at": 551.0,
+     "entry": true
+    },
+    {
+     "name": "cosmickiss",
+     "at": 552.0
+    },
+    {
+     "name": "weightyimpact",
+     "at": 552.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "majesticmeteowrath",
+     "at": 561.6
+    },
+    {
+     "name": "twowayfireball",
+     "at": 565.0,
+     "entry": true
+    },
+    {
+     "name": "fourwayfireball",
+     "at": 565.0,
+     "entry": true
+    },
+    {
+     "name": "twowayfireball",
+     "at": 565.9,
+     "entry": true
+    },
+    {
+     "name": "fourwayfireball",
+     "at": 565.9,
+     "entry": true
+    },
+    {
+     "name": "crownofarcadia",
+     "at": 574.2
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 588.1,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 589.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 591.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 593.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 595.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 597.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 607.2,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 608.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 610.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 612.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 614.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 616.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 618.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 628.3,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 629.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 631.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 633.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 635.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 637.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 639.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreakkick",
+     "at": 641.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreaker",
+     "at": 654.4,
+     "entry": true
+    },
+    {
+     "name": "heartbreaker",
+     "at": 654.6,
+     "entry": true
+    }
+   ]
   }
  ]
 }

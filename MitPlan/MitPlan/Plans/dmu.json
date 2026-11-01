@@ -711,6 +711,249 @@
     "² Use your 30s mitigation for the first Mystery Magic after the Graven Image castbar.",
     "³ You can alternatively use Bell just before the first set of puddles which will provide an immediate heal when the second set of puddles occurs as the Bell will expire shortly after.",
     "⁴ If you plan to use Dissipation in your opener, use it before Aetherflow. If you use the first Spreadlo earlier, you will get it back for the Double-Trouble Trap in the second Graven Image and be able to use Seraphism earlier/later."
+   ],
+   "syncs": [
+    {
+     "name": "revoltingruin",
+     "at": 19.1
+    },
+    {
+     "name": "gravenimage",
+     "at": 29.6,
+     "entry": true
+    },
+    {
+     "name": "pulsewave",
+     "at": 35.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "mysterymagic",
+     "at": 37.8
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 37.8
+    },
+    {
+     "name": "flagrantfire",
+     "at": 38.8,
+     "entry": true
+    },
+    {
+     "name": "wavecannon",
+     "at": 43.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "doubletroubletrap",
+     "at": 45.1,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 46.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "doubletroubletrap",
+     "at": 50.1,
+     "entry": true
+    },
+    {
+     "name": "mysterymagic",
+     "at": 54.1
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 54.1
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 54.1
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 63.0
+    },
+    {
+     "name": "hyperdrive",
+     "at": 66.1,
+     "entry": true
+    },
+    {
+     "name": "hyperdrive",
+     "at": 68.1,
+     "entry": true
+    },
+    {
+     "name": "hyperdrive",
+     "at": 70.1,
+     "entry": true
+    },
+    {
+     "name": "gravenimage",
+     "at": 80.6,
+     "entry": true
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 87.7
+    },
+    {
+     "name": "gravitas",
+     "at": 87.8,
+     "entry": true
+    },
+    {
+     "name": "vitrophyre",
+     "at": 91.8,
+     "entry": true
+    },
+    {
+     "name": "revoltingruin",
+     "at": 97.5
+    },
+    {
+     "name": "revoltingruin",
+     "at": 100.6
+    },
+    {
+     "name": "intemperatewill",
+     "at": 101.5,
+     "entry": true
+    },
+    {
+     "name": "gravitationalwave",
+     "at": 101.5,
+     "entry": true
+    },
+    {
+     "name": "gravitas",
+     "at": 106.2,
+     "entry": true
+    },
+    {
+     "name": "vitrophyre",
+     "at": 110.2,
+     "entry": true
+    },
+    {
+     "name": "intemperatewill",
+     "at": 114.5,
+     "entry": true
+    },
+    {
+     "name": "gravitationalwave",
+     "at": 114.5,
+     "entry": true
+    },
+    {
+     "name": "gravity",
+     "at": 117.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "doubletroubletrap",
+     "at": 118.2,
+     "entry": true
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 132.3
+    },
+    {
+     "name": "hyperdrive",
+     "at": 135.5,
+     "entry": true
+    },
+    {
+     "name": "hyperdrive",
+     "at": 137.6,
+     "entry": true
+    },
+    {
+     "name": "hyperdrive",
+     "at": 139.6,
+     "entry": true
+    },
+    {
+     "name": "teletrouncing",
+     "at": 151.4,
+     "entry": true
+    },
+    {
+     "name": "teletrouncing",
+     "at": 159.3,
+     "entry": true
+    },
+    {
+     "name": "teletrouncing",
+     "at": 162.3,
+     "entry": true
+    },
+    {
+     "name": "gravenimage",
+     "at": 163.5,
+     "entry": true
+    },
+    {
+     "name": "indulgentwill",
+     "at": 173.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "idyllicwill",
+     "at": 173.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "mysterymagic",
+     "at": 186.5
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 186.5
+    },
+    {
+     "name": "avemaria",
+     "at": 186.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "indolentwill",
+     "at": 186.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "flagrantfire",
+     "at": 187.3,
+     "entry": true
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 202.6
+    },
+    {
+     "name": "ultimateembrace",
+     "at": 220.3
+    },
+    {
+     "name": "forsaken",
+     "at": 235.5
+    },
+    {
+     "name": "thepathoflight",
+     "at": 248.7
+    }
    ]
   },
   {
@@ -1399,6 +1642,292 @@
     "² Prepare Spreadlo either on the OT shortly beforehand or the MT during Ultimate Embrace to assist the tanks.",
     "³ Use Holos during the first Ultimate Embrace so it is back for Light of Judgement and provides mitigation to the tanks. Alternatively, you can use Holos for the Wings of Destruction + Ultimate Embrace.",
     "⁴ Use early to avoid shaking off mitigation if playing WAR."
+   ],
+   "syncs": [
+    {
+     "name": "ultimateembrace",
+     "at": 24.5
+    },
+    {
+     "name": "forsaken",
+     "at": 39.3
+    },
+    {
+     "name": "thepathoflight",
+     "at": 52.5
+    },
+    {
+     "name": "spelldriver",
+     "at": 53.1,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 53.1,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 53.1,
+     "entry": true
+    },
+    {
+     "name": "futuresend",
+     "at": 61.8,
+     "entry": true
+    },
+    {
+     "name": "pastsend",
+     "at": 61.8,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 62.4
+    },
+    {
+     "name": "spelldriver",
+     "at": 63.1,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 63.1,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 63.1,
+     "entry": true
+    },
+    {
+     "name": "allthingsending",
+     "at": 73.1,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 73.4
+    },
+    {
+     "name": "spelldriver",
+     "at": 74.0,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 74.0,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 74.0,
+     "entry": true
+    },
+    {
+     "name": "futuresend",
+     "at": 82.7,
+     "entry": true
+    },
+    {
+     "name": "pastsend",
+     "at": 82.7,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 83.4
+    },
+    {
+     "name": "spelldriver",
+     "at": 84.1,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 84.1,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 84.1,
+     "entry": true
+    },
+    {
+     "name": "allthingsending",
+     "at": 94.4,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 94.5
+    },
+    {
+     "name": "spelldriver",
+     "at": 95.2,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 95.2,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 95.2,
+     "entry": true
+    },
+    {
+     "name": "futuresend",
+     "at": 104.0,
+     "entry": true
+    },
+    {
+     "name": "pastsend",
+     "at": 104.0,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 104.5
+    },
+    {
+     "name": "spelldriver",
+     "at": 105.1,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 105.1,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 105.1,
+     "entry": true
+    },
+    {
+     "name": "allthingsending",
+     "at": 115.2,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 115.4
+    },
+    {
+     "name": "spelldriver",
+     "at": 116.0,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 116.0,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 116.0,
+     "entry": true
+    },
+    {
+     "name": "futuresend",
+     "at": 124.7,
+     "entry": true
+    },
+    {
+     "name": "pastsend",
+     "at": 124.7,
+     "entry": true
+    },
+    {
+     "name": "thepathoflight",
+     "at": 125.4
+    },
+    {
+     "name": "spelldriver",
+     "at": 126.0,
+     "entry": true
+    },
+    {
+     "name": "spellscatter",
+     "at": 126.0,
+     "entry": true
+    },
+    {
+     "name": "spellwave",
+     "at": 126.0,
+     "entry": true
+    },
+    {
+     "name": "allthingsending",
+     "at": 136.6,
+     "entry": true
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 145.6
+    },
+    {
+     "name": "trine",
+     "at": 156.8,
+     "entry": true
+    },
+    {
+     "name": "wingsofdestruction",
+     "at": 163.9,
+     "entry": true
+    },
+    {
+     "name": "trine",
+     "at": 169.7,
+     "entry": true
+    },
+    {
+     "name": "trine",
+     "at": 171.7,
+     "entry": true
+    },
+    {
+     "name": "trine",
+     "at": 173.7,
+     "entry": true
+    },
+    {
+     "name": "wingsofdestruction",
+     "at": 174.0,
+     "entry": true
+    },
+    {
+     "name": "ultimateembrace",
+     "at": 181.1
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 189.4
+    },
+    {
+     "name": "aeroiiiassault",
+     "at": 190.6,
+     "entry": true
+    },
+    {
+     "name": "aeroiiiassault",
+     "at": 193.6,
+     "entry": true
+    },
+    {
+     "name": "downforthecount",
+     "at": 194.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "definitionofinsanity",
+     "at": 230.9,
+     "entry": true,
+     "anchor": true
+    }
    ]
   },
   {
@@ -2437,6 +2966,603 @@
     "¹⁰ Both healers should have instant cast heals prepared to top up the party between the first and second set of stomps.",
     "¹¹ If you are holding at the end of P3, you can send this for the 6th Tether set.",
     "¹² Philosophia should be used after both Accretions resolves to avoid accidentally popping both at the same time."
+   ],
+   "syncs": [
+    {
+     "name": "thedecisivebattle",
+     "at": 49.1,
+     "entry": true
+    },
+    {
+     "name": "bowelsofagony",
+     "at": 68.4
+    },
+    {
+     "name": "strayflames",
+     "at": 87.8
+    },
+    {
+     "name": "strayspray",
+     "at": 87.8
+    },
+    {
+     "name": "thunder",
+     "at": 88.0
+    },
+    {
+     "name": "inferno",
+     "at": 88.8
+    },
+    {
+     "name": "tsunami",
+     "at": 88.8
+    },
+    {
+     "name": "cyclone",
+     "at": 90.5,
+     "entry": true
+    },
+    {
+     "name": "thunder",
+     "at": 96.5
+    },
+    {
+     "name": "thunder",
+     "at": 99.5
+    },
+    {
+     "name": "trance",
+     "at": 108.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "longitudinalimplosion",
+     "at": 109.7,
+     "entry": true
+    },
+    {
+     "name": "latitudinalimplosion",
+     "at": 109.7,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 110.5,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 112.5,
+     "entry": true
+    },
+    {
+     "name": "strayspray",
+     "at": 114.6
+    },
+    {
+     "name": "strayflames",
+     "at": 114.6
+    },
+    {
+     "name": "tsunami",
+     "at": 115.6
+    },
+    {
+     "name": "inferno",
+     "at": 115.6
+    },
+    {
+     "name": "cyclone",
+     "at": 117.3,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 125.4,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 127.4,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 129.4,
+     "entry": true
+    },
+    {
+     "name": "umbrasmash",
+     "at": 129.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 131.0,
+     "entry": true
+    },
+    {
+     "name": "vacuumwave",
+     "at": 132.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 133.1,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 135.0,
+     "entry": true
+    },
+    {
+     "name": "cyclone",
+     "at": 136.1,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 137.0,
+     "entry": true
+    },
+    {
+     "name": "aetherlink",
+     "at": 137.4,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 139.0,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 147.0,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 147.2,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 147.4,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 147.6,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 147.8,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 148.0,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 148.2,
+     "entry": true
+    },
+    {
+     "name": "ultimablaster",
+     "at": 148.4,
+     "entry": true
+    },
+    {
+     "name": "thunder",
+     "at": 154.8
+    },
+    {
+     "name": "thunder",
+     "at": 157.8
+    },
+    {
+     "name": "thedecisivebattle",
+     "at": 162.8,
+     "entry": true
+    },
+    {
+     "name": "thunder",
+     "at": 171.9
+    },
+    {
+     "name": "max",
+     "at": 173.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "thunder",
+     "at": 174.9
+    },
+    {
+     "name": "earthquake",
+     "at": 177.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "accretionearthquake",
+     "at": 182.1,
+     "entry": true
+    },
+    {
+     "name": "accretionearthquake",
+     "at": 186.2,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 192.6,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 193.4,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 194.2,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 194.9,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 195.9,
+     "entry": true
+    },
+    {
+     "name": "shockingimpact",
+     "at": 195.9,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 195.9,
+     "entry": true
+    },
+    {
+     "name": "blackhole",
+     "at": 196.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "nothingness",
+     "at": 203.3,
+     "entry": true
+    },
+    {
+     "name": "aetherlink",
+     "at": 203.4,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 210.4,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 212.4,
+     "entry": true
+    },
+    {
+     "name": "thunder",
+     "at": 214.0
+    },
+    {
+     "name": "thunder",
+     "at": 217.0
+    },
+    {
+     "name": "damningedict",
+     "at": 222.1,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 223.4,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 224.3,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 224.9,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 225.7,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 226.7,
+     "entry": true
+    },
+    {
+     "name": "shockingimpact",
+     "at": 226.7,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 226.7,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 234.2,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 235.8,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 239.3,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 241.3,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 244.4,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 246.0,
+     "entry": true
+    },
+    {
+     "name": "damningedict",
+     "at": 249.4,
+     "entry": true
+    },
+    {
+     "name": "lookuponmeanddespair",
+     "at": 249.6,
+     "entry": true
+    },
+    {
+     "name": "lookuponmeanddespair",
+     "at": 250.7,
+     "entry": true
+    },
+    {
+     "name": "thunder",
+     "at": 255.1
+    },
+    {
+     "name": "thunder",
+     "at": 258.1
+    },
+    {
+     "name": "nothingness",
+     "at": 268.3,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 269.9,
+     "entry": true
+    },
+    {
+     "name": "aetherlink",
+     "at": 270.5,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 273.4,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 275.0,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 278.5,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 280.1,
+     "entry": true
+    },
+    {
+     "name": "whitehole",
+     "at": 290.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "longitudinalimplosion",
+     "at": 290.0,
+     "entry": true
+    },
+    {
+     "name": "latitudinalimplosion",
+     "at": 290.0,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 290.8,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 291.5,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 292.3,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 292.8,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 292.8,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 293.5,
+     "entry": true
+    },
+    {
+     "name": "slaphappy",
+     "at": 294.8,
+     "entry": true
+    },
+    {
+     "name": "shockingimpact",
+     "at": 294.8,
+     "entry": true
+    },
+    {
+     "name": "shockwave",
+     "at": 294.8,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 302.2,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 303.8,
+     "entry": true
+    },
+    {
+     "name": "lookuponmeanddespair",
+     "at": 307.9,
+     "entry": true
+    },
+    {
+     "name": "lookuponmeanddespair",
+     "at": 309.3,
+     "entry": true
+    },
+    {
+     "name": "nothingness",
+     "at": 309.7,
+     "entry": true
+    },
+    {
+     "name": "primordialcrustquake",
+     "at": 311.3,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 318.6
+    },
+    {
+     "name": "blizzard",
+     "at": 321.7
+    },
+    {
+     "name": "stompamole",
+     "at": 322.6,
+     "entry": true
+    },
+    {
+     "name": "stompamole",
+     "at": 324.2,
+     "entry": true
+    },
+    {
+     "name": "knockdown",
+     "at": 324.2,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 324.7
+    },
+    {
+     "name": "stompamole",
+     "at": 325.5,
+     "entry": true
+    },
+    {
+     "name": "stompamole",
+     "at": 326.8,
+     "entry": true
+    },
+    {
+     "name": "stompamole",
+     "at": 328.1,
+     "entry": true
+    },
+    {
+     "name": "knockdown",
+     "at": 329.7,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 332.9
+    },
+    {
+     "name": "bigbang",
+     "at": 334.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "bowelsofagony",
+     "at": 352.7
+    },
+    {
+     "name": "meteor",
+     "at": 352.7
+    },
+    {
+     "name": "bowelsofagony",
+     "at": 357.7
+    },
+    {
+     "name": "meteor",
+     "at": 357.7
+    }
    ]
   },
   {
@@ -3000,6 +4126,187 @@
     "Targeted mitigation (Reprisal, Addle, etc) only works on Ultima Upsurge, the rest is used to assist in mitigating tank auto attacks.",
     "¹ Use at the beginning of the phase for autos.",
     "² Use when Neo Exdeath reappears to cast Flood of Naught."
+   ],
+   "syncs": [
+    {
+     "name": "kefkasays",
+     "at": 15.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "mysterymagic",
+     "at": 25.1
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 25.1
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 25.1
+    },
+    {
+     "name": "grandcross",
+     "at": 29.5,
+     "entry": true
+    },
+    {
+     "name": "inferno",
+     "at": 34.8
+    },
+    {
+     "name": "tsunami",
+     "at": 34.8
+    },
+    {
+     "name": "mysterymagic",
+     "at": 39.9
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 39.9
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 39.9
+    },
+    {
+     "name": "grandcross",
+     "at": 44.3,
+     "entry": true
+    },
+    {
+     "name": "tsunami",
+     "at": 49.1
+    },
+    {
+     "name": "inferno",
+     "at": 49.1
+    },
+    {
+     "name": "mysterymagic",
+     "at": 54.8
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 54.8
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 54.8
+    },
+    {
+     "name": "grandcross",
+     "at": 59.0,
+     "entry": true
+    },
+    {
+     "name": "floodofnaught",
+     "at": 71.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "edgeofdeath",
+     "at": 71.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "whiteantilight",
+     "at": 71.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "blackantilight",
+     "at": 71.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "deathsurge",
+     "at": 75.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "manacharge",
+     "at": 80.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "deathbolt",
+     "at": 80.4,
+     "entry": true
+    },
+    {
+     "name": "deathwave",
+     "at": 80.4,
+     "entry": true
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 88.4
+    },
+    {
+     "name": "deathshriek",
+     "at": 89.7,
+     "entry": true
+    },
+    {
+     "name": "ultimaupsurge",
+     "at": 98.7,
+     "entry": true
+    },
+    {
+     "name": "strayflames",
+     "at": 101.4
+    },
+    {
+     "name": "deathwave",
+     "at": 105.8,
+     "entry": true
+    },
+    {
+     "name": "deathbolt",
+     "at": 105.8,
+     "entry": true
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 106.9
+    },
+    {
+     "name": "deathshriek",
+     "at": 113.8,
+     "entry": true
+    },
+    {
+     "name": "manarelease",
+     "at": 120.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "strayspray",
+     "at": 124.4
+    },
+    {
+     "name": "thrummingthunder",
+     "at": 125.3
+    },
+    {
+     "name": "blizzardiiiblowout",
+     "at": 125.3
+    },
+    {
+     "name": "ultimaupsurge",
+     "at": 138.1,
+     "entry": true
+    }
    ]
   },
   {
@@ -3176,7 +4483,14 @@
         ]
        }
       ]
-     }
+     },
+     "tSync": 67.3,
+     "syncAt": [
+      {
+       "name": "Chaotic Flood",
+       "at": 67.3
+      }
+     ]
     },
     {
      "name": "Maddening Orchestra",
@@ -3240,11 +4554,11 @@
        }
       ]
      },
-     "tSync": 79.3,
+     "tSync": 78.6,
      "syncAt": [
       {
        "name": "Maddening Orchestra",
-       "at": 79.3
+       "at": 78.6
       }
      ]
     },
@@ -3296,11 +4610,11 @@
        }
       ]
      },
-     "tSync": 90.8,
+     "tSync": 90.5,
      "syncAt": [
       {
        "name": "Fell Forces",
-       "at": 90.8
+       "at": 90.5
       }
      ]
     },
@@ -3325,11 +4639,11 @@
        }
       ]
      },
-     "tSync": 100.4,
+     "tSync": 100.3,
      "syncAt": [
       {
        "name": "Celestriad",
-       "at": 100.4
+       "at": 100.3
       }
      ]
     },
@@ -3403,11 +4717,11 @@
        }
       ]
      },
-     "tSync": 134.1,
+     "tSync": 134.0,
      "syncAt": [
       {
        "name": "Ultima Repeater",
-       "at": 134.1
+       "at": 134.0
       }
      ]
     },
@@ -3490,11 +4804,11 @@
        }
       ]
      },
-     "tSync": 138.6,
+     "tSync": 138.5,
      "syncAt": [
       {
        "name": "Fell Forces",
-       "at": 138.6
+       "at": 138.5
       }
      ]
     },
@@ -4225,6 +5539,429 @@
     "³ Use two GCDs after the Stray Apocalypse castbar is completed so it is back for Forsaken.",
     "⁴ Use during the Celestriad castbar.",
     "⁵ Use after the third towers in Celestriad resolves."
+   ],
+   "syncs": [
+    {
+     "name": "ultimarepeater",
+     "at": 49.0,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 50.1,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 50.9,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 51.6,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 51.9,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 54.5,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 57.7,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 60.8,
+     "entry": true
+    },
+    {
+     "name": "flood",
+     "at": 65.4,
+     "entry": true
+    },
+    {
+     "name": "chaoticflood",
+     "at": 66.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "flood",
+     "at": 66.6,
+     "entry": true
+    },
+    {
+     "name": "flood",
+     "at": 67.6,
+     "entry": true
+    },
+    {
+     "name": "flood",
+     "at": 68.6,
+     "entry": true
+    },
+    {
+     "name": "flood",
+     "at": 69.6,
+     "entry": true
+    },
+    {
+     "name": "maddeningorchestra",
+     "at": 78.3,
+     "entry": true
+    },
+    {
+     "name": "holy",
+     "at": 79.2,
+     "entry": true
+    },
+    {
+     "name": "flare",
+     "at": 79.2,
+     "entry": true
+    },
+    {
+     "name": "maddeningorchestra",
+     "at": 81.5,
+     "entry": true
+    },
+    {
+     "name": "holy",
+     "at": 82.4,
+     "entry": true
+    },
+    {
+     "name": "chaoticflare",
+     "at": 82.4,
+     "entry": true
+    },
+    {
+     "name": "chaoticholy",
+     "at": 86.2,
+     "entry": true
+    },
+    {
+     "name": "flarediffusion",
+     "at": 86.2,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 90.8,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 98.2,
+     "entry": true
+    },
+    {
+     "name": "celestriad",
+     "at": 104.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "catastrophicchoice",
+     "at": 113.0,
+     "entry": true
+    },
+    {
+     "name": "fire",
+     "at": 113.7,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 113.7
+    },
+    {
+     "name": "thunder",
+     "at": 113.7
+    },
+    {
+     "name": "quake",
+     "at": 113.8,
+     "entry": true
+    },
+    {
+     "name": "tornado",
+     "at": 113.8,
+     "entry": true
+    },
+    {
+     "name": "fire",
+     "at": 118.2,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 118.2
+    },
+    {
+     "name": "thunder",
+     "at": 118.2
+    },
+    {
+     "name": "catastrophicchoice",
+     "at": 123.6,
+     "entry": true
+    },
+    {
+     "name": "fire",
+     "at": 124.2,
+     "entry": true
+    },
+    {
+     "name": "blizzard",
+     "at": 124.2
+    },
+    {
+     "name": "thunder",
+     "at": 124.2
+    },
+    {
+     "name": "quake",
+     "at": 124.4,
+     "entry": true
+    },
+    {
+     "name": "tornado",
+     "at": 124.4,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 132.5,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 133.6,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 134.4,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 135.1,
+     "entry": true
+    },
+    {
+     "name": "ultimarepeater",
+     "at": 135.9,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 137.3,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 140.5,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 145.9,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 146.6,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 149.1,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 151.1,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 153.6,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 156.1,
+     "entry": true
+    },
+    {
+     "name": "strayapocalypse",
+     "at": 158.6,
+     "entry": true
+    },
+    {
+     "name": "strayentropy",
+     "at": 162.5,
+     "entry": true
+    },
+    {
+     "name": "strayentropy",
+     "at": 163.4,
+     "entry": true
+    },
+    {
+     "name": "maddeningorchestra",
+     "at": 171.3,
+     "entry": true
+    },
+    {
+     "name": "holy",
+     "at": 172.2,
+     "entry": true
+    },
+    {
+     "name": "flare",
+     "at": 172.2,
+     "entry": true
+    },
+    {
+     "name": "maddeningorchestra",
+     "at": 174.5,
+     "entry": true
+    },
+    {
+     "name": "holy",
+     "at": 175.4,
+     "entry": true
+    },
+    {
+     "name": "chaoticflare",
+     "at": 175.4,
+     "entry": true
+    },
+    {
+     "name": "flarediffusion",
+     "at": 178.7,
+     "entry": true
+    },
+    {
+     "name": "chaoticholy",
+     "at": 178.7,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 183.3,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 186.4,
+     "entry": true
+    },
+    {
+     "name": "fellforces",
+     "at": 189.5,
+     "entry": true
+    },
+    {
+     "name": "forsaken",
+     "at": 200.4
+    },
+    {
+     "name": "forsakenground",
+     "at": 205.7,
+     "entry": true
+    },
+    {
+     "name": "forsakenbonds",
+     "at": 205.7,
+     "entry": true
+    },
+    {
+     "name": "forsaken",
+     "at": 207.9
+    },
+    {
+     "name": "forsakenground",
+     "at": 213.5,
+     "entry": true
+    },
+    {
+     "name": "forsakenbonds",
+     "at": 213.5,
+     "entry": true
+    },
+    {
+     "name": "forsaken",
+     "at": 216.8
+    },
+    {
+     "name": "forsakenground",
+     "at": 221.9,
+     "entry": true
+    },
+    {
+     "name": "forsakenbonds",
+     "at": 221.9,
+     "entry": true
+    },
+    {
+     "name": "forsaken",
+     "at": 225.0
+    },
+    {
+     "name": "forsakenground",
+     "at": 230.0,
+     "entry": true
+    },
+    {
+     "name": "forsakenbonds",
+     "at": 230.0,
+     "entry": true
+    },
+    {
+     "name": "forsakennull",
+     "at": 262.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 8654.2
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 9654.2
+    },
+    {
+     "name": "bowelsofagony",
+     "at": 10654.2
+    },
+    {
+     "name": "meteor",
+     "at": 10654.2
+    },
+    {
+     "name": "meteor",
+     "at": 11659.2
+    },
+    {
+     "name": "bowelsofagony",
+     "at": 12659.2
+    },
+    {
+     "name": "lightofjudgment",
+     "at": 13654.2
+    }
    ]
   }
  ],

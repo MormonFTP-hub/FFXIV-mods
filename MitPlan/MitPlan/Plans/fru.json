@@ -477,6 +477,248 @@
    "notes": [
     "*Shake/Veil can be used prepull to cover break 1",
     "Using too many single target mits on MT for PM2 can cause buff cap, please be careful"
+   ],
+   "syncs": [
+    {
+     "name": "cyclonicbreak",
+     "at": 12.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 14.0,
+     "entry": true
+    },
+    {
+     "name": "sinsmoke",
+     "at": 14.0,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 14.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 16.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 18.0,
+     "entry": true
+    },
+    {
+     "name": "powdermarktrail",
+     "at": 21.8,
+     "entry": true
+    },
+    {
+     "name": "utopiansky",
+     "at": 32.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "burnmark",
+     "at": 38.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "sinboundfire",
+     "at": 45.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "sinboundthunder",
+     "at": 45.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "blastingzone",
+     "at": 45.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 52.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 54.0,
+     "entry": true
+    },
+    {
+     "name": "sinsmoke",
+     "at": 54.0,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 54.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 56.0,
+     "entry": true
+    },
+    {
+     "name": "cyclonicbreak",
+     "at": 58.0,
+     "entry": true
+    },
+    {
+     "name": "turnoftheheavens",
+     "at": 59.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "burntstrike",
+     "at": 60.2,
+     "entry": true
+    },
+    {
+     "name": "burnout",
+     "at": 61.9,
+     "entry": true
+    },
+    {
+     "name": "burntstrike",
+     "at": 66.2,
+     "entry": true
+    },
+    {
+     "name": "blastburn",
+     "at": 70.5,
+     "entry": true
+    },
+    {
+     "name": "floatingfetters",
+     "at": 73.1,
+     "entry": true
+    },
+    {
+     "name": "sinsmoke",
+     "at": 76.3,
+     "entry": true
+    },
+    {
+     "name": "burnishedglory",
+     "at": 83.7,
+     "entry": true
+    },
+    {
+     "name": "falloffaith",
+     "at": 99.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "floatingfetters",
+     "at": 99.9,
+     "entry": true
+    },
+    {
+     "name": "floatingfetters",
+     "at": 102.9,
+     "entry": true
+    },
+    {
+     "name": "sinblaze",
+     "at": 103.2,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 103.2,
+     "entry": true
+    },
+    {
+     "name": "floatingfetters",
+     "at": 105.2,
+     "entry": true
+    },
+    {
+     "name": "sinblaze",
+     "at": 106.1,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 106.1,
+     "entry": true
+    },
+    {
+     "name": "floatingfetters",
+     "at": 107.6,
+     "entry": true
+    },
+    {
+     "name": "sinblaze",
+     "at": 108.5,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 108.5,
+     "entry": true
+    },
+    {
+     "name": "sinblaze",
+     "at": 112.0,
+     "entry": true
+    },
+    {
+     "name": "sinsmite",
+     "at": 112.0,
+     "entry": true
+    },
+    {
+     "name": "burnishedglory",
+     "at": 120.0,
+     "entry": true
+    },
+    {
+     "name": "powdermarktrail",
+     "at": 128.6,
+     "entry": true
+    },
+    {
+     "name": "burntstrike",
+     "at": 140.0,
+     "entry": true
+    },
+    {
+     "name": "blastburn",
+     "at": 141.8,
+     "entry": true
+    },
+    {
+     "name": "burnout",
+     "at": 141.8,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 143.8
+    },
+    {
+     "name": "burnishedglory",
+     "at": 158.9,
+     "entry": true
+    },
+    {
+     "name": "quadrupleslap",
+     "at": 214.0
+    }
    ]
   },
   {
@@ -773,6 +1015,150 @@
    "notes": [
     "*Feint/Addle at start of Mirror Image castbar to have back up for Banish III",
     "**Expedience should be used as soon as Frigid Stone prey markers appear, Samba/Tact/Troub should be used walking in before KB"
+   ],
+   "syncs": [
+    {
+     "name": "quadrupleslap",
+     "at": 173.8
+    },
+    {
+     "name": "mirrorimage",
+     "at": 183.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "diamonddust",
+     "at": 190.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "axekick",
+     "at": 199.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "scythekick",
+     "at": 199.0,
+     "entry": true
+    },
+    {
+     "name": "thehouseoflight",
+     "at": 199.9
+    },
+    {
+     "name": "frigidstone",
+     "at": 201.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "icicleimpact",
+     "at": 202.0,
+     "entry": true
+    },
+    {
+     "name": "heavenlystrike",
+     "at": 205.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "icicleimpact",
+     "at": 206.0,
+     "entry": true
+    },
+    {
+     "name": "frigidneedle",
+     "at": 208.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "sinboundholy",
+     "at": 209.0,
+     "entry": true
+    },
+    {
+     "name": "icicleimpact",
+     "at": 209.9,
+     "entry": true
+    },
+    {
+     "name": "sinboundholy",
+     "at": 209.9,
+     "entry": true
+    },
+    {
+     "name": "sinboundholy",
+     "at": 211.3,
+     "entry": true
+    },
+    {
+     "name": "sinboundholy",
+     "at": 212.9,
+     "entry": true
+    },
+    {
+     "name": "sinboundholy",
+     "at": 214.5,
+     "entry": true
+    },
+    {
+     "name": "shiningarmorfrostarmor",
+     "at": 218.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "twinstillness",
+     "at": 225.1,
+     "entry": true
+    },
+    {
+     "name": "twinsilence",
+     "at": 225.1,
+     "entry": true
+    },
+    {
+     "name": "twinsilence",
+     "at": 227.2,
+     "entry": true
+    },
+    {
+     "name": "twinstillness",
+     "at": 227.2,
+     "entry": true
+    },
+    {
+     "name": "hallowedray",
+     "at": 237.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "mirrormirror",
+     "at": 247.6,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "scythekick",
+     "at": 261.7,
+     "entry": true
+    },
+    {
+     "name": "reflectedscythekick",
+     "at": 271.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "banish",
+     "at": 277.9
+    }
    ]
   },
   {
@@ -1079,7 +1465,167 @@
    ],
    "notes": [
     "*Soil/Kera should be used immediately after walking towards the middle tower soak"
-   ]
+   ],
+   "syncs": [
+    {
+     "name": "lightrampant",
+     "at": 287.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "luminoushammer",
+     "at": 295.2,
+     "entry": true
+    },
+    {
+     "name": "luminoushammer",
+     "at": 296.8,
+     "entry": true
+    },
+    {
+     "name": "luminoushammer",
+     "at": 298.4,
+     "entry": true
+    },
+    {
+     "name": "brighthunger",
+     "at": 298.5
+    },
+    {
+     "name": "luminoushammer",
+     "at": 299.9,
+     "entry": true
+    },
+    {
+     "name": "luminoushammer",
+     "at": 301.5,
+     "entry": true
+    },
+    {
+     "name": "powerfullight",
+     "at": 304.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "burst",
+     "at": 306.7,
+     "entry": true
+    },
+    {
+     "name": "burst",
+     "at": 309.7,
+     "entry": true
+    },
+    {
+     "name": "brighthunger",
+     "at": 313.3
+    },
+    {
+     "name": "banish",
+     "at": 316.4
+    },
+    {
+     "name": "thehouseoflight",
+     "at": 323.6
+    },
+    {
+     "name": "absolutezero",
+     "at": 343.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "swellingfrost",
+     "at": 345.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 377.8,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 378.8,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 382.0,
+     "entry": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 383.0,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 385.2,
+     "entry": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 388.1,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 388.3,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 391.5,
+     "entry": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 393.3,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 394.7,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 397.9,
+     "entry": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 398.6,
+     "entry": true
+    },
+    {
+     "name": "hiemalstorm",
+     "at": 401.1,
+     "entry": true
+    },
+    {
+     "name": "sinboundblizzard",
+     "at": 403.9,
+     "entry": true
+    },
+    {
+     "name": "endlessiceage",
+     "at": 409.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "junction",
+     "at": 453.4,
+     "entry": true,
+     "anchor": true
+    }
+   ],
+   "start": 282.3
   },
   {
    "name": "P3 · Gaia",
@@ -1559,6 +2105,158 @@
    "notes": [
     "*15s mits slightly after Hell's Judgement to have up for Shell Crusher or additional use on CD for soil/kera",
     "**The timing for 15s to catch Shockwave Pulsar and Memory's End is fairly precise, hit mits at the P in Pulsar"
+   ],
+   "syncs": [
+    {
+     "name": "hellsjudgment",
+     "at": 3.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "ultimaterelativity",
+     "at": 18.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "darkfire",
+     "at": 29.8,
+     "entry": true
+    },
+    {
+     "name": "unholydarkness",
+     "at": 29.8
+    },
+    {
+     "name": "sinboundmeltdown",
+     "at": 35.0,
+     "entry": true
+    },
+    {
+     "name": "darkfire",
+     "at": 39.9,
+     "entry": true
+    },
+    {
+     "name": "darkblizzard",
+     "at": 39.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "unholydarkness",
+     "at": 39.9
+    },
+    {
+     "name": "sinboundmeltdown",
+     "at": 45.0,
+     "entry": true
+    },
+    {
+     "name": "darkfire",
+     "at": 49.9,
+     "entry": true
+    },
+    {
+     "name": "unholydarkness",
+     "at": 49.9
+    },
+    {
+     "name": "sinboundmeltdown",
+     "at": 56.0,
+     "entry": true
+    },
+    {
+     "name": "shadoweye",
+     "at": 61.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "darkwater",
+     "at": 61.5
+    },
+    {
+     "name": "darkeruption",
+     "at": 61.5,
+     "entry": true
+    },
+    {
+     "name": "shellcrusher",
+     "at": 65.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "shockwavepulsar",
+     "at": 73.9,
+     "entry": true
+    },
+    {
+     "name": "blackhalo",
+     "at": 82.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "spellinwaitingrefrain",
+     "at": 91.3,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "apocalypse",
+     "at": 106.5,
+     "entry": true
+    },
+    {
+     "name": "darkwater",
+     "at": 110.1
+    },
+    {
+     "name": "spirittaker",
+     "at": 111.6
+    },
+    {
+     "name": "apocalypse",
+     "at": 121.4,
+     "entry": true
+    },
+    {
+     "name": "darkeruption",
+     "at": 124.1,
+     "entry": true
+    },
+    {
+     "name": "darkwater",
+     "at": 129.9
+    },
+    {
+     "name": "darkestdance",
+     "at": 132.2,
+     "entry": true
+    },
+    {
+     "name": "darkestdance",
+     "at": 135.1,
+     "entry": true
+    },
+    {
+     "name": "darkwater",
+     "at": 139.0
+    },
+    {
+     "name": "shockwavepulsar",
+     "at": 145.2,
+     "entry": true
+    },
+    {
+     "name": "memorysend",
+     "at": 159.0,
+     "entry": true,
+     "anchor": true
+    }
    ]
   },
   {
@@ -1979,6 +2677,175 @@
     "*Kera/Soil should be used after 2nd somber",
     "**Bell and Macro should be used immediately for the Crystallize Time castbar finishes to heal for dark party stack",
     "***Kera/Soil immediately after rewinds are placed to have up for Morn Afah"
+   ],
+   "syncs": [
+    {
+     "name": "materialization",
+     "at": 177.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "drachenarmor",
+     "at": 189.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "akhrhai",
+     "at": 191.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "edgeofoblivion",
+     "at": 194.0,
+     "entry": true
+    },
+    {
+     "name": "darklitdragonsong",
+     "at": 202.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "brighthunger",
+     "at": 213.0
+    },
+    {
+     "name": "thepathoflight",
+     "at": 213.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "spirittaker",
+     "at": 216.0
+    },
+    {
+     "name": "spirittaker",
+     "at": 216.4
+    },
+    {
+     "name": "darkwateriiihallowedwings",
+     "at": 221.0,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "somberdance",
+     "at": 224.5,
+     "entry": true
+    },
+    {
+     "name": "somberdance",
+     "at": 227.8,
+     "entry": true
+    },
+    {
+     "name": "edgeofoblivion",
+     "at": 231.2,
+     "entry": true
+    },
+    {
+     "name": "akhmorn",
+     "at": 237.5
+    },
+    {
+     "name": "mornafah",
+     "at": 247.6,
+     "entry": true
+    },
+    {
+     "name": "crystallizetime",
+     "at": 263.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "edgeofoblivion",
+     "at": 269.6,
+     "entry": true
+    },
+    {
+     "name": "maelstrom",
+     "at": 275.5,
+     "entry": true
+    },
+    {
+     "name": "darkwater",
+     "at": 276.5
+    },
+    {
+     "name": "darkblizzardiiidarkeruptiondarkaero",
+     "at": 278.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "maelstrom",
+     "at": 281.1,
+     "entry": true
+    },
+    {
+     "name": "unholydarkness",
+     "at": 281.5
+    },
+    {
+     "name": "tidallight",
+     "at": 284.9,
+     "entry": true
+    },
+    {
+     "name": "maelstrom",
+     "at": 285.7,
+     "entry": true
+    },
+    {
+     "name": "tidallight",
+     "at": 290.9,
+     "entry": true
+    },
+    {
+     "name": "quietus",
+     "at": 295.1,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "spirittaker",
+     "at": 300.7
+    },
+    {
+     "name": "hallowedwings",
+     "at": 306.3,
+     "entry": true
+    },
+    {
+     "name": "hallowedwings",
+     "at": 310.9,
+     "entry": true
+    },
+    {
+     "name": "akhmorn",
+     "at": 320.2
+    },
+    {
+     "name": "edgeofoblivion",
+     "at": 328.2,
+     "entry": true
+    },
+    {
+     "name": "mornafah",
+     "at": 330.2,
+     "entry": true
+    },
+    {
+     "name": "memorysendabsolutezero",
+     "at": 343.4,
+     "entry": true,
+     "anchor": true
+    }
    ]
   },
   {
@@ -2535,6 +3402,148 @@
    "notes": [
     "*Holos immediately after dodging first exaline",
     "**15s mits on the B in Box, it's more important to catch Fulgent Blade"
+   ],
+   "syncs": [
+    {
+     "name": "fulgentblade",
+     "at": 422.5,
+     "entry": true
+    },
+    {
+     "name": "thepathofdarknessthepathoflight",
+     "at": 433.7,
+     "entry": true
+    },
+    {
+     "name": "akhmorn",
+     "at": 449.8
+    },
+    {
+     "name": "paradiseregained",
+     "at": 458.0,
+     "entry": true
+    },
+    {
+     "name": "wingsdarkandlight",
+     "at": 468.0,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 468.4
+    },
+    {
+     "name": "wingsdarkandlightexplosion",
+     "at": 471.7,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 475.2
+    },
+    {
+     "name": "polarizingstrikes",
+     "at": 489.2,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 493.8,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 498.4,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 503.0,
+     "entry": true
+    },
+    {
+     "name": "pandorasbox",
+     "at": 523.2,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "fulgentblade",
+     "at": 535.2,
+     "entry": true
+    },
+    {
+     "name": "thepathofdarknessthepathoflight",
+     "at": 546.3,
+     "entry": true
+    },
+    {
+     "name": "akhmorn",
+     "at": 561.5
+    },
+    {
+     "name": "paradiseregained",
+     "at": 573.8,
+     "entry": true
+    },
+    {
+     "name": "wingsdarkandlight",
+     "at": 584.3,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 584.7
+    },
+    {
+     "name": "wingsdarkandlightexplosion",
+     "at": 588.2,
+     "entry": true
+    },
+    {
+     "name": "explosion",
+     "at": 591.7
+    },
+    {
+     "name": "polarizingstrikes",
+     "at": 600.5,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 605.1,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 609.7,
+     "entry": true
+    },
+    {
+     "name": "polarizingpaths",
+     "at": 614.0,
+     "entry": true
+    },
+    {
+     "name": "fulgentblade",
+     "at": 625.3,
+     "entry": true
+    },
+    {
+     "name": "thepathofdarknessthepathoflight",
+     "at": 636.3,
+     "entry": true
+    },
+    {
+     "name": "akhmorn",
+     "at": 652.2
+    },
+    {
+     "name": "paradiselost",
+     "at": 682.2,
+     "entry": true,
+     "anchor": true
+    }
    ]
   }
  ]

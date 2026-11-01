@@ -7,8 +7,9 @@
 // The phases (BossMod's UMADStates: P1 to P5, each a boss of its own) and the sim's HP: each phase's boss is an
 // adds window soaking all the party's damage (Chaos and Exdeath half each), so a phase's HP stands alone; the
 // boss's own pool is P5's Ultima Kefka, whose death clears the fight. Pushes skip cactbot's waits: P1's fake duty
-// complete, Down for the Count's 30 s on the floor, the gap before P4, and bring P3 on (God Kefka's death) and P4
-// (both P3 bosses dead). P1 and P4 are timed: their HP checks (15% and 20%) only enrage in the game; the sim plays on.
+// complete, Down for the Count's 30 s on the floor, P3's enrage gap, and bring P3 on (God Kefka's death) and P4
+// (both P3 bosses dead). The target bar names each phase's boss (plan.names). P1 and P4 are timed: their HP checks
+// (15% and 20%) only enrage in the game; the sim plays on.
 //
 // The mechanics follow BossMod's UMAD modules (github.com/awgil/ffxiv_bossmod: shapes and sizes from the game's
 // Action sheet) and cactbot's triggers, built with the sim's toolkit (js/mech.js):
@@ -35,10 +36,10 @@
 //   - Earthquake: Slap Happy (three slams + party stack or role cones), the black holes' 24 lasers (each player soaks
 //     three, D>S>A), Damning Edict, Look upon Me and Despair, White Hole + Implosion; Stomp-a-Mole's towers, Blizzard
 //     puddles, Knock Down stacks and Big Bang.
-//   P4 Kefka Says (Chaos and Neo Exdeath beside him): Mystery Magic x3, Grand Cross, Inferno/Tsunami, Flood of
+//   P4 Kefka Says (Chaos beside him; Neo Exdeath's model is left out of the map for its size): Mystery Magic x3, Grand Cross, Inferno/Tsunami, Flood of
 //     Naught's colour halves, Death Bolt/Wave stacks and spreads (supports N/W, DPS S/E), Death Shriek gazes, Stray
 //     Flames / Stray Spray (in or out), the last ice.
-//   P5 Ultima Kefka: Ultima Repeater, Fell Forces (role autos), Flood (rotating bands) with Chaotic Flood's stack,
+//   P5 Ultima Kefka (his model, m1005, is an empty file in this client: God Kefka's stands in): Ultima Repeater, Fell Forces (role autos), Flood (rotating bands) with Chaotic Flood's stack,
 //     Maddening Orchestra x2 (Flare to the north wall, Holy stack south), Celestriad (12 elemental towers, in/out),
 //     Stray Apocalypse (exaflares) and Stray Entropy, Forsaken (four stacks while holes open), Forsaken Null.
 // Simplified: real/fake is shown in the calls, and only the true result lands (the "fake" Ave Maria / fake shriek,
@@ -1218,6 +1219,8 @@
           gone.push(PIECE[h.join(',')]);
         }
         P.looks.push({ t: e.t + 0.5, show: LOOK.p5.filter(m => !gone.includes(m)) });
+        // The middle's hole is a fall (the floor a ring from then); the others are lethal puddles.
+        if (k === 0) P.arena.push({ t: e.t + 1, shape: 'donut', at: [0, 0], r0: 6, r1: 20, deathwall: true });
         call(e.t - 5.1, `Stack ${['C', '4', '1', '2'][k] || ''}; out of the orange`, { alert: true, dur: 4 });
       });
       label(E('Forsaken Null (Enrage)', fk.t, fk.t + 120), 'Forsaken Null (enrage)');

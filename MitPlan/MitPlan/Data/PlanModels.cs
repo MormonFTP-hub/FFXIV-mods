@@ -36,7 +36,9 @@ public sealed class Plan
         for (var p = 0; p < Phases.Count; p++)
         {
             var phase = Phases[p];
-            var clock = string.IsNullOrEmpty(phase.Clock) ? $"p{p}" : phase.Clock;
+            if (string.IsNullOrEmpty(phase.Clock))
+                phase.Clock = $"p{p}";
+            var clock = phase.Clock;
             foreach (var hit in phase.Hits)
             {
                 hit.PhaseIndex = p;
@@ -82,6 +84,12 @@ public sealed class Phase
 
     /// <summary>Phases sharing a clock count time from the same zero (a savage fight); each ultimate phase has its own.</summary>
     public string Clock { get; set; } = "";
+
+    /// <summary>When the phase starts on its clock, for a phase that shares its clock with the one before it.</summary>
+    public double? Start { get; set; }
+
+    /// <summary>Every boss cast in the phase at its time on the clock (from cactbot), for following between rows.</summary>
+    public List<SyncAt> Syncs { get; set; } = [];
 
     public List<Hit> Hits { get; set; } = [];
     public List<string> Notes { get; set; } = [];
@@ -146,6 +154,12 @@ public sealed class SyncAt
 {
     public string Name { get; set; } = "";
     public double At { get; set; }
+
+    /// <summary>The cast only happens in this phase: seeing it means you're in the phase.</summary>
+    public bool Entry { get; set; }
+
+    /// <summary>The cast happens once in the whole fight: it sets the clock wherever the clock was.</summary>
+    public bool Anchor { get; set; }
 }
 
 /// <summary>A personal tank cooldown table (Ikuya's Omnitank tab), shown to tanks under the phase it belongs to.</summary>

@@ -73,6 +73,7 @@
   {
    "name": "It's A10 Again",
    "clock": "fight",
+   "start": 0,
    "hits": [
     {
      "name": "Prepull",
@@ -208,11 +209,142 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "killervoice",
+     "at": 10.5
+    },
+    {
+     "name": "hardcore",
+     "at": 20.6
+    },
+    {
+     "name": "vampstomp",
+     "at": 30.7
+    },
+    {
+     "name": "blastbeat",
+     "at": 34.8
+    },
+    {
+     "name": "blastbeat",
+     "at": 38.2
+    },
+    {
+     "name": "blastbeat",
+     "at": 41.8
+    },
+    {
+     "name": "brutalrainx",
+     "at": 46.8
+    },
+    {
+     "name": "sadisticscreech",
+     "at": 60.8
+    },
+    {
+     "name": "deadwake",
+     "at": 68.0,
+     "entry": true
+    },
+    {
+     "name": "coffinfiller",
+     "at": 75.2,
+     "entry": true
+    },
+    {
+     "name": "halfmoon",
+     "at": 75.2
+    },
+    {
+     "name": "halfmoon",
+     "at": 78.2
+    },
+    {
+     "name": "coffinfiller",
+     "at": 78.2,
+     "entry": true
+    },
+    {
+     "name": "deadwake",
+     "at": 85.4,
+     "entry": true
+    },
+    {
+     "name": "coffinfiller",
+     "at": 92.6,
+     "entry": true
+    },
+    {
+     "name": "halfmoon",
+     "at": 92.6
+    },
+    {
+     "name": "halfmoon",
+     "at": 95.6
+    },
+    {
+     "name": "coffinfiller",
+     "at": 95.6,
+     "entry": true
+    },
+    {
+     "name": "deadwake",
+     "at": 102.7,
+     "entry": true
+    },
+    {
+     "name": "coffinfiller",
+     "at": 109.9,
+     "entry": true
+    },
+    {
+     "name": "halfmoon",
+     "at": 109.9
+    },
+    {
+     "name": "halfmoon",
+     "at": 112.9
+    },
+    {
+     "name": "coffinfiller",
+     "at": 112.9,
+     "entry": true
+    },
+    {
+     "name": "coffinfiller",
+     "at": 120.0,
+     "entry": true
+    },
+    {
+     "name": "halfmoon",
+     "at": 120.0
+    },
+    {
+     "name": "halfmoon",
+     "at": 123.0
+    },
+    {
+     "name": "coffinfiller",
+     "at": 123.0,
+     "entry": true
+    },
+    {
+     "name": "deadwake",
+     "at": 130.1,
+     "entry": true
+    },
+    {
+     "name": "sadisticscreech",
+     "at": 138.0
+    }
+   ]
   },
   {
    "name": "More Buzz Saws",
    "clock": "fight",
+   "start": 147,
    "hits": [
     {
      "name": "Crowd Kill + Fatale",
@@ -427,11 +559,119 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "crowdkill",
+     "at": 152.4
+    },
+    {
+     "name": "finalefatale",
+     "at": 171.4
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 176.3
+    },
+    {
+     "name": "aetherlettingproteans",
+     "at": 190.4,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "aetherletting",
+     "at": 192.4,
+     "entry": true
+    },
+    {
+     "name": "aetherletting",
+     "at": 194.4,
+     "entry": true
+    },
+    {
+     "name": "aetherletting",
+     "at": 196.4,
+     "entry": true
+    },
+    {
+     "name": "aetherletting",
+     "at": 198.4,
+     "entry": true
+    },
+    {
+     "name": "hardcore",
+     "at": 219.8
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 224.8
+    },
+    {
+     "name": "vampstomp",
+     "at": 229.9
+    },
+    {
+     "name": "blastbeat",
+     "at": 234.0
+    },
+    {
+     "name": "blastbeat",
+     "at": 237.4
+    },
+    {
+     "name": "blastbeat",
+     "at": 241.0
+    },
+    {
+     "name": "halfmoon",
+     "at": 246.0
+    },
+    {
+     "name": "halfmoon",
+     "at": 249.0
+    },
+    {
+     "name": "brutalrainx",
+     "at": 256.2
+    },
+    {
+     "name": "insatiablethirst",
+     "at": 270.2
+    },
+    {
+     "name": "sadisticscreech",
+     "at": 283.2
+    },
+    {
+     "name": "plummet",
+     "at": 295.4,
+     "entry": true
+    },
+    {
+     "name": "killervoice",
+     "at": 304.4
+    },
+    {
+     "name": "plummet",
+     "at": 313.5,
+     "entry": true
+    },
+    {
+     "name": "killervoice",
+     "at": 322.5
+    },
+    {
+     "name": "plummet",
+     "at": 331.6,
+     "entry": true
+    }
+   ]
   },
   {
    "name": "Hell in a Cell",
    "clock": "fight",
+   "start": 365,
    "hits": [
     {
      "name": "Crowd Kill + Fatale",
@@ -632,7 +872,251 @@
      "info": []
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "sadisticscreech",
+     "at": 355.6
+    },
+    {
+     "name": "crowdkill",
+     "at": 370.0
+    },
+    {
+     "name": "finalefatale",
+     "at": 389.0
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 393.9
+    },
+    {
+     "name": "hellinacell",
+     "at": 398.9,
+     "entry": true
+    },
+    {
+     "name": "bloodybondage",
+     "at": 400.1,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicspread",
+     "at": 408.0,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicamp",
+     "at": 408.0,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicamp",
+     "at": 415.1,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicspread",
+     "at": 415.1,
+     "entry": true
+    },
+    {
+     "name": "hellinacell",
+     "at": 421.2,
+     "entry": true
+    },
+    {
+     "name": "bloodybondage",
+     "at": 422.4,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicamp",
+     "at": 430.3,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicspread",
+     "at": 430.3,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicspread",
+     "at": 437.4,
+     "entry": true
+    },
+    {
+     "name": "ultrasonicamp",
+     "at": 437.4,
+     "entry": true
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 442.5
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 446.5
+    },
+    {
+     "name": "undeaddeathmatch",
+     "at": 451.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "bloodybondage",
+     "at": 452.7,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 459.8,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 462.2,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 464.5,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 466.8,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 469.1,
+     "entry": true
+    },
+    {
+     "name": "breakdowndrop",
+     "at": 472.0,
+     "entry": true
+    },
+    {
+     "name": "breakwingbeat",
+     "at": 472.0,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 477.8,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 480.2,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 482.5,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 484.8,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 487.1,
+     "entry": true
+    },
+    {
+     "name": "breakdowndrop",
+     "at": 490.1,
+     "entry": true
+    },
+    {
+     "name": "breakwingbeat",
+     "at": 490.1,
+     "entry": true
+    },
+    {
+     "name": "brutalrainx",
+     "at": 497.0
+    },
+    {
+     "name": "vampstomp",
+     "at": 510.0
+    },
+    {
+     "name": "blastbeat",
+     "at": 514.1
+    },
+    {
+     "name": "blastbeat",
+     "at": 517.5
+    },
+    {
+     "name": "blastbeat",
+     "at": 521.1
+    },
+    {
+     "name": "halfmoon",
+     "at": 526.1
+    },
+    {
+     "name": "halfmoon",
+     "at": 529.1
+    },
+    {
+     "name": "hardcore",
+     "at": 536.2
+    },
+    {
+     "name": "pulpingpulse",
+     "at": 541.2
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 548.4,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 550.8,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 553.1,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 555.4,
+     "entry": true
+    },
+    {
+     "name": "sanguinescratch",
+     "at": 557.7,
+     "entry": true
+    },
+    {
+     "name": "insatiablethirst",
+     "at": 568.5
+    },
+    {
+     "name": "crowdkill",
+     "at": 582.6
+    },
+    {
+     "name": "finalefatale",
+     "at": 601.3
+    },
+    {
+     "name": "finalefatale",
+     "at": 602.4
+    }
+   ]
   }
  ]
 }

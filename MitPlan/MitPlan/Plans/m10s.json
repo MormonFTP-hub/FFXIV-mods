@@ -76,6 +76,7 @@
   {
    "name": "1 on 1",
    "clock": "fight",
+   "start": 0,
    "hits": [
     {
      "name": "Prepull",
@@ -156,6 +157,10 @@
       {
        "name": "Cutback Blaze",
        "at": 59.0
+      },
+      {
+       "name": "Pyrotation",
+       "at": 65.5
       }
      ]
     },
@@ -183,11 +188,106 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "hotimpact",
+     "at": 11.7
+    },
+    {
+     "name": "flamefloater",
+     "at": 27.4
+    },
+    {
+     "name": "flamefloater",
+     "at": 30.6
+    },
+    {
+     "name": "flamefloater",
+     "at": 33.9
+    },
+    {
+     "name": "flamefloater",
+     "at": 37.0
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 49.4
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 50.2
+    },
+    {
+     "name": "cutbackblaze",
+     "at": 59.0
+    },
+    {
+     "name": "cutbackblaze",
+     "at": 59.9
+    },
+    {
+     "name": "pyrotation",
+     "at": 65.5
+    },
+    {
+     "name": "diversdare",
+     "at": 79.6
+    },
+    {
+     "name": "sickswell",
+     "at": 94.0
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 103.1
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 112.1
+    },
+    {
+     "name": "sickswell",
+     "at": 112.1
+    },
+    {
+     "name": "awesomesplash",
+     "at": 114.6
+    },
+    {
+     "name": "awesomeslab",
+     "at": 114.6
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 123.0
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 123.0
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 125.6
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 125.6
+    },
+    {
+     "name": "deepimpact",
+     "at": 133.4
+    },
+    {
+     "name": "deepimpact",
+     "at": 133.6
+    }
+   ]
   },
   {
    "name": "Insane Air",
    "clock": "fight",
+   "start": 152,
    "hits": [
     {
      "name": "Xtreme Spectacular",
@@ -286,11 +386,154 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "diversdare",
+     "at": 140.6
+    },
+    {
+     "name": "xtremespectacular",
+     "at": 158.0,
+     "entry": true
+    },
+    {
+     "name": "xtremespectacular",
+     "at": 165.8,
+     "entry": true
+    },
+    {
+     "name": "xtremespectacular",
+     "at": 166.8,
+     "entry": true
+    },
+    {
+     "name": "xtremespectacular",
+     "at": 170.7,
+     "entry": true
+    },
+    {
+     "name": "epicbrotherhood",
+     "at": 175.9
+    },
+    {
+     "name": "insaneair",
+     "at": 191.7
+    },
+    {
+     "name": "blastingsnap",
+     "at": 193.6
+    },
+    {
+     "name": "plungingsnap",
+     "at": 193.6
+    },
+    {
+     "name": "reentryblast",
+     "at": 193.6
+    },
+    {
+     "name": "blastingsnap",
+     "at": 194.7
+    },
+    {
+     "name": "plungingsnap",
+     "at": 194.7
+    },
+    {
+     "name": "reentryblast",
+     "at": 194.7
+    },
+    {
+     "name": "insaneair",
+     "at": 199.0
+    },
+    {
+     "name": "blastingsnap",
+     "at": 200.9
+    },
+    {
+     "name": "plungingsnap",
+     "at": 200.9
+    },
+    {
+     "name": "reentryblast",
+     "at": 200.9
+    },
+    {
+     "name": "blastingsnap",
+     "at": 202.0
+    },
+    {
+     "name": "plungingsnap",
+     "at": 202.0
+    },
+    {
+     "name": "reentryblast",
+     "at": 202.0
+    },
+    {
+     "name": "insaneair",
+     "at": 206.3
+    },
+    {
+     "name": "blastingsnap",
+     "at": 208.2
+    },
+    {
+     "name": "plungingsnap",
+     "at": 208.2
+    },
+    {
+     "name": "reentryblast",
+     "at": 208.2
+    },
+    {
+     "name": "blastingsnap",
+     "at": 209.3
+    },
+    {
+     "name": "plungingsnap",
+     "at": 209.3
+    },
+    {
+     "name": "reentryblast",
+     "at": 209.3
+    },
+    {
+     "name": "insaneair",
+     "at": 213.6
+    },
+    {
+     "name": "blastingsnap",
+     "at": 215.5
+    },
+    {
+     "name": "plungingsnap",
+     "at": 215.5
+    },
+    {
+     "name": "reentryblast",
+     "at": 215.5
+    },
+    {
+     "name": "blastingsnap",
+     "at": 216.6
+    },
+    {
+     "name": "plungingsnap",
+     "at": 216.6
+    },
+    {
+     "name": "reentryblast",
+     "at": 216.6
+    }
+   ]
   },
   {
    "name": "Snaking",
    "clock": "fight",
+   "start": 238,
    "hits": [
     {
      "name": "Fire/Water Snaking",
@@ -404,11 +647,157 @@
      ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "diversdare",
+     "at": 226.2
+    },
+    {
+     "name": "epicbrotherhood",
+     "at": 234.8
+    },
+    {
+     "name": "firesnaking",
+     "at": 241.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "watersnaking",
+     "at": 241.9,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 253.9
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 254.5
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 255.1
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 255.1
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 257.7
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 257.7
+    },
+    {
+     "name": "sickswell",
+     "at": 259.7
+    },
+    {
+     "name": "hotimpact",
+     "at": 265.9
+    },
+    {
+     "name": "deepvarial",
+     "at": 272.3,
+     "entry": true
+    },
+    {
+     "name": "deepvarial",
+     "at": 273.9,
+     "entry": true
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 276.5
+    },
+    {
+     "name": "awesomesplash",
+     "at": 277.1
+    },
+    {
+     "name": "awesomeslab",
+     "at": 277.1
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 277.2
+    },
+    {
+     "name": "hotaerial",
+     "at": 285.6,
+     "entry": true
+    },
+    {
+     "name": "hotaerial",
+     "at": 287.1,
+     "entry": true
+    },
+    {
+     "name": "hotaerial",
+     "at": 289.1,
+     "entry": true
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 289.2
+    },
+    {
+     "name": "hotaerial",
+     "at": 291.2,
+     "entry": true
+    },
+    {
+     "name": "hotaerial",
+     "at": 293.3,
+     "entry": true
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 298.4
+    },
+    {
+     "name": "sickswell",
+     "at": 298.4
+    },
+    {
+     "name": "awesomesplash",
+     "at": 300.8
+    },
+    {
+     "name": "awesomeslab",
+     "at": 300.8
+    },
+    {
+     "name": "cutbackblaze",
+     "at": 303.4
+    },
+    {
+     "name": "cutbackblaze",
+     "at": 304.3
+    },
+    {
+     "name": "deepimpact",
+     "at": 310.3
+    },
+    {
+     "name": "deepimpact",
+     "at": 310.6
+    },
+    {
+     "name": "diversdare",
+     "at": 317.6
+    }
+   ]
   },
   {
    "name": "Xtreme Waves",
    "clock": "fight",
+   "start": 328,
    "hits": [
     {
      "name": "Deep Aerial",
@@ -496,11 +885,98 @@
      }
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "epicbrotherhood",
+     "at": 323.8
+    },
+    {
+     "name": "deepaerial",
+     "at": 325.9,
+     "entry": true
+    },
+    {
+     "name": "deepaerial",
+     "at": 331.9,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 342.8,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 344.9,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 351.2,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 353.3,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 359.7,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 361.8,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 368.2,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 370.3,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 376.7,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 378.8,
+     "entry": true
+    },
+    {
+     "name": "xtremewave",
+     "at": 385.4,
+     "entry": true
+    },
+    {
+     "name": "scathingsteam",
+     "at": 387.5,
+     "entry": true
+    },
+    {
+     "name": "impactzone",
+     "at": 390.1,
+     "entry": true
+    },
+    {
+     "name": "impactzone",
+     "at": 390.3,
+     "entry": true
+    }
+   ]
   },
   {
    "name": "Tubular",
    "clock": "fight",
+   "start": 409,
    "hits": [
     {
      "name": "Arena Split",
@@ -613,14 +1089,86 @@
         ]
        }
       ]
-     }
+     },
+     "tSync": 448.9,
+     "syncAt": [
+      {
+       "name": "Divers' Dare",
+       "at": 448.9
+      }
+     ]
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "diversdare",
+     "at": 395.8
+    },
+    {
+     "name": "epicbrotherhood",
+     "at": 401.9
+    },
+    {
+     "name": "sickswell",
+     "at": 407.0
+    },
+    {
+     "name": "flamefloater",
+     "at": 411.4
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 420.7
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 426.3
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 426.3
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 428.9
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 428.9
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 432.9
+    },
+    {
+     "name": "freakypyrotation",
+     "at": 433.8,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "sickesttakeoff",
+     "at": 441.8
+    },
+    {
+     "name": "sickswell",
+     "at": 441.8
+    },
+    {
+     "name": "awesomeslab",
+     "at": 444.2
+    },
+    {
+     "name": "diversdare",
+     "at": 448.9
+    }
+   ]
   },
   {
    "name": "Xtreme Snaking",
    "clock": "fight",
+   "start": 463,
    "hits": [
     {
      "name": "Extreme Snaking",
@@ -763,7 +1311,14 @@
         ]
        }
       ]
-     }
+     },
+     "tSync": 549.4,
+     "syncAt": [
+      {
+       "name": "Pyrotation",
+       "at": 549.4
+      }
+     ]
     },
     {
      "name": "Enrage 1",
@@ -810,7 +1365,211 @@
      "info": []
     }
    ],
-   "notes": []
+   "notes": [],
+   "syncs": [
+    {
+     "name": "epicbrotherhood",
+     "at": 457.4
+    },
+    {
+     "name": "xtremefiresnaking",
+     "at": 464.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "xtremewatersnaking",
+     "at": 464.5,
+     "entry": true,
+     "anchor": true
+    },
+    {
+     "name": "insaneair",
+     "at": 479.4
+    },
+    {
+     "name": "blastingsnap",
+     "at": 481.3
+    },
+    {
+     "name": "plungingsnap",
+     "at": 481.3
+    },
+    {
+     "name": "reentryblast",
+     "at": 481.3
+    },
+    {
+     "name": "blastingsnap",
+     "at": 482.4
+    },
+    {
+     "name": "plungingsnap",
+     "at": 482.4
+    },
+    {
+     "name": "reentryblast",
+     "at": 482.4
+    },
+    {
+     "name": "bailout",
+     "at": 484.0,
+     "entry": true
+    },
+    {
+     "name": "insaneair",
+     "at": 489.9
+    },
+    {
+     "name": "blastingsnap",
+     "at": 491.8
+    },
+    {
+     "name": "plungingsnap",
+     "at": 491.8
+    },
+    {
+     "name": "reentryblast",
+     "at": 491.8
+    },
+    {
+     "name": "blastingsnap",
+     "at": 492.9
+    },
+    {
+     "name": "plungingsnap",
+     "at": 492.9
+    },
+    {
+     "name": "reentryblast",
+     "at": 492.9
+    },
+    {
+     "name": "bailout",
+     "at": 494.5,
+     "entry": true
+    },
+    {
+     "name": "insaneair",
+     "at": 500.3
+    },
+    {
+     "name": "blastingsnap",
+     "at": 502.2
+    },
+    {
+     "name": "plungingsnap",
+     "at": 502.2
+    },
+    {
+     "name": "reentryblast",
+     "at": 502.2
+    },
+    {
+     "name": "blastingsnap",
+     "at": 503.3
+    },
+    {
+     "name": "plungingsnap",
+     "at": 503.3
+    },
+    {
+     "name": "reentryblast",
+     "at": 503.3
+    },
+    {
+     "name": "bailout",
+     "at": 505.0,
+     "entry": true
+    },
+    {
+     "name": "insaneair",
+     "at": 510.7
+    },
+    {
+     "name": "blastingsnap",
+     "at": 512.6
+    },
+    {
+     "name": "plungingsnap",
+     "at": 512.6
+    },
+    {
+     "name": "reentryblast",
+     "at": 512.6
+    },
+    {
+     "name": "blastingsnap",
+     "at": 513.7
+    },
+    {
+     "name": "plungingsnap",
+     "at": 513.7
+    },
+    {
+     "name": "reentryblast",
+     "at": 513.7
+    },
+    {
+     "name": "bailout",
+     "at": 515.1,
+     "entry": true
+    },
+    {
+     "name": "diversdare",
+     "at": 523.1
+    },
+    {
+     "name": "epicbrotherhood",
+     "at": 529.3
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 539.2
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 539.2
+    },
+    {
+     "name": "alleyoopinferno",
+     "at": 541.4
+    },
+    {
+     "name": "reversealleyoop",
+     "at": 541.8
+    },
+    {
+     "name": "alleyoopdoubledip",
+     "at": 541.8
+    },
+    {
+     "name": "pyrotation",
+     "at": 549.4
+    },
+    {
+     "name": "deepimpact",
+     "at": 550.3
+    },
+    {
+     "name": "deepimpact",
+     "at": 550.5
+    },
+    {
+     "name": "diversdare",
+     "at": 563.6
+    },
+    {
+     "name": "diversdare",
+     "at": 572.7
+    },
+    {
+     "name": "overthefalls",
+     "at": 593.5,
+     "entry": true,
+     "anchor": true
+    }
+   ]
   }
  ]
 }

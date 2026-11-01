@@ -564,9 +564,14 @@
       };
       // (The last baiters come straight in from the edge after their lock, clear of their lines and of the tank.)
       const comeIn = (spot, away) => {
-        const av = lockedAt(tLock[2], tC3);
-        for (let k = 0.9; k > 0; k -= 0.02) { const q = mul(spot, k); if (av.every(h => !inside(h, q, 1.8)) && away.every(f => dist(f, q) > 6.6)) return r2(q); }
-        return r2(mul(spot, 0.3));
+        const av = lockedAt(tLock[2], tC3), cand = [];
+        const clear = (q) => { for (let k = 0; k <= 10; k++) { const m = add(spot, mul(sub(q, spot), k / 10)); if (away.some(f => dist(f, m) < 6.2)) return false; } return true; };
+        for (let x = -19; x <= 19; x += 0.5) for (let y = -19; y <= 19; y += 0.5) {
+          const q = [x, y];
+          if (FLOOR(q) && av.every(h => !inside(h, q, 1.8)) && away.every(f => dist(f, q) > 6.6) && clear(q)) cand.push(q);
+        }
+        cand.sort((u, v) => dist(u, spot) - dist(v, spot));
+        return r2(cand[0] || mul(spot, 0.3));
       };
       if (spreadQ) {
         quoteSpots[b2] = r2(b2In);
@@ -728,7 +733,7 @@
       dive(tMD, at(th + 90 * sgn, 22), th + 90 * sgn + 180, 12, 'Megaflare Dive', tMD - 4);
       // Towers (the MT nearest Nael, H1 nearest the stack, M1 and R1 the sides); the other four stack and walk
       // Hypernova's puddles round the far edge.
-      const tw = { MT: at(th + 45, 9), M1: at(th - 45, 9), H1: at(th + 135, 9), R1: at(th - 135, 9) };
+      const tw = { MT: at(th + 45, 9), M1: at(th - 45, 9), H1: at(th + 120, 8), R1: at(th - 120, 8) };
       for (const [s, p] of Object.entries(tw)) tower(tTw, r2(p), 3, 1, [s], 'Megaflare (tower)', { tell: tTw - 8 });
       const grp = ['OT', 'H2', 'M2', 'R2'], carrier = pick(grp), g0 = at(th + 140, 18.5), g3 = at(th + 220, 18.5), path2 = [0, 1, 2, 3].map(k => add(g0, mul(sub(g3, g0), k / 3)));
       for (let k = 0; k < 4; k++) hz({ t: tHy + 1.55 * k, tell: tHy + 1.55 * k - 2.4, shape: 'circle', from: 'target', targets: [carrier], r: 5, snap: 1.4, dmg: 0.9, name: 'Hypernova' });
