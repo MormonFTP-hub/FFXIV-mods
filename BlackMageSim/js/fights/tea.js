@@ -101,10 +101,14 @@
   // Phase 4: Perfect Alexander in the middle (hitbox 10.8): everyone near its edge, the tanks north.
   const UP4 = { MT: [0, 12.6], OT: [2.6, 12.3], M1: [-4.2, -11.6], M2: [4.2, -11.6], H1: [-8.6, -10], H2: [8.6, -10], R1: [-11.6, -6.4], R2: [11.6, -6.4] };
 
-  // The arena's looks (map.js toggles models named _aN_...): phase 1's chamber (looks a1 and a3), the hall the rest
-  // of the fight is fought in (a4 to a8, with a1's pipes and fires).
-  const LOOK1 = ['a1', 'a3'];
-  const LOOK2 = ['a1_flam1', 'a1_pip03', 'a1_pip10', 'a1_pip11', 'a1_shaf3', 'a4', 'a5', 'a6', 'a7', 'a8'];
+  // The arena's looks, the game's four boss layers (each model's tag after its zone prefix): phase 1's chamber (the
+  // common a1 and a3 parts, its own p1 room), phase 2's hall (a4 to a8 with a1's pipes and fires, the p2 floor and
+  // shell), phase 3's sky platform (p3, the clouds and sky ac), phase 4's clockwork heaven (p4, the great Alexander
+  // round it, al).
+  const LOOK1 = ['a1', 'a3', 'p1'];
+  const LOOK2 = ['a1_flam1', 'a1_pip03', 'a1_pip10', 'a1_pip11', 'a1_shaf3', 'a4', 'a5', 'a6', 'a7', 'a8', 'p2'];
+  const LOOK3 = ['p3', 'ac'];
+  const LOOK4 = ['p4', 'al'];
 
   // When each phase gives way (the pushes' seconds; the timeline's own lines otherwise).
   const P1_END = 194.8;          // 5.2 s before the first Hawk Blaster (BossMod's P2Intermission)
@@ -115,7 +119,11 @@
   function plan(events, strat) {
     const P = { start: Object.assign({}, UP1), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [],
       boss: [{ t: 0, at: [0, 0] }], hitbox: [{ t: 0, r: 3.5 }], face: [], form: [], others: [], untargetable: [],
-      looks: [{ t: 0, show: LOOK1 }, { t: P1_END, show: LOOK2 }], arena: CIRCLE };
+      looks: [{ t: 0, show: LOOK1 }, { t: P1_END, show: LOOK2 }, { t: P2_END, show: LOOK3 }, { t: P4_FROM - 8, show: LOOK4 }], arena: CIRCLE,
+      // The target's name by phase (with the forms).
+      names: [{ t: 0, name: 'Living Liquid' }, { t: P1_END, name: 'Cruise Chaser' }, { t: P2_START - 3, name: 'Brute Justice and Cruise Chaser' },
+        { t: P2_END, name: 'Alexander Prime' }, { t: 705.6, name: 'Cruise Chaser and Brute Justice' }, { t: 731.7, name: 'Brute Justice and Alexander Prime' },
+        { t: 771.9, name: 'Alexander' }, { t: P4_FROM - 8, name: 'Perfect Alexander' }] };
     let id = 0;
     const hz = (o) => { const h = Object.assign({ id: ++id, react: 3 }, o); P.hazards.push(h); return h; };
     const pref = (t, spots) => P.prefs.push({ t, spots });

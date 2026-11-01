@@ -101,26 +101,30 @@
   const clumpAt = (slots, c, o) => place(slots.map(s => [s, c, 0.55]), Object.assign({ m: 0 }, o));
   // A clump clear of `avoid`: its middle picked first (with room for the clump), so it never splits round a shape.
   const clumpSafe = (slots, c, avoid, m) => clumpAt(slots, place([['c', c]], { avoid, m: (m || 1.5) + 1.3 }).c, { avoid, m: m || 1.5 });
-  // n points (pairwise >= sep) satisfying ok, nearest `anchor` first; `keep`: points to stay sep from too.
+  // n points (pairwise >= sep) satisfying ok, as near `anchor` as a search finds (nearest first, on a 1-yalm grid);
+  // `keep`: points to stay sep from too.
   function spreadIn(n, ok, anchor, sep, keep) {
     const cand = [];
     for (let x = -19.5; x <= 19.5; x += 0.5) for (let y = -19.5; y <= 19.5; y += 0.5) if (ok([x, y])) cand.push([x, y]);
     cand.sort((a, b) => dist(a, anchor) - dist(b, anchor));
-    const have = (keep || []).slice(), out = [];
-    const near = cand.filter(c => have.every(p => dist(p, c) >= sep)).slice(0, 600), got = [];
-    let steps = 0;
-    const dfs = (i) => {
-      if (got.length === n) return true;
-      for (let j = i; j < near.length && steps < 200000; j++) {
-        steps++;
-        if (got.every(p => dist(p, near[j]) >= sep)) { got.push(near[j]); if (dfs(j + 1)) return true; got.pop(); }
-      }
-      return false;
-    };
-    if (dfs(0)) return got.map(r2);
-    for (const c of cand) {
+    const have = (keep || []).slice(), free = cand.filter(c => have.every(p => dist(p, c) >= sep));
+    for (const g of [0.5, 1, 2]) {
+      const near = free.filter(c => Math.abs((c[0] / g) % 1) < 1e-6 && Math.abs((c[1] / g) % 1) < 1e-6).slice(0, 500), got = [];
+      let steps = 0;
+      const dfs = (i) => {
+        if (got.length === n) return true;
+        for (let j = i; j < near.length && steps < 150000; j++) {
+          steps++;
+          if (got.every(p => dist(p, near[j]) >= sep)) { got.push(near[j]); if (dfs(j + 1)) return true; got.pop(); }
+        }
+        return false;
+      };
+      if (dfs(0)) return got.map(r2);
+    }
+    const out = [];
+    for (const c of free) {
       if (out.length >= n) break;
-      if (have.every(p => dist(p, c) >= sep)) { out.push(r2(c)); have.push(c); }
+      if (out.every(p => dist(p, c) >= sep)) out.push(r2(c));
     }
     while (out.length < n) out.push(r2(anchor));
     return out;
@@ -196,7 +200,8 @@
     fixEvents(events);
     const st = STRATS[strat] || STRATS.kefkabin;
     const P = { start: Object.assign({}, UP1), prefs: [], hazards: [], checks: [], calls: [], marks: [], labels: new Map(), debuffs: [],
-      boss: [{ t: 0, at: [0, 0] }], hitbox: [{ t: 0, r: 6 }], looks: [], form: [], others: [], untargetable: [], face: [], arena: [{ t: 0, ...ARENA }] };
+      boss: [{ t: 0, at: [0, 0] }], hitbox: [{ t: 0, r: 6 }], looks: [], form: [], others: [], untargetable: [], face: [], arena: [{ t: 0, ...ARENA }],
+      names: [{ t: 0, name: 'Kefka' }] };
     let id = 0;
     const X = {
       P, st, events,
@@ -223,6 +228,7 @@
     P.form.sort((a, b) => a.t - b.t);
     P.hitbox.sort((a, b) => a.t - b.t);
     P.boss.sort((a, b) => a.t - b.t);
+    P.names.sort((a, b) => a.t - b.t);
     return P;
   }
 
@@ -503,6 +509,7 @@
   function phase2(X) {
     const { P, hz, pref, call, debuff, E, EA, tOf, castOf, label, raid, spreads, stack } = X;
     P.form.push({ t: 197.4, model: 'none' }, { t: 304, model: 'god' }, { t: 480.4, model: 'none' });
+    P.names.push({ t: 297.4, name: 'Forsaken Kefka' }, { t: 486, name: 'Kefka' });
     P.hitbox.push({ t: 297, r: 6.02 });
     P.looks.push({ t: 297.4, show: LOOK.p2 });
     P.untargetable.push([480.1, 529.5]);
@@ -629,6 +636,7 @@
     const { P, st, hz, pref, call, debuff, mark, E, EA, tOf, castOf, label, raid, spreads, stack } = X;
     const aero = E('Aero III Assault', 482, 495);
     P.form.push({ t: 485.9, model: null }, { t: 527, model: 'chaos' }, { t: 841.5, model: 'none' });
+    P.names.push({ t: 527, name: 'Chaos' });
     P.hitbox.push({ t: 486, r: 6 });
     P.looks.push({ t: 486.0, show: LOOK.p3 });
     const KEF = [0, 18.5];
@@ -922,6 +930,7 @@
     if (!ks) return;
     const t0 = ks.t;
     P.form.push({ t: castOf(ks, 5) - 10, model: null }, { t: 1116, model: 'none' });
+    P.names.push({ t: castOf(ks, 5) - 10, name: 'Kefka' });
     P.hitbox.push({ t: castOf(ks, 5) - 10, r: 6 });
     P.boss.push({ t: castOf(ks, 5) - 10, at: [0, 0] });
     P.looks.push({ t: castOf(ks, 5) - 12, show: LOOK.p4 });
@@ -1058,6 +1067,7 @@
     const tIn = castOf(ur, 4) - 6.5;
     // Ultima Kefka's own model is empty in this client: God Kefka's stands in.
     P.form.push({ t: tIn, model: 'god' });
+    P.names.push({ t: uu ? uu.t + 1 : tIn, name: 'Ultima Kefka' });
     P.hitbox.push({ t: tIn, r: 8.01 });
     P.looks.push({ t: uu ? uu.t + 1 : tIn - 20, show: LOOK.p5 });
     pref(uu ? uu.t + 0.5 : tIn, UP5);
