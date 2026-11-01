@@ -1168,13 +1168,11 @@
   B.FIGHT_SCRIPTS = B.FIGHT_SCRIPTS || {};
   B.FIGHT_SCRIPTS.chaotic = {
     // FFLogs' max HP in a kill (report ha4c9WMqF3J2b7yQ, and nmyZKRaVNkd3cYth the same): the Cloud of Darkness
-    // 294,173,558, for all twenty-four (kills take 500-590 s: some 530,000 a second, the eight's share a third). The sim
-    // counts only the eight's damage (the Shadows' goes to her anyway, at Evaporation), so a pull here runs on to the
-    // enrage with her a little over half. No push stands in for the other sixteen: every phase change in this fight is
-    // on the clock (cactbot's timeline has no HP-pushed phases), so the timeline plays out as in the game whatever the
-    // damage, and a push could only skip mechanics, not make up the missing damage. Clearing it takes the whole
-    // alliance; the party's job here is the mechanics.
-    hp: 294173558,
+    // 294,173,558, for all twenty-four (kills take 500-590 s: some 530,000 a second). The sim counts only your
+    // party's damage, so it has your party's share: a third, 98,057,853, which your eight take down about when an
+    // alliance takes her whole. Every phase change in this fight is on the clock (cactbot's timeline has no HP-pushed
+    // phases), so the timeline plays out as in the game whatever the damage.
+    hp: 98057853,
     pushes: [],
     defaultStrat: 'raidplan',
     strats: {

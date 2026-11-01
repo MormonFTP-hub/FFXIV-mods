@@ -12,6 +12,7 @@
     "boss": "Cloud of Darkness",
     "timeline": "07-dt/alliance/cloud_of_darkness_chaotic",
     "branches": "main",
+    "take": ["flare-branch-2"],
     "hitbox": 23.0,
     "model": {
       "kind": "monster", "id": 130, "body": 2, "variant": 1, "scale": 2.0,

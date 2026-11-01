@@ -450,12 +450,13 @@ def boss_out(pack, m, events):
     return out
 
 
-def main_line(text):
+def main_line(text, take=()):
     """cactbot's timeline read along its main line, as (second, name, rest) rows. Where it branches (a jump into
     labelled blocks, one per way the fight can go), its own generic lines ("A/B?") stand for the branches; the blocks
     are passed over and the fight goes on from the label where they all rejoin, moved up to follow on (the gap each
     jump skips taken out). Found by following the first branch: each jump adds its gap, until a label past every
-    block jumped into. Backward jumps (the enrage loop) and the reset end the reading."""
+    block jumped into. A jump to a label named in `take` (the zone's "take": the script's choice of branch) is simply
+    followed. Backward jumps (the enrage loop) and the reset end the reading."""
     rows = []
     for line in text.splitlines():
         m = re.match(r'^(\d+(?:\.\d+)?)\s+label\s+"([^"]+)"', line)
@@ -483,6 +484,11 @@ def main_line(text):
         """Every place the rows at row k's second jump to (cactbot lists one line per way it can go)."""
         return {target(x) for x in range(k, len(rows)) if rows[x][0] == rows[k][0] and target(x) is not None}
 
+    def resyncs(k):
+        """A line cactbot re-syncs to from anywhere (a wide window): a phase starting whichever way it came."""
+        w = re.search(r"\bwindow\s+(\d+(?:\.\d+)?)", rows[k][3])
+        return bool(w) and float(w.group(1)) >= 60
+
     out, i, offset, first = [], 0, 0.0, None      # first: the main line's latest branch point (its row, where it can go)
     while i < len(rows):
         t, kind, name, rest = rows[i]
@@ -507,10 +513,8 @@ def main_line(text):
                         on = False
                     k += 1
                     continue
-                # Past the last block, a line cactbot re-syncs to from anywhere (a wide window: a phase starting
-                # whichever way it came) is where they all go on, if no label is.
-                w = re.search(r"\bwindow\s+(\d+(?:\.\d+)?)", rows[k][3])
-                if k > max(known) and w and float(w.group(1)) >= 60:
+                # Past the last block, a re-sync line is where they all go on, if no label is.
+                if k > max(known) and resyncs(k):
                     resync = True
                     break
                 tg = target(k)
@@ -523,6 +527,8 @@ def main_line(text):
                     known |= jumps_at(k)
                     k += 1
                     continue
+                if on:                              # the jump's own line happens, then the way goes on where it says
+                    way.append((round(rows[k][0] - offset - gap, 1), rows[k][2], rows[k][3]))
                 group = jumps_at(k)
                 known |= group
                 alts |= group - {tg}
@@ -540,14 +546,23 @@ def main_line(text):
             since = round(rows[src][0] - offset, 1)
             generic = [r for r in out if since < r[0] < rejoin and not r[1].startswith("--")]
             if not generic or generic[-1][0] < rejoin - 10:
-                out = [r for r in out if r[0] <= since] + [r for r in way if r[0] < rejoin]
+                out = [r for r in out if r[0] <= since] + [r for r in way if r[0] <= rejoin]     # its last line jumps to it
+            else:       # generic lines running past the rejoin stood in for what follows it: the real lines now
+                out = [r for r in out if r[0] < rejoin]
             offset += gap
-            # The main line's generic lines running past the rejoin stood in for what follows it: the real lines now.
-            out = [r for r in out if r[0] < rejoin]
             first = None
             i = k if resync else k + 1               # a re-sync line is itself the next event
             continue
-        if target(i) is not None and (first is None or rows[first[0]][0] != t):
+        tg = target(i)
+        # A lone forcejump is no branch, only the fight's clock skipping on: what follows its label comes next. (Unless
+        # a re-sync line lies between: then the label is the way the fight fails, an enrage kept past the end.)
+        skips = tg is not None and "forcejump" in rest and jumps_at(i) == {tg} and not any(resyncs(x) for x in range(i + 1, tg))
+        if tg is not None and first is None and (skips or rows[tg][2] in take):
+            out.append((round(t - offset, 1), name, rest))
+            offset += rows[tg][0] - t
+            i = tg + 1
+            continue
+        if tg is not None and (first is None or rows[first[0]][0] != t):
             first = (i, jumps_at(i))
         out.append((round(t - offset, 1), name, rest))
         i += 1
@@ -571,7 +586,7 @@ def timeline(f):
     # as their scripts were written against.
     text = cache.read_text(encoding="utf-8")
     if f.get("branches") == "main":
-        rows = [(t, name.rstrip("?"), rest) for t, name, rest in main_line(text)]
+        rows = [(t, name.rstrip("?"), rest) for t, name, rest in main_line(text, f.get("take", ()))]
     else:
         rows = []
         for line in text.splitlines():
