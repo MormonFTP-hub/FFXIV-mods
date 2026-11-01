@@ -381,7 +381,9 @@
         const busy = cuts.filter(c => c.t > outFor[m.t] - 0.01 && c.t < m.t && spots[c.s]);
         pref(outFor[m.t], Object.fromEntries(Object.entries(spots).filter(([s]) => !busy.some(c => c.s === s))));
         for (const c of busy) pref(c.t + 0.05, { [c.s]: spots[c.s] });
-        pref(m.t + 0.2, MID(outer));
+        // Back in while pairs are still to come; after the last, stay out of the way (a little in).
+        const more = blasts.some(b => !b.mid && b.t > m.t);
+        pref(m.t + 0.2, more ? MID(outer) : Object.fromEntries(outer.map(s => [s, r2(mul(spots[s], 0.75))])));
         if (after) pref(after.t + 0.7, MID([after.s]));
       }
       call(P1_END + 4, 'Limit Cut: wait in the middle; out for the middle blasts', { dur: 6 });
@@ -663,7 +665,7 @@
       const TETH = [[-12.7, 12.7], [12.7, 12.7], [-18, 0], [18, 0]];
       const BOX = [[-5, -8], [5, -8], [-5, -18], [5, -18]];
       const spots = Object.assign(assign(teth, TETH), assign(free, BOX));
-      const tCr = T('Judgment Crystal + True Heart', t0, t0 + 25, 558.2), tOrb = tCr + 7.5;
+      const tCr = T('Judgment Crystal + True Heart', t0, t0 + 25, 558.2), tOrb = tCr + 3.5;
       pref(t0 + 4.5, spots);
       for (const s of teth) { call(t0 + 7, 'Plasmasphere tethered to YOU: wait at your edge spot', { slot: s, alert: true, dur: 6 }); debuff(s, null, 'Plasmasphere', 'wait for your orb at the edge', t0 + 7, tOrb); }
       for (const s of free) call(t0 + 7, 'Judgment Crystal: your corner of the box (south)', { slot: s, alert: true, dur: 6 });
@@ -735,7 +737,7 @@
     if (wf) {
       const t0 = wf.t, AP = [0, -16.5];
       bossTo(t0 + 2.5, AP, 2); face(t0 + 2.5, 0);
-      const bjWest = Math.random() < 0.5, BJ = bjWest ? [-12, 12] : [12, 12];
+      const wNW = Math.random() < 0.5, bjWest = !wNW, BJ = bjWest ? [-12, 12] : [12, 12];
       bjTo(t0 + 2.5, BJ); ccTo(t0 + 2.5, bjWest ? [12, 12] : [-12, 12]);
       const order = shuffle(S), num = Object.fromEntries(order.map((s, i) => [s, i + 1])), who = (n) => order[n - 1];
       const tLC = T('Limit Cut', t0, t0 + 15, 637.7);
@@ -745,7 +747,7 @@
       }
       // Odds wait west, evens east (clear of the Chakrams' lines, north-south and east-west through the middle, and
       // of Sacrament's cross from Alexander Prime, south); each cut steps out to the north wall on its side.
-      const WC = [-14, 8], EC = [14, 8], CUT = { odd: [-9.3, 16.1], even: [9.3, 16.1] };
+      const WC = [-13.6, 10], EC = [13.6, 10], CUT = { odd: [-8.4, 16.6], even: [8.4, 16.6] };
       const homeOf = (n) => (n % 2 ? WC : EC);
       const homes = () => Object.assign(clump(S.filter(s => num[s] % 2), WC, { sep: 0.7 }), clump(S.filter(s => !(num[s] % 2)), EC, { sep: 0.7 }));
       pref(t0 + 3, homes());
@@ -754,7 +756,7 @@
       hz({ t: tChak, tell: tChak - 6, shape: 'line', at: [bjWest ? -30 : 30, 0], deg: bjWest ? 90 : 270, len: 60, w: 6, dmg: 1.2, name: 'Eye of the Chakram' });
       // The wormholes (north-west and south-east, or north-east and south-west), soaked 5/6, 7/8, 1/2 as they
       // shrink (8, 6, 3 yalms); the south one's second soak from its north edge, clear of Sacrament.
-      const wNW = Math.random() < 0.5, WH = wNW ? [r2(at(315, 16.5)), r2(at(135, 16.5))] : [r2(at(45, 16.5)), r2(at(225, 16.5))];
+      const WH = wNW ? [r2(at(315, 16.5)), r2(at(135, 16.5))] : [r2(at(45, 16.5)), r2(at(225, 16.5))];
       const westW = WH.find(p => p[0] < 0), eastW = WH.find(p => p[0] > 0);
       const rep = ['Repentance 1', 'Repentance 2', 'Repentance 3'].map(n => E(n, t0 + 20, t0 + 40));
       const soak = [[5, 6], [7, 8], [1, 2]], RAD = [8, 6, 3], GO = [6, 3.4, 3.4];
@@ -876,7 +878,7 @@
     const optical = (t, kind, tell) => {
       if (kind === 'spread') {
         const pts = fan(180, 13.6, 8, 32);
-        pref(tell + 0.3, assign(['R1', 'M1', 'H1', 'MT', 'OT', 'H2', 'M2', 'R2'], pts));
+        pref(tell + 0.3, assign(['R2', 'M2', 'H2', 'OT', 'MT', 'H1', 'M1', 'R1'], pts));
         spreads(t, S, 6, 'Individual Reprobation', { tell });
       } else {
         const a = ['MT', 'H1', 'M1', 'R1'], b = ['OT', 'H2', 'M2', 'R2'];
