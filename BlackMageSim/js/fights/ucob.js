@@ -555,18 +555,30 @@
       b2In = b2In || place([['x', mul(b2Spot, 0.42)]], { avoid, m: 1.6 }).x;
       const got = [b2In];
       for (const p of pts) { if (got.length >= rest.length) break; if (got.every(q => dist(q, p) > 5.4)) got.push(p); }
-      const far = (from) => r2(pts.filter(p => from.every(q => dist(p, q) > 8.6)).sort((a, b) => dist(a, [-5, 0]) - dist(b, [-5, 0]))[0] || [-15, 8]);
+      const far = (from) => {
+        for (const d of [8.6, 7.8, 7, 6.4]) { const p = pts.filter(q => from.every(f => dist(q, f) > d))[0]; if (p) return r2(p); }
+        return r2(pts.slice().sort((a, b) => Math.min(...from.map(f => dist(b, f))) - Math.min(...from.map(f => dist(a, f))))[0] || [-15, 8]);
+      };
+      // (The last baiters come straight in from the edge after their lock, clear of their lines and of the tank.)
+      const comeIn = (spot, away) => {
+        const av = lockedAt(tLock[2], tC3);
+        for (let k = 0.9; k > 0; k -= 0.02) { const q = mul(spot, k); if (av.every(h => !inside(h, q, 1.8)) && away.every(f => dist(f, q) > 6.6)) return r2(q); }
+        return r2(mul(spot, 0.3));
+      };
       if (spreadQ) {
         quoteSpots[b2] = r2(b2In);
         rest.filter(s => s !== b2).forEach((s, i) => { quoteSpots[s] = r2(got[i + 1] || [-5, 0]); });
         for (const s of rest) role(t, tdd + 0.1, s, quoteSpots[s]);
-        role(tSpread + 0.05, tdd + 0.1, 'MT', far(rest.filter(s => s !== 'MT').map(s => quoteSpots[s]).concat(keep)));
+        const mtFar = far(rest.filter(s => s !== 'MT').map(s => quoteSpots[s]).concat(keep));
+        role(tSpread + 0.05, tdd + 0.1, 'MT', mtFar);
+        sets[2].forEach((s, i) => role(tLock[2] + 0.05, tdd + 0.1, s, comeIn(keep[i], [mtFar])));
       } else {
         const mid = rest.filter(s => s !== 'MT'), c = place([['x', [-5, 0]]], { avoid, m: 1.8 }).x;
         Object.assign(quoteSpots, clumpAt(mid, c));
         quoteSpots.MT = far([c].concat(keep));
         for (const s of rest) role(t, tBeam2 + 0.1, s, quoteSpots[s]);
         role(tDive2 + 0.1, tBeam2 + 0.1, 'MT', c);
+        sets[2].forEach((s, i) => role(tLock[2] + 0.05, tBeam2 + 0.1, s, comeIn(keep[i], [c])));
       }
     }
     if (spreadQ) {
@@ -578,7 +590,7 @@
       stack(tBeam2, pick(mid), 4, mid.length, 8, 'Thermionic Beam', { tell: tDive2 - 2 });
     }
     const tDiveNael = spreadQ ? tdd : tDive2;
-    P.form.push({ t: tLock[0] + 1, model: 'none' }, { t: tDiveNael, model: 'nael' });
+    P.form.push({ t: tSpread - 2.5, model: 'none' }, { t: tDiveNael, model: 'nael' });
     bossAt(tDiveNael, p2.roles.filter(r => r.slot === 'MT' && r.t0 <= tDiveNael - 0.2 && tDiveNael - 0.2 < r.t1).pop().p);
     bossAt(tDiveNael + 1, [0, 0], 3);
     // The baiters back in after their lock, away from the lines coming.
@@ -624,7 +636,7 @@
     label(E('Megaflare Enrage', 610, 625), 'Megaflare (enrage: Nael must be down)');
     // The dragons, out from Bahamut's Favor till their dives.
     DRAGONS.forEach((m, k) => {
-      const d = drAt(k), j = diveOf.findIndex(x => x.includes(drOrder.find(q => q === d) || d)), tGone = j >= 0 ? tHit[j] + 0.6 : tC3 + 0.6;
+      const d = drAt(k), j = diveOf.findIndex(x => x.some(q => dist(q, d) < 0.1)), tGone = j >= 0 ? tHit[j] + 0.6 : tC3 + 0.6;
       other(m, [{ t: 0, at: d }], [[tFav, tGone]], [0, 0]);
     });
 
@@ -715,7 +727,7 @@
       // Hypernova's puddles round the far edge.
       const tw = { MT: at(th + 45, 9), M1: at(th - 45, 9), H1: at(th + 135, 9), R1: at(th - 135, 9) };
       for (const [s, p] of Object.entries(tw)) tower(tTw, r2(p), 3, 1, [s], 'Megaflare (tower)', { tell: tTw - 8 });
-      const grp = ['OT', 'H2', 'M2', 'R2'], carrier = pick(grp), g0 = at(th + 140, 17.5), g3 = at(th + 220, 17.5), path2 = [0, 1, 2, 3].map(k => add(g0, mul(sub(g3, g0), k / 3)));
+      const grp = ['OT', 'H2', 'M2', 'R2'], carrier = pick(grp), g0 = at(th + 140, 18.5), g3 = at(th + 220, 18.5), path2 = [0, 1, 2, 3].map(k => add(g0, mul(sub(g3, g0), k / 3)));
       for (let k = 0; k < 4; k++) hz({ t: tHy + 1.55 * k, tell: tHy + 1.55 * k - 2.4, shape: 'circle', from: 'target', targets: [carrier], r: 5, snap: 1.4, dmg: 0.9, name: 'Hypernova' });
       stack(tSt, carrier, 5, 4, 4, 'Megaflare (stack)', { tell: tSt - 5 });
       pref(tMD + 0.1, Object.assign(Object.fromEntries(Object.entries(tw).map(([s, p]) => [s, r2(p)])), clumpAt(grp, path2[0])));
@@ -1036,24 +1048,40 @@
   // Bahamut is Bahamut Prime again, healed to full. Each pool is scaled to the bots' (Dawntrail) damage so its phase
   // takes as long as in those kills at ~220,000 party DPS: P1 133 s, P2 127 s, P4 110 s, P5 175 s.
   const HP1 = 29.35e6, HP2 = 27.9e6, HP4T = 11.98e6, HP4N = 12.22e6, HP5 = 38.5e6;
+  // The phases' seconds on the loaded timeline (P3 from Seventh Umbral Era, the adds phase from its Bahamut's Favor,
+  // P5 from Teraflare), so the windows and pushes follow however the timeline is read.
+  let phaseCache = null;
+  const phases = () => {
+    const f = B.app && B.app.fight, ev = f && f.key === 'ucob' ? f.events : null;
+    if (phaseCache && phaseCache.ev === ev) return phaseCache;
+    const find = (name, t0, t1, d) => { const e = ev && ev.find(x => x.name === name && x.t >= t0 && x.t <= t1); return e ? e.t : d; };
+    phaseCache = { ev, p3: find('Seventh Umbral Era', 640, 670, 655.3) - 5.3, p4: find("Bahamut's Favor", 980, 1010, 994.4) - 3.6, p5: find('Teraflare', 1150, 1260, 1212.9) - 16.2 };
+    return phaseCache;
+  };
   B.FIGHT_SCRIPTS.ucob = {
     hp: HP1 + HP2 + HP4T + HP5,
     // Bahamut Prime in P3 (time-locked; his HP there is a window that takes all the damage, as it never reaches the
     // later pools; it shows his HP falling to about half, as in the kills), and Nael beside Twintania in the adds
     // phase (half the damage, so the two fall together).
-    adds: [
-      { from: 650, to: 990.8, hp: 77e6, share: 1, name: 'Bahamut Prime' },
-      { from: 990.8, to: 1196.7, hp: HP4N, share: HP4N / (HP4N + HP4T), name: 'Nael deus Darnus' },
-    ],
+    get adds() {
+      const ph = phases();
+      return [
+        { from: ph.p3, to: ph.p4, hp: 77e6, share: 1, name: 'Bahamut Prime' },
+        { from: ph.p4, to: ph.p5, hp: HP4N, share: HP4N / (HP4N + HP4T), name: 'Nael deus Darnus' },
+      ];
+    },
     // Twintania's 75% and 45% (each block's loop runs till then) and her death, Nael's death (not before the
     // divebombs are over), and the adds phase over (Twintania with Nael) to Teraflare.
-    pushes: [
-      { from: 0, to: 100, dealt: HP1 * 0.25, name: 'Twintania at 75%' },
-      { from: 100, to: 200, dealt: HP1 * 0.55, name: 'Twintania at 45%' },
-      { from: 200, to: 400, dealt: HP1, name: 'Twintania falls' },
-      { from: 562.5, to: 650, dealt: HP1 + HP2, name: 'Nael deus Darnus falls' },
-      { from: 990.8, to: 1196.7, dealt: HP1 + HP2 + HP4T, name: 'Twintania and Nael fall' },
-    ],
+    get pushes() {
+      const ph = phases();
+      return [
+        { from: 0, to: 100, dealt: HP1 * 0.25, name: 'Twintania at 75%' },
+        { from: 100, to: 200, dealt: HP1 * 0.55, name: 'Twintania at 45%' },
+        { from: 200, to: 400, dealt: HP1, name: 'Twintania falls' },
+        { from: 562.5, to: ph.p3, dealt: HP1 + HP2, name: 'Nael deus Darnus falls' },
+        { from: ph.p4, to: ph.p5, dealt: HP1 + HP2 + HP4T, name: 'Twintania and Nael fall' },
+      ];
+    },
     defaultStrat: 'naur',
     strats: {
       naur: { label: 'NAUR (NA)' },

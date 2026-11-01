@@ -99,12 +99,25 @@
     return out;
   }
   const clumpAt = (slots, c, o) => place(slots.map(s => [s, c, 0.55]), Object.assign({ m: 0 }, o));
+  // A clump clear of `avoid`: its middle picked first (with room for the clump), so it never splits round a shape.
+  const clumpSafe = (slots, c, avoid, m) => clumpAt(slots, place([['c', c]], { avoid, m: (m || 1.5) + 1.3 }).c, { avoid, m: m || 1.5 });
   // n points (pairwise >= sep) satisfying ok, nearest `anchor` first; `keep`: points to stay sep from too.
   function spreadIn(n, ok, anchor, sep, keep) {
     const cand = [];
     for (let x = -19.5; x <= 19.5; x += 0.5) for (let y = -19.5; y <= 19.5; y += 0.5) if (ok([x, y])) cand.push([x, y]);
     cand.sort((a, b) => dist(a, anchor) - dist(b, anchor));
     const have = (keep || []).slice(), out = [];
+    const near = cand.filter(c => have.every(p => dist(p, c) >= sep)).slice(0, 600), got = [];
+    let steps = 0;
+    const dfs = (i) => {
+      if (got.length === n) return true;
+      for (let j = i; j < near.length && steps < 200000; j++) {
+        steps++;
+        if (got.every(p => dist(p, near[j]) >= sep)) { got.push(near[j]); if (dfs(j + 1)) return true; got.pop(); }
+      }
+      return false;
+    };
+    if (dfs(0)) return got.map(r2);
     for (const c of cand) {
       if (out.length >= n) break;
       if (have.every(p => dist(p, c) >= sep)) { out.push(r2(c)); have.push(c); }
@@ -262,7 +275,7 @@
       const okSide = (sx) => (p) => floorR(1.2)(p) && p[0] * sx > 1.5 && cones.every(c => !inside(c, p, 1.6));
       const fin = {};
       for (const [grp, q, sx] of [[SUP, qW, -1], [DPS, qE, 1]]) {
-        const pts = fireStack ? Object.values(clumpAt(grp, Q[q], { avoid: cones, m: 1.6 })) : spreadIn(4, okSide(sx), Q[q], 6.2);
+        const pts = fireStack ? Object.values(clumpSafe(grp, Q[q], cones, 1.6)) : spreadIn(4, okSide(sx), Q[q], 6.2);
         // The tethered one takes the spot lowest down (its knockback start, 13 north of it, must be on the floor).
         pts.sort((a, b) => a[1] - b[1]);
         const tt = grp.find(s => teth.includes(s)), rest = grp.filter(s => s !== tt);
@@ -317,7 +330,7 @@
           Object.assign(cspots, assign(mates, along(H, [-sx, 0], 3.25, 0.6, 3)));
           debuff(h, 'doubleTroubleTrap', 'Double-trouble Trap', 'stack: your partners are thrown 14 away', dc ? dc.t : tW + 2, tC);
           call(dc ? dc.t : tW + 2, 'Confetti on YOU: stack 9 out', { slot: h, alert: true, dur: 4 });
-          hz({ t: tC, tell: tC - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, snap: 2, name: 'Double-trouble Trap' });
+          hz({ t: tC, tell: tC - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, name: 'Double-trouble Trap' });
           stack(tC, [h], 6, 4, 'Double-trouble Trap', { tell: tC - 5 });
         });
         pref(tEx + 0.1, cspots);
@@ -355,17 +368,18 @@
       const p1 = safe === 'NWSE' ? [-4, 11.5] : [4, 11.5], p2 = [0, -12];
       const puddle = (p, t0, tgt) => {
         stack(t0, [tgt], 5, 6, 'Gravitas', { tell: t0 - 5, max: 8 });
-        hz({ t: t0 + 1.8, tell: t0, shape: 'circle', from: 'target', targets: [tgt], snap: 1.8, r: 5, dmg: 0.9, lasts: tPop - 0.6 - (t0 + 1.8), tick: 2.5, tickDmg: 0.9, name: 'Gravitas (puddle)' });
+        hz({ t: t0 + 1.8, tell: t0, shape: 'circle', from: 'target', targets: [tgt], snap: 1.8, r: 5, dmg: 0.9, lasts: tPop - 0.6 - (t0 + 1.8), tick: 4, tickDmg: 0.9, name: 'Gravitas (puddle)' });
         call(t0 - 5, `Stack ${p[1] > 0 ? 'north' : 'south'}: the puddle drops there`, { dur: 4 });
       };
-      pref(cB + 0.2, clumpAt(S, p1, { avoid: cones, m: 1.6 }));
+      pref(cB + 0.2, clumpSafe(S, p1, cones, 1.6));
       puddle(p1, tG1, pick(S));
       // Vitrophyre: everyone spreads (5), G1 west and G2 east, 10.5 or more from the puddles.
       const vitro = (t0, t, puddles, ay) => {
-        const spots = {};
+        const spots = {}, done = [];
         [[G1, -1], [G2, 1]].forEach(([grp, sx]) => {
           const ok = (p) => floorR(1.2)(p) && p[0] * sx > 2 && puddles.every(q => dist(p, q) > 10.6);
-          const pts = spreadIn(4, ok, [8 * sx, ay], 6.2).sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+          const pts = spreadIn(4, ok, [8 * sx, ay], 6.2, done).sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+          done.push(...pts);
           Object.assign(spots, assign(grp.slice().sort((a, b) => 'MTOTM1M2'.includes(b) - 'MTOTM1M2'.includes(a)), pts));
         });
         pref(t0 + 0.1, spots);
@@ -387,7 +401,7 @@
       // Gravitas 2 south, Vitrophyre 2 clear of both puddles.
       pref(tW1 + 0.1, clumpAt(S, p2));
       puddle(p2, tG2, pick(S));
-      vitro(tG2, tV2, [p1, p2], 0);
+      vitro(tG2, tV2, [p1, p2], -3);
       // The second half room: supports north, DPS south, on the safe side.
       const half2 = pick([-1, 1]), sx2 = -half2;
       hz(Object.assign({ t: tW2, tell: tW2 - 5.2, dmg: 1.3, name: 'Gravitational Wave' }, halfShape(half2)));
@@ -404,7 +418,7 @@
         cs2[h] = H;
         Object.assign(cs2, assign(mates, along(H, u, 1.2, 0.6, 3)));
         debuff(h, 'doubleTroubleTrap', 'Double-trouble Trap', 'stack: throws your partners into the puddle', tW2 - 6, tC2);
-        hz({ t: tC2, tell: tC2 - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, snap: 2, name: 'Double-trouble Trap' });
+        hz({ t: tC2, tell: tC2 - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, name: 'Double-trouble Trap' });
         stack(tC2, [h], 6, 4, 'Double-trouble Trap', { tell: tC2 - 5 });
       });
       pref(tW2 + 0.1, cs2);
@@ -447,7 +461,7 @@
         cs3[h] = H;
         Object.assign(cs3, assign(mates, along(H, u, 1.2, 0.6, 3)));
         debuff(h, 'doubleTroubleTrap', 'Double-trouble Trap', 'stack: throws your partners across', a2, tC3);
-        hz({ t: tC3, tell: tC3 - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, snap: 2, name: 'Double-trouble Trap' });
+        hz({ t: tC3, tell: tC3 - 5, effect: 'knockback', from: 'target', targets: [h], shape: 'circle', r: 6, dist: 14, name: 'Double-trouble Trap' });
         stack(tC3, [h], 6, 4, 'Double-trouble Trap', { tell: tC3 - 5 });
       });
       pref(a2 + 0.1, cs3);
@@ -467,7 +481,7 @@
         bands.forEach(c => hz(Object.assign({ t: tM, tell: castOf(mm3, 5), dmg: 1.2, name: 'Thrumming Thunder III' }, c)));
         let spots;
         if (fireStack) {
-          spots = Object.assign(place(SUP.map(s => [s, st.stack3.sup, 0.55]), { avoid: bands, m: 1.6, sep: 0.55 }), place(DPS.map(s => [s, st.stack3.dps, 0.55]), { avoid: bands, m: 1.6, sep: 0.55 }));
+          spots = Object.assign(clumpSafe(SUP, st.stack3.sup, bands, 1.6), clumpSafe(DPS, st.stack3.dps, bands, 1.6));
           stack(tF, [pick(SUP)], 6, 4, 'Flagrant Fire III', { tell: castOf(mm3, 5) });
           stack(tF, [pick(DPS)], 6, 4, 'Flagrant Fire III', { tell: castOf(mm3, 5) });
         } else {
@@ -736,7 +750,7 @@
         X.P.prefs.push({ t: vw.t + 0.6, spots: { [s]: spot } });
       });
       label(numAt, 'Cyclone (limit cut numbers out)');
-      pref(vw.t + 15.9, UP2);
+      pref(tOf(charges[7], vw.t + 16.2) + 0.3, UP2);
       // Exdeath's busters again (Decisive Battle between).
       const t2 = E('Thunder III 1', vw.t + 18, vw.t + 25), t3 = E('Thunder III 1', vw.t + 35, vw.t + 42);
       EXP.push({ t: vw.t + 16, at: [0, -6], move: 2 });
@@ -800,8 +814,8 @@
         const slams = big.map((c, i) => ({ t: hits[i], shape: { shape: 'circle', at: c, r: 13 } }));
         if (llT && llT[0] > castOf(cb, 5) - 3 && llT[1] < tS) {
           const by = (a, b) => slams.filter(x => x.t > a && x.t <= b + 0.6).map(x => x.shape);
-          moments.push({ t: castOf(cb, 5) + 0.2, end: llT[0], duty: {}, shapes: llC[0].concat(by(0, llT[0])) });
-          moments.push({ t: llT[0] + 0.05, end: llT[1], duty: {}, shapes: llC[1].concat(by(llT[0], llT[1])) });
+          moments.push({ t: castOf(cb, 5) + 0.2, end: llT[0], duty: {}, anchors: duty, shapes: llC[0].concat(by(0, llT[0])) });
+          moments.push({ t: llT[0] + 0.05, end: llT[1], duty: {}, anchors: duty, shapes: llC[1].concat(by(llT[0], llT[1])) });
           moments.push({ t: llT[1] + 0.1, end: tS, duty, shapes: [] });
         } else moments.push({ t: castOf(cb, 5) + 0.2, end: tS, duty, shapes: [] });
       }
@@ -818,13 +832,13 @@
           while (used.includes(s)) s = queue[++qi % 8];
           qi++;
           used.push(s);
-          const spot = ring(HB[j] + 55, 14);
+          const spot = ring(HB[j] + 25, 17.5);
           duty[s] = spot;
           shapes.push({ shape: 'line', at: HOLE[j], deg: brg(sub(spot, HOLE[j])), len: 40, w: 6 });
           hz({ t: e.t, tell: e.t - 7, effect: 'bait', shape: 'line', from: HOLE[j], aim: 'target', targets: [s], len: 40, w: 6, dmg: 0.9, own: 0.25, tether: HOLE[j], name: 'Nothingness' });
-          call(e.t - 7, `Black hole tether: point it clockwise (${dirName(HB[j] + 55)})`, { slot: s, alert: true, dur: 4 });
+          call(e.t - 7, `Black hole tether: point it clockwise along the edge (${dirName(HB[j] + 25)})`, { slot: s, alert: true, dur: 4 });
         }
-        moments.push({ t: e.t - 6.8, end: e.t, duty, shapes });
+        moments.push({ t: i ? Math.max(e.t - 6.8, shots[i - 1].t + 0.15) : e.t - 6.8, end: e.t, duty, shapes });
       });
       HOLE.forEach((p, j) => {
         const first = shots[j === 0 ? 0 : j === 1 ? 1 : 2];
@@ -857,8 +871,8 @@
           for (const [s, p] of Object.entries(m.duty)) if (!duty[s]) duty[s] = p;
           shapes.push(...m.shapes);
         }
-        const free = S.filter(s => !duty[s]);
-        pref(T, Object.assign({}, duty, place(free.map(s => [s, BASE[s], 0.8]), { avoid: shapes, m: 1.5, keep: Object.values(duty), keepSep: 1.2 })));
+        const free = S.filter(s => !duty[s]), anc = (live.find(m => m.anchors) || {}).anchors || BASE;
+        pref(T, Object.assign({}, duty, place(free.map(s => [s, anc[s] || BASE[s], 0.8]), { avoid: shapes, m: 1.5, keep: Object.values(duty), keepSep: 1.2 })));
       }
     }
 
@@ -1087,18 +1101,21 @@
       const h1 = tOf(E('Holy', mo.t, mo.t + 2), mo.t + 0.9), h2 = tOf(E('Holy', h1 + 1, h1 + 5), h1 + 3.2), h3 = tOf(E('Chaotic Holy', h2, h2 + 5), h2 + 3.5);
       const hit = shuffle(NONTANK).slice(0, 3), close = NONTANK.filter(s => !hit.includes(s));
       const spread = { [flareT]: ring(340, 12), [holyT]: ring(20, 12) };
-      NONTANK.forEach((s, i) => { spread[s] = ring(70 + 44 * i, 10.5); });
+      const bear = {};
+      shuffle(NONTANK).forEach((s, i) => { bear[s] = 100 + 32 * i; spread[s] = ring(bear[s], 10.5); });
       pref(castOf(mo, 5) + 0.2, spread);
       spreads(h1, [flareT, holyT].concat(hit), 5, 'Holy', { tell: castOf(mo, 5) });
       debuff(flareT, 'surpriseFlare', 'Surprise Flare', 'go to the north wall', h1, h3);
       debuff(holyT, 'surpriseHoly', 'Surprise Holy', 'the party stacks on you', h1, h3);
       // Second hit: the three not hit close (9.5 out, apart), the hit three out, the tanks together north.
-      const p2 = Object.assign(clumpAt(TANKS, [0, 13.5]), assign(close, [ring(140, 9.5), ring(180, 9.5), ring(220, 9.5)]), assign(hit, [ring(110, 17), ring(250, 17), ring(180, 17)]));
+      const p2 = clumpAt(TANKS, [0, 13.5]);
+      for (const s of close) p2[s] = ring(bear[s], 10);
+      for (const s of hit) p2[s] = ring(bear[s], 17);
       pref(h1 + 0.1, p2);
       spreads(h2, { nearest: 3 }, 5, 'Holy', { tell: h1 });
       stack(h2, [flareT], 5, 2, 'Chaotic Flare', { tell: h1, dmg: 0.5 });
       // Third: Flare to the north wall, everyone else stacked on the Holy tank south.
-      pref(h2 + 0.1, Object.assign({ [flareT]: [0, 19.2] }, clumpAt(S.filter(s => s !== flareT), [0, -11.5])));
+      pref(h2 + 0.1, Object.assign({ [flareT]: [0, 19.2] }, clumpAt(S.filter(s => s !== flareT), [0, -9.5])));
       spreads(h3, [flareT], 25, 'Flare Diffusion', { tell: h2, own: 0.4 });
       stack(h3, [holyT], 6, 7, 'Chaotic Holy', { tell: h2 });
       call(castOf(mo, 5), `Maddening Orchestra: spread; ${flareT} takes Flare north`, { alert: true, dur: 5 });
@@ -1162,8 +1179,8 @@
       const se = E('Stray Entropy', sa.t, sa.t + 25);
       if (se) {
         const lastNW = (sets.length - 1) % 2 === 0, d = lastNW ? 135 : 45;
-        const pts = [-16.1, -11.5, -6.9, -2.3, 2.3, 6.9, 11.5, 16.1].map((x, i) => r2(add(at(d, x), at(d + 90, i % 2 ? 1.5 : -1.5))));
-        pref(se.t - 3.5, assign(shuffle(S), pts));
+        const pts = [-14.7, -10.5, -6.3, -2.1, 2.1, 6.3, 10.5, 14.7].map((x, i) => r2(add(at(d, x), at(d + 90, i % 2 ? 1.8 : -1.8))));
+        pref(Math.min(se.t - 3.5, sets[sets.length - 2] + 3.1), assign(shuffle(S), pts));
         spreads(se.t, S, 5, 'Stray Entropy', { tell: castOf(se, 5) });
         call(se.t - 3.5, 'Stray Entropy: spread along the diagonal', { alert: true, dur: 4 });
         pref(se.t + 0.3, UP5);

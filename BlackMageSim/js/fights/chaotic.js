@@ -409,11 +409,24 @@
     };
     // Razing-volley Particle Beam: the four waves at ts; a cell safe from the first two, then one from the last two.
     const razingSet = (ts, prev, next, nextBy = 3.5) => {
-      const A = pick(['SE', 'SW']), Bq = A === 'SE' ? 'SW' : 'SE';
-      const l = shuffle([0, 1, 2, 3, 4]), m = shuffle([0, 1, 2, 3, 4]);
+      // (A pattern the party couldn't get through to what comes next is drawn again: the game's never leave the
+      // only cell for the last lanes out of reach.)
+      let A, Bq, l, m, best = null;
+      for (let tries = 0; tries < 30 && (!best || best.cost >= 100); tries++) {
+        A = pick(['SE', 'SW']); Bq = A === 'SE' ? 'SW' : 'SE';
+        l = shuffle([0, 1, 2, 3, 4]); m = shuffle([0, 1, 2, 3, 4]);
+        best = cellsFor(A, l, m, prev, next, nextBy);
+      }
       const waves = [[A, l.slice(0, 2)], [Bq, m.slice(0, 2)], [A, l.slice(2)], [Bq, m.slice(2)]];
       waves.forEach(([edge, lanes], k) => lanes.forEach(i => hz({ t: ts[k], tell: ts[k] - (k < 2 ? 5 : 3.5), shape: 'line', at: CLOUD[edge][i], deg: edge === 'SE' ? 315 : 45,
         len: 45, w: 8, dmg: 1.2, name: 'Razing-volley Particle Beam', aimed: true })));
+      if (!best) { P.notes.push(`Razing-volley at ${ts[0]}: no cells`); best = { a: [0, 12], b: [0, 12] }; }
+      pref(ts[0] - 4.6, clusterAt(best.a, S, 1.4));
+      pref(ts[1] + 0.05, clusterAt(best.b, S, 1.4));
+      call(ts[0] - 5, 'Criss-cross: a safe cell, then the cell the first lanes hit', { alert: true, dur: 5 });
+      return best.b;
+    };
+    const cellsFor = (A, l, m, prev, next, nextBy) => {
       const seHit = (A === 'SE' ? l : m).slice(0, 2), swHit = (A === 'SE' ? m : l).slice(0, 2);
       const mid = (i, j) => { const c = cellMid(i, j); return i + j >= 6 ? [c[0], 33] : c; };
       const c1 = [], c2 = [];
@@ -428,11 +441,7 @@
         const cost = dist(prev, a) * 0.6 + dist(a, b) + dist(b, next) * 0.6 + (dist(b, next) > 5.4 * nextBy - 1 ? 100 : 0);
         if (!best || cost < best.cost) best = { cost, a, b };
       }
-      if (!best) { P.notes.push(`Razing-volley at ${ts[0]}: no cells`); best = { a: c1[0] || [0, 12], b: c2[0] || [0, 12] }; }
-      pref(ts[0] - 4.6, clusterAt(best.a, S, 1.4));
-      pref(ts[1] + 0.05, clusterAt(best.b, S, 1.4));
-      call(ts[0] - 5, 'Criss-cross: a safe cell, then the cell the first lanes hit', { alert: true, dur: 5 });
-      return best.b;
+      return best;
     };
     // Grim Embrace: every player's hand, four waves after the first cast; the target steps out of its own.
     const hands = [];
@@ -573,12 +582,12 @@
 
     // --- The Third Art of Darkness: each Shadow's three mechanics ---
     const NAMES = { L: 'left cleave', R: 'right cleave', stack: 'pair stacks', spread: 'proteans' };
-    const proteanSpots = (side, ours, t) => {
+    const proteanSpots = (side, ours, t, keepOff = 0) => {
       const A = ADD[side], bs = ours.map(s => platBrg(side, specOf(s, t).pd, st.rel));
       const place = (s, b) => {
         const ok = okFor(s, t, t + 1, 0.9);
         let best = null;
-        for (let d = 4.6; d <= 11.5; d += 0.1) { const p = add(A, at(b, d)); if (ok(p)) best = p; else if (best) break; }
+        for (let d = 4.6; d <= 11.5; d += 0.1) { const p = add(A, at(b, d)); if (ok(p) && Math.abs(p[0]) >= keepOff) best = p; else if (best) break; }
         return best || add(A, at(b, 4.6));
       };
       let pts = [];
@@ -627,7 +636,7 @@
       }
       moveAll(tFrom, spots);
     };
-    const thirdArt = (ev, tTow) => {
+    const thirdArt = (ev, tTow, keepOff = 0) => {
       const tA = ev.t, times = [tA + 0.55, tA + 3.55, tA + 6.55];
       const text = [];
       let last = tA + 7;
@@ -657,10 +666,10 @@
           if (k === 'L' || k === 'R') {
             const cone = { shape: 'cone', at: ADD[side], deg: deg360(FACE[side] + (k === 'L' ? -90 : 90)), half: 90, r: 15 };
             hz(Object.assign({ t: tk, tell, dmg: 1.2, name: `The Art of Darkness (${NAMES[k]})`, aimed: true }, cone));
-            spots = placeAll(from, Object.fromEntries(ours.map(s => [s, prefAt(s, from)])), (s, p) => !inside(cone, p, 1.5) && dist(p, ADD[side]) > 2.5, 1.0, tk + 0.5);
+            spots = placeAll(from, Object.fromEntries(ours.map(s => [s, prefAt(s, from)])), (s, p) => !inside(cone, p, 1.5) && dist(p, ADD[side]) > 2.5 && Math.abs(p[0]) >= keepOff, 1.0, tk + 0.5);
           } else if (k === 'stack') spots = stacks(side, ours, tk, tell);
           else {
-            spots = proteanSpots(side, ours, tk);
+            spots = proteanSpots(side, ours, tk, keepOff);
             hz({ t: tk, tell, effect: 'bait', shape: 'line', from: ADD[side], aim: 'target', targets: ours.slice(), len: 22, w: 5, snap: 0.3, dmg: 1.0, own: 0.3, name: 'Hyper-focused Particle Beam' });
           }
           moveAll(from, spots, tk + 0.5);
@@ -907,7 +916,8 @@
     // Excruciate: the Shadows' tank busters on our platform tanks.
     const exc = E('Excruciate', tDel2, tFl2);
     if (exc) {
-      const t0 = piv ? piv.t + 0.6 + 6.5 + 0.1 : exc.t - 5;
+      const tl = laserEvs.map(e => e.t).find(x => piv && x > piv.t && x < exc.t);
+      const t0 = Math.max(piv ? piv.t + 0.6 + 6.5 + 0.1 : exc.t - 5, tl ? tl + 0.1 : 0);
       const spots = idle(t0, null, exc.t + 0.3), tanks = [];
       for (const side of ['W', 'E']) {
         const tank = sideSlots(side, exc.t).find(isTank);
@@ -962,7 +972,7 @@
     if (tas[1]) {
       const tEnd = tas[1].t + 6.55 + 0.45;
       if (dds[1]) burnRing(dds[1].t + 1.1, tEnd + 2.5);
-      thirdArt(tas[1], null);
+      thirdArt(tas[1], null, 22.0);
       backToIdle(tEnd + 0.1, S.filter(s => isPlat(zoneOf(s, tEnd))));
     }
     const fe = events.find(e => e.name === 'Feint Particle Beam' && e.kind === 'cast' && e.t > tSwap);
@@ -970,12 +980,18 @@
       const tLock = fe.t + 1, tF0 = tLock + 4, n = 18, every = 0.36, tEnd = tF0 + every * (n - 1);
       label(fe, 'Feint Particle Beam (a chaser in each tile corner)');
       // Spot s held at `spot` (walked there) from t0 till t1, then back to where it stands idle.
+      const taEnd = tas[1] ? tas[1].t + 7.1 : 0, clearOfShadows = (p) => ['W', 'E'].every(sd => dist(p, ADD[sd]) > 16.8);
+      const cleaves = P.hazards.filter(h => /^The Art of Darkness/.test(h.name) && h.t >= tLock && h.t <= taEnd + 0.5);
+      // Spot s held at `spot` (walked there) from t0 till t1, then back toward its idle spot (clear of the Shadows'
+      // cleaves till the Third Art is over).
       const hold = (s, t0, t1, spot) => {
-        for (const e of P.prefs) if (e.t > t0 && e.t < t1 && e.spots[s]) { e.spots = Object.assign({}, e.spots); delete e.spots[s]; }
+        for (const e of P.prefs) if (e.t > t0 && e.t < taEnd + 0.3 && e.spots[s]) { e.spots = Object.assign({}, e.spots); delete e.spots[s]; }
         moveTo(s, t0, spot, t1);
-        moveTo(s, t1, idleOf(s, t1));
+        if (t1 < taEnd) {
+          moveTo(s, t1, findSpot(idleOf(s, t1), (p) => okFor(s, t1, taEnd)(p) && clearOfShadows(p)), taEnd);
+          moveTo(s, taEnd + 0.2, idleOf(s, taEnd + 0.2));
+        } else moveTo(s, t1, idleOf(s, t1));
       };
-      const clearOfShadows = (p) => ['W', 'E'].every(sd => dist(p, ADD[sd]) > 16.8);
       for (const [c, g] of Object.entries(tileGroups(fe.t))) {
         const [sx, sy] = CORNER[c];
         const want = Object.fromEntries(g.map(s => [s, cellAt(c, tileOf(s, fe.t).ch || tileOf(s, fe.t).id)]));
@@ -997,13 +1013,18 @@
             if (k) { const goal = fn(tk - 0.3), v = sub(goal, prev), d = len(v); prev = d > 2.1 ? add(prev, mul(v, 2.1 / d)) : goal; }
             trail.push(prev);
             worst = Math.min(worst, dist(fn(tk), prev) + 1);
+            if (k === n - 1) for (const h of cleaves) if (inside(h, h.t <= tEnd + 0.3 ? fn(h.t) : fn(tEnd), 1.6)) worst = -10;
             for (const o of S) if (o !== x) worst = Math.min(worst, dist(mates.includes(o) ? spots[o] : prefAt(o, tk), prev));
           }
           if (!chosen || worst > chosen.worst) chosen = { fn, worst, trail };
         }
         hold(x, fe.t - 5, tLock, start);
+        for (const e of P.prefs) if (e.t > tLock && e.t < taEnd + 0.3 && e.spots[x]) { e.spots = Object.assign({}, e.spots); delete e.spots[x]; }
         pref(tLock + 0.05, { [x]: chosen.fn });
-        moveTo(x, tEnd + 0.3, idleOf(x, tEnd + 0.3));
+        if (tEnd + 0.3 < taEnd) {
+          moveTo(x, tEnd + 0.3, findSpot(chosen.fn(tEnd), (p) => okFor(x, tEnd, taEnd)(p) && clearOfShadows(p)), taEnd);
+          moveTo(x, taEnd + 0.2, idleOf(x, taEnd + 0.2));
+        } else moveTo(x, tEnd + 0.3, idleOf(x, tEnd + 0.3));
         for (const m of mates) {
           if (chosen.trail.some(q => dist(q, spots[m]) < 4.8)) spots[m] = findSpot(spots[m], (p) => okFor(m, tLock, tEnd)(p) && clearOfShadows(p) && chosen.trail.every(q => dist(q, p) >= 4.8)
             && Object.entries(spots).every(([o, q]) => o === m || o === x || dist(q, p) >= 1.2), 20);
@@ -1087,11 +1108,14 @@
     // ===== Placed last, once every spot is known =====
     // The lasers: each away from the middle, turned off anyone it would catch.
     for (const L of laserPlan) for (const s of L.who) {
-      const p = prefAt(s, L.t - 0.4), others = S.filter(o => o !== s).flatMap(o => [L.t - 0.4, L.t - 0.2, L.t].map(tt => prefAt(o, tt))), out = brg(p);
+      const p = prefAt(s, L.t - 0.4), others = S.filter(o => o !== s).flatMap(o => [L.t - 0.7, L.t - 0.4, L.t - 0.2, L.t, L.t + 0.1].map(tt => prefAt(o, tt))), out = brg(p);
       let best = null;
-      for (const d of [0, 20, -20, 40, -40, 60, -60, 80, -80, 100, -100, 120, -120, 150, -150, 180]) {
-        const deg = deg360(out + d), cone = { shape: 'cone', at: p, deg, half: 7.5, r: 25 };
-        if (others.every(q => !inside(cone, q, 1.0))) { best = deg; break; }
+      for (const m of [1.4, 0.7]) {
+        for (const d of Array.from({ length: 36 }, (_, k) => (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 10)) {
+          const deg = deg360(out + d), cone = { shape: 'cone', at: p, deg, half: 7.5, r: 25 };
+          if (others.every(q => !inside(cone, q, m))) { best = deg; break; }
+        }
+        if (best !== null) break;
       }
       if (best === null) { best = out; P.notes.push(`laser ${s} at ${L.t}: no clear way`); }
       hz({ t: L.t, tell: L.t - 4, effect: 'bait', shape: 'cone', from: 'target', targets: [s], deg: best, half: 7.5, r: 25, snap: 0.4, dmg: 0.9, own: 0, name: 'Dark-energy Particle Beam' });

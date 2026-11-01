@@ -43,11 +43,22 @@
 //   P5 Pandora: Fulgent Blade's six sweeping lines (the party walks their crossings), Akh Morn left/right, Paradise
 //     Regained (three towers, Wings Dark and Light's cleaves and tethers on the tanks), Polarizing Strikes (four rounds
 //     of line baits, swapping sides), Pandora's Box (the tank LB), twice over, Paradise Lost.
-// Simplified (the engine can't do it, or wtfdig gives no diagram): Diamond Dust's thin ice slides are walks, and its
-// cursed pattern and the Frigid Needle crosses are left out; the hourglasses' lasers sweep from where they're baited;
-// Crystallize Time's dragon heads and cleanses are calls (their puddles aren't on the floor), its traffic lights stand
-// N/S and on the diagonals; Morn Afah's HP check, the tank LB and the intermission's Gaia are assumed done; where
-// BossMod's AI and wtfdig disagree on a spot, wtfdig's; elsewhere the spots are this script's own.
+// Simplified (the engine can't do it, or neither BossMod nor wtfdig fixes it):
+//   - P1: Utopian Sky's clones calling their spots by stepping in, and the halos' exact spots (the safe side's small
+//     ones and the other's big ones are this script's).
+//   - P2: Diamond Dust's thin ice slides are walks, its cursed pattern, the Frigid Needle crosses and Sinbound Holy's
+//     puddles are left out (three icicle pairs 16 out, four seconds apart); Light Rampant's tethers are solved by the
+//     conga alone, its puddles don't stay, its orbs stand on fixed spots; the mirrors and crystals are drawn on the floor
+//     (the frozen mirror is invisible in the game files, the crystals' model exports empty); the Ice Veil's rays leave
+//     no puddles.
+//   - P3: the rewinds are walks back (no stun and teleport); Shadoweye's gazes are a call (the sim's self-check has no
+//     facing to test); the lasers sweep from where they're baited.
+//   - P4: Crystallize Time's dragon heads and cleanses are calls (their puddles aren't on the floor), its traffic lights
+//     stand 17 out (north/south, then the diagonals), Hallowed Wings comes from the north edge, then the south; Akh
+//     Morn's 7-1 has MT solo first, OT second; Morn Afah's HP check is assumed passed.
+//   - P5: Fulgent Blade's six lines (60 degrees apart, a pair every 4 s) and the path through their crossings are this
+//     script's (searched); Pandora's Box's tank LB is assumed.
+// Where BossMod's AI and wtfdig disagree on a spot, wtfdig's; elsewhere the spots are this script's own.
 (function (B) {
   const S = B.SLOTS;
   const at = B.bearing;

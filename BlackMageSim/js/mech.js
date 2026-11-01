@@ -226,8 +226,12 @@
       for (const h of hz) {
         if (isKnock(h)) {
           if (slot && (h.immune || []).includes(slot)) continue;
+          const from = p;
           p = this.knockOf(h, p, slot);
-          if (!this.onArena(p, 0.6)) return false;
+          if (!this.onArena(p, 0.6)) {
+            if (this.arena().deathwall) return false;          // thrown off: a KO
+            p = this.toEdge(p, from);                          // a plain wall just stops you there
+          }
         } else if (this.parts(h).some(s => s.shape && inside(s, p, 1.1))) return false;
       }
       return true;
@@ -525,6 +529,7 @@
     //   boss     where the boss stands: [{t, at: [E, N], move}] (it walks `move` seconds to each spot, or leaps);
     //            its target ring, range, positionals, model and anything aimed from 'boss' follow it
     //   hitbox   [{t, r}]: the boss's size by phase
+    //   names    [{t, name}]: the target's name by phase (on the target bar and in the log)
     //   face     [{t, deg | at}]: which way the boss faces from then (a bearing, or a point or slot to face); null: its
     //            main tank again (the default)
     //   untargetable [[t0, t1], ...]: windows the boss can't be targeted, besides cactbot's
@@ -535,8 +540,8 @@
     //            model each, or 'main': a copy of the boss itself, for clones), out in their windows; attacks can come
     //            `from` one by its model name; `face`: a point or 'party' (the party's middle, the default) to turn to
     //   looks    [{t, show: ['a1_flo', 'a3_flo02'], lift}]: the arena's look by phase. Its models are named
-    //            <zone>_a1_flo01 and so on; an entry names models by the start of 'a1_flo01' ('a1': all of look a1,
-    //            'a1_flo': its floors, 'a3_flo02': one). Each entry shows the models it names, of those the list names
+    //            <zone>_a1_flo01 and so on (or _p1_, _al_ in older zones); an entry names models by the start of
+    //            what follows the zone ('a1': all of look a1, 'a1_flo': its floors, 'a3_flo02': one, 'p2': TEA's room). Each entry shows the models it names, of those the list names
     //            anywhere; models the list never names always show. `lift` raises what it shows that many yalms and
     //            `shift` ([E, N]) moves it (a phase the game fights lower down or elsewhere), `shifts` ({name: [E, N]})
     //            moves the models so named their own way (a floor splitting apart); meanwhile you walk a flat floor
@@ -815,7 +820,7 @@
         return null;
       }
       if (eff === 'gaze') {
-        if (m.slot !== party.playerSlot()) return null;          // the bots look away
+        if (m.slot !== party.playerSlot() || this.app.qa) return null;      // the bots (and the self-check's player) look away
         const face = this.playerFacing();
         const look = ps.some(s => {
           if (s.owner === m.slot) return false;                  // the gaze's own target is spared, as in the game

@@ -326,11 +326,24 @@
       // Which bearing each pair uses: its group's side of the last pair of blasts (just hit, so clear till next time).
       const lastBlast = (t) => blasts.filter(b => !b.mid && b.t <= t).pop();
       const lastAny = (t) => blasts.filter(b => b.t <= t).pop();
-      const sideOf = (n, t) => { const lb = lastBlast(t), g = lb ? lb.deg : d0 - 45, north = A.includes(n); const a = deg360(g), bdeg = deg360(g + 180); const isN = (d) => d >= 225 || d < 45; return north ? (isN(a) ? a : bdeg) : (isN(a) ? bdeg : a); };
+      const sideOfGroup = (n, t) => { const lb = lastBlast(t), g = lb ? lb.deg : d0 - 45, north = A.includes(n); const a = deg360(g), bdeg = deg360(g + 180); const isN = (d) => d >= 225 || d < 45; return north ? (isN(a) ? a : bdeg) : (isN(a) ? bdeg : a); };
+      const angOff = (a, b) => Math.abs(((a - b) % 360 + 540) % 360 - 180);
       const midBefore = (t, w) => mids.find(m => m.t < t && t - m.t < w);
+      const oddDeg = {};
+      for (const c of cuts) {
+        if (!c.odd) continue;
+        let d = sideOfGroup(c.n, c.t - 0.05);
+        const pe = cuts.filter(x => !x.odd && x.t < c.t).pop();
+        if (pe && c.t - pe.t < 6 && oddDeg[pe.n - 1] !== undefined) {
+          const pl = deg360(oddDeg[pe.n - 1] - (midBefore(pe.t, 1) ? 53 : 0)), alt = deg360(d + 180);
+          if (angOff(alt, pl) > angOff(d, pl)) d = alt;
+        }
+        oddDeg[c.n] = d;
+      }
+      const sideOf = (n) => oddDeg[n % 2 ? n : n - 1];
       const midAfter = (t, w) => mids.find(m => m.t > t && m.t - t < w);
       let apex = null, prevOdd = null;
-      const apexAt = (c) => { const o = cuts.filter(x => x.odd && x.t < c.t).pop(); return { d: o ? sideOf(o.n, o.t - 0.05) : d0 }; };
+      const apexAt = (c) => { const o = cuts.filter(x => x.odd && x.t < c.t).pop(); return { d: o ? sideOf(o.n) : d0 }; };
       const outFor = {};            // each middle blast's time to go out
       // (Out after the last pair of blasts before it, and after any charge in between.)
       for (const m of mids) {
@@ -353,11 +366,8 @@
         } else if (apex) {
           // A middle blast just before: the target waits out beside the apex's line (clear of the odd's cleave),
           // thrown on toward the wall; otherwise just out from the apex on its line.
-          // A middle blast soon after: beside the line, away from where the next odd steps out.
-          const mb = midBefore(c.t, 1), late = midBefore(c.t, 4), soon = midAfter(c.t, 2.5);
-          const nextOdd = cuts.find(x => x.odd && x.t > c.t), nd = nextOdd ? sideOf(nextOdd.n, nextOdd.t - 0.05) : apex.d;
-          const away = ((nd - apex.d) % 360 + 540) % 360 - 180 > 0 ? -45 : 45;
-          const tgt = mb ? r2(at(apex.d - 40, 11.2)) : late ? r2(at(apex.d + 45, 7)) : soon ? r2(at(apex.d + away, 7)) : r2(at(apex.d, 6.5));
+          const mb = midBefore(c.t, 1), late = midBefore(c.t, 4);
+          const tgt = mb ? r2(at(apex.d - 40, 11.2)) : late ? r2(at(apex.d + 45, 7)) : r2(at(apex.d, 6.5));
           c.band = brg(sub(tgt, apex.p));
           pref(mb ? outFor[mb.t] : Math.max(c.t - 1.5, prevOdd.t + 0.1), { [c.s]: tgt });
           hz({ t: c.t, tell: c.t - 1.5, effect: 'bait', shape: 'line', from: apex.p, aim: 'target', targets: [c.s], len: 'target', w: 10, dmg: 1.0, own: 0.35, name: 'Super Blassty Charge' });

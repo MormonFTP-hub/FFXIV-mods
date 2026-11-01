@@ -146,7 +146,7 @@
       for (const md of G.models) {
         const inst = this.view(md.instances, E), n = inst.length / 12;
         // An arena's looks (its models' _a1_, _a2_, ...: the floor each phase stands on), for the fight to switch.
-        const look = ((md.path || '').match(/_(a\d_[a-z0-9]+)\.mdl$/i) || [])[1];
+        const look = ((md.path || '').match(/\/[a-z0-9]+_([a-z0-9]+_[a-z0-9]+)\.mdl$/i) || [])[1];
         for (const me of md.meshes) {
           const mat = mats[me.material];
           if (!mat) continue;

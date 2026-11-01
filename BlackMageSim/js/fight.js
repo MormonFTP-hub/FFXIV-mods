@@ -21,7 +21,13 @@
       this.mech = this.script ? new B.Mechanics(app, this, this.script) : null;
       this.reset();
     }
-    get name() { return this.data.boss; }
+    // The boss's name: the plan's for the phase (names: [{t, name}]), or the fight's.
+    get name() {
+      const L = this.mech && this.mech.plan && this.mech.plan.names;
+      let n = this.data.boss;
+      if (L) for (const k of L) if (k.t <= (this.t ?? 0)) n = k.name;
+      return n;
+    }
 
     reset() {
       this.next = 0;
