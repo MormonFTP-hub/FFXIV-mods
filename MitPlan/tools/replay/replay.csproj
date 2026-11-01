@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Replays cactbot's timelines through the plugin's follow clock. Plain .NET, no Dalamud needed. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\MitPlan\Data\PlanModels.cs" />
+    <Compile Include="..\..\MitPlan\Tracking\FollowClock.cs" />
+  </ItemGroup>
+</Project>

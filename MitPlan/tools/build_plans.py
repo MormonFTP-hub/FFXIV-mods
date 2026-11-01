@@ -321,13 +321,6 @@ def build_fmbg():
                     hit["cells"][k] = c
             hit["sync"] = sync_names(name, casts)
             cur["hits"].append(hit)
-    # Hits the sheet gives no time take the time of the hit before them, for ordering.
-    for p in phases:
-        last = 0
-        for h in p["hits"]:
-            if h.get("t") is None:
-                h["t"] = last
-            last = h["t"]
     return {
         "id": "fru",
         "name": "Futures Rewritten (Ultimate)",
@@ -456,9 +449,134 @@ def build_silacy():
 
 # ---------------------------------------------------------------- main
 
+# ---------------------------------------------------------------- lining rows up with the boss's casts
+
+SIM_FIGHTS = ROOT.parent / "BlackMageSim" / "work" / "fights"
+SIM_KEY = {"dmu": "umad"}
+
+# How far (s) a row's time may be from the cast it's named after; and how close two rows must agree on a clock offset.
+ALIGN_REACH = 15
+ALIGN_AGREE = 6
+
+
+def cast_events(plan_id):
+    """The boss's abilities along cactbot's main line (the Striking Dummy Sim's export), as (second, name as compared)."""
+    path = SIM_FIGHTS / f"{SIM_KEY.get(plan_id, plan_id)}.json"
+    if not path.exists():
+        return None
+    events = []
+    for e in json.loads(path.read_text(encoding="utf-8"))["fight"]["events"]:
+        for part in re.sub(r"\s*\([^)]*\)", "", e["name"]).split("/"):
+            if norm(part):
+                events.append((e["t"], norm(part)))
+    return events
+
+
+def token_times(hit):
+    """Each of a row's casts with the time the sheet puts it at: the first starts the row, the last ends it."""
+    names = hit.get("sync", [])
+    t = hit.get("t")
+    for i, name in enumerate(names):
+        yield name, (hit.get("tEnd", t) if i > 0 and i == len(names) - 1 else t)
+
+
+def align(plan):
+    """
+    Gives each row's casts the time on the plan's clock that cactbot's timeline puts them at, so the plugin can sync
+    tightly and isn't fooled by a cast the sheet doesn't list (M9S's Dead Wake comes four times, the sheet names one).
+    Sheets and cactbot drift apart over a fight (M10S's sheet has Snaking 24 s before cactbot does), so the offset
+    between the two clocks is followed row by row, starting from what the first rows agree on. A cast inside a row's
+    stretch ("Rain + Thirst > Screech", 4:12-4:44) gets its own time within it. Rows the sheet gives no time get the
+    time of their cast between the rows around them.
+    """
+    events = cast_events(plan["id"])
+    if events is None:
+        print(f"      {plan['id']}: no cactbot events in {SIM_FIGHTS}, keeping the sheet's cast names only")
+        return
+    clocks = {}
+    for p in plan["phases"]:
+        clocks.setdefault(p["clock"], []).extend(h for h in p["hits"] if "cells" in h)
+
+    def occurrences(name):
+        return [e[0] for e in events if e[1] == norm(name)]
+
+    for clock, hits in clocks.items():
+        timed = [h for h in hits if h.get("t") is not None]
+        first = []
+        for h in timed:
+            d = [x - at for name, at in token_times(h) for x in occurrences(name)]
+            if d:
+                first.append(d)
+            if len(first) == 4:
+                break
+        if not first:
+            for h in hits:
+                h.pop("sync", None)
+            continue
+        diffs = [d for row in first for d in row]
+        drift = max(diffs, key=lambda d: (sum(any(abs(d2 - d) <= ALIGN_AGREE for d2 in row) for row in first), -abs(d)))
+
+        prev = None
+        for i, h in enumerate(hits):
+            exact = []
+            if h.get("t") is None:
+                lo = prev if prev is not None else -9999
+                nxt = next((x["t"] for x in hits[i + 1:] if x.get("t") is not None), 99999)
+                for name in h.get("sync", []):
+                    found = [x - drift for x in occurrences(name) if lo < x - drift < nxt]
+                    if found:
+                        exact.append({"name": name, "at": round(found[0], 1)})
+                if exact:
+                    h["t"] = int(exact[0]["at"])
+                    h["tEst"] = True
+            else:
+                lo, hi = h["t"], h.get("tEnd", h["t"])
+                for k, (name, at) in enumerate(token_times(h)):
+                    occ = [x - drift for x in occurrences(name)]
+                    inside = [x for x in occ if lo - 3 <= x <= hi + 3]
+                    near = [x for x in occ if abs(x - at) <= ALIGN_REACH]
+                    pick = min(inside or near, key=lambda x: abs(x - at)) if inside or near else None
+                    if pick is None:
+                        continue
+                    exact.append({"name": name, "at": round(pick, 1)})
+                    if k == 0:
+                        h["tSync"] = round(pick, 1)
+                    # A single-time row's first cast says how far the clocks have drifted by now (half of it, so
+                    # one row timed differently from the rest doesn't throw the next ones off).
+                    if k == 0 and lo == hi and abs(pick - at) <= ALIGN_REACH:
+                        drift += (pick - at) / 2
+            if exact:
+                h["syncAt"] = h.get("syncAt", []) + [x for x in exact if x not in h.get("syncAt", [])]
+            # A cast cactbot never has near this row would sync the clock to the wrong time: drop it.
+            h.pop("sync", None)
+            if h.get("t") is not None:
+                prev = h["t"]
+    # Keep the sheet's order: a row never lights up before the one above it.
+    for hits in clocks.values():
+        last = None
+        for h in hits:
+            when = h.get("tSync", h.get("t"))
+            if when is None:
+                continue
+            if last is not None and when < last:
+                h["tSync"] = last
+                when = last
+            last = when
+    # Anything still untimed sorts with the row before it.
+    for p in plan["phases"]:
+        last = 0
+        for h in p["hits"]:
+            if h.get("t") is None:
+                h["t"] = last
+                h["tEst"] = True
+            last = h["t"]
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     plans = [build_ikuya(), build_fmbg()] + build_silacy()
+    for plan in plans:
+        align(plan)
     for plan in plans:
         hits = [h for p in plan["phases"] for h in p["hits"] if "cells" in h]
         synced = [h for h in hits if h.get("sync") or h.get("syncAt")]

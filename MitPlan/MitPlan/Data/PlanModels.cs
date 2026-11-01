@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace MitPlan.Data;
@@ -47,6 +48,9 @@ public sealed class Plan
                 Flat.Add(hit);
             }
         }
+
+        foreach (var first in Flat.Where(h => h.Sync.Count > 0 || h.SyncAt.Count > 0).GroupBy(h => h.Clock).Select(g => g.First()))
+            first.Entry = true;
     }
 }
 
@@ -99,6 +103,12 @@ public sealed class Hit
     /// <summary>Seconds on the clock of the row's last hit, when the row covers a stretch.</summary>
     public int? TEnd { get; set; }
 
+    /// <summary>True when the sheet gives no time and <see cref="T"/> is the time of the row's cast in cactbot's timeline.</summary>
+    public bool TEst { get; set; }
+
+    /// <summary>When the row's first cast lands on the clock per cactbot's timeline; more exact than the sheet's time.</summary>
+    public double? TSync { get; set; }
+
     /// <summary>Mits per slot key. Each line is used together; a carry line is still up from an earlier hit.</summary>
     public Dictionary<string, List<CellLine>> Cells { get; set; } = [];
 
@@ -118,6 +128,12 @@ public sealed class Hit
     [JsonIgnore] public int FlatIndex { get; set; }
     [JsonIgnore] public string Clock { get; set; } = "";
     [JsonIgnore] public int ClockOrder { get; set; }
+
+    /// <summary>The first row of its clock named after a cast: that cast starts the clock (an ultimate phase).</summary>
+    [JsonIgnore] public bool Entry { get; set; }
+
+    /// <summary>When the hit lands on its clock, for following the fight.</summary>
+    [JsonIgnore] public double? When => TSync ?? T;
 }
 
 public sealed class CellLine
@@ -129,7 +145,7 @@ public sealed class CellLine
 public sealed class SyncAt
 {
     public string Name { get; set; } = "";
-    public int At { get; set; }
+    public double At { get; set; }
 }
 
 /// <summary>A personal tank cooldown table (Ikuya's Omnitank tab), shown to tanks under the phase it belongs to.</summary>

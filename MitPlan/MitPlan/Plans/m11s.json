@@ -131,10 +131,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Raw Steel Trophy"
-     ]
+     }
     },
     {
      "name": "Assault Evolved 1",
@@ -168,8 +165,12 @@
        }
       ]
      },
-     "sync": [
-      "Assault Evolved"
+     "tSync": 43.0,
+     "syncAt": [
+      {
+       "name": "Assault Evolved",
+       "at": 43.0
+      }
      ]
     },
     {
@@ -202,8 +203,12 @@
        }
       ]
      },
-     "sync": [
-      "Assault Evolved"
+     "tSync": 87.5,
+     "syncAt": [
+      {
+       "name": "Assault Evolved",
+       "at": 87.5
+      }
      ]
     },
     {
@@ -258,8 +263,12 @@
        }
       ]
      },
-     "sync": [
-      "Crown of Arcadia"
+     "tSync": 117.0,
+     "syncAt": [
+      {
+       "name": "Crown of Arcadia",
+       "at": 117.0
+      }
      ]
     },
     {
@@ -298,8 +307,12 @@
        }
       ]
      },
-     "sync": [
-      "Dance of Domination"
+     "tSync": 136.1,
+     "syncAt": [
+      {
+       "name": "Dance of Domination",
+       "at": 136.1
+      }
      ]
     },
     {
@@ -316,10 +329,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Raw Steel Trophy"
-     ]
+     }
     }
    ],
    "notes": []
@@ -344,8 +354,12 @@
        }
       ]
      },
-     "sync": [
-      "Charybdistopia"
+     "tSync": 173.7,
+     "syncAt": [
+      {
+       "name": "Charybdistopia",
+       "at": 173.7
+      }
      ]
     },
     {
@@ -460,8 +474,12 @@
        }
       ]
      },
-     "sync": [
-      "One and Only"
+     "tSync": 235.2,
+     "syncAt": [
+      {
+       "name": "One and Only",
+       "at": 235.2
+      }
      ]
     }
    ],
@@ -495,8 +513,12 @@
        }
       ]
      },
-     "sync": [
-      "Meteorain"
+     "tSync": 286.9,
+     "syncAt": [
+      {
+       "name": "Meteorain",
+       "at": 286.9
+      }
      ]
     },
     {
@@ -527,10 +549,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Meteorain"
-     ]
+     }
     },
     {
      "name": "Meteorain 3",
@@ -555,10 +574,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Meteorain"
-     ]
+     }
     }
    ],
    "notes": []
@@ -596,8 +612,12 @@
        }
       ]
      },
-     "sync": [
-      "Majestic Meteor"
+     "tSync": 370.7,
+     "syncAt": [
+      {
+       "name": "Majestic Meteor",
+       "at": 370.7
+      }
      ]
     },
     {
@@ -672,8 +692,12 @@
        }
       ]
      },
-     "sync": [
-      "Massive Meteor"
+     "tSync": 440.1,
+     "syncAt": [
+      {
+       "name": "Massive Meteor",
+       "at": 440.1
+      }
      ]
     }
    ],
@@ -719,8 +743,12 @@
        }
       ]
      },
-     "sync": [
-      "Crown of Arcadia"
+     "tSync": 474.2,
+     "syncAt": [
+      {
+       "name": "Crown of Arcadia",
+       "at": 474.2
+      }
      ]
     },
     {
@@ -751,8 +779,12 @@
        }
       ]
      },
-     "sync": [
-      "Crown of Arcadia"
+     "tSync": 516.6,
+     "syncAt": [
+      {
+       "name": "Crown of Arcadia",
+       "at": 516.6
+      }
      ]
     },
     {
@@ -770,8 +802,12 @@
        }
       ]
      },
-     "sync": [
-      "Ecliptic Stampede"
+     "tSync": 528.9,
+     "syncAt": [
+      {
+       "name": "Ecliptic Stampede",
+       "at": 528.9
+      }
      ]
     },
     {
@@ -878,8 +914,12 @@
        }
       ]
      },
-     "sync": [
-      "Crown of Arcadia"
+     "tSync": 574.2,
+     "syncAt": [
+      {
+       "name": "Crown of Arcadia",
+       "at": 574.2
+      }
      ]
     },
     {

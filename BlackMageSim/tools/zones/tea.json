@@ -9,7 +9,7 @@
   "exclude": "d2a9_|d2az_al_|d2a0_ac_|d2az_p3_|d2az_p4_|d2az_a0_env|d2az_p2_boss2|d2a0_a3_wat02",
   "fight": {
     "duty": "The Epic of Alexander (Ultimate)",
-    "boss": "Living Liquid",
+    "boss": "Alexander",
     "timeline": "05-shb/ultimate/the_epic_of_alexander",
     "branches": "main",
     "hitbox": 3.5,

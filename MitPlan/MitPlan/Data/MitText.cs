@@ -19,17 +19,20 @@ public sealed class MitButton
     public string? OnlyFor { get; init; }
 }
 
+/// <summary>A piece of an item: a button, or the sheet's own words between buttons.</summary>
+public sealed record MitPart(MitButton? Button, string? Text);
+
 /// <summary>One sheet item ("Reprisal 50% cast", "Party Mit (GNB/DRK) ¹") read for a job.</summary>
 public sealed class MitItem
 {
     /// <summary>The sheet's text, untouched, for the tooltip.</summary>
     public required string Raw { get; init; }
 
-    /// <summary>The buttons named in the item. Empty when it's an instruction ("100% hp keep topped").</summary>
-    public List<MitButton> Buttons { get; init; } = [];
+    /// <summary>The item in the sheet's order: "-10s" then Recitation; Reprisal then "50% cast".</summary>
+    public List<MitPart> Parts { get; init; } = [];
 
-    /// <summary>The rest of the item's words: timing, targets, or the whole text when no button was recognised.</summary>
-    public string Hint { get; init; } = "";
+    /// <summary>The buttons named in the item. Empty when it's an instruction ("100% hp keep topped").</summary>
+    public IEnumerable<MitButton> Buttons => Parts.Where(p => p.Button != null).Select(p => p.Button!);
 
     /// <summary>Footnote markers (¹, *) pointing at the phase notes.</summary>
     public List<string> Refs { get; init; } = [];
@@ -39,7 +42,7 @@ public sealed class MitItem
 
     public string? OnlyFor { get; init; }
 
-    public bool AnyForYou => ForYou && (Buttons.Count == 0 || Buttons.Any(b => b.ForYou));
+    public bool AnyForYou => ForYou && (!Buttons.Any() || Buttons.Any(b => b.ForYou));
 }
 
 /// <summary>Turns the sheets' shorthand into each job's buttons.</summary>
@@ -173,6 +176,9 @@ public static partial class MitText
                 forYou = onlyFor.Split('/').Contains(job);
         }
 
+        // Someone else's line ("Party Mit (GNB/DRK)" for a Warrior) stays in the sheet's words, not yours.
+        var reader = forYou ? job : null;
+
         // Every term in the text, left to right, the longest where two start together.
         var matches = Terms
             .SelectMany(t => t.Pattern.Matches(text).Select(m => (Match: m, t.Term)))
@@ -180,22 +186,28 @@ public static partial class MitText
             .ThenByDescending(m => m.Match.Length)
             .ToList();
 
-        var buttons = new List<MitButton>();
-        var rest = new System.Text.StringBuilder();
+        var parts = new List<MitPart>();
         var at = 0;
         foreach (var (match, term) in matches)
         {
             if (match.Index < at)
                 continue;
 
-            rest.Append(text, at, match.Index - at).Append(' ');
+            AddText(parts, text[at..match.Index]);
             at = match.Index + match.Length;
-            buttons.Add(Button(term, job, slot?.Role));
+            parts.Add(new MitPart(Button(term, reader, slot?.Role), null));
         }
 
-        rest.Append(text[at..]);
-        var hint = Tidy(EmptyBrackets().Replace(rest.ToString(), " "));
-        return new MitItem { Raw = raw, Buttons = buttons, Hint = hint, Refs = refs, ForYou = forYou, OnlyFor = onlyFor };
+        AddText(parts, text[at..]);
+        return new MitItem { Raw = raw, Parts = parts, Refs = refs, ForYou = forYou, OnlyFor = onlyFor };
+    }
+
+    /// <summary>Keeps the sheet's words between buttons, minus the joiners left over from splitting ("/", "+").</summary>
+    private static void AddText(List<MitPart> parts, string text)
+    {
+        text = Spaces().Replace(EmptyBrackets().Replace(text, " "), " ").Trim().Trim('/', '|', ',', '&').Trim();
+        if (text.Length > 0 && text != "+")
+            parts.Add(new MitPart(null, text));
     }
 
     private static MitButton Button(Term term, string? job, string? role)
@@ -203,7 +215,10 @@ public static partial class MitText
         if (term.Generic is { } key)
         {
             if (job != null && Jobs.Generic[key].TryGetValue(job, out var mine))
-                return new MitButton { Label = key == "kitchen sink" ? "Kitchen sink" : string.Join(" + ", mine), Actions = [.. mine] };
+            {
+                var named = key is "kitchen sink" or "gcd shields" ? Jobs.GenericLabel[key] : string.Join(" + ", mine);
+                return new MitButton { Label = named, Actions = [.. mine] };
+            }
 
             return new MitButton { Label = Jobs.GenericLabel[key] };
         }
@@ -231,6 +246,4 @@ public static partial class MitText
         notes.FirstOrDefault(n => n.StartsWith(marker, StringComparison.Ordinal)
                                   && (n.Length == marker.Length
                                       || (marker[0] == '*' ? n[marker.Length] != '*' : !Superscripts.Contains(n[marker.Length]))));
-
-    private static string Tidy(string s) => Spaces().Replace(s, " ").Trim(' ', '-', '+', ',', '/', ':', '|');
 }

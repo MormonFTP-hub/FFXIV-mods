@@ -64,7 +64,7 @@
   const FLOOR = onFloor(1.2);
   // The three Neurolinks (waymarks 1-3), where Twintania is tanked as she reaches 75%, 45% and 0%: 1 and 3 either side
   // of the north, 2 in the south (the adds phase is tanked between 1 and 3).
-  const NL = { 1: [-11, 4], 2: [0, -12], 3: [11, 4] };
+  const NL = { 1: [-13, 4], 2: [0, -12], 3: [13, 4] };
 
   // ---------- placing the party ----------
   // Each [slot, want, sep] in turn: the nearest point to `want` on the floor, clear of the shapes in `avoid` (by m)
@@ -286,17 +286,17 @@
         tfY = y;
         puddles(t, 5, 1.15, y, 6, 'Targeted Fire');
         pref(t - 3.5, { [y]: lhArcC[0] });
-        pref(t - 0.1, { [y]: walkPath(lhArcC.concat([Cq.base[y]]), t - 0.1, 5.4) });
+        pref(t - 0.1, { [y]: walkPath(lhArcC, t - 0.1, 5.4) });
         call(t - 3.5, 'Puddles on YOU: run the north edge', { slot: y, alert: true, dur: 4 });
         label(k ? null : E('Targeted Fire x5', t - 0.5, t + 0.5), `Targeted Fire x5 (on ${y})`);
       } else if (n === 'Fireball') {
-        const tgt = pick(NT.filter(s => s !== tfY)), outH = tgt === 'H1' ? 'H2' : 'H1', inn = NT.filter(s => s !== outH && s !== tfY);
+        // (A healer with the puddles is the healer out; otherwise H1, or H2 if the fireball is on H1.)
+        const outH = ['H1', 'H2'].includes(tfY) ? tfY : null, tgt = pick(NT.filter(s => s !== tfY && s !== outH));
+        const oh = outH || (tgt === 'H1' ? 'H2' : 'H1'), inn = NT.filter(s => s !== oh && s !== tfY);
         stack(t, tgt, 4, inn.length, inn.length, 'Fireball', { tell: t - 5 });
-        pref(t - 1.8, Object.assign(clumpAt(inn, Cq.Q), { [outH]: r2(add(Cq.Q, mul(Cq.out, -6.5))) }));
-        const back = Object.assign({}, Cq.base);
-        if (tfY) delete back[tfY];
-        pref(t + 0.2, back);
-        call(t - 5, `Fireball on ${tgt}: stack (the tanks, ${outH} and the puddles out)`, { dur: 4 });
+        pref(t - 1.8, Object.assign(clumpAt(inn, Cq.Q), oh === tfY ? {} : { [oh]: r2(add(Cq.Q, mul(Cq.out, -6.5))) }));
+        pref(t + 0.2, Cq.base);
+        call(t - 5, `Fireball on ${tgt}: stack (the tanks, ${oh} and the puddles out)`, { dur: 4 });
       } else if (n === 'Twister') {
         const xs = gens[gens.length - 1].xs, rough = Object.assign({}, Cq.rough);
         xs.forEach(x => delete rough[x]);
@@ -401,7 +401,7 @@
         const d = doomed[k];
         if (d) {
           role(land + 0.05, land + 1.25, d, c);
-          tower(land + 1.1, c, 2.5, 1, [d], 'Wings of Salvation (cleanse)', { tell: land, fail: 1.2 });
+          tower(land + 1.1, c, 2, 1, [d], 'Wings of Salvation (cleanse)', { tell: land, fail: 1.2 });
           debuff(d, 'doom', 'Doom', 'cleanse in a Wings of Salvation puddle', cast - 2, land + 1.1);
         }
       }
@@ -413,22 +413,23 @@
     const tQ1a = q1a ? q1a.t : 443.2, tQ1b = q1b ? q1b.t : 446.2, q1k = pick(['chariot', 'beam']);
     label(q1b, NAME[q1k]);
     const cl = EA(/^Chain Lightning$/, 440, 520).map(e => e.t);
-    const pairs = [];
-    let pool = shuffle(NT);
-    for (let i = 0; i < 4; i++) { if (pool.length < 2) pool = shuffle(NT); pairs.push([pool.pop(), pool.pop()]); }
     const fb = [1, 2, 3, 4].map(k => T(`Fireball (${k})`, 440, 520, [448.9, 464.0, 489.8, 510.8][k - 1]));
     const dooms = EA(/^Doom$/, 440, 520).map(e => e.t);
     const wingE = EA(/^Wings Of Salvation x\d$/, 440, 520);
     // Who is doomed in each set (2, 3, 3), and who carries each fireball.
+    // (Thunder 3 and the second fireball's player clear of doom 2, thunder 4 clear of doom 3, thunder 2 clear of fireball 2.)
     const doomSets = [shuffle(NT).slice(0, 2), shuffle(NT).slice(0, 3), shuffle(NT).slice(0, 3)];
-    const fbT = [pick(NT), pick(NT), null, pick(NT)];
-    fbT[2] = pick(NT.filter(s => s !== fbT[1]));
+    const free2 = shuffle(NT.filter(s => !doomSets[1].includes(s)));
+    const fbT = [pick(NT), free2[2], null, null];
+    const pairs = [shuffle(NT).slice(0, 2), shuffle(NT.filter(s => s !== fbT[1])).slice(0, 2), free2.slice(0, 2), shuffle(NT.filter(s => !doomSets[2].includes(s))).slice(0, 2)];
+    fbT[2] = pick(NT.filter(s => s !== fbT[1] && !pairs[2].includes(s)));
+    fbT[3] = pick(NT.filter(s => !pairs[3].includes(s)));
 
     // 438: quote 1.
     call(tQ1a - 5, q1k === 'chariot' ? 'In => Out' : 'In => Stack', { alert: true, dur: 5 });
     quotePiece(tQ1a, 'dynamo', [0, 0], th, S, tQ1a - 5);
     chain(cl[0] || tQ1a, pairs[0]);
-    thunders.push({ t0: (cl[0] || tQ1a) - 5, t1: (cl[0] || tQ1a) + 0.05, pair: pairs[0] });
+    thunders.push({ t0: (cl[0] || tQ1a) - 5, t1: (cl[0] || tQ1a) + 0.05, pair: pairs[0], r: 4.4 });
     if (q1k === 'chariot') { quotePiece(tQ1b, 'chariot', [0, 0], th, S, tQ1a); clumpFrom(tQ1a + 0.05, OUTP([0, 0], th)); clumpFrom(tQ1b + 0.05, IN([0, 0], th)); }
     else quotePiece(tQ1b, 'beam', [0, 0], th, S, tQ1a);
     // Doom 1 (two) and Wings x2; fireball 1 in.
@@ -440,7 +441,7 @@
     fireball(fb[1], fbT[1], false, []);
     // Quote 2: Thermionic Beam, then Lunar Dynamo or Iron Chariot; Chain Lightning 2 just before.
     chain(cl[1] || fb[1] + 4, pairs[1]);
-    thunders.push({ t0: (cl[1] || fb[1] + 4) - 5, t1: (cl[1] || fb[1] + 4) + 0.05, pair: pairs[1] });
+    thunders.push({ t0: (cl[1] || fb[1] + 4) - 4, t1: (cl[1] || fb[1] + 4) + 1.4, pair: pairs[1], r: 8.5 });
     const q2a = E('Thermionic Beam', 469, 473), q2b = E('Lunar Dynamo/Iron Chariot', 472, 476);
     const tQ2a = q2a ? q2a.t : 471.3, tQ2b = q2b ? q2b.t : 474.3, q2k = pick(['dynamo', 'chariot']);
     label(q2b, NAME[q2k]);
@@ -452,7 +453,7 @@
     const w2 = wingE[1] ? wingE[1].t : 477.7;
     wingsSet(w2, 3, 4.0, doomSets[1]);
     chain(cl[2] || w2 + 9, pairs[2]);
-    thunders.push({ t0: (cl[2] || w2 + 9) - 5, t1: (cl[2] || w2 + 9) + 0.05, pair: pairs[2] });
+    thunders.push({ t0: (cl[2] || w2 + 9) - 4, t1: (cl[2] || w2 + 9) + 1.4, pair: pairs[2], r: 8.5 });
     role(fb[2] - 4, fb[2] + 0.1, fbT[1], r2(OUTP([0, 0], th + 180)));
     fireball(fb[2], fbT[2], true, [fbT[1]]);
     // Quote 3: Raven Dive (spread; Nael lands on one), then Lunar Dynamo or Iron Chariot round where she lands.
@@ -473,7 +474,7 @@
     // Doom 3 and Wings x3; Chain Lightning 4.
     const w3 = wingE[2] ? wingE[2].t : 513.9;
     chain(cl[3] || w3, pairs[3]);
-    thunders.push({ t0: (cl[3] || w3) - 5, t1: (cl[3] || w3) + 0.05, pair: pairs[3] });
+    thunders.push({ t0: fb[3] + 0.1, t1: (cl[3] || w3) + 1.4, pair: pairs[3], r: 8.5 });
     wingsSet(w3, 3, 4.0, doomSets[2]);
     buster(T('Ravensbeak', 528, 536, 532.4), 'MT', 'Ravensbeak');
 
@@ -496,10 +497,10 @@
       Object.assign(spots, clumpAt(free, c, { avoid: pend.filter(p => dist(p.at, c) > 0.5), m: 0.3 }));
       if (th0) {
         // Each thunder 4.6 from Nael (inside Lunar Dynamo), as far from the clump as it can be.
-        const cb = brg(sub(c, n)), cands = [110, 140, 170, -110, -140, -170, 80, -80].map(d => r2(add(n, at(cb + d, 4.4))));
-        const ok = (p) => dist(p, c) > 6.6 && pend.every(q => dist(q.at, p) > q.r + 1.2) && FLOOR(p);
+        const cb = brg(sub(c, n)), cands = [110, -110, 140, -140, 80, -80, 170, -170, 60, -60].map(d => r2(add(n, at(cb + d, th0.r))));
+        const ok = (p) => dist(p, c) > 6.6 && pend.every(q => dist(q.at, p) > q.r + 1.4) && FLOOR(p);
         const good = cands.filter(ok);
-        const a = good[0] || cands[0], b = good.find(p => dist(p, a) > 6.5) || cands[3];
+        const a = good[0] || cands[0], b = good.find(p => dist(p, a) > 6.5) || cands[1];
         spots[th0.pair[0]] = a; spots[th0.pair[1]] = b;
       }
       pref(t, spots);
@@ -526,37 +527,47 @@
       const d = diveOf[j][i], spot = r2(at(brg(d) + 36, 20.5));
       const h = hz({ t: tHit[j], tell: tMark[j], shape: 'line', from: d, aim: 'target', targets: [s], len: 52, w: 20, snap: 4, dmg: 1.3, name: 'Cauterize', react: 4 });
       lines.push({ h, t0: tLock[j], t1: tHit[j], from: d, to: spot });
-      role(tLock[j] - 2.8, tLock[j] + 0.05, s, spot);
+      role(tMark[j] + 0.4, tLock[j] + 0.05, s, spot);
       call(tMark[j], `Divebomb ${j + 1}: bait the ${dirName(brg(d))} dragon (stand ${dirName(brg(spot))})`, { slot: s, alert: true, dur: 4 });
     }));
     call(tM1, spreadQ ? 'Divebombs: spread quote (spread, then the tank\'s dive)' : 'Divebombs: stack quote (the tank\'s dive, then stack)', { alert: true, dur: 6 });
     // Hypernova: four puddles where the party stands, a step aside each time.
     const hyper = E('Hypernova x4', 540, 546), tHy = hyper ? hyper.t : 542.8;
     const hyPts = [[0, -3], [-6, -3], [-6, 3], [0, 4]];
-    const carrier = pick(S.filter(s => !baiters.slice(0, 2).includes(s)));
+    const carrier = pick(['MT', baiters[5]]);
     for (let k = 0; k < 4; k++) hz({ t: tHy + 1.55 * k + 1.2, tell: tHy + 1.55 * k - 0.8, shape: 'circle', from: 'target', targets: [carrier], r: 5, snap: 1.2, dmg: 0.9, name: 'Hypernova' });
-    // The quote: spreads west of the middle (the next baiters at their spots), or the tank's dive then the stack.
+    // The quote: spreads west of the middle (the next baiters at their spots), the tank then off alone for Nael's dive;
+    // or the tank's dive first (away from the party) and the stack in the middle.
     const quoteSpots = {};
-    const lockedAt = (t) => lines.filter(l => l.t0 <= t && t < l.t1 + 0.2).map(l => ({ shape: 'line', at: l.from, deg: brg(sub(l.to, l.from)), len: 52, w: 20 }));
+    const lockedAt = (t0, t1) => lines.filter(l => l.t0 < t1 && t0 < l.t1 + 0.2).map(l => ({ shape: 'line', at: l.from, deg: brg(sub(l.to, l.from)), len: 52, w: 20 }));
     {
-      const t = tSpread - 2.5, avoid = lockedAt(tSpread + 0.5);
+      const t = tC1 + 0.05, avoid = lockedAt(t, tdd + 0.5);
       const keep = sets[2].map(s => at(brg(diveOf[2][sets[2].indexOf(s)]) + 36, 20.5));
       const rest = S.filter(s => !sets[2].includes(s));
       const ok = (p) => FLOOR(p) && avoid.every(h => !inside(h, p, 1.6));
       const pts = [];
       for (let x = -19; x <= 19; x += 0.5) for (let y = -19; y <= 19; y += 0.5) if (ok([x, y]) && keep.every(q => dist(q, [x, y]) > 5)) pts.push([x, y]);
-      pts.sort((a, b) => dist(a, [-6, 0]) - dist(b, [-6, 0]));
-      const got = [];
-      for (const p of pts) { if (got.length >= rest.length) break; if (got.every(q => dist(q, p) > 5.2)) got.push(p); }
-      rest.forEach((s, i) => { quoteSpots[s] = r2(got[i] || [-6, 0]); });
-      if (!spreadQ) {
-        // The dive first: the tank alone (its spread spot), the rest stack in the middle of theirs.
-        const mid = rest.filter(s => s !== 'MT'), c = got.length ? [got.slice(1, mid.length + 1).reduce((a, p) => a + p[0], 0) / mid.length, got.slice(1, mid.length + 1).reduce((a, p) => a + p[1], 0) / mid.length] : [-6, 0];
-        const far = got.slice().sort((a, b) => dist(b, c) - dist(a, c))[0] || [-14, 6];
-        quoteSpots.MT = r2(far);
-        Object.assign(quoteSpots, clumpAt(mid, place([['x', c]], { avoid: avoid.concat([{ shape: 'circle', at: far, r: 9 }]), m: 1.6 }).x));
+      pts.sort((a, b) => dist(a, [-5, 0]) - dist(b, [-5, 0]));
+      // (The second baiter comes in straight from the edge, out of its own line.)
+      const b2 = sets[1][0], b2Spot = lines.find(l => l.h.targets[0] === b2).to;
+      let b2In = null;
+      for (let k = 0.9; k > 0 && !b2In; k -= 0.02) { const q = mul(b2Spot, k); if (avoid.every(h => !inside(h, q, 1.8))) b2In = r2(q); }
+      b2In = b2In || place([['x', mul(b2Spot, 0.42)]], { avoid, m: 1.6 }).x;
+      const got = [b2In];
+      for (const p of pts) { if (got.length >= rest.length) break; if (got.every(q => dist(q, p) > 5.4)) got.push(p); }
+      const far = (from) => r2(pts.filter(p => from.every(q => dist(p, q) > 8.6)).sort((a, b) => dist(a, [-5, 0]) - dist(b, [-5, 0]))[0] || [-15, 8]);
+      if (spreadQ) {
+        quoteSpots[b2] = r2(b2In);
+        rest.filter(s => s !== b2).forEach((s, i) => { quoteSpots[s] = r2(got[i + 1] || [-5, 0]); });
+        for (const s of rest) role(t, tdd + 0.1, s, quoteSpots[s]);
+        role(tSpread + 0.05, tdd + 0.1, 'MT', far(rest.filter(s => s !== 'MT').map(s => quoteSpots[s]).concat(keep)));
+      } else {
+        const mid = rest.filter(s => s !== 'MT'), c = place([['x', [-5, 0]]], { avoid, m: 1.8 }).x;
+        Object.assign(quoteSpots, clumpAt(mid, c));
+        quoteSpots.MT = far([c].concat(keep));
+        for (const s of rest) role(t, tBeam2 + 0.1, s, quoteSpots[s]);
+        role(tDive2 + 0.1, tBeam2 + 0.1, 'MT', c);
       }
-      for (const s of rest) role(t, (spreadQ ? tdd : tBeam2) + 0.1, s, quoteSpots[s]);
     }
     if (spreadQ) {
       spreads(tSpread, S.filter(s => !sets[2].includes(s)), 4, 'Meteor Stream', { tell: tSpread - 3 });
@@ -565,11 +576,10 @@
       buster(tDive2, 'MT', 'Dalamud Dive', { r: 5, tell: tDive2 - 3 });
       const mid = S.filter(s => s !== 'MT' && !sets[2].includes(s));
       stack(tBeam2, pick(mid), 4, mid.length, 8, 'Thermionic Beam', { tell: tDive2 - 2 });
-      role(tDive2 + 0.1, tBeam2 + 0.1, 'MT', quoteSpots[mid[0]]);
     }
     const tDiveNael = spreadQ ? tdd : tDive2;
     P.form.push({ t: tLock[0] + 1, model: 'none' }, { t: tDiveNael, model: 'nael' });
-    bossAt(tDiveNael, quoteSpots.MT || [-10, 0]);
+    bossAt(tDiveNael, p2.roles.filter(r => r.slot === 'MT' && r.t0 <= tDiveNael - 0.2 && tDiveNael - 0.2 < r.t1).pop().p);
     bossAt(tDiveNael + 1, [0, 0], 3);
     // The baiters back in after their lock, away from the lines coming.
     {
@@ -660,7 +670,7 @@
       const tTw = twisters(tDv + 1.0);
       pref(tTw, Object.fromEntries(S.map(s => [s, QSPOT(N, s, 12, [37.5, 72.5, 107.5, 142.5])])));
       spreads(tSp, S, 5, 'Megaflare', { tell: tDv + 1.3 });
-      hz({ t: tPep, tell: tPep - 3, shape: 'circle', from: 'target', targets: S.slice(), r: 6, snap: 3, dmg: 1.0, name: 'Megaflare (puddle)' });
+      hz({ t: tPep, tell: tPep - 3, shape: 'circle', from: 'target', targets: S.slice(), r: 6, snap: 3, dmg: 1.0, name: 'Megaflare (puddle)', react: 1.8 });
       pref(tSp + 0.05, clumpAt(S, [0, 0]));
       // Earth Shakers: H1 north-west, H2 north-east, two DPS south-east together; the stack (the other DPS) south-west;
       // the tanks hold Tempest Wing's tethers due north, between the cones.
@@ -703,13 +713,19 @@
       dive(tMD, at(th + 90 * sgn, 22), th + 90 * sgn + 180, 12, 'Megaflare Dive', tMD - 4);
       // Towers (the MT nearest Nael, H1 nearest the stack, M1 and R1 the sides); the other four stack and walk
       // Hypernova's puddles round the far edge.
-      const tw = { MT: at(th, 9), H1: at(th + 180, 9), M1: at(th - 90, 9), R1: at(th + 90, 9) };
+      const tw = { MT: at(th + 45, 9), M1: at(th - 45, 9), H1: at(th + 135, 9), R1: at(th - 135, 9) };
       for (const [s, p] of Object.entries(tw)) tower(tTw, r2(p), 3, 1, [s], 'Megaflare (tower)', { tell: tTw - 8 });
-      const grp = ['OT', 'H2', 'M2', 'R2'], carrier = pick(grp), path2 = [150, 175, 200, 225].map(d => at(th + d, 15));
+      const grp = ['OT', 'H2', 'M2', 'R2'], carrier = pick(grp), g0 = at(th + 140, 17.5), g3 = at(th + 220, 17.5), path2 = [0, 1, 2, 3].map(k => add(g0, mul(sub(g3, g0), k / 3)));
       for (let k = 0; k < 4; k++) hz({ t: tHy + 1.55 * k, tell: tHy + 1.55 * k - 2.4, shape: 'circle', from: 'target', targets: [carrier], r: 5, snap: 1.4, dmg: 0.9, name: 'Hypernova' });
       stack(tSt, carrier, 5, 4, 4, 'Megaflare (stack)', { tell: tSt - 5 });
       pref(tMD + 0.1, Object.assign(Object.fromEntries(Object.entries(tw).map(([s, p]) => [s, r2(p)])), clumpAt(grp, path2[0])));
-      for (let k = 1; k < 4; k++) pref(tHy + 1.55 * (k - 1) - 1.35, clumpAt(grp, path2[k]));
+      // (The puddles follow the carrier; the others step on ahead of it, and all four stack at the third spot.)
+      const others4 = grp.filter(s => s !== carrier), sn = (k) => tHy + 1.55 * k - 1.4;
+      pref(sn(0) - 0.6, clumpAt(others4, path2[1]));
+      pref(sn(0) + 0.05, { [carrier]: r2(path2[1]) });
+      pref(sn(1) - 0.6, clumpAt(others4, path2[2]));
+      pref(sn(1) + 0.05, { [carrier]: r2(path2[2]) });
+      pref(Math.max(tSt, sn(2)) + 0.05, clumpAt(grp, path2[3]));
       call(tMD, 'Towers: MT, H1, M1, R1; the rest stack', { alert: true, dur: 5 });
       pref(tTw + 0.1, UP3);
     }
@@ -717,7 +733,7 @@
     // --- Fellruin Trio: Nael's quote in the middle, Tempest Wing, Aetheric Profusion (the Neurolinks), Meteor Stream ---
     const frt = E('Fellruin Trio', 770, 785);
     if (frt) {
-      const t0 = frt.t, opt = pick([[0, 2], [110, 1], [250, 3]]), bB = opt[0], pNL = NL[opt[1]];
+      const t0 = frt.t, opt = pick([[0, 2], [107, 1], [253, 3]]), bB = opt[0], pNL = NL[opt[1]];
       const tankNL = [1, 2, 3].filter(k => k !== opt[1]).map(k => NL[k]);
       const eA = E('Lunar Dynamo/Raven Dive', t0 + 6, t0 + 12), eB = E('Raven Dive/Lunar Dynamo', t0 + 9, t0 + 15);
       const tA = eA ? eA.t : t0 + 9.4, tB2 = eB ? eB.t : t0 + 12.4, tTW = T('Tempest Wing', t0 + 12, t0 + 18, t0 + 15.4);
@@ -756,8 +772,7 @@
       tower(tAP, pNL, 2, [party.length, party.length], party, 'Aetheric Profusion (Neurolink)', { tell: tAP - 5, fail: 1.0 });
       call(tB2, `Neurolinks: party ${nlName(pNL)}, tanks ${nlName(tankNL[0])} and ${nlName(tankNL[1])}`, { alert: true, dur: 4 });
       // Meteor Stream: everyone spreads out from the Neurolinks.
-      const away = unit(pNL);
-      const ring = assign(party, [-75, -45, -15, 15, 45, 75].map(d => r2(add(pNL, at(brg(away) + d, 5.4)))));
+      const ring = assign(party, [-75, -45, -15, 15, 45, 75].map(d => r2(add(pNL, at(brg(mul(pNL, -1)) + d, 9)))));
       pref(tAP + 0.05, ring);
       spreads(tMS, S, 4, 'Meteor Stream', { tell: tAP - 1 });
       pref(tMS + 0.1, UP3);
@@ -814,15 +829,16 @@
       call(t0 + 2, 'Quickmarch spread facing Neurolink 1', { alert: true, dur: 5 });
       const order = shuffle(S), set1 = order.slice(0, 3), set2 = order.slice(3, 6);
       const NLS = [NL[1], NL[2], NL[3]];
-      // Safe edge spots (clear of every Neurolink's Hatch).
-      const safe = [];
-      for (const b of [-12, 0, 12, 113, 125, 137, 223, 235, 247]) safe.push(r2(at(b, 19.5)));
-      const free1 = S.filter(s => !set1.includes(s));
-      pref(t0 + 2.2, assign(free1, safe));
+      // Safe edge spots (clear of every Neurolink's Hatch), each beside a Neurolink: the first set waits by theirs, takes
+      // its egg, and backs off to the wall on the other side as the second set comes in; the two with no Hatch stay put.
+      const E1 = [346, 221, 111].map(b => r2(at(b, 19.5))), E2 = [249, 139, 14].map(b => r2(at(b, 19.5)));
+      const none = S.filter(s => !set1.includes(s) && !set2.includes(s));
+      const keepN = assign(none, [r2(at(0, 19.5)), r2(at(125, 19.5))]);
+      pref(t0 + 2.2, Object.assign({}, keepN, assign(set1, E1), assign(set2, E2)));
       set1.forEach((s, i) => { hatch(g1 + 4, g1 - 3, s, NLS[i]); pref(g1 - 3, { [s]: NLS[i] }); });
-      set2.forEach((s, i) => { hatch(g2 + 4, g2 - 3, s, NLS[i]); pref(g2 - 3, { [s]: NLS[i] }); });
-      const free2 = S.filter(s => !set2.includes(s));
-      pref(g1 + 4.05, assign(free2, safe.filter((p, i) => !free1.slice(0, 5).some((s, j) => set2.includes(s) ? false : j === i)).concat(safe)));
+      pref(g1 + 4.1, Object.assign({}, assign(set1, E1), assign(set2, NLS)));
+      set2.forEach((s, i) => hatch(g2 + 4, g1 + 4.1, s, NLS[i]));
+      pref(g2 + 4.1, assign(set2, E2));
       spreads(tMD, DPS, 4, 'Meteor Stream', { tell: tMD - 4 });
       spreads(tMT, ['MT', 'OT', 'H1', 'H2'], 4, 'Meteor Stream', { tell: tMT - 4 });
       // Earth Shakers: four at a time, two cones east and two west (sharing); the rest at Neurolink 1's side.
@@ -874,11 +890,13 @@
       const dT = dAt(7), twBait = r2(at(dT - 120 * dir, 19)), twFrom = at(dT, 21);
       other('main', [{ t: 0, at: twFrom }], [[tTwM - 1, tTD + 0.5]], [0, 0]);
       const chord = { shape: 'line', at: twFrom, deg: brg(sub(twBait, twFrom)), len: 60, w: 8 };
+      // (The towers on the far side of the middle from her line.)
+      const lineOff = (p) => { const u = B.bearing(chord.deg, 1), q = sub(p, chord.at); return Math.abs(q[0] * u[1] - q[1] * u[0]); };
       const cands = [];
-      for (let b = 0; b < 360; b += 22.5) { const p = r2(at(b, 9)); if (!inside(chord, p, 4.5) && dist(p, [0, 0]) > 8) cands.push(p); }
+      for (let b = 0; b < 360; b += 11.25) cands.push(r2(at(b, 8.6)));
+      cands.sort((a, b) => lineOff(b) - lineOff(a));
       const towersAt = [];
-      for (const p of cands) if (towersAt.length < 4 && towersAt.every(q => dist(q, p) > 8)) towersAt.push(p);
-      while (towersAt.length < 4) towersAt.push(r2(at(dT + 180 + 30 * towersAt.length, 9)));
+      for (const p of cands) if (towersAt.length < 4 && towersAt.every(q => dist(q, p) > 6.8)) towersAt.push(p);
       const towerSlots = ['H1', 'H2', 'M1', 'M2'];
       towerSlots.forEach((s, i) => tower(tTow, towersAt[i], 3, 1, [s], 'Megaflare (tower)', { tell: tTow - 8 }));
       hz({ t: tTD, tell: tTwM, shape: 'line', from: twFrom, aim: 'target', targets: ['R1'], len: 60, w: 8, snap: 4, dmg: 1.3, name: 'Twisting Dive' });
@@ -897,7 +915,7 @@
     bossAt(tP4, TW4);
     other('nael', [{ t: 0, at: NA4 }], [[tP4, 1300]], 'OT');
     other('bahamut', [{ t: 0, at: BA4 }], [[tP4, 1300]], [0, 0]);
-    const P4 = { MT: [-2.5, 11.5], OT: [4.6, 6.2], H1: [-2.2, -1], H2: [3, -1.5], M1: [-0.8, 1.6], M2: [1.6, 0.6], R1: [-1, -2.5], R2: [1.2, -3] };
+    const P4 = { MT: [-2.5, 11.5], OT: [2.8, 7.4], H1: [-2.2, -1], H2: [3, -1.5], M1: [-0.8, 1.6], M2: [1.6, 0.6], R1: [-1, -2.5], R2: [1.2, -3] };
     pref(tP4 + 0.2, P4);
     call(tP4, 'Tank the adds between Neurolinks 1 and 3', { dur: 5 });
     const tankPlummet = (t) => { cleave(t, 'MT', 12, 60, 'Plummet'); buster(t + 3.2, 'OT', 'Bahamut\'s Claw', { tell: t - 1 }); };
@@ -934,7 +952,7 @@
     }
     // The triple quotes: in/out round Nael, the stack in the middle, Raven Dive (spread: wtfdig's spots).
     const RD4 = { MT: [-6, 16.5], OT: [6, 16.5], H1: [13, 0], H2: [-13, 0], M1: [-7, 1], M2: [7, 1], R1: [-16, -7], R2: [16, -7] };
-    const IN4 = { MT: [0.2, 6.6], OT: [4.2, 5.8] }, OUT4 = { MT: [-5, 13], OT: [10, 11] };
+    const IN4 = { MT: [0.2, 6.6], OT: [3.2, 6.8] }, OUT4 = { MT: [-5, 13], OT: [8, 12] };
     const triple = (ts, kinds) => {
       call(ts[0] - 5, kinds.map(k => NAME[k]).join(' => '), { alert: true, dur: 6 });
       kinds.forEach((k, i) => {
@@ -990,15 +1008,19 @@
       for (let k = 0; k < hits; k++) stack(e.t + 1.1 * k, 'MT', 4, 2, 2, 'Akh Morn', { tell: e.t - 4, dmg: 0.4 });
       call(e.t - 4, `Akh Morn x${hits}: tanks share`, { dur: 4 });
     }
-    // Exaflares: three lines in from the edge (cardinals and intercards), 8 yalms a step every 1.5 s, six steps.
+    // Exaflares: three lines from beside the boss (cardinals and intercards, a third of the way round from each other),
+    // 8 yalms a step every 1.5 s, six steps, one after the other; the party waits in the widest gap between them.
     for (const e of EA(/^Exaflare #\d$/, tP5, tP5 + 300)) {
-      const bs = shuffle([0, 45, 90, 135, 180, 225, 270, 315]);
-      const use = [bs[0]];
-      for (const b of bs) if (use.length < 3 && use.every(u => Math.abs(((b - u + 540) % 360) - 180) >= 90)) use.push(b);
+      const b0 = pick([0, 45, 90, 135, 180, 225, 270, 315]), use = [b0, b0 + 135, b0 + 225].map(deg360);
+      const hs = [];
       use.forEach((b, i) => {
-        for (const h of B.mechSeq.exaflare({ at: at(b, 20), deg: b + 180, t: e.t + 2 * i, n: 6, r: 6, step: 8, every: 1.5, show: 2, dmg: 1.0, name: 'Exaflare' })) hz(h);
+        for (const h of B.mechSeq.exaflare({ at: at(b, 4), deg: b, t: e.t + 1.5 * i, n: 6, r: 6, step: 8, every: 1.5, show: 2, dmg: 1.0, name: 'Exaflare' })) hs.push(hz(h));
       });
+      const gap = place([['x', at(b0 + 292.5, 8.5)]], { avoid: hs.map(h => ({ shape: 'circle', at: h.at, r: h.r })), m: 1.6 }).x;
+      pref(e.t - 3.8, clumpAt(S, gap));
+      pref(e.t + 8.2, UP5);
       label(e, `Exaflare #${e.name.slice(-1)} (from the ${use.map(dirName).join(', ')})`);
+      call(e.t - 3.8, `Exaflares: wait ${dirName(b0 + 292.5)} of the boss`, { dur: 4 });
     }
     for (const e of EA(/^Morn Afah Enrage/, tP5, tP5 + 400)) label(e, e.name.replace('Morn Afah Enrage', 'Morn Afah (enrage)'));
 

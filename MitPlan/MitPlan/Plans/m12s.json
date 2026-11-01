@@ -141,8 +141,12 @@
        }
       ]
      },
-     "sync": [
-      "Mortal Slayer"
+     "tSync": 38.4,
+     "syncAt": [
+      {
+       "name": "Mortal Slayer",
+       "at": 38.4
+      }
      ]
     },
     {
@@ -159,8 +163,12 @@
        }
       ]
      },
-     "sync": [
-      "Grotesquerie: Act"
+     "tSync": 67.5,
+     "syncAt": [
+      {
+       "name": "Grotesquerie: Act",
+       "at": 67.5
+      }
      ]
     },
     {
@@ -214,8 +222,12 @@
        }
       ]
      },
-     "sync": [
-      "The Fixer"
+     "tSync": 104.8,
+     "syncAt": [
+      {
+       "name": "The Fixer",
+       "at": 104.8
+      }
      ]
     }
    ],
@@ -239,8 +251,12 @@
        }
       ]
      },
-     "sync": [
-      "Grotesquerie: Act"
+     "tSync": 117.0,
+     "syncAt": [
+      {
+       "name": "Grotesquerie: Act",
+       "at": 117.0
+      }
      ]
     }
    ],
@@ -279,8 +295,12 @@
        }
       ]
      },
-     "sync": [
-      "Splattershed"
+     "tSync": 183.3,
+     "syncAt": [
+      {
+       "name": "Splattershed",
+       "at": 183.3
+      }
      ]
     },
     {
@@ -289,8 +309,12 @@
      "t": 203,
      "tEnd": 206,
      "cells": {},
-     "sync": [
-      "Grotesquerie: Act"
+     "tSync": 203.4,
+     "syncAt": [
+      {
+       "name": "Grotesquerie: Act",
+       "at": 203.4
+      }
      ]
     },
     {
@@ -368,8 +392,12 @@
        }
       ]
      },
-     "sync": [
-      "The Fixer"
+     "tSync": 237.1,
+     "syncAt": [
+      {
+       "name": "The Fixer",
+       "at": 237.1
+      }
      ]
     }
    ],
@@ -400,8 +428,12 @@
        }
       ]
      },
-     "sync": [
-      "Grotesquerie: Curtain Call"
+     "tSync": 249.2,
+     "syncAt": [
+      {
+       "name": "Grotesquerie: Curtain Call",
+       "at": 249.2
+      }
      ]
     },
     {
@@ -442,8 +474,12 @@
        }
       ]
      },
-     "sync": [
-      "Splattershed"
+     "tSync": 283.6,
+     "syncAt": [
+      {
+       "name": "Splattershed",
+       "at": 283.6
+      }
      ]
     },
     {
@@ -461,8 +497,12 @@
        }
       ]
      },
-     "sync": [
-      "Mortal Slayer"
+     "tSync": 311.9,
+     "syncAt": [
+      {
+       "name": "Mortal Slayer",
+       "at": 311.9
+      }
      ]
     },
     {
@@ -508,8 +548,12 @@
        }
       ]
      },
-     "sync": [
-      "Slaughtershed"
+     "tSync": 336.0,
+     "syncAt": [
+      {
+       "name": "Slaughtershed",
+       "at": 336.0
+      }
      ]
     },
     {
@@ -570,8 +614,12 @@
        }
       ]
      },
-     "sync": [
-      "Slaughtershed"
+     "tSync": 364.9,
+     "syncAt": [
+      {
+       "name": "Slaughtershed",
+       "at": 364.9
+      }
      ]
     },
     {
@@ -607,8 +655,12 @@
        }
       ]
      },
-     "sync": [
-      "Slaughtershed"
+     "tSync": 396.1,
+     "syncAt": [
+      {
+       "name": "Slaughtershed",
+       "at": 396.1
+      }
      ]
     },
     {
@@ -711,8 +763,12 @@
        }
       ]
      },
-     "sync": [
-      "Replication"
+     "tSync": 27.6,
+     "syncAt": [
+      {
+       "name": "Replication",
+       "at": 27.6
+      }
      ]
     },
     {
@@ -784,9 +840,16 @@
        }
       ]
      },
-     "sync": [
-      "Staging",
-      "Replication"
+     "tSync": 90.8,
+     "syncAt": [
+      {
+       "name": "Staging",
+       "at": 90.8
+      },
+      {
+       "name": "Replication",
+       "at": 105.0
+      }
      ]
     },
     {
@@ -877,8 +940,12 @@
        }
       ]
      },
-     "sync": [
-      "Blood Mana"
+     "tSync": 189.6,
+     "syncAt": [
+      {
+       "name": "Blood Mana",
+       "at": 189.6
+      }
      ]
     },
     {
@@ -947,8 +1014,12 @@
        }
       ]
      },
-     "sync": [
-      "Arcadia Aflame"
+     "tSync": 235.4,
+     "syncAt": [
+      {
+       "name": "Arcadia Aflame",
+       "at": 235.4
+      }
      ]
     }
    ],
@@ -980,8 +1051,12 @@
        }
       ]
      },
-     "sync": [
-      "Idyllic Dream"
+     "tSync": 268.4,
+     "syncAt": [
+      {
+       "name": "Idyllic Dream",
+       "at": 268.4
+      }
      ]
     },
     {
@@ -1028,8 +1103,12 @@
        }
       ]
      },
-     "sync": [
-      "Lindwurm's Meteor"
+     "tSync": 342.4,
+     "syncAt": [
+      {
+       "name": "Lindwurm's Meteor",
+       "at": 342.4
+      }
      ]
     },
     {
@@ -1046,8 +1125,12 @@
        }
       ]
      },
-     "sync": [
-      "Arcadian Arcanum"
+     "tSync": 354.6,
+     "syncAt": [
+      {
+       "name": "Arcadian Arcanum",
+       "at": 354.6
+      }
      ]
     },
     {
@@ -1212,8 +1295,12 @@
        }
       ]
      },
-     "sync": [
-      "Idyllic Dream"
+     "tSync": 470.3,
+     "syncAt": [
+      {
+       "name": "Idyllic Dream",
+       "at": 470.3
+      }
      ]
     },
     {
@@ -1245,8 +1332,12 @@
        }
       ]
      },
-     "sync": [
-      "Arcadian Hell"
+     "tSync": 512.8,
+     "syncAt": [
+      {
+       "name": "Arcadian Hell",
+       "at": 512.8
+      }
      ]
     },
     {
@@ -1256,8 +1347,12 @@
      "tEnd": 531,
      "note": "EVERY SINGLE REMAINING MITIGATION AT ONCE",
      "cells": {},
-     "sync": [
-      "Arcadian Hell"
+     "tSync": 529.0,
+     "syncAt": [
+      {
+       "name": "Arcadian Hell",
+       "at": 529.0
+      }
      ]
     },
     {

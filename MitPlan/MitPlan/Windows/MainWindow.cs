@@ -289,7 +289,8 @@ public sealed partial class MainWindow : Window
 
     private void DrawPhaseTabs(Plan plan)
     {
-        using var bar = ImRaii.TabBar("##phases", ImGuiTabBarFlags.FittingPolicyScroll);
+        // One tab bar per fight, so switching fights doesn't keep the last fight's tab.
+        using var bar = ImRaii.TabBar($"##phases-{plan.Id}", ImGuiTabBarFlags.FittingPolicyScroll);
         if (!bar)
             return;
 
@@ -436,15 +437,20 @@ public sealed partial class MainWindow : Window
 
         // Measure first so the item moves to the next line whole.
         var width = 0f;
-        foreach (var b in item.Buttons)
+        foreach (var part in item.Parts)
         {
-            if (showIcons)
-                width += b.Actions.Count(a => GameData.Icon(a) != 0) * (iconSize + gap);
-            width += ImGui.CalcTextSize(ButtonText(b)).X + gap;
+            if (part.Button is { } b)
+            {
+                if (showIcons)
+                    width += b.Actions.Count(a => GameData.Icon(a) != 0) * (iconSize + gap);
+                width += ImGui.CalcTextSize(ButtonText(b)).X + gap;
+            }
+            else
+            {
+                width += ImGui.CalcTextSize(Display(part.Text!)).X + gap;
+            }
         }
 
-        if (item.Hint.Length > 0)
-            width += ImGui.CalcTextSize(Display(item.Hint)).X + gap;
         if (item.Refs.Count > 0)
             width += ImGui.CalcTextSize(RefText(item)).X + gap;
 
@@ -454,8 +460,17 @@ public sealed partial class MainWindow : Window
         using (ImRaii.Group())
         {
             var first = true;
-            foreach (var b in item.Buttons)
+            foreach (var part in item.Parts)
             {
+                if (part.Button is not { } b)
+                {
+                    if (!first)
+                        ImGui.SameLine(0, gap);
+                    ImGui.TextColored(!forYou ? Dim : Muted, Display(part.Text!));
+                    first = false;
+                    continue;
+                }
+
                 var color = !forYou || !b.ForYou ? Dim : carry ? Muted : ImGuiColors.DalamudWhite;
                 if (showIcons)
                 {
@@ -477,11 +492,11 @@ public sealed partial class MainWindow : Window
                 first = false;
             }
 
-            if (item.Hint.Length > 0)
+            if (!forYou && item.OnlyFor != null)
             {
                 if (!first)
                     ImGui.SameLine(0, gap);
-                ImGui.TextColored(!forYou ? Dim : Muted, Display(item.Hint));
+                ImGui.TextColored(Dim, $"({item.OnlyFor})");
                 first = false;
             }
 

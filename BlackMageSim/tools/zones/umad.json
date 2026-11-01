@@ -6,7 +6,7 @@
   "sky": "arena",
   "dummy": [100.0, 0.0, 100.0],
   "facing": 0.0,
-  "exclude": "_a7_grk1|_a7_grk2[ab]|_a8_gar01|_a0_shk01",
+  "exclude": "_a7_grk1|_a7_grk2[ab]|_a8_gar01|_a0_shk01|_a1_(rubb|flor|pill|gar02|gar10|tow|flo08)",
   "fight": {
     "duty": "Dancing Mad (Ultimate)",
     "boss": "Kefka",
@@ -37,12 +37,6 @@
         "pap": "chara/monster/m0109/animation/a0001/bt_common/resident/monster.pap",
         "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_c_1", "cast": "cbbm_sp_c_2lp", "run": "cbbm_02f_lp0"},
         "specials": "chara/monster/m0109/animation/a0001/bt_common/mon_sp/m0109/"
-      },
-      "neoexdeath": {
-        "kind": "monster", "id": 418, "body": 1, "variant": 1, "scale": 1.5,
-        "pap": "chara/monster/m0418/animation/a0001/bt_common/resident/monster.pap",
-        "anims": {"idle": "cbbm_id0", "castStart": "cbbm_sp_b_1", "cast": "cbbm_sp_b_2lp"},
-        "specials": "chara/monster/m0418/animation/a0001/bt_common/mon_sp/m0418/"
       }
     },
     "statuses": {

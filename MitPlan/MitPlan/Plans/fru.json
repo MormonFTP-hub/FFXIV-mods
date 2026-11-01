@@ -140,11 +140,15 @@
        }
       ]
      },
-     "sync": [
-      "Cyclonic Break"
-     ],
      "time": "0:14",
-     "t": 14
+     "t": 14,
+     "tSync": 14.0,
+     "syncAt": [
+      {
+       "name": "Cyclonic Break",
+       "at": 14.0
+      }
+     ]
     },
     {
      "name": "Utopian Sky",
@@ -171,10 +175,14 @@
        }
       ]
      },
-     "sync": [
-      "Utopian Sky"
-     ],
-     "t": 14
+     "t": 32,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Utopian Sky",
+       "at": 32.6
+      }
+     ]
     },
     {
      "name": "Cyclonic Break 2",
@@ -197,11 +205,15 @@
        }
       ]
      },
-     "sync": [
-      "Cyclonic Break"
-     ],
      "time": "0:50",
-     "t": 50
+     "t": 50,
+     "tSync": 54.0,
+     "syncAt": [
+      {
+       "name": "Cyclonic Break",
+       "at": 54.0
+      }
+     ]
     },
     {
      "name": "Burnished Glory 1",
@@ -274,11 +286,15 @@
        }
       ]
      },
-     "sync": [
-      "Burnished Glory"
-     ],
      "time": "1:26",
-     "t": 86
+     "t": 86,
+     "tSync": 81.4,
+     "syncAt": [
+      {
+       "name": "Burnished Glory",
+       "at": 81.4
+      }
+     ]
     },
     {
      "name": "Fall of Faith (1/2)",
@@ -315,10 +331,14 @@
        }
       ]
      },
-     "sync": [
-      "Fall Of Faith"
-     ],
-     "t": 86
+     "t": 99,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Fall Of Faith",
+       "at": 99.1
+      }
+     ]
     },
     {
      "name": "Fall of Faith (3/4)",
@@ -369,10 +389,14 @@
        }
       ]
      },
-     "sync": [
-      "Fall Of Faith"
-     ],
-     "t": 86
+     "t": 99,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Fall Of Faith",
+       "at": 99.1
+      }
+     ]
     },
     {
      "name": "Burnished Glory 2",
@@ -439,11 +463,15 @@
        }
       ]
      },
-     "sync": [
-      "Burnished Glory"
-     ],
      "time": "2:01",
-     "t": 121
+     "t": 121,
+     "tSync": 119.0,
+     "syncAt": [
+      {
+       "name": "Burnished Glory",
+       "at": 119.0
+      }
+     ]
     }
    ],
    "notes": [
@@ -517,11 +545,15 @@
        }
       ]
      },
-     "sync": [
-      "Diamond Dust"
-     ],
      "time": "3:10",
-     "t": 190
+     "t": 190,
+     "tSync": 190.6,
+     "syncAt": [
+      {
+       "name": "Diamond Dust",
+       "at": 190.6
+      }
+     ]
     },
     {
      "name": "Sinbound Holy",
@@ -557,10 +589,14 @@
        }
       ]
      },
-     "sync": [
-      "Sinbound Holy"
-     ],
-     "t": 190
+     "t": 209,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Sinbound Holy",
+       "at": 209.0
+      }
+     ]
     },
     {
      "name": "Hallowed Ray",
@@ -603,11 +639,15 @@
        }
       ]
      },
-     "sync": [
-      "Hallowed Ray"
-     ],
      "time": "3:58",
-     "t": 238
+     "t": 238,
+     "tSync": 237.7,
+     "syncAt": [
+      {
+       "name": "Hallowed Ray",
+       "at": 237.7
+      }
+     ]
     },
     {
      "name": "Mirror Mirror",
@@ -644,10 +684,14 @@
        }
       ]
      },
-     "sync": [
-      "Mirror, Mirror"
-     ],
-     "t": 238
+     "t": 247,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Mirror, Mirror",
+       "at": 247.6
+      }
+     ]
     },
     {
      "name": "Banish III",
@@ -715,11 +759,15 @@
        }
       ]
      },
-     "sync": [
-      "Banish"
-     ],
      "time": "4:38",
-     "t": 278
+     "t": 278,
+     "tSync": 277.9,
+     "syncAt": [
+      {
+       "name": "Banish",
+       "at": 277.9
+      }
+     ]
     }
    ],
    "notes": [
@@ -786,11 +834,15 @@
        }
       ]
      },
-     "sync": [
-      "Light Rampant"
-     ],
      "time": "4:47",
-     "t": 287
+     "t": 287,
+     "tSync": 287.3,
+     "syncAt": [
+      {
+       "name": "Light Rampant",
+       "at": 287.3
+      }
+     ]
     },
     {
      "name": "Powerful Light",
@@ -840,10 +892,14 @@
        }
       ]
      },
-     "sync": [
-      "Powerful Light"
-     ],
-     "t": 287
+     "t": 304,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Powerful Light",
+       "at": 304.3
+      }
+     ]
     },
     {
      "name": "Banish III",
@@ -866,10 +922,14 @@
        }
       ]
      },
-     "sync": [
-      "Banish"
-     ],
-     "t": 287
+     "t": 316,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Banish",
+       "at": 316.4
+      }
+     ]
     },
     {
      "name": "House of Light",
@@ -897,11 +957,15 @@
        }
       ]
      },
-     "sync": [
-      "The House of Light"
-     ],
      "time": "5:22",
-     "t": 322
+     "t": 322,
+     "tSync": 325.3,
+     "syncAt": [
+      {
+       "name": "The House of Light",
+       "at": 325.3
+      }
+     ]
     },
     {
      "name": "Absolute Zero",
@@ -959,11 +1023,15 @@
        }
       ]
      },
-     "sync": [
-      "Absolute Zero"
-     ],
      "time": "5:44",
-     "t": 344
+     "t": 344,
+     "tSync": 342.9,
+     "syncAt": [
+      {
+       "name": "Absolute Zero",
+       "at": 342.9
+      }
+     ]
     },
     {
      "name": "Junction (Transition)",
@@ -999,10 +1067,14 @@
        }
       ]
      },
-     "sync": [
-      "Junction"
-     ],
-     "t": 344
+     "t": 453,
+     "tEst": true,
+     "syncAt": [
+      {
+       "name": "Junction",
+       "at": 453.4
+      }
+     ]
     }
    ],
    "notes": [
@@ -1055,11 +1127,15 @@
        }
       ]
      },
-     "sync": [
-      "Ultimate Relativity"
-     ],
      "time": "0:18",
-     "t": 18
+     "t": 18,
+     "tSync": 18.0,
+     "syncAt": [
+      {
+       "name": "Ultimate Relativity",
+       "at": 18.0
+      }
+     ]
     },
     {
      "name": "Fire/Dark Set 1/2",
@@ -1208,11 +1284,15 @@
        }
       ]
      },
-     "sync": [
-      "Shell Crusher"
-     ],
      "time": "1:05",
-     "t": 65
+     "t": 65,
+     "tSync": 65.7,
+     "syncAt": [
+      {
+       "name": "Shell Crusher",
+       "at": 65.7
+      }
+     ]
     },
     {
      "name": "Shockwave Pulsar",
@@ -1255,11 +1335,15 @@
        }
       ]
      },
-     "sync": [
-      "Shockwave Pulsar"
-     ],
      "time": "1:14",
-     "t": 74
+     "t": 74,
+     "tSync": 73.8,
+     "syncAt": [
+      {
+       "name": "Shockwave Pulsar",
+       "at": 73.8
+      }
+     ]
     },
     {
      "name": "Dark Water 1",
@@ -1280,11 +1364,15 @@
        }
       ]
      },
-     "sync": [
-      "Dark Water"
-     ],
      "time": "1:50",
-     "t": 110
+     "t": 110,
+     "tSync": 110.2,
+     "syncAt": [
+      {
+       "name": "Dark Water",
+       "at": 110.2
+      }
+     ]
     },
     {
      "name": "Dark Eruption",
@@ -1319,11 +1407,15 @@
        }
       ]
      },
-     "sync": [
-      "Dark Eruption"
-     ],
      "time": "2:05",
-     "t": 125
+     "t": 125,
+     "tSync": 123.2,
+     "syncAt": [
+      {
+       "name": "Dark Eruption",
+       "at": 123.2
+      }
+     ]
     },
     {
      "name": "Dark Water 3",
@@ -1336,11 +1428,15 @@
        }
       ]
      },
-     "sync": [
-      "Dark Water"
-     ],
      "time": "2:19",
-     "t": 139
+     "t": 139,
+     "tSync": 139.0,
+     "syncAt": [
+      {
+       "name": "Dark Water",
+       "at": 139.0
+      }
+     ]
     },
     {
      "name": "Shockwave Pulsar",
@@ -1391,11 +1487,15 @@
        }
       ]
      },
-     "sync": [
-      "Shockwave Pulsar"
-     ],
      "time": "2:26",
-     "t": 146
+     "t": 146,
+     "tSync": 144.4,
+     "syncAt": [
+      {
+       "name": "Shockwave Pulsar",
+       "at": 144.4
+      }
+     ]
     },
     {
      "name": "Memory's End",
@@ -1468,11 +1568,15 @@
     {
      "name": "Edge of Oblivion",
      "cells": {},
-     "sync": [
-      "Edge of Oblivion"
-     ],
      "time": "3:14",
-     "t": 194
+     "t": 194,
+     "tSync": 194.0,
+     "syncAt": [
+      {
+       "name": "Edge of Oblivion",
+       "at": 194.0
+      }
+     ]
     },
     {
      "name": "Darklit Dragonsong",
@@ -1524,11 +1628,15 @@
        }
       ]
      },
-     "sync": [
-      "Darklit Dragonsong"
-     ],
      "time": "3:22",
-     "t": 202
+     "t": 202,
+     "tSync": 203.5,
+     "syncAt": [
+      {
+       "name": "Darklit Dragonsong",
+       "at": 203.5
+      }
+     ]
     },
     {
      "name": "The Path of Light",
@@ -1572,20 +1680,28 @@
        }
       ]
      },
-     "sync": [
-      "The Path of Light"
-     ],
      "time": "3:33",
-     "t": 213
+     "t": 213,
+     "tSync": 214.9,
+     "syncAt": [
+      {
+       "name": "The Path of Light",
+       "at": 214.9
+      }
+     ]
     },
     {
      "name": "Edge of Oblivion",
      "cells": {},
-     "sync": [
-      "Edge of Oblivion"
-     ],
      "time": "3:51",
-     "t": 231
+     "t": 231,
+     "tSync": 231.3,
+     "syncAt": [
+      {
+       "name": "Edge of Oblivion",
+       "at": 231.3
+      }
+     ]
     },
     {
      "name": "Akh Morn Afah",
@@ -1695,11 +1811,15 @@
        }
       ]
      },
-     "sync": [
-      "Crystallize Time"
-     ],
      "time": "4:24",
-     "t": 264
+     "t": 264,
+     "tSync": 263.1,
+     "syncAt": [
+      {
+       "name": "Crystallize Time",
+       "at": 263.1
+      }
+     ]
     },
     {
      "name": "Crystallize Mech",
@@ -1737,7 +1857,8 @@
        }
       ]
      },
-     "t": 264
+     "t": 264,
+     "tEst": true
     },
     {
      "name": "Hallowed Wing",
@@ -1773,11 +1894,15 @@
        }
       ]
      },
-     "sync": [
-      "Hallowed Wings"
-     ],
      "time": "5:06",
-     "t": 306
+     "t": 306,
+     "tSync": 306.6,
+     "syncAt": [
+      {
+       "name": "Hallowed Wings",
+       "at": 306.6
+      }
+     ]
     },
     {
      "name": "Akh Morn Afah",
@@ -1908,11 +2033,15 @@
        }
       ]
      },
-     "sync": [
-      "Fulgent Blade"
-     ],
      "time": "7:02",
-     "t": 422
+     "t": 422,
+     "tSync": 423.0,
+     "syncAt": [
+      {
+       "name": "Fulgent Blade",
+       "at": 423.0
+      }
+     ]
     },
     {
      "name": "Akh Morn 1",
@@ -1971,11 +2100,15 @@
        }
       ]
      },
-     "sync": [
-      "Akh Morn"
-     ],
      "time": "7:30",
-     "t": 450
+     "t": 450,
+     "tSync": 449.5,
+     "syncAt": [
+      {
+       "name": "Akh Morn",
+       "at": 449.5
+      }
+     ]
     },
     {
      "name": "Polarizing Strikes 1",
@@ -2036,11 +2169,15 @@
        }
       ]
      },
-     "sync": [
-      "Polarizing Strikes"
-     ],
      "time": "8:09",
-     "t": 489
+     "t": 489,
+     "tSync": 489.4,
+     "syncAt": [
+      {
+       "name": "Polarizing Strikes",
+       "at": 489.4
+      }
+     ]
     },
     {
      "name": "Pandora's Box",
@@ -2083,11 +2220,15 @@
        }
       ]
      },
-     "sync": [
-      "Pandora's Box"
-     ],
      "time": "8:43",
-     "t": 523
+     "t": 523,
+     "tSync": 523.5,
+     "syncAt": [
+      {
+       "name": "Pandora's Box",
+       "at": 523.5
+      }
+     ]
     },
     {
      "name": "Fulgent Blade 2",
@@ -2137,11 +2278,15 @@
        }
       ]
      },
-     "sync": [
-      "Fulgent Blade"
-     ],
      "time": "8:55",
-     "t": 535
+     "t": 535,
+     "tSync": 535.3,
+     "syncAt": [
+      {
+       "name": "Fulgent Blade",
+       "at": 535.3
+      }
+     ]
     },
     {
      "name": "Akh Morn 2",
@@ -2186,11 +2331,15 @@
        }
       ]
      },
-     "sync": [
-      "Akh Morn"
-     ],
      "time": "9:21",
-     "t": 561
+     "t": 561,
+     "tSync": 562.1,
+     "syncAt": [
+      {
+       "name": "Akh Morn",
+       "at": 562.1
+      }
+     ]
     },
     {
      "name": "Polarizing Strikes 2",
@@ -2253,11 +2402,15 @@
        }
       ]
      },
-     "sync": [
-      "Polarizing Strikes"
-     ],
      "time": "10:01",
-     "t": 601
+     "t": 601,
+     "tSync": 600.0,
+     "syncAt": [
+      {
+       "name": "Polarizing Strikes",
+       "at": 600.0
+      }
+     ]
     },
     {
      "name": "Fulgent Blade 3",
@@ -2316,11 +2469,15 @@
        }
       ]
      },
-     "sync": [
-      "Fulgent Blade"
-     ],
      "time": "10:25",
-     "t": 625
+     "t": 625,
+     "tSync": 625.6,
+     "syncAt": [
+      {
+       "name": "Fulgent Blade",
+       "at": 625.6
+      }
+     ]
     },
     {
      "name": "Akh Morn 3",
@@ -2364,11 +2521,15 @@
        }
       ]
      },
-     "sync": [
-      "Akh Morn"
-     ],
      "time": "10:52",
-     "t": 652
+     "t": 652,
+     "tSync": 652.3,
+     "syncAt": [
+      {
+       "name": "Akh Morn",
+       "at": 652.3
+      }
+     ]
     }
    ],
    "notes": [

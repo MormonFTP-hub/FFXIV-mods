@@ -56,7 +56,7 @@ public sealed class ConfigWindow : Window
 
         ImGui.Spacing();
         ImGui.TextDisabled("Your own plans");
-        ImGui.TextWrapped("Put plan .json files in the plans folder to add fights or replace a built-in one (same id).");
+        ImGui.TextUnformatted("Plan .json files in the plans folder add fights, or replace a built-in one with the same id.");
         if (ImGui.Button("Open plans folder"))
         {
             Directory.CreateDirectory(plugin.Library.CustomFolder);

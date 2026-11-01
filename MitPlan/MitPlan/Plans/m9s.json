@@ -146,9 +146,16 @@
        }
       ]
      },
-     "sync": [
-      "Blast Beat",
-      "Sadistic Screech"
+     "tSync": 41.8,
+     "syncAt": [
+      {
+       "name": "Blast Beat",
+       "at": 41.8
+      },
+      {
+       "name": "Sadistic Screech",
+       "at": 60.8
+      }
      ]
     },
     {
@@ -188,9 +195,16 @@
        }
       ]
      },
-     "sync": [
-      "Dead Wake",
-      "Sadistic Screech"
+     "tSync": 130.1,
+     "syncAt": [
+      {
+       "name": "Dead Wake",
+       "at": 130.1
+      },
+      {
+       "name": "Sadistic Screech",
+       "at": 138.0
+      }
      ]
     }
    ],
@@ -237,9 +251,16 @@
        }
       ]
      },
-     "sync": [
-      "Crowd Kill",
-      "Finale Fatale"
+     "tSync": 152.4,
+     "syncAt": [
+      {
+       "name": "Crowd Kill",
+       "at": 152.4
+      },
+      {
+       "name": "Finale Fatale",
+       "at": 171.4
+      }
      ]
     },
     {
@@ -257,8 +278,12 @@
        }
       ]
      },
-     "sync": [
-      "Aetherletting"
+     "tSync": 192.4,
+     "syncAt": [
+      {
+       "name": "Aetherletting",
+       "at": 192.4
+      }
      ]
     },
     {
@@ -297,8 +322,12 @@
        }
       ]
      },
-     "sync": [
-      "Blast Beat"
+     "tSync": 234.0,
+     "syncAt": [
+      {
+       "name": "Blast Beat",
+       "at": 234.0
+      }
      ]
     },
     {
@@ -338,9 +367,16 @@
        }
       ]
      },
-     "sync": [
-      "Insatiable Thirst",
-      "Sadistic Screech"
+     "tSync": 270.2,
+     "syncAt": [
+      {
+       "name": "Insatiable Thirst",
+       "at": 270.2
+      },
+      {
+       "name": "Sadistic Screech",
+       "at": 283.2
+      }
      ]
     },
     {
@@ -426,9 +462,12 @@
        }
       ]
      },
-     "sync": [
-      "Crowd Kill",
-      "Finale Fatale"
+     "tSync": 370.0,
+     "syncAt": [
+      {
+       "name": "Crowd Kill",
+       "at": 370.0
+      }
      ]
     },
     {
@@ -482,8 +521,12 @@
        }
       ]
      },
-     "sync": [
-      "Hell in a Cell"
+     "tSync": 398.9,
+     "syncAt": [
+      {
+       "name": "Hell in a Cell",
+       "at": 398.9
+      }
      ]
     },
     {
@@ -514,8 +557,12 @@
        }
       ]
      },
-     "sync": [
-      "Sanguine Scratch"
+     "tSync": 459.8,
+     "syncAt": [
+      {
+       "name": "Sanguine Scratch",
+       "at": 459.8
+      }
      ]
     },
     {

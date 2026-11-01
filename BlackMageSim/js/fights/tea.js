@@ -157,7 +157,6 @@
     const TW = [-16, 0], TE = [16, 0], TS = [0, -16], TORN = [TW, TE, TS];
     const tCas = T('Cascade', 15, 25, 19.5);
     for (const c of TORN) hz({ t: tCas + 1, tell: tCas - 3, shape: 'circle', at: c, r: 7.6, dmg: 0.6, tickDmg: 0.6, lasts: Math.min(150, P1_END - tCas - 1.5), tick: 1, name: 'Liquid Rage' });
-    const tornadoAvoid = TORN.map(c => ({ shape: 'circle', at: c, r: 7.6 }));
     call(tCas - 4, 'Cascade: tornadoes west, east and south (north open)', { dur: 5 });
     // Fluid Swing (Living Liquid) and Fluid Strike (the Hand): 90-degree cleaves at their tanks.
     for (const ev of events.filter(e => e.name === 'Fluid Swing' && e.t < 150)) {
@@ -354,8 +353,13 @@
         } else if (apex) {
           // A middle blast just before: the target waits out beside the apex's line (clear of the odd's cleave),
           // thrown on toward the wall; otherwise just out from the apex on its line.
-          const mb = midBefore(c.t, 1);
-          pref(mb ? outFor[mb.t] : Math.max(c.t - 1.5, prevOdd.t + 0.1), { [c.s]: mb ? r2(at(apex.d - 40, 11.2)) : r2(at(apex.d, 6.5)) });
+          // A middle blast soon after: beside the line, away from where the next odd steps out.
+          const mb = midBefore(c.t, 1), late = midBefore(c.t, 4), soon = midAfter(c.t, 2.5);
+          const nextOdd = cuts.find(x => x.odd && x.t > c.t), nd = nextOdd ? sideOf(nextOdd.n, nextOdd.t - 0.05) : apex.d;
+          const away = ((nd - apex.d) % 360 + 540) % 360 - 180 > 0 ? -45 : 45;
+          const tgt = mb ? r2(at(apex.d - 40, 11.2)) : late ? r2(at(apex.d + 45, 7)) : soon ? r2(at(apex.d + away, 7)) : r2(at(apex.d, 6.5));
+          c.band = brg(sub(tgt, apex.p));
+          pref(mb ? outFor[mb.t] : Math.max(c.t - 1.5, prevOdd.t + 0.1), { [c.s]: tgt });
           hz({ t: c.t, tell: c.t - 1.5, effect: 'bait', shape: 'line', from: apex.p, aim: 'target', targets: [c.s], len: 'target', w: 10, dmg: 1.0, own: 0.35, name: 'Super Blassty Charge' });
           hz({ t: c.t + 0.05, tell: c.t - 1.5, effect: 'knockback', from: apex.p, targets: [c.s], dist: 20, dmg: 0, name: 'Super Blassty Charge', immune: S.slice() });
           call(c.t - 2.5, `#${c.n}: Super Blassty Charge: step out ${dirName(apex.d)} (Arm's Length)`, { slot: c.s, alert: true, dur: 2.5 });
@@ -376,14 +380,30 @@
           lines.forEach((a, i) => { const b = i + 1 < lines.length ? lines[i + 1] : lines[0] + 360, g = b - a; if (g > best) { best = g; ld = a + g / 2; } });
         }
         const spots = {};
-        outer.forEach((s, i) => { spots[s] = r2(at(ld + 15 * (i - (outer.length - 1) / 2), 11.6)); });
+        // (Each spot 65 degrees or more off every line; nearest the gap's middle first.)
+        const off = (b) => Math.min(...lines.map(l => Math.abs(((b - l) % 360 + 540) % 360 - 180)), 999);
+        const cand = [];
+        for (let k = -12; k <= 12; k++) { const b = ld + 13 * k; if (off(b) >= 65) cand.push(b); }
+        cand.sort((a, b) => Math.abs(a - ld) - Math.abs(b - ld));
+        outer.forEach((s, i) => { spots[s] = r2(at(cand.length ? cand[i % cand.length] : ld, 11.6 + (cand.length && i >= cand.length ? 2.2 : 0))); });
+        // The next cuts' targets wait out on their own lines (the even beside, clear of the odd's cleave).
+        for (const c of cuts.filter(x => x.t > m.t && x.t < m.t + 4 && spots[x.s])) spots[c.s] = r2(c.odd ? at(sideOf(c.n, c.t - 0.05), 11.6) : at(apexAt(c).d + 60, 11.6));
         // (Whoever has a cut before it goes out after that.)
         const busy = cuts.filter(c => c.t > outFor[m.t] - 0.01 && c.t < m.t && spots[c.s]);
-        pref(outFor[m.t], Object.fromEntries(Object.entries(spots).filter(([s]) => !busy.some(c => c.s === s))));
+        // (An odd cut just before: out the other way from the charge's line, which runs 53 degrees off its own.)
+        for (const c of busy) if (c.odd) spots[c.s] = r2(at(sideOf(c.n, c.t - 0.05) + 75, 11.6));
+        // (The next cuts' targets go out on their lines only after any charge before the blast: theirs may cross it.)
+        const ch = cuts.filter(c => !c.odd && c.t > outFor[m.t] && c.t < m.t).pop(), chLine = ch ? ch.band : null;
+        const crosses = (s) => chLine !== null && Math.abs(((brg(spots[s]) - chLine) % 360 + 540) % 360 - 180) < 62;
+        const ahead = cuts.filter(x => x.t > m.t && x.t < m.t + 4 && spots[x.s] && crosses(x.s)).map(x => x.s);
+        for (const s of ahead) spots[s] = r2(mul(spots[s], 10.8 / 11.6));
+        pref(outFor[m.t], Object.fromEntries(Object.entries(spots).filter(([s]) => !busy.some(c => c.s === s) && !ahead.includes(s))));
+        if (ahead.length) pref(ch.t + 0.05, Object.fromEntries(ahead.map(s => [s, spots[s]])));
         for (const c of busy) pref(c.t + 0.05, { [c.s]: spots[c.s] });
         // Back in while pairs are still to come; after the last, stay out of the way (a little in).
-        const more = blasts.some(b => !b.mid && b.t > m.t);
-        pref(m.t + 0.2, more ? MID(outer) : Object.fromEntries(outer.map(s => [s, r2(mul(spots[s], 0.75))])));
+        const more = blasts.some(b => !b.mid && b.t > m.t), next = new Set(cuts.filter(c => c.t > m.t && c.t < m.t + 4).map(c => c.s));
+        const back = outer.filter(s => !next.has(s));
+        pref(m.t + 0.2, more ? MID(back) : Object.fromEntries(back.map(s => [s, r2(mul(spots[s], 0.75))])));
         if (after) pref(after.t + 0.7, MID([after.s]));
       }
       call(P1_END + 4, 'Limit Cut: wait in the middle; out for the middle blasts', { dur: 6 });
@@ -793,7 +813,8 @@
       for (let n = 1; n <= 8; n++) {
         const odd = n % 2 === 1, e = E(`#${n} ${odd ? 'Alpha Sword' : 'Super Blassty Charge'}`, t0, t0 + 45);
         if (!e) continue;
-        const s = who(n), sp = s === jumper ? jAfter : CUT[odd ? 'odd' : 'even'], cp = r2(mul(sp, 0.82));
+        const southW = (odd ? westW : eastW)[1] < 0;
+        const s = who(n), sp = s === jumper ? jAfter : (n === 5 || n === 6) && southW ? [odd ? -18.6 : 18.6, 0] : CUT[odd ? 'odd' : 'even'], cp = r2(mul(sp, 0.82));
         const prevSame = E(`#${n - 2} ${odd ? 'Alpha Sword' : 'Super Blassty Charge'}`, t0, t0 + 45);
         const soaked = rep.map((r, k) => (r && soak[k].includes(n) && r.t < e.t ? r.t : 0)).reduce((a, b) => Math.max(a, b), 0);
         if (s !== jumper) pref(Math.max(e.t - 4, prevSame ? prevSame.t + 0.3 : 0, soaked + 0.2), { [s]: sp });

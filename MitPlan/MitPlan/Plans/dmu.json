@@ -152,8 +152,12 @@
        }
       ]
      },
-     "sync": [
-      "Mystery Magic"
+     "tSync": 37.7,
+     "syncAt": [
+      {
+       "name": "Mystery Magic",
+       "at": 37.7
+      }
      ]
     },
     {
@@ -226,8 +230,12 @@
        }
       ]
      },
-     "sync": [
-      "Wave Cannon"
+     "tSync": 43.0,
+     "syncAt": [
+      {
+       "name": "Wave Cannon",
+       "at": 43.0
+      }
      ]
     },
     {
@@ -297,8 +305,12 @@
        }
       ]
      },
-     "sync": [
-      "Double-trouble Trap"
+     "tSync": 50.2,
+     "syncAt": [
+      {
+       "name": "Double-trouble Trap",
+       "at": 50.2
+      }
      ]
     },
     {
@@ -365,8 +377,12 @@
        }
       ]
      },
-     "sync": [
-      "Light of Judgment"
+     "tSync": 63.1,
+     "syncAt": [
+      {
+       "name": "Light of Judgment",
+       "at": 63.1
+      }
      ]
     },
     {
@@ -390,8 +406,12 @@
        }
       ]
      },
-     "sync": [
-      "Gravitas"
+     "tSync": 87.5,
+     "syncAt": [
+      {
+       "name": "Gravitas",
+       "at": 87.5
+      }
      ]
     },
     {
@@ -423,8 +443,12 @@
        }
       ]
      },
-     "sync": [
-      "Gravitas"
+     "tSync": 106.4,
+     "syncAt": [
+      {
+       "name": "Gravitas",
+       "at": 106.4
+      }
      ]
     },
     {
@@ -471,8 +495,12 @@
        }
       ]
      },
-     "sync": [
-      "Double-trouble Trap"
+     "tSync": 118.5,
+     "syncAt": [
+      {
+       "name": "Double-trouble Trap",
+       "at": 118.5
+      }
      ]
     },
     {
@@ -531,8 +559,12 @@
        }
       ]
      },
-     "sync": [
-      "Light of Judgment"
+     "tSync": 132.5,
+     "syncAt": [
+      {
+       "name": "Light of Judgment",
+       "at": 132.5
+      }
      ]
     },
     {
@@ -561,10 +593,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Double-trouble Trap"
-     ]
+     }
     },
     {
      "name": "Indulgent Will",
@@ -612,8 +641,12 @@
        }
       ]
      },
-     "sync": [
-      "Indulgent Will"
+     "tSync": 173.3,
+     "syncAt": [
+      {
+       "name": "Indulgent Will",
+       "at": 173.3
+      }
      ]
     },
     {
@@ -661,8 +694,12 @@
        }
       ]
      },
-     "sync": [
-      "Mystery Magic"
+     "tSync": 186.0,
+     "syncAt": [
+      {
+       "name": "Mystery Magic",
+       "at": 186.0
+      }
      ]
     }
    ],
@@ -715,8 +752,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultimate Embrace"
+     "tSync": 25.0,
+     "syncAt": [
+      {
+       "name": "Ultimate Embrace",
+       "at": 25.0
+      }
      ]
     },
     {
@@ -809,8 +850,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken"
+     "tSync": 39.7,
+     "syncAt": [
+      {
+       "name": "Forsaken",
+       "at": 39.7
+      }
      ]
     },
     {
@@ -1211,8 +1256,12 @@
        }
       ]
      },
-     "sync": [
-      "Light of Judgment"
+     "tSync": 145.1,
+     "syncAt": [
+      {
+       "name": "Light of Judgment",
+       "at": 145.1
+      }
      ]
     },
     {
@@ -1268,8 +1317,12 @@
        }
       ]
      },
-     "sync": [
-      "Wings of Destruction"
+     "tSync": 174.0,
+     "syncAt": [
+      {
+       "name": "Wings of Destruction",
+       "at": 174.0
+      }
      ]
     },
     {
@@ -1331,8 +1384,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultimate Embrace"
+     "tSync": 181.2,
+     "syncAt": [
+      {
+       "name": "Ultimate Embrace",
+       "at": 181.2
+      }
      ]
     }
    ],
@@ -1397,8 +1454,12 @@
        }
       ]
      },
-     "sync": [
-      "Bowels of Agony"
+     "tSync": 68.9,
+     "syncAt": [
+      {
+       "name": "Bowels of Agony",
+       "at": 68.9
+      }
      ]
     },
     {
@@ -1438,9 +1499,16 @@
        }
       ]
      },
-     "sync": [
-      "Stray Flames",
-      "Tsunami"
+     "tSync": 87.6,
+     "syncAt": [
+      {
+       "name": "Stray Flames",
+       "at": 87.6
+      },
+      {
+       "name": "Tsunami",
+       "at": 88.8
+      }
      ]
     },
     {
@@ -1485,8 +1553,12 @@
        }
       ]
      },
-     "sync": [
-      "Thunder"
+     "tSync": 97.1,
+     "syncAt": [
+      {
+       "name": "Thunder",
+       "at": 97.1
+      }
      ]
     },
     {
@@ -1538,9 +1610,16 @@
        }
       ]
      },
-     "sync": [
-      "Stray Flames",
-      "Tsunami"
+     "tSync": 114.2,
+     "syncAt": [
+      {
+       "name": "Stray Flames",
+       "at": 114.2
+      },
+      {
+       "name": "Tsunami",
+       "at": 115.6
+      }
      ]
     },
     {
@@ -1609,8 +1688,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultima Blaster"
+     "tSync": 125.7,
+     "syncAt": [
+      {
+       "name": "Ultima Blaster",
+       "at": 125.7
+      }
      ]
     },
     {
@@ -1701,8 +1784,12 @@
        }
       ]
      },
-     "sync": [
-      "Vacuum Wave"
+     "tSync": 132.7,
+     "syncAt": [
+      {
+       "name": "Vacuum Wave",
+       "at": 132.7
+      }
      ]
     },
     {
@@ -1776,8 +1863,12 @@
        }
       ]
      },
-     "sync": [
-      "Cyclone"
+     "tSync": 136.2,
+     "syncAt": [
+      {
+       "name": "Cyclone",
+       "at": 136.2
+      }
      ]
     },
     {
@@ -1808,8 +1899,12 @@
        }
       ]
      },
-     "sync": [
-      "The Decisive Battle"
+     "tSync": 162.5,
+     "syncAt": [
+      {
+       "name": "The Decisive Battle",
+       "at": 162.5
+      }
      ]
     },
     {
@@ -1817,7 +1912,9 @@
      "info": [
       "Healer Accretion 1st | DPS Accretion 2nd",
       "Tanks and DPS should not use any abilities that boosts HP such as Second Wind and Curing Waltz."
-     ]
+     ],
+     "t": 163,
+     "tEst": true
     },
     {
      "name": "Earthquake",
@@ -1862,8 +1959,12 @@
        }
       ]
      },
-     "sync": [
-      "Earthquake"
+     "tSync": 177.1,
+     "syncAt": [
+      {
+       "name": "Earthquake",
+       "at": 177.1
+      }
      ]
     },
     {
@@ -1917,9 +2018,16 @@
        }
       ]
      },
-     "sync": [
-      "Shocking Impact",
-      "Shockwave"
+     "tSync": 195.8,
+     "syncAt": [
+      {
+       "name": "Shocking Impact",
+       "at": 195.8
+      },
+      {
+       "name": "Shockwave",
+       "at": 195.9
+      }
      ]
     },
     {
@@ -1967,9 +2075,16 @@
        }
       ]
      },
-     "sync": [
-      "Shocking Impact",
-      "Shockwave"
+     "tSync": 226.3,
+     "syncAt": [
+      {
+       "name": "Shocking Impact",
+       "at": 226.3
+      },
+      {
+       "name": "Shockwave",
+       "at": 226.7
+      }
      ]
     },
     {
@@ -2014,10 +2129,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Black Hole"
-     ]
+     }
     },
     {
      "name": "Black Holes II (4th Tether Set)",
@@ -2050,10 +2162,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Black Hole"
-     ]
+     }
     },
     {
      "name": "Black Holes II (5th Tether Set)",
@@ -2082,10 +2191,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Black Hole"
-     ]
+     }
     },
     {
      "name": "Thunder III (5th Set)",
@@ -2152,8 +2258,12 @@
        }
       ]
      },
-     "sync": [
-      "Thunder"
+     "tSync": 255.3,
+     "syncAt": [
+      {
+       "name": "Thunder",
+       "at": 255.3
+      }
      ]
     },
     {
@@ -2203,10 +2313,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Black Hole"
-     ]
+     }
     },
     {
      "name": "Shocking Impact/Shockwave",
@@ -2243,9 +2350,16 @@
        }
       ]
      },
-     "sync": [
-      "Shocking Impact",
-      "Shockwave"
+     "tSync": 294.5,
+     "syncAt": [
+      {
+       "name": "Shocking Impact",
+       "at": 294.5
+      },
+      {
+       "name": "Shockwave",
+       "at": 294.8
+      }
      ]
     },
     {
@@ -2292,9 +2406,16 @@
        }
       ]
      },
-     "sync": [
-      "Stomp-a-Mole",
-      "Knock Down"
+     "tSync": 322.3,
+     "syncAt": [
+      {
+       "name": "Stomp-a-Mole",
+       "at": 322.3
+      },
+      {
+       "name": "Knock Down",
+       "at": 324.2
+      }
      ]
     }
    ],
@@ -2374,8 +2495,12 @@
        }
       ]
      },
-     "sync": [
-      "Grand Cross"
+     "tSync": 30.0,
+     "syncAt": [
+      {
+       "name": "Grand Cross",
+       "at": 30.0
+      }
      ]
     },
     {
@@ -2425,9 +2550,16 @@
        }
       ]
      },
-     "sync": [
-      "Inferno",
-      "Tsunami"
+     "tSync": 34.5,
+     "syncAt": [
+      {
+       "name": "Inferno",
+       "at": 34.5
+      },
+      {
+       "name": "Tsunami",
+       "at": 34.8
+      }
      ]
     },
     {
@@ -2486,8 +2618,12 @@
        }
       ]
      },
-     "sync": [
-      "Grand Cross"
+     "tSync": 44.5,
+     "syncAt": [
+      {
+       "name": "Grand Cross",
+       "at": 44.5
+      }
      ]
     },
     {
@@ -2547,9 +2683,16 @@
        }
       ]
      },
-     "sync": [
-      "Inferno",
-      "Tsunami"
+     "tSync": 49.3,
+     "syncAt": [
+      {
+       "name": "Inferno",
+       "at": 49.3
+      },
+      {
+       "name": "Tsunami",
+       "at": 49.1
+      }
      ]
     },
     {
@@ -2615,8 +2758,12 @@
        }
       ]
      },
-     "sync": [
-      "Grand Cross"
+     "tSync": 59.0,
+     "syncAt": [
+      {
+       "name": "Grand Cross",
+       "at": 59.0
+      }
      ]
     },
     {
@@ -2654,8 +2801,12 @@
        }
       ]
      },
-     "sync": [
-      "Flood of Naught"
+     "tSync": 71.1,
+     "syncAt": [
+      {
+       "name": "Flood of Naught",
+       "at": 71.1
+      }
      ]
     },
     {
@@ -2688,8 +2839,12 @@
        }
       ]
      },
-     "sync": [
-      "Death Bolt"
+     "tSync": 79.9,
+     "syncAt": [
+      {
+       "name": "Death Bolt",
+       "at": 79.9
+      }
      ]
     },
     {
@@ -2748,8 +2903,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultima Upsurge"
+     "tSync": 98.4,
+     "syncAt": [
+      {
+       "name": "Ultima Upsurge",
+       "at": 98.4
+      }
      ]
     },
     {
@@ -2791,8 +2950,12 @@
        }
       ]
      },
-     "sync": [
-      "Death Bolt"
+     "tSync": 105.6,
+     "syncAt": [
+      {
+       "name": "Death Bolt",
+       "at": 105.6
+      }
      ]
     },
     {
@@ -2823,8 +2986,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultima Upsurge"
+     "tSync": 138.1,
+     "syncAt": [
+      {
+       "name": "Ultima Upsurge",
+       "at": 138.1
+      }
      ]
     }
    ],
@@ -2905,8 +3072,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultima Repeater"
+     "tSync": 49.0,
+     "syncAt": [
+      {
+       "name": "Ultima Repeater",
+       "at": 49.0
+      }
      ]
     },
     {
@@ -2957,8 +3128,12 @@
        }
       ]
      },
-     "sync": [
-      "Fell Forces"
+     "tSync": 55.0,
+     "syncAt": [
+      {
+       "name": "Fell Forces",
+       "at": 55.0
+      }
      ]
     },
     {
@@ -3001,10 +3176,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Chaotic Flood"
-     ]
+     }
     },
     {
      "name": "Maddening Orchestra",
@@ -3068,8 +3240,12 @@
        }
       ]
      },
-     "sync": [
-      "Maddening Orchestra"
+     "tSync": 79.3,
+     "syncAt": [
+      {
+       "name": "Maddening Orchestra",
+       "at": 79.3
+      }
      ]
     },
     {
@@ -3120,8 +3296,12 @@
        }
       ]
      },
-     "sync": [
-      "Fell Forces"
+     "tSync": 90.8,
+     "syncAt": [
+      {
+       "name": "Fell Forces",
+       "at": 90.8
+      }
      ]
     },
     {
@@ -3145,8 +3325,12 @@
        }
       ]
      },
-     "sync": [
-      "Celestriad"
+     "tSync": 100.4,
+     "syncAt": [
+      {
+       "name": "Celestriad",
+       "at": 100.4
+      }
      ]
     },
     {
@@ -3219,8 +3403,12 @@
        }
       ]
      },
-     "sync": [
-      "Ultima Repeater"
+     "tSync": 134.1,
+     "syncAt": [
+      {
+       "name": "Ultima Repeater",
+       "at": 134.1
+      }
      ]
     },
     {
@@ -3302,8 +3490,12 @@
        }
       ]
      },
-     "sync": [
-      "Fell Forces"
+     "tSync": 138.6,
+     "syncAt": [
+      {
+       "name": "Fell Forces",
+       "at": 138.6
+      }
      ]
     },
     {
@@ -3320,8 +3512,12 @@
        }
       ]
      },
-     "sync": [
-      "Stray Entropy"
+     "tSync": 163.0,
+     "syncAt": [
+      {
+       "name": "Stray Entropy",
+       "at": 163.0
+      }
      ]
     },
     {
@@ -3345,8 +3541,12 @@
        }
       ]
      },
-     "sync": [
-      "Maddening Orchestra"
+     "tSync": 171.7,
+     "syncAt": [
+      {
+       "name": "Maddening Orchestra",
+       "at": 171.7
+      }
      ]
     },
     {
@@ -3363,8 +3563,12 @@
        }
       ]
      },
-     "sync": [
-      "Fell Forces"
+     "tSync": 183.5,
+     "syncAt": [
+      {
+       "name": "Fell Forces",
+       "at": 183.5
+      }
      ]
     },
     {
@@ -3372,7 +3576,9 @@
      "info": [
       "For Forsaken, use any timed mitigation as late as possible unless otherwise noted.",
       "It is important that the new round of mitigation for the 5th hit are applied as the first round of mitigation will fall off."
-     ]
+     ],
+     "t": 183,
+     "tEst": true
     },
     {
      "name": "Forsaken (1st Hit)",
@@ -3437,8 +3643,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken"
+     "tSync": 200.8,
+     "syncAt": [
+      {
+       "name": "Forsaken",
+       "at": 200.8
+      }
      ]
     },
     {
@@ -3510,8 +3720,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken Bonds"
+     "tSync": 206.4,
+     "syncAt": [
+      {
+       "name": "Forsaken Bonds",
+       "at": 206.4
+      }
      ]
     },
     {
@@ -3588,8 +3802,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken"
+     "tSync": 207.9,
+     "syncAt": [
+      {
+       "name": "Forsaken",
+       "at": 207.9
+      }
      ]
     },
     {
@@ -3650,8 +3868,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken Bonds"
+     "tSync": 212.9,
+     "syncAt": [
+      {
+       "name": "Forsaken Bonds",
+       "at": 212.9
+      }
      ]
     },
     {
@@ -3727,8 +3949,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken"
+     "tSync": 216.6,
+     "syncAt": [
+      {
+       "name": "Forsaken",
+       "at": 216.6
+      }
      ]
     },
     {
@@ -3802,8 +4028,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken Bonds"
+     "tSync": 221.8,
+     "syncAt": [
+      {
+       "name": "Forsaken Bonds",
+       "at": 221.8
+      }
      ]
     },
     {
@@ -3877,8 +4107,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken"
+     "tSync": 225.1,
+     "syncAt": [
+      {
+       "name": "Forsaken",
+       "at": 225.1
+      }
      ]
     },
     {
@@ -3952,8 +4186,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken Bonds"
+     "tSync": 230.0,
+     "syncAt": [
+      {
+       "name": "Forsaken Bonds",
+       "at": 230.0
+      }
      ]
     },
     {
@@ -3970,8 +4208,12 @@
        }
       ]
      },
-     "sync": [
-      "Forsaken Null"
+     "tSync": 261.2,
+     "syncAt": [
+      {
+       "name": "Forsaken Null",
+       "at": 261.2
+      }
      ]
     }
    ],

@@ -151,9 +151,12 @@
        }
       ]
      },
-     "sync": [
-      "Cutback Blaze",
-      "Pyrotation"
+     "tSync": 59.0,
+     "syncAt": [
+      {
+       "name": "Cutback Blaze",
+       "at": 59.0
+      }
      ]
     },
     {
@@ -171,8 +174,12 @@
        }
       ]
      },
-     "sync": [
-      "Sick Swell"
+     "tSync": 94.0,
+     "syncAt": [
+      {
+       "name": "Sick Swell",
+       "at": 94.0
+      }
      ]
     }
    ],
@@ -217,8 +224,12 @@
        }
       ]
      },
-     "sync": [
-      "Xtreme Spectacular"
+     "tSync": 158.0,
+     "syncAt": [
+      {
+       "name": "Xtreme Spectacular",
+       "at": 158.0
+      }
      ]
     },
     {
@@ -236,8 +247,12 @@
        }
       ]
      },
-     "sync": [
-      "Insane Air"
+     "tSync": 191.7,
+     "syncAt": [
+      {
+       "name": "Insane Air",
+       "at": 191.7
+      }
      ]
     },
     {
@@ -307,8 +322,12 @@
        }
       ]
      },
-     "sync": [
-      "Watersnaking"
+     "tSync": 241.9,
+     "syncAt": [
+      {
+       "name": "Watersnaking",
+       "at": 241.9
+      }
      ]
     },
     {
@@ -376,8 +395,12 @@
        }
       ]
      },
-     "sync": [
-      "Cutback Blaze"
+     "tSync": 303.4,
+     "syncAt": [
+      {
+       "name": "Cutback Blaze",
+       "at": 303.4
+      }
      ]
     }
    ],
@@ -415,8 +438,12 @@
        }
       ]
      },
-     "sync": [
-      "Deep Aerial"
+     "tSync": 331.9,
+     "syncAt": [
+      {
+       "name": "Deep Aerial",
+       "at": 331.9
+      }
      ]
     },
     {
@@ -586,10 +613,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Divers' Dare"
-     ]
+     }
     }
    ],
    "notes": []
@@ -641,8 +665,12 @@
        }
       ]
      },
-     "sync": [
-      "Insane Air"
+     "tSync": 479.4,
+     "syncAt": [
+      {
+       "name": "Insane Air",
+       "at": 479.4
+      }
      ]
     },
     {
@@ -735,10 +763,7 @@
         ]
        }
       ]
-     },
-     "sync": [
-      "Pyrotation"
-     ]
+     }
     },
     {
      "name": "Enrage 1",

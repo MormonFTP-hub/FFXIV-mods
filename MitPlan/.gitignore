@@ -18,3 +18,7 @@ x64/
 
 # Cached sheets and timelines (tools/build_plans.py)
 work/
+
+# tools/replay build output
+tools/replay/bin/
+tools/replay/obj/
