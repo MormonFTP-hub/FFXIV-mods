@@ -301,10 +301,15 @@ function channelId_(props, stored) {
   return stored[pk];
 }
 
+/** Discord turns bot requests away ("internal network error") unless they say who they are. */
+function botHeaders_() {
+  return {Authorization: 'Bot ' + DISCORD_BOT_TOKEN, 'User-Agent': 'DiscordBot (https://script.google.com, 1.0)'};
+}
+
 /** A Discord API call as the bot: the parsed reply ({} when there's none), or false if it failed. */
 function botApi_(method, path) {
   const r = UrlFetchApp.fetch('https://discord.com/api/v10' + path,
-                              {method, headers: {Authorization: 'Bot ' + DISCORD_BOT_TOKEN}, muteHttpExceptions: true});
+                              {method, headers: botHeaders_(), muteHttpExceptions: true});
   const code = r.getResponseCode();
   if (code === 401 || code === 403) console.warn(`The Discord bot was turned away (HTTP ${code}): run testDiscordBot`);
   if (code < 200 || code >= 300) return false;
@@ -339,7 +344,7 @@ function channelRecent_(props, stored) {
   const channel = channelId_(props, stored);
   if (!channel) return {code: 0, messages: []};
   const r = UrlFetchApp.fetch(`https://discord.com/api/v10/channels/${channel}/messages?limit=100`,
-                              {headers: {Authorization: 'Bot ' + DISCORD_BOT_TOKEN}, muteHttpExceptions: true});
+                              {headers: botHeaders_(), muteHttpExceptions: true});
   const code = r.getResponseCode();
   if (code === 401 || code === 403) console.warn(`The Discord bot can't read the channel (HTTP ${code}): run testDiscordBot`);
   let messages = [];
@@ -348,20 +353,28 @@ function channelRecent_(props, stored) {
   } catch (e) {
     // not Discord's JSON (Cloudflare): try again next check
   }
-  return {code, messages};
+  return {code, messages, why: code === 200 ? '' : r.getContentText().slice(0, 200)};
 }
 
 /** Run from the editor to check DISCORD_BOT_TOKEN: signs in as the bot and reads the board's channel. */
 function testDiscordBot() {
   checkSettings_();
   if (!botReady_()) return console.log('No bot token yet: paste it near the top, save, and run this again.');
-  const me = UrlFetchApp.fetch('https://discord.com/api/v10/users/@me', {headers: {Authorization: 'Bot ' + DISCORD_BOT_TOKEN}, muteHttpExceptions: true});
+  const me = UrlFetchApp.fetch('https://discord.com/api/v10/users/@me', {headers: botHeaders_(), muteHttpExceptions: true});
   if (me.getResponseCode() !== 200) return console.log(`Discord didn't take the bot token (HTTP ${me.getResponseCode()}): copy it again from the bot's page.`);
   console.log(`Signed in as the bot ${JSON.parse(me.getContentText()).username}.`);
   const props = PropertiesService.getScriptProperties();
-  const {code} = channelRecent_(props, props.getProperties());
+  const {code, why} = channelRecent_(props, props.getProperties());
   console.log(code === 200 ? `It can read the channel: the board will move back to the bottom when people type, old messages get cleaned up, and the ${PAUSE_EMOJI} switch shows up under the countdown on the next check.` :
-              `It can't read the channel (HTTP ${code}): invite it to the server with View Channels, Read Message History and Add Reactions.`);
+              `It can't read the channel (HTTP ${code} ${why}): invite it to the server with View Channels, Read Message History and Add Reactions.`);
+  const state = JSON.parse(props.getProperty('board') || 'null');
+  const channel = channelId_(props, props.getProperties());
+  if (!state || !state.timerId || !channel) return;
+  const path = `https://discord.com/api/v10/channels/${channel}/messages/${state.timerId}/reactions/${encodeURIComponent(PAUSE_EMOJI)}`;
+  const add = UrlFetchApp.fetch(path + '/@me', {method: 'put', headers: botHeaders_(), muteHttpExceptions: true});
+  console.log(`Adding the ${PAUSE_EMOJI} switch under the countdown: HTTP ${add.getResponseCode()} ${add.getContentText().slice(0, 120)}`);
+  const read = UrlFetchApp.fetch(path + '?limit=100', {headers: botHeaders_(), muteHttpExceptions: true});
+  console.log(`Reading who clicked it: HTTP ${read.getResponseCode()} ${read.getResponseCode() === 200 ? '' : read.getContentText().slice(0, 120)}`);
 }
 
 function discord_(method, path, payload, uploads) {

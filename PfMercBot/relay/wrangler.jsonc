@@ -1,0 +1,10 @@
+// Cloudflare settings for the PF Merc board's bot relay: https://pf-mercs-relay.lack-age-im.workers.dev
+// From the repo root: npx wrangler deploy --config PfMercBot/relay/wrangler.jsonc
+{
+  "name": "pf-mercs-relay",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-23",
+  "workers_dev": true,
+  // No per-version preview addresses: only the current upload is reachable.
+  "preview_urls": false
+}
