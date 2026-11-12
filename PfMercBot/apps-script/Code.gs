@@ -21,13 +21,14 @@ const FFLOGS_CLIENT_ID = 'PASTE_FFLOGS_CLIENT_ID';  // double-click and paste th
 const FFLOGS_CLIENT_SECRET = 'PASTE_FFLOGS_CLIENT_SECRET';  // double-click and paste the Client Secret
 const USE_FFLOGS = false;  // true = look up each leader's prog on FFLogs (spends those keys' API points)
 // Pings this one Discord user (right-click your name > Copy User ID) when a party in PING_FIGHTS offers
-// more than PING_OVER_MILLIONS. Nobody else is ever pinged. '' turns it off.
+// more than PING_OVER_MILLIONS. Nobody else is ever pinged. '' turns it off. With the bot (below), this
+// user is also the only one whose 🛑 under the countdown pauses the board.
 const PING_USER_ID = '161345179222147072';
 const PING_FIGHTS = ["Dragonsong's Reprise (Ultimate)", 'The Omega Protocol (Ultimate)'];
 const PING_OVER_MILLIONS = 5;
-// Optional, to move the board back to the bottom when people type in the channel and delete the board's
-// own old messages: a Discord bot's token (README: "Keeping the board at the bottom"). The bot only
-// reads the channel; it never posts.
+// Optional, to move the board back to the bottom when people type in the channel, delete the board's own
+// old messages, and give PING_USER_ID a 🛑 on/off switch: a Discord bot's token (README: "Keeping the
+// board at the bottom"). The bot reads the channel and adds that one reaction; it never posts.
 const DISCORD_BOT_TOKEN = 'PASTE_BOT_TOKEN_HERE';  // double-click and paste the bot's token
 // ==================================
 
@@ -50,6 +51,7 @@ const MAX_FIGHTS = 9;  // Discord allows 10 embeds per message: the header plus 
 const MAX_CHARS = 5800;  // ...and 6000 characters across all of them
 const GOLD = 0xF1C40F;
 const GIL_ICON = 'attachment://icon065002.png';  // the gil coin, shown on the board's header
+const PAUSE_EMOJI = '🛑';  // the off switch the bot puts under the countdown
 const FIGHT_COLOURS = [0xE74C3C, 0x9B59B6, 0x3498DB, 0x1ABC9C, 0xE67E22, 0xE91E63, 0x2ECC71, 0x5865F2, 0xF39C12];
 const ROLE_ICONS = {tank: '🛡️', healer: '💚', dps: '⚔️', flex: '❔', any: '❔'};
 
@@ -115,6 +117,7 @@ function check_(throwErrors) {
 
 function runPoll_(props, stored, startedAt) {
   checkSettings_();
+  if (pausedByOwner_(JSON.parse(stored.board || 'null'), props, stored)) return;  // the off switch is on
   const listings = parseListings(fetchListings_(), NA_DATA_CENTRES);
   if (!listings.length) throw new Error('xivpf returned no NA listings (site down or changed?)');
 
@@ -170,10 +173,11 @@ function runPoll_(props, stored, startedAt) {
   let boardId = mine ? state.id : null;
   let boardSig = mine ? state.sig : null;
   let timerId = mine ? state.timerId : null;
+  let reacted = mine ? state.reacted : null;  // the countdown that has the bot's off switch on it
   const alerts = Object.assign({}, mine && state.alerts);  // key hash -> ping message id
   // Saved after every post, so a check that fails halfway (Discord has its moments) never loses track
   // of a message it already posted.
-  const save = () => props.setProperty('board', JSON.stringify({id: boardId, hook, sig: boardSig, timerId, alerts}));
+  const save = () => props.setProperty('board', JSON.stringify({id: boardId, hook, sig: boardSig, timerId, reacted, alerts}));
   // With DISCORD_BOT_TOKEN (webhooks can't read the channel), the channel's latest messages: if someone
   // typed under ours, the board is posted again, and the pings and countdown with it, so it's all back
   // at the bottom. Our own out-of-date messages are deleted further down.
@@ -215,6 +219,10 @@ function runPoll_(props, stored, startedAt) {
   if (timerId && !discord_('patch', `/messages/${timerId}`, {content: timer, allowed_mentions: {parse: []}})) timerId = null;
   if (!timerId) timerId = discord_('post', '', {content: timer, username: BOT_NAME, allowed_mentions: {parse: []}}).id;
   save();
+  if (botReady_() && reacted !== timerId && botApi_('put', `/channels/${channelId_(props, stored)}/messages/${timerId}/reactions/${encodeURIComponent(PAUSE_EMOJI)}/@me`)) {
+    reacted = timerId;  // the off switch, ready to click
+    save();
+  }
   // Anything else this webhook posted is out of date (old boards and countdowns, one-per-party alerts
   // from the first version): delete it. Messages handled above this check are skipped.
   const handled = new Set([boardId, timerId, ...Object.values(alerts), state && state.id, state && state.timerId,
@@ -281,16 +289,56 @@ function laterId_(a, b) {
   return a.length !== b.length ? a.length > b.length : a > b;
 }
 
-/** The latest 100 messages in the webhook's channel, read as the bot: {code, messages}. */
-function channelRecent_(props, stored) {
+/** The webhook's channel id (the webhook knows it), or null if Discord didn't say. */
+function channelId_(props, stored) {
   const pk = 'channel:' + webhookId_();
-  if (!stored[pk]) {  // the webhook knows its channel
+  if (!stored[pk]) {
     const w = UrlFetchApp.fetch(webhookBase_(), {muteHttpExceptions: true});
-    if (w.getResponseCode() !== 200) return {code: w.getResponseCode(), messages: []};
+    if (w.getResponseCode() !== 200) return null;
     stored[pk] = JSON.parse(w.getContentText()).channel_id;
     props.setProperty(pk, stored[pk]);
   }
-  const r = UrlFetchApp.fetch(`https://discord.com/api/v10/channels/${stored[pk]}/messages?limit=100`,
+  return stored[pk];
+}
+
+/** A Discord API call as the bot: the parsed reply ({} when there's none), or false if it failed. */
+function botApi_(method, path) {
+  const r = UrlFetchApp.fetch('https://discord.com/api/v10' + path,
+                              {method, headers: {Authorization: 'Bot ' + DISCORD_BOT_TOKEN}, muteHttpExceptions: true});
+  const code = r.getResponseCode();
+  if (code === 401 || code === 403) console.warn(`The Discord bot was turned away (HTTP ${code}): run testDiscordBot`);
+  if (code < 200 || code >= 300) return false;
+  try {
+    return code === 204 ? {} : JSON.parse(r.getContentText());
+  } catch (e) {
+    return false;  // not Discord's JSON (Cloudflare): try again next check
+  }
+}
+
+/**
+ * The board's off switch: the bot puts a 🛑 under the countdown, and while PING_USER_ID's own 🛑 is on
+ * it, checks stop and the countdown says so. Anyone else's 🛑 does nothing. Needs DISCORD_BOT_TOKEN.
+ */
+function pausedByOwner_(state, props, stored) {
+  if (!botReady_() || !/^\d{17,20}$/.test(PING_USER_ID) || !state || state.hook !== webhookId_() || !state.timerId) return false;
+  const channel = channelId_(props, stored);
+  const users = channel && botApi_('get', `/channels/${channel}/messages/${state.timerId}/reactions/${encodeURIComponent(PAUSE_EMOJI)}?limit=100`);
+  const paused = Array.isArray(users) && users.some(u => u.id === PING_USER_ID);
+  if (paused !== Boolean(state.paused)) {
+    if (paused) {
+      discord_('patch', `/messages/${state.timerId}`, {allowed_mentions: {parse: []},
+          content: `-# ⏸️ Paused <t:${Math.floor(Date.now() / 1000)}:R>  ·  take your ${PAUSE_EMOJI} off to turn the board back on`});
+    }
+    props.setProperty('board', JSON.stringify(Object.assign({}, state, {paused})));  // unpausing: this check updates everything
+  }
+  return paused;
+}
+
+/** The latest 100 messages in the webhook's channel, read as the bot: {code, messages}. */
+function channelRecent_(props, stored) {
+  const channel = channelId_(props, stored);
+  if (!channel) return {code: 0, messages: []};
+  const r = UrlFetchApp.fetch(`https://discord.com/api/v10/channels/${channel}/messages?limit=100`,
                               {headers: {Authorization: 'Bot ' + DISCORD_BOT_TOKEN}, muteHttpExceptions: true});
   const code = r.getResponseCode();
   if (code === 401 || code === 403) console.warn(`The Discord bot can't read the channel (HTTP ${code}): run testDiscordBot`);
@@ -312,8 +360,8 @@ function testDiscordBot() {
   console.log(`Signed in as the bot ${JSON.parse(me.getContentText()).username}.`);
   const props = PropertiesService.getScriptProperties();
   const {code} = channelRecent_(props, props.getProperties());
-  console.log(code === 200 ? 'It can read the channel: the board will move back to the bottom when people type, and old messages get cleaned up.' :
-              `It can't read the channel (HTTP ${code}): invite it to the server, with Read Message History in that channel.`);
+  console.log(code === 200 ? `It can read the channel: the board will move back to the bottom when people type, old messages get cleaned up, and the ${PAUSE_EMOJI} switch shows up under the countdown on the next check.` :
+              `It can't read the channel (HTTP ${code}): invite it to the server with View Channels, Read Message History and Add Reactions.`);
 }
 
 function discord_(method, path, payload, uploads) {

@@ -51,28 +51,34 @@ Edit the lines at the top of `Code.gs` and save. The next check uses them.
 | `PIN_TO_BOTTOM` | Fights that always go at the bottom of the board, in this order (the last is the very bottom). |
 | `PING_USER_ID` | The Discord user to @-mention about big offers (in Discord: right-click your name > Copy User ID; needs Developer Mode on). `''` turns pings off. |
 | `PING_FIGHTS` / `PING_OVER_MILLIONS` | Which fights ping, and the pay they have to beat (more than this many millions). |
-| `DISCORD_BOT_TOKEN` | Optional. Lets the board move back to the bottom when people type in the channel (see below). |
+| `DISCORD_BOT_TOKEN` | Optional. Lets the board move back to the bottom when people type in the channel, and gives you the 🛑 on/off switch (see below). |
 | `FFLOGS_CLIENT_ID` / `FFLOGS_CLIENT_SECRET` | Optional. With these and `USE_FFLOGS`, each leader gets their best pull on that fight, e.g. "📈 P5 · 23.44%" or "✅ Cleared ×3". |
 | `USE_FFLOGS` | `false` (now) = no FFLogs lookups at all, so those keys' API points stay free for other things. `true` turns prog back on. |
 
-### Keeping the board at the bottom
+### Keeping the board at the bottom, and the on/off switch
 
 When people chat in the channel, the board ends up above their messages. A webhook can only post,
-not read the channel, so moving the board back down needs a small Discord bot that only reads:
+not read the channel, so moving the board back down needs a small Discord bot. The same bot gives
+you an on/off switch. It only reads the channel and adds one reaction; it never posts.
 
 1. Open <https://discord.com/developers/applications>, click **New Application**, name it (e.g.
    "PF Mercs") and create it.
 2. Open **Bot**, click **Reset Token** and copy the token. Paste it over `PASTE_BOT_TOKEN_HERE`
    near the top of `Code.gs`, then save.
 3. Invite the bot to your server. Open **OAuth2 > URL Generator**, tick `bot`, then tick
-   **View Channels** and **Read Message History**. Open the link at the bottom, pick the server,
-   and authorize it. It needs no other permissions, and no privileged intents.
+   **View Channels**, **Read Message History** and **Add Reactions**. Open the link at the bottom,
+   pick the server, and authorize it. It needs no other permissions, and no privileged intents.
 4. Run `testDiscordBot` from the function dropdown. It should say the bot can read the channel.
 
 From then on, a check that finds a message posted after the countdown deletes the board, pings and
 countdown and posts them again below it. It also deletes any other message the webhook posted that's
 out of date: old boards and countdowns, stray pings, and the one-per-party alerts from the first
 version. Other people's messages are never touched.
+
+**On/off switch:** the bot puts a 🛑 under the countdown. While *your* 🛑 (the `PING_USER_ID`
+account) is on it, the board is paused: the countdown says "Paused", and nothing is fetched, edited
+or pinged. Take your 🛑 off and the next check turns everything back on. It also moves the board under
+anything typed while it was paused. Anyone else's 🛑 does nothing.
 
 Even without the bot, each check keeps the board, then the pings, then the countdown in that order,
 and saves after every message it posts, so a check that fails halfway doesn't lose track of one. Moved pings show the mention but don't ping again. Each
