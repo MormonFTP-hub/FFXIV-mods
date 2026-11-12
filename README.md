@@ -6,8 +6,11 @@ Characters from other games ported into **Final Fantasy XIV** as [Penumbra](http
 ![Glamourer](https://img.shields.io/badge/designs-Glamourer-e0579b)
 ![Python](https://img.shields.io/badge/tools-Python%20%7C%20Blender-3776ab)
 ![.NET](https://img.shields.io/badge/apps-.NET%20%7C%20Dalamud-512bd4)
+[![Discord](https://img.shields.io/badge/Discord-join%20the%20Workshop-5865F2?logo=discord&logoColor=white)](https://discord.gg/9cVPS7r5Ha)
 
-**[⬇ Download the mods](../../releases/tag/mods)** · **[⬇ Download the apps](../../releases/tag/apps)** · [How to install](#installing-a-mod) · [Tools and apps](#tools-and-apps) · [How a port is made](#how-a-port-is-made)
+**[⬇ Download the mods](../../releases/tag/mods)** · **[⬇ Download the apps](../../releases/tag/apps)** · **[💬 Join the Discord](https://discord.gg/9cVPS7r5Ha)** · [How to install](#installing-a-mod) · [Tools and apps](#tools-and-apps) · [How a port is made](#how-a-port-is-made)
+
+<p align="center"><a href="https://discord.gg/9cVPS7r5Ha"><img src="docs/discord.png" width="100%" alt="Join MormonFTP's Workshop on Discord: mod help, requests, sims and plugins, new releases"></a></p>
 
 ## Mods
 
@@ -101,6 +104,13 @@ python tools/backup.py
 This rebuilds the gallery from the `.pmp` files, commits and pushes any changes, and uploads every new or changed `.pmp` and `.exe` to the releases. `--readme` only rebuilds the gallery. `--no-push` commits without sending anything. Before committing it checks the new lines for anything that looks like a token, webhook or key, and stops if it finds one.
 
 It also runs by itself: `tools/autobackup_hook.py` is a Claude Code Stop hook that runs at the end of every Claude turn. If anything in this folder changed, it starts a backup in the background. The log is `.git/autobackup.log`, and a failed backup shows up as a message at the end of the next turn.
+
+## Join the Discord
+
+Questions, requests and new releases all go through **[MormonFTP's Workshop](https://discord.gg/9cVPS7r5Ha)**:
+browse every mod and tool as cards in #ffxiv-gallery, ask for a character in #mod-requests, get install help in
+#mod-help, and show your character wearing a mod in #community-shots. Want to help build something? Start in
+#how-to-contribute.
 
 ## Credits
 
