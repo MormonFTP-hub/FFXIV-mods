@@ -162,10 +162,6 @@ function runPoll_(props, stored, startedAt) {
   const prog = lookupProg_(parties, props, stored);
   const embeds = buildBoard_(parties, firstSeen, leaders, prog, now, props, stored);
   const sig = shortHash_(BOARD_LAYOUT + JSON.stringify(embeds));
-  const t = Math.floor(now / 1000);
-  // the next check that will run: in a minute, or later if today's runtime budget needs a rest
-  const rest = Math.ceil((budgetOpensAt_(stored, Date.now() - startedAt) - now) / 1000 / CHECK_EVERY_S) * CHECK_EVERY_S;
-  const timer = `-# 🔄 Next refresh <t:${t + Math.max(CHECK_EVERY_S, rest)}:R>  ·  last refreshed <t:${t}:T>`;
 
   // Two messages: the board (the cards) and a one-line countdown under it. Discord only builds image
   // previews for pictures uploaded with the edit, so the board is re-sent with its pictures only when
@@ -215,6 +211,11 @@ function runPoll_(props, stored, startedAt) {
     props.setProperty('seen', JSON.stringify(seen));
   }
 
+  // The next check that will run: in a minute, or later if today's runtime budget needs a rest. Worked
+  // out last, so the time spent sending the board counts.
+  const t = Math.floor(now / 1000);
+  const rest = Math.ceil((budgetOpensAt_(stored, Date.now() - startedAt) - Date.now()) / 1000 / CHECK_EVERY_S) * CHECK_EVERY_S;
+  const timer = `-# 🔄 Next refresh <t:${Math.floor(Date.now() / 1000) + Math.max(CHECK_EVERY_S, rest)}:R>  ·  last refreshed <t:${t}:T>`;
   if (timerId && ![boardId, ...Object.values(alerts)].every(id => laterId_(timerId, id))) {  // it's above the board or a ping: replace it
     discord_('delete', `/messages/${timerId}`);
     timerId = null;

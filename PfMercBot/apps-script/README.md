@@ -75,6 +75,13 @@ countdown and posts them again below it. It also deletes any other message the w
 out of date: old boards and countdowns, stray pings, and the one-per-party alerts from the first
 version. Other people's messages are never touched.
 
+**The relay:** Discord turns bot requests from Google's servers away ("internal network error",
+code 40333), so the script sends them through a tiny Cloudflare Worker, `../relay/worker.js`
+(`BOT_API` in `Code.gs`). It only passes the PF Mercs bot's own requests, and only for reading
+#pf-mercs and the 🛑 switch. To redeploy it from the repo root:
+`npx wrangler deploy --config PfMercBot/relay/wrangler.jsonc`. If you use a different bot or
+channel, change `BOT_ID` and `CHANNEL` at the top of `worker.js` first.
+
 **On/off switch:** the bot puts a 🛑 under the countdown. While *your* 🛑 (the `PING_USER_ID`
 account) is on it, the board is paused: the countdown says "Paused", and nothing is fetched, edited
 or pinged. Take your 🛑 off and the next check turns everything back on. It also moves the board under
