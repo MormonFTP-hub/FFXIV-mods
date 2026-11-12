@@ -52,6 +52,9 @@ const MAX_CHARS = 5800;  // ...and 6000 characters across all of them
 const GOLD = 0xF1C40F;
 const GIL_ICON = 'attachment://icon065002.png';  // the gil coin, shown on the board's header
 const PAUSE_EMOJI = '🛑';  // the off switch the bot puts under the countdown
+// Discord turns bot requests from Google's servers away ("internal network error"), so they go through a
+// small relay on Cloudflare (../relay/worker.js) that only passes this bot's few requests on #pf-mercs.
+const BOT_API = 'https://pf-mercs-relay.lack-age-im.workers.dev/api/v10';
 const FIGHT_COLOURS = [0xE74C3C, 0x9B59B6, 0x3498DB, 0x1ABC9C, 0xE67E22, 0xE91E63, 0x2ECC71, 0x5865F2, 0xF39C12];
 const ROLE_ICONS = {tank: '🛡️', healer: '💚', dps: '⚔️', flex: '❔', any: '❔'};
 
@@ -178,11 +181,11 @@ function runPoll_(props, stored, startedAt) {
   // Saved after every post, so a check that fails halfway (Discord has its moments) never loses track
   // of a message it already posted.
   const save = () => props.setProperty('board', JSON.stringify({id: boardId, hook, sig: boardSig, timerId, reacted, alerts}));
-  // With DISCORD_BOT_TOKEN (webhooks can't read the channel), the channel's latest messages: if someone
-  // typed under ours, the board is posted again, and the pings and countdown with it, so it's all back
-  // at the bottom. Our own out-of-date messages are deleted further down.
+  // With DISCORD_BOT_TOKEN (webhooks can't read the channel), the channel's latest messages: if anyone
+  // typed below the board (even above a newer countdown), the board is posted again, and the pings and
+  // countdown with it, so it's all back at the bottom. Our own out-of-date messages are deleted further down.
   const recent = mine && botReady_() ? channelRecent_(props, stored).messages : [];
-  if (boardId && timerId && recent.some(m => m.webhook_id !== hook && laterId_(m.id, timerId))) {
+  if (boardId && recent.some(m => m.webhook_id !== hook && laterId_(m.id, boardId))) {
     discord_('delete', `/messages/${boardId}`);
     boardId = null;
   }
@@ -308,7 +311,7 @@ function botHeaders_() {
 
 /** A Discord API call as the bot: the parsed reply ({} when there's none), or false if it failed. */
 function botApi_(method, path) {
-  const r = UrlFetchApp.fetch('https://discord.com/api/v10' + path,
+  const r = UrlFetchApp.fetch(BOT_API + path,
                               {method, headers: botHeaders_(), muteHttpExceptions: true});
   const code = r.getResponseCode();
   if (code === 401 || code === 403) console.warn(`The Discord bot was turned away (HTTP ${code}): run testDiscordBot`);
@@ -343,7 +346,7 @@ function pausedByOwner_(state, props, stored) {
 function channelRecent_(props, stored) {
   const channel = channelId_(props, stored);
   if (!channel) return {code: 0, messages: []};
-  const r = UrlFetchApp.fetch(`https://discord.com/api/v10/channels/${channel}/messages?limit=100`,
+  const r = UrlFetchApp.fetch(`${BOT_API}/channels/${channel}/messages?limit=100`,
                               {headers: botHeaders_(), muteHttpExceptions: true});
   const code = r.getResponseCode();
   if (code === 401 || code === 403) console.warn(`The Discord bot can't read the channel (HTTP ${code}): run testDiscordBot`);
@@ -360,7 +363,7 @@ function channelRecent_(props, stored) {
 function testDiscordBot() {
   checkSettings_();
   if (!botReady_()) return console.log('No bot token yet: paste it near the top, save, and run this again.');
-  const me = UrlFetchApp.fetch('https://discord.com/api/v10/users/@me', {headers: botHeaders_(), muteHttpExceptions: true});
+  const me = UrlFetchApp.fetch(BOT_API + '/users/@me', {headers: botHeaders_(), muteHttpExceptions: true});
   if (me.getResponseCode() !== 200) return console.log(`Discord didn't take the bot token (HTTP ${me.getResponseCode()}): copy it again from the bot's page.`);
   console.log(`Signed in as the bot ${JSON.parse(me.getContentText()).username}.`);
   const props = PropertiesService.getScriptProperties();
@@ -370,7 +373,7 @@ function testDiscordBot() {
   const state = JSON.parse(props.getProperty('board') || 'null');
   const channel = channelId_(props, props.getProperties());
   if (!state || !state.timerId || !channel) return;
-  const path = `https://discord.com/api/v10/channels/${channel}/messages/${state.timerId}/reactions/${encodeURIComponent(PAUSE_EMOJI)}`;
+  const path = `${BOT_API}/channels/${channel}/messages/${state.timerId}/reactions/${encodeURIComponent(PAUSE_EMOJI)}`;
   const add = UrlFetchApp.fetch(path + '/@me', {method: 'put', headers: botHeaders_(), muteHttpExceptions: true});
   console.log(`Adding the ${PAUSE_EMOJI} switch under the countdown: HTTP ${add.getResponseCode()} ${add.getContentText().slice(0, 120)}`);
   const read = UrlFetchApp.fetch(path + '?limit=100', {headers: botHeaders_(), muteHttpExceptions: true});
