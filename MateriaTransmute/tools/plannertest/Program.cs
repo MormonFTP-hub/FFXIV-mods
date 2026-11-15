@@ -37,5 +37,26 @@ Check("keep 2 of each: X has 2+0 spare, XI has 5 → 1 trade", Planner.CountTrad
 cfg.KeepPerItem = 3;
 Check("keep 3: XI has 4 spare → none", Planner.Next(bags, cfg) == null);
 
+// The in-game case from 2026-11-15: 127 Spell Speed XI and 12 Piety XI, both junk.
+var sps = new MateriaItem(5, 25, 11, "Spell Speed", "Quicktongue Materia XI", 0);
+var pie = new MateriaItem(6, 7, 11, "Piety", "Piety Materia XI", 0);
+var bag2 = new List<MateriaStack> { S(sps, 127, 0), S(pie, 12, 1) };
+var cfg2 = new Configuration { TrashTypes = [7, 25] };
+b = Planner.Next(bag2, cfg2);
+Check("one Piety + four Spell Speed (Piety rides along to rule it out)",
+    b != null && b.Picks.Single(p => p.Stack.Materia == pie).Take == 1 && b.Picks.Single(p => p.Stack.Materia == sps).Take == 4);
+Console.WriteLine("   " + b!.Describe());
+
+// Six junk stats at one grade: five different ones in the trade, one each.
+var six = Enumerable.Range(0, 6).Select(i => S(new MateriaItem((uint)(10 + i), (uint)(30 + i), 9, $"Stat{i}", $"Stat{i} IX", 0), 10 + i, (short)i)).ToList();
+var cfg3 = new Configuration { TrashTypes = [30, 31, 32, 33, 34, 35] };
+b = Planner.Next(six, cfg3);
+Check("six junk stats → five different, one each, biggest piles first",
+    b != null && b.Picks.Count == 5 && b.Picks.All(p => p.Take == 1) && b.Picks.All(p => p.Stack.Materia.ItemId != 10));
+
+cfg3.MixTypes = false;
+b = Planner.Next(six, cfg3);
+Check("mixing off → five of the biggest pile", b != null && b.Picks.Count == 1 && b.Picks[0].Take == 5 && b.Picks[0].Stack.Materia.ItemId == 15);
+
 Console.WriteLine(fails == 0 ? "all passed" : $"{fails} failed");
 return fails;

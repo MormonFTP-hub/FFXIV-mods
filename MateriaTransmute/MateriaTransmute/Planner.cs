@@ -67,26 +67,42 @@ public static class Planner
         if (spare.Sum(s => s.Count) < PerTrade)
             return null;
 
-        var picks = new List<(MateriaStack, int)>();
-        var need = PerTrade;
-        foreach (var (itemId, _, count) in spare)
+        // How many of each materia go in.
+        var amounts = new Dictionary<uint, int>();
+        if (config.MixTypes)
         {
-            var fromItem = System.Math.Min(count, need);
+            // One of every junk stat (up to five): Mutamix never gives back a stat that went in, and one is enough to
+            // rule it out, so the scarce ones last for as many trades as possible.
+            foreach (var s in spare.Take(PerTrade))
+                amounts[s.ItemId] = 1;
+
+            // The rest from whichever pile is biggest after that.
+            for (var need = PerTrade - amounts.Values.Sum(); need > 0; need--)
+            {
+                var biggest = spare.MaxBy(s => s.Count - amounts.GetValueOrDefault(s.ItemId));
+                amounts[biggest.ItemId] = amounts.GetValueOrDefault(biggest.ItemId) + 1;
+            }
+        }
+        else
+        {
+            amounts[spare[0].ItemId] = PerTrade;
+        }
+
+        var picks = new List<(MateriaStack, int)>();
+        foreach (var s in spare.Where(s => amounts.ContainsKey(s.ItemId)))
+        {
+            var fromItem = amounts[s.ItemId];
             // Smallest stacks first, so a trade empties bag slots rather than nibbling at big stacks.
-            foreach (var stack in stacks.Where(s => s.Materia.ItemId == itemId && s.Quantity > 0).OrderBy(s => s.Quantity))
+            foreach (var stack in stacks.Where(x => x.Materia.ItemId == s.ItemId && x.Quantity > 0).OrderBy(x => x.Quantity))
             {
                 if (fromItem == 0)
                     break;
                 var take = System.Math.Min(stack.Quantity, fromItem);
                 picks.Add((stack, take));
                 fromItem -= take;
-                need -= take;
             }
-
-            if (need == 0)
-                break;
         }
 
-        return need == 0 ? new Batch(grade, picks) : null;
+        return picks.Sum(p => p.Item2) == PerTrade ? new Batch(grade, picks) : null;
     }
 }

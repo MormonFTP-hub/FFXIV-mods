@@ -4,7 +4,7 @@ A Dalamud plugin that gives your junk materia to **Mutamix Bubblypots** (the Bon
 
 You tick what's junk (all Piety, say), stand next to him and press Start. It talks to him, picks **Transmute Materia**, puts five junk materia of one grade in the window, confirms, answers the "are you certain" prompt, logs what came back, and goes again until fewer than five of any grade are left.
 
-**Untested in game so far (2026-11-15).** It builds, and the trade picker passes its offline checks. The game-side steps (filling the window, Confirm, the Yes prompt) follow the game's own structs but haven't run against the live client yet.
+Tested in game on 2026-11-15 (v0.1.0): 16 trades of Spell Speed XI ran end to end, three of them grade-ups. v0.1.1 mixes every junk stat into each trade and checks for a free bag slot before every trade, not just the first.
 
 ## Installing it (for friends)
 
@@ -27,7 +27,7 @@ then **Save and Close**, `/xlplugins`, search **Materia Transmuter**, Install. T
 | `/transmute map` | Flag Mutamix on the map |
 
 - **Pick junk.** One row per stat in your bags, one column per grade. Ticking a stat's name covers every grade of it, now and later. Single boxes tick one grade.
-- **Settings.** Keep at least N of each junk materia. Stop after N trades. Mix junk stats in one trade (on by default: Mutamix never returns a stat that went in, so mixing junk rules more of it out of the result). Grades are never mixed, since a mixed trade can come back at the lower grade.
+- **Settings.** Keep at least N of each junk materia. Stop after N trades. Mix junk stats in every trade (on by default): Mutamix never returns a stat that went in, so each trade gets one of every junk stat of its grade (up to five) and the rest from the biggest pile. With 127 Spell Speed XI and 12 Piety XI that's 1 Piety + 4 Spell Speed, and neither can come back. Grades are never mixed, since a mixed trade can come back at the lower grade.
 - **Results.** Every trade's input and output, with grade-ups highlighted, plus an all-time tally.
 
 Lower grades go first so a grade-up can join the next batch of its grade. A result that is itself junk goes back in.

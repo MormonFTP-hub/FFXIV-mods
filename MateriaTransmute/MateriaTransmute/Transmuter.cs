@@ -95,7 +95,7 @@ public sealed unsafe class Transmuter : IDisposable
         if (FindMutamix() is not { } npc || Distance(npc) > TalkRange)
             return "Stand next to Mutamix Bubblypots in Central Thanalan.";
         if (GameUi.FreeBagSlots() == 0)
-            return "Make room for one more item in your bags.";
+            return "Your bags are full: free one slot for the new materia.";
         return null;
     }
 
@@ -224,6 +224,7 @@ public sealed unsafe class Transmuter : IDisposable
 
                 sent = filling;
                 sentAt = now;
+                lastInteract = now;
                 filling = null;
                 confirmClicked = false;
                 Progress($"Transmuting {sent.Describe()}");
@@ -252,7 +253,12 @@ public sealed unsafe class Transmuter : IDisposable
 
             Status = "Waiting for the result";
             if (now - sentAt > TimeSpan.FromSeconds(15))
-                Stop("Stopped: no new materia showed up within 15 seconds of the trade. Check your bags, then press Start again.");
+            {
+                Stop(GameUi.FreeBagSlots() == 0
+                    ? $"Stopped: your bags are full, so Mutamix couldn't hand over the new materia. {BagsFull}"
+                    : "Stopped: no new materia showed up within 15 seconds of the trade. Check your bags, then press Start again.");
+            }
+
             return;
         }
 
@@ -316,8 +322,12 @@ public sealed unsafe class Transmuter : IDisposable
         || Plugin.Condition[ConditionFlag.BetweenAreas51] || Plugin.Condition[ConditionFlag.Casting];
 
     /// <summary>The window on screen belongs to Mutamix: he's the target, or we spoke to him moments ago.</summary>
+    /// <remarks>"Moments ago" runs from the last step of his flow, not the last time we walked up to him: one talk can
+    /// loop through many trades, and a stale clock left his own Talk box unclicked.</remarks>
     private bool TalkingToMutamix(DateTime now) =>
-        Plugin.TargetManager.Target?.BaseId == MutamixId || now - lastInteract < TimeSpan.FromSeconds(90);
+        Plugin.TargetManager.Target?.BaseId == MutamixId || now - lastInteract < TimeSpan.FromSeconds(60);
+
+    public const string BagsFull = "Free one bag slot (the new materia needs it), then press Start again.";
 
     private void StartNextTrade(DateTime now)
     {
@@ -338,7 +348,7 @@ public sealed unsafe class Transmuter : IDisposable
 
         if (GameUi.FreeBagSlots() == 0)
         {
-            Stop("Stopped: make room for one more item in your bags.");
+            Stop($"Stopped: your bags are full. {BagsFull}");
             return;
         }
 
@@ -374,6 +384,7 @@ public sealed unsafe class Transmuter : IDisposable
         }
 
         interactTries = 0;
+        lastInteract = now;
 
         // Picked a moment ago and the menu is still up: give it time, then give up rather than click forever.
         if (now - lastMenuPick < TimeSpan.FromSeconds(4))
@@ -387,6 +398,13 @@ public sealed unsafe class Transmuter : IDisposable
         if ((config.MaxTrades > 0 && TradesThisRun >= config.MaxTrades) || Planner.Next(GameUi.ScanBags(plugin.Catalog), config) == null)
         {
             Stop(TradesThisRun == 0 ? "Nothing to trade." : $"Done: {TradesThisRun} trade(s). Close Mutamix's menu when you like.");
+            return;
+        }
+
+        // Every trade needs a free slot, not just the first: the results pile up as new stacks.
+        if (GameUi.FreeBagSlots() == 0)
+        {
+            Stop($"Stopped: your bags are full. {BagsFull}");
             return;
         }
 
@@ -408,6 +426,7 @@ public sealed unsafe class Transmuter : IDisposable
     private void FillWindow(AddonTradeMultiple* addon, DateTime now)
     {
         interactTries = 0;
+        lastInteract = now;
         var agent = AgentTradeMultiple.Instance();
         if (agent == null)
         {
@@ -422,6 +441,12 @@ public sealed unsafe class Transmuter : IDisposable
             if (inWindow > 0)
             {
                 Stop("Stopped: the transmute window already has materia in it. Take them out and press Start again.");
+                return;
+            }
+
+            if (GameUi.FreeBagSlots() == 0)
+            {
+                Stop($"Stopped: your bags are full. {BagsFull}");
                 return;
             }
 
@@ -589,6 +614,7 @@ public sealed unsafe class Transmuter : IDisposable
 
         sent = null;
         before = null;
+        lastInteract = now;
         Progress(got == null ? "Trade done" : $"Got {got.Name}");
         nextStep = now.AddMilliseconds(500);
         return true;

@@ -248,6 +248,8 @@ public sealed class MainWindow : Window
             junk == 0 ? "Nothing ticked yet." : $"{junk} junk materia in your bags, enough for {trades} trade{(trades == 1 ? "" : "s")} right now.");
         if (junk > 0 && trades == 0)
             ImGui.TextColored(Dim, "A trade needs five junk materia of the same grade.");
+        else if (Planner.Next(stacks, Config) is { } next)
+            ImGui.TextColored(Dim, $"Next trade: {next.Describe()}");
     }
 
     private void DrawResults()
@@ -328,14 +330,15 @@ public sealed class MainWindow : Window
         }
 
         var mix = Config.MixTypes;
-        if (ImGui.Checkbox("Mix different junk stats in one trade", ref mix))
+        if (ImGui.Checkbox("Mix junk stats in every trade", ref mix))
         {
             Config.MixTypes = mix;
             Config.Save();
         }
 
-        ImGui.TextColored(Dim, "Mutamix never gives back a stat that went in, so mixing junk stats rules more of them out.\n"
-                               + "Off: each trade is five of the very same materia. The grade is never mixed either way.");
+        ImGui.TextColored(Dim, "Mutamix never gives back a stat that went in. So each trade gets one of every junk stat of that\n"
+                               + "grade (up to five) and the rest from the biggest pile: none of your junk can come back.\n"
+                               + "Off: each trade is five of the very same materia. Grades are never mixed either way.");
 
         var echo = Config.EchoResults;
         if (ImGui.Checkbox("Print each result in chat (only you see it)", ref echo))
