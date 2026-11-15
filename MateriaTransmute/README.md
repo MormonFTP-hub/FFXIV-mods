@@ -58,7 +58,7 @@ The output is `MateriaTransmute\bin\Debug\MateriaTransmute.dll`, which is in thi
 To share a new version: bump `<Version>` in `MateriaTransmute.csproj`, then
 
 ```
-python MateriaTransmute/tools/package.py
+python tools/package_plugin.py MateriaTransmute
 ```
 
-It builds Release, writes `dist/MateriaTransmute.zip` (plugin + HOW TO INSTALL.txt) and updates `repo.json` at the repo root. The backup (`tools/backup.py`) pushes `repo.json` and uploads the zip to the apps release, and friends get the update through Dalamud.
+(`MateriaTransmute/tools/package.py` does the same.) It builds Release, writes `dist/MateriaTransmute.zip` (plugin + HOW TO INSTALL.txt) and updates `repo.json` at the repo root. The backup (`tools/backup.py`) pushes `repo.json` and uploads the zip to the apps release, and friends get the update through Dalamud.

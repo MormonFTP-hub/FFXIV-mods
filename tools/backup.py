@@ -2,7 +2,7 @@
 
 Rebuilds the mod gallery in README.md (thumbnails in docs/thumbs), commits and pushes everything
 .gitignore lets through, then uploads each .pmp to the rolling "mods" release and the app .exe files
-(and the Materia Transmuter plugin zip) to the "apps" release. Only files that are new or changed since their last upload go up again.
+(and the Dalamud plugin zips) to the "apps" release. Only files that are new or changed since their last upload go up again.
 
     python tools/backup.py             # gallery + commit + push + release uploads
     python tools/backup.py --readme    # only rebuild the gallery
@@ -27,7 +27,7 @@ README = ROOT / 'README.md'
 THUMBS = ROOT / 'docs' / 'thumbs'
 START, END = '<!-- mods:start -->', '<!-- mods:end -->'
 APPS = ['PmpViewer/PMP Viewer.exe', 'Authenticator/Authenticator.exe', 'InstaViewer/Insta Viewer.exe',
-        'MateriaTransmute/dist/MateriaTransmute.zip']  # the plugin zip repo.json points at
+        'MateriaTransmute/dist/MateriaTransmute.zip', 'DroneRunner/dist/DroneRunner.zip']  # plugin zips repo.json points at
 THUMB_SIZE = (800, 400)
 COLUMNS = 3
 # The repo is public and commits go up unattended, so anything that looks like a live credential stops the commit
@@ -221,8 +221,8 @@ def main():
     apps = {slug(Path(a).stem) + Path(a).suffix: ROOT / a for a in APPS if (ROOT / a).exists()}
     sync_release(gh, 'apps', 'Apps (latest builds)',
                  'Windows builds of the apps in this repo. See each app\'s readme for what it needs.\n'
-                 'MateriaTransmute.zip is the Materia Transmuter Dalamud plugin. Install it in game from the custom repo '
-                 'https://raw.githubusercontent.com/MormonFTP-hub/FFXIV-mods/main/repo.json (see MateriaTransmute/HOW TO INSTALL.txt).\n',
+                 'MateriaTransmute.zip and DroneRunner.zip are the Materia Transmuter and Drone Runner Dalamud plugins. Install them in game from the custom repo '
+                 'https://raw.githubusercontent.com/MormonFTP-hub/FFXIV-mods/main/repo.json (see HOW TO INSTALL.txt in each plugin folder).\n',
                  apps, False)
 
 

@@ -23,7 +23,7 @@ LOCK = GIT / 'autobackup.lock'
 LOG = GIT / 'autobackup.log'
 STATUS = GIT / 'autobackup.json'
 APPS = ['PmpViewer/PMP Viewer.exe', 'Authenticator/Authenticator.exe', 'InstaViewer/Insta Viewer.exe',
-        'MateriaTransmute/dist/MateriaTransmute.zip']  # the plugin zip repo.json points at
+        'MateriaTransmute/dist/MateriaTransmute.zip', 'DroneRunner/dist/DroneRunner.zip']  # plugin zips repo.json points at
 STALE_LOCK = 3600
 NO_WINDOW, NEW_GROUP, BREAKAWAY = 0x08000000, 0x00000200, 0x01000000
 
