@@ -2,7 +2,7 @@
 
 Rebuilds the mod gallery in README.md (thumbnails in docs/thumbs), commits and pushes everything
 .gitignore lets through, then uploads each .pmp to the rolling "mods" release and the app .exe files
-to the "apps" release. Only files that are new or changed since their last upload go up again.
+(and the Materia Transmuter plugin zip) to the "apps" release. Only files that are new or changed since their last upload go up again.
 
     python tools/backup.py             # gallery + commit + push + release uploads
     python tools/backup.py --readme    # only rebuild the gallery
@@ -26,7 +26,8 @@ ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / 'README.md'
 THUMBS = ROOT / 'docs' / 'thumbs'
 START, END = '<!-- mods:start -->', '<!-- mods:end -->'
-APPS = ['PmpViewer/PMP Viewer.exe', 'Authenticator/Authenticator.exe', 'InstaViewer/Insta Viewer.exe']
+APPS = ['PmpViewer/PMP Viewer.exe', 'Authenticator/Authenticator.exe', 'InstaViewer/Insta Viewer.exe',
+        'MateriaTransmute/dist/MateriaTransmute.zip']  # the plugin zip repo.json points at
 THUMB_SIZE = (800, 400)
 COLUMNS = 3
 # The repo is public and commits go up unattended, so anything that looks like a live credential stops the commit
