@@ -87,6 +87,9 @@ public sealed class Plugin : IDalamudPlugin
             case "go":
                 Transmuter.Start();
                 break;
+            case "test":
+                Transmuter.Start(testRun: true);
+                break;
             case "stop":
                 Transmuter.Stop("Stopped.");
                 break;

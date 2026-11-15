@@ -42,6 +42,9 @@ public sealed unsafe class Transmuter : IDisposable
     private readonly string promptText;
 
     public bool Running { get; private set; }
+
+    /// <summary>Test run: does everything up to the "are you certain" prompt, then stops and leaves it to you.</summary>
+    public bool TestRun { get; private set; }
     public string Status { get; private set; } = "Idle";
     public int TradesThisRun { get; private set; }
     public List<TradeResult> Results { get; } = [];
@@ -53,6 +56,8 @@ public sealed unsafe class Transmuter : IDisposable
     private DateTime lastAdd;
     private bool confirmClicked;
     private DateTime confirmAt;
+    private int confirmTries;
+    private DateTime? windowGoneSince;
 
     // The trade sent off, waiting for the bags to change
     private Batch? sent;
@@ -64,6 +69,8 @@ public sealed unsafe class Transmuter : IDisposable
     private DateTime nextInteract;
     private DateTime lastInteract;
     private int interactTries;
+    private DateTime lastMenuPick;
+    private bool loggedOtherYesno;
 
     public Transmuter(Plugin plugin)
     {
@@ -92,7 +99,7 @@ public sealed unsafe class Transmuter : IDisposable
         return null;
     }
 
-    public void Start()
+    public void Start(bool testRun = false)
     {
         if (Running)
             return;
@@ -105,12 +112,17 @@ public sealed unsafe class Transmuter : IDisposable
         }
 
         Running = true;
+        TestRun = testRun;
         TradesThisRun = 0;
         filling = null;
         sent = null;
         before = null;
         confirmClicked = false;
+        confirmTries = 0;
+        windowGoneSince = null;
         interactTries = 0;
+        lastMenuPick = DateTime.MinValue;
+        loggedOtherYesno = false;
         nextStep = nextInteract = DateTime.UtcNow;
         lastProgress = DateTime.UtcNow;
         Status = "Starting";
@@ -194,9 +206,16 @@ public sealed unsafe class Transmuter : IDisposable
         if (GameUi.TryGetAddon("SelectYesno", out var yesnoBase))
         {
             var yesno = (AddonSelectYesno*)yesnoBase;
-            if (filling != null && confirmClicked && GameUi.Matches(GameUi.YesnoText(yesno), promptText))
+            var prompt = GameUi.YesnoText(yesno);
+            if (filling != null && confirmClicked && GameUi.Matches(prompt, promptText))
             {
-                before = GameUi.Counts(GameUi.ScanBags(plugin.Catalog));
+                if (TestRun)
+                {
+                    Stop($"Test run worked: {filling.Describe()} is in the window and the final prompt is up. "
+                         + "Click No to keep them, or Yes to trade.");
+                    return;
+                }
+
                 if (!GameUi.ClickButton(yesnoBase, yesno->YesButton))
                 {
                     Status = "Waiting for the Yes button";
@@ -210,6 +229,12 @@ public sealed unsafe class Transmuter : IDisposable
                 Progress($"Transmuting {sent.Describe()}");
                 nextStep = now.AddMilliseconds(600);
                 return;
+            }
+
+            if (!loggedOtherYesno)
+            {
+                loggedOtherYesno = true;
+                Plugin.Log.Info($"Left a Yes/No alone (confirm clicked: {confirmClicked}): \"{prompt}\"");
             }
 
             Status = "A Yes/No box that isn't the transmute one is open; answer it to carry on";
@@ -233,7 +258,17 @@ public sealed unsafe class Transmuter : IDisposable
 
         if (GameUi.TryGetAddon("TradeMultiple", out var trade))
         {
+            windowGoneSince = null;
             FillWindow((AddonTradeMultiple*)trade, now);
+            return;
+        }
+
+        // The window went away mid-fill and no prompt replaced it: someone closed it.
+        if (filling != null)
+        {
+            windowGoneSince ??= now;
+            if (now - windowGoneSince > TimeSpan.FromSeconds(2))
+                Stop("Stopped: the transmute window closed before the trade. Nothing was traded.");
             return;
         }
 
@@ -257,8 +292,9 @@ public sealed unsafe class Transmuter : IDisposable
                 return;
             }
 
+            // Not counted as progress: if clicking doesn't move the Talk box on, the 20-second stop catches it.
             GameUi.ClickTalk(talk);
-            Progress("Talking to Mutamix");
+            Status = "Talking to Mutamix";
             nextStep = now.AddMilliseconds(400);
             return;
         }
@@ -338,6 +374,22 @@ public sealed unsafe class Transmuter : IDisposable
         }
 
         interactTries = 0;
+
+        // Picked a moment ago and the menu is still up: give it time, then give up rather than click forever.
+        if (now - lastMenuPick < TimeSpan.FromSeconds(4))
+        {
+            if (now - lastMenuPick > TimeSpan.FromSeconds(3))
+                Stop("Stopped: picking \"Transmute Materia\" in Mutamix's menu didn't take.");
+            return;
+        }
+
+        var config = plugin.Configuration;
+        if ((config.MaxTrades > 0 && TradesThisRun >= config.MaxTrades) || Planner.Next(GameUi.ScanBags(plugin.Catalog), config) == null)
+        {
+            Stop(TradesThisRun == 0 ? "Nothing to trade." : $"Done: {TradesThisRun} trade(s). Close Mutamix's menu when you like.");
+            return;
+        }
+
         var entries = GameUi.MenuEntries(menu);
         var index = entries.FindIndex(e => GameUi.Matches(e, menuText));
         if (index < 0)
@@ -348,6 +400,7 @@ public sealed unsafe class Transmuter : IDisposable
         }
 
         addon->FireCallbackInt(index);
+        lastMenuPick = now;
         Progress($"Picked \"{entries[index]}\"");
         nextStep = now.AddMilliseconds(500);
     }
@@ -382,6 +435,10 @@ public sealed unsafe class Transmuter : IDisposable
             pickIndex = 0;
             expectedInWindow = 0;
             confirmClicked = false;
+            confirmTries = 0;
+            lastMenuPick = DateTime.MinValue;
+            // Counted before anything goes in, in case the game lifts them out of the bags while they sit in the window.
+            before = GameUi.Counts(GameUi.ScanBags(plugin.Catalog));
             Progress($"Filling the window: {filling.Describe()}");
             nextStep = now.AddMilliseconds(300);
             return;
@@ -393,7 +450,8 @@ public sealed unsafe class Transmuter : IDisposable
             {
                 Stop(pickIndex == 0
                     ? "Stopped: something else went into the transmute window. Nothing was traded."
-                    : $"Stopped: the game didn't take {filling.Picks[pickIndex - 1].Stack.Materia.Name}. Nothing was traded.");
+                    : $"Stopped: the game didn't take {filling.Picks[pickIndex - 1].Stack.Materia.Name} "
+                      + $"(the window shows {inWindow}, expected {expectedInWindow}). Nothing was traded.");
             }
 
             return;
@@ -420,9 +478,18 @@ public sealed unsafe class Transmuter : IDisposable
 
         if (confirmClicked)
         {
-            // The Yes/No should be up by now; if it never came, press Confirm again.
+            // The Yes/No should be up by now; if it never came, press Confirm again (three tries).
             if (now - confirmAt > TimeSpan.FromSeconds(3))
+            {
+                if (confirmTries >= 3)
+                {
+                    Stop("Stopped: pressing Confirm didn't bring up the transmute prompt. Nothing was traded.");
+                    return;
+                }
+
                 confirmClicked = false;
+            }
+
             return;
         }
 
@@ -442,7 +509,9 @@ public sealed unsafe class Transmuter : IDisposable
         {
             confirmClicked = true;
             confirmAt = now;
-            Progress("Confirming");
+            confirmTries++;
+            if (confirmTries == 1)
+                Progress("Confirming");
             nextStep = now.AddMilliseconds(400);
         }
     }

@@ -89,7 +89,7 @@ public sealed class MainWindow : Window
             }
 
             ImGui.SameLine();
-            ImGui.TextColored(Gold, $"Trade {t.TradesThisRun + 1}: {t.Status}");
+            ImGui.TextColored(Gold, t.TestRun ? $"Test run: {t.Status}" : $"Trade {t.TradesThisRun + 1}: {t.Status}");
             return;
         }
 
@@ -102,6 +102,12 @@ public sealed class MainWindow : Window
                 if (ImGui.Button("Start", new Vector2(110 * scale, 0)))
                     t.Start();
             }
+
+            ImGui.SameLine();
+            if (ImGui.Button("Test run"))
+                t.Start(testRun: true);
+            if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                ImGui.SetTooltip("Goes all the way to Mutamix's final \"are you certain\" prompt, then stops.\nClick No there and nothing is traded.");
         }
 
         ImGui.SameLine();
@@ -345,13 +351,14 @@ public sealed class MainWindow : Window
             "1. Get to Mutamix Bubblypots at the Bonfire in Central Thanalan (X 23.7, Y 13.6). The \"Show on map\" button flags him.\n"
             + "   He trades once you've done the level 19 quest \"Marvelously Mutable Materia\".\n"
             + "2. On \"Pick junk\", tick what you don't want: a stat's name for every grade of it (Piety, say), or single boxes for one grade.\n"
-            + "3. Stand next to him and press Start (or type /transmute start).\n\n"
+            + "3. Stand next to him and press Start (or type /transmute start).\n"
+            + "   \"Test run\" goes up to his final \"are you certain\" prompt and stops there; click No and nothing is traded.\n\n"
             + "It talks to him, picks \"Transmute Materia\", puts five junk materia of one grade in the window, confirms, and goes again "
             + "until fewer than five of any grade are left. Lower grades go first, so a lucky grade-up can join the next batch of its grade. "
             + "If what comes back is junk too, it goes back in.\n\n"
             + "It only ever puts in materia you ticked, never mixes grades, and stops by itself if you get into combat, change zones, "
             + "a window it doesn't know shows up, or nothing happens for 20 seconds. Press Stop or type /transmute stop at any time.\n\n"
-            + "Commands: /transmute (window), /transmute start, /transmute stop, /transmute map. /mutamix works too.");
+            + "Commands: /transmute (window), /transmute start, /transmute test, /transmute stop, /transmute map. /mutamix works too.");
     }
 
     private static void DrawIcon(uint icon, float size)

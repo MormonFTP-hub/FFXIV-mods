@@ -33,6 +33,8 @@ You need XIVLauncher with Dalamud, the launcher that runs plugins. If you alread
 3. On the "Pick junk" tab, tick the materia you don't want. Ticking a stat's name, such as Piety, ticks every grade of it.
 4. Stand next to Mutamix and press Start. It keeps trading until fewer than five of any grade are left.
    Press Stop, or type  /transmute stop , at any time.
+   Want to see it work first? Press "Test run". It goes up to Mutamix's final "are you certain" question and stops.
+   Click No there and nothing is traded.
 
 Each trade takes five materia of the same grade. You get back one materia of a different stat, sometimes one grade higher.
 The plugin only uses materia you ticked. "Settings" can keep a few of each, or stop after a set number of trades.
