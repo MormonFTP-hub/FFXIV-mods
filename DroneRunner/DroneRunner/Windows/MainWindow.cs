@@ -212,6 +212,14 @@ public sealed class MainWindow : Window
             Config.Save();
         }
 
+        var pause = Config.PauseAfterArtifact;
+        ImGui.SetNextItemWidth(110 * scale);
+        if (ImGui.InputInt("Seconds to wait after each artifact before the next drone", ref pause))
+        {
+            Config.PauseAfterArtifact = Math.Clamp(pause, 0, 60);
+            Config.Save();
+        }
+
         var echo = Config.EchoResults;
         if (ImGui.Checkbox("Print each record in chat (only you see it)", ref echo))
         {
@@ -239,6 +247,19 @@ public sealed class MainWindow : Window
         ImGui.TextColored(Dim, "What the plugin can see. If a run goes wrong, copy this and send it over.");
         if (ImGui.SmallButton("Copy to clipboard"))
             ImGui.SetClipboardText(DiagnosticsText());
+        if (Config.ArtifactIconId != 0)
+        {
+            ImGui.SameLine();
+            if (ImGui.SmallButton("Forget the learned map icon"))
+            {
+                Config.ArtifactIconId = 0;
+                Config.ArtifactMarkerSource = "";
+                Config.Save();
+            }
+
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("If it keeps heading to the wrong place, it may have learned the wrong icon for the red X.");
+        }
         ImGui.Separator();
         using var child = ImRaii.Child("##diag");
         ImGui.TextUnformatted(DiagnosticsText());

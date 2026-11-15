@@ -74,6 +74,8 @@ public sealed unsafe class Runner : IDisposable
     private bool locatedSignal;
     private bool alreadyDeployedSignal;
     private HashSet<(string, uint, int, int)>? markerBaseline;
+    private DateTime deployNotBefore;
+    private DateTime locateGraceUntil;
 
     // Locating / travelling
     private Site? sweepSite;
@@ -369,11 +371,13 @@ public sealed unsafe class Runner : IDisposable
 
     // ---------------------------------------------------------------- deploy
 
-    private void BeginDeploy()
+    private void BeginDeploy(bool pause = false)
     {
         Phase = Phase.Deploying;
         deployIssued = false;
         deployTries = 0;
+        // Right after an appraisal the game refuses items for a moment ("can't perform this action"): wait first.
+        deployNotBefore = pause ? DateTime.UtcNow.AddSeconds(Math.Max(0, plugin.Configuration.PauseAfterArtifact)) : DateTime.MinValue;
         Target = null;
         TargetSource = "";
         manualLeg = false;
@@ -406,6 +410,13 @@ public sealed unsafe class Runner : IDisposable
                 return;
             }
 
+            if (now < deployNotBefore)
+            {
+                Status = $"Next drone in {(deployNotBefore - now).TotalSeconds:0} s";
+                lastProgress = now;
+                return;
+            }
+
             if (Plugin.Condition[ConditionFlag.Mounted])
             {
                 GameUi.UseGeneralAction(Dismount);
@@ -414,8 +425,10 @@ public sealed unsafe class Runner : IDisposable
                 return;
             }
 
-            // Remember what's on the map now, so the drone's marker stands out as new.
-            markerBaseline = GameUi.AllMarkers().Select(m => m.Key).ToHashSet();
+            // Remember what's on the map before the first try, so the drone's marker stands out as new. Not on a
+            // retry: a module that went up late would already be on the map, and its marker wouldn't look new.
+            if (deployTries == 0)
+                markerBaseline = GameUi.AllMarkers().Select(m => m.Key).ToHashSet();
             modulesBefore = GameUi.ItemCount(z.ModuleItemId);
             locatedSignal = false;
             alreadyDeployedSignal = false;
@@ -435,7 +448,7 @@ public sealed unsafe class Runner : IDisposable
             if (FindArtifact() is { } waiting)
                 BeginTravel(waiting, null);
             else
-                BeginLocate("A drone is already out: looking for its artifact");
+                BeginLocate("A drone is already out: looking for its artifact", TimeSpan.FromSeconds(6));
             return;
         }
 
@@ -449,7 +462,7 @@ public sealed unsafe class Runner : IDisposable
             }
 
             Status = "Drone is scanning";
-            if (now - deployAt > TimeSpan.FromSeconds(8))
+            if (now - deployAt > TimeSpan.FromSeconds(12))
             {
                 Note("Drone went up but no marker or artifact found; sweeping the spots");
                 BeginLocate("Checking the artifact spots");
@@ -472,10 +485,11 @@ public sealed unsafe class Runner : IDisposable
 
     // ---------------------------------------------------------------- locate
 
-    private void BeginLocate(string status)
+    private void BeginLocate(string status, TimeSpan? grace = null)
     {
         Phase = Phase.Locating;
         sweepSite = null;
+        locateGraceUntil = DateTime.UtcNow + (grace ?? TimeSpan.Zero);
         Progress(status);
     }
 
@@ -485,6 +499,13 @@ public sealed unsafe class Runner : IDisposable
         if (FindArtifact() is { } fix)
         {
             BeginTravel(fix, null);
+            return;
+        }
+
+        // Give a late map marker a few seconds before walking the spots.
+        if (DateTime.UtcNow < locateGraceUntil)
+        {
+            Status = "Waiting for the drone's marker";
             return;
         }
 
@@ -793,7 +814,7 @@ public sealed unsafe class Runner : IDisposable
         if (c.EchoResults)
             Plugin.ChatGui.Print($"Artifact {FoundThisRun}: {find.RecordName}{(tier == 3 ? "  ★" : "")}", "Drone", (ushort)(tier == 3 ? 500 : tier == 2 ? 37 : 45));
 
-        BeginDeploy();
+        BeginDeploy(pause: true);
     }
 
     // ---------------------------------------------------------------- finding the artifact
@@ -889,11 +910,11 @@ public sealed unsafe class Runner : IDisposable
             // Minimap markers come and go as you move, so only a label or the learned icon counts for them.
             var steady = !m.Source.StartsWith("minimap", StringComparison.Ordinal);
             var labelled = GameUi.Contains(m.Text, siteLabel);
-            var knownIcon = config.ArtifactIconId != 0 && m.IconId == config.ArtifactIconId && m.Source == config.ArtifactMarkerSource;
+            var knownIcon = config.ArtifactIconId != 0 && m.IconId == config.ArtifactIconId;
             var isNew = steady && markerBaseline != null && !markerBaseline.Contains(m.Key) && spot.Distance < 6f;
             if (labelled || knownIcon || isNew)
             {
-                if (!knownIcon && m.IconId != 0)
+                if (!knownIcon && m.IconId != 0 && (labelled || config.ArtifactIconId == 0))
                 {
                     config.ArtifactIconId = m.IconId;
                     config.ArtifactMarkerSource = m.Source;

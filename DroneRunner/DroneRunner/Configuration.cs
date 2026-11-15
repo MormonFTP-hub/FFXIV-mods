@@ -15,6 +15,9 @@ public class Configuration : IPluginConfiguration
     /// <summary>Stop after this many artifacts in one run (0 = until the modules run out).</summary>
     public int MaxArtifacts { get; set; } = 0;
 
+    /// <summary>Seconds to wait after an artifact before the next module (the game refuses items for a moment).</summary>
+    public int PauseAfterArtifact { get; set; } = 5;
+
     /// <summary>Print each record found in chat (local only).</summary>
     public bool EchoResults { get; set; } = true;
 
