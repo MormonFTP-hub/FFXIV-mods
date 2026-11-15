@@ -1,0 +1,44 @@
+DRONE RUNNER
+Runs Artifact Search in Cosmic Exploration for you: it uses your drone modules, goes to each artifact and examines it.
+
+You need XIVLauncher with Dalamud, the launcher that runs plugins. If you already use any plugin, you have it.
+It works best with the vnavmesh plugin, which does the walking (see step 3 below). Without it, you walk to a map flag
+and the plugin does the rest.
+
+
+=== INSTALL (updates install themselves) ===
+
+1. In game, type  /xlsettings  and open the "Experimental" tab.
+2. Find "Custom Plugin Repositories". Paste this link into the empty box, then click the + next to it:
+
+      https://raw.githubusercontent.com/MormonFTP-hub/FFXIV-mods/main/repo.json
+
+3. For vnavmesh, add this link the same way, then click + :
+
+      https://puni.sh/api/repository/veyn
+
+4. Click "Save and Close" at the bottom.
+5. Type  /xlplugins , search for "Drone Runner" and click Install. Do the same for "vnavmesh".
+
+
+=== USING THE ZIP INSTEAD ===
+
+1. Make a folder you won't delete, for example  C:\FFXIV Plugins\Drone Runner , and unzip this file into it.
+2. In game, type  /xlsettings  and open the "Experimental" tab.
+3. Under "Dev Plugin Locations", paste the full path to the DLL, for example
+      C:\FFXIV Plugins\Drone Runner\DroneRunner.dll
+   click the + next to it, then "Save and Close".
+4. Type  /xlplugins , open "Dev Tools", then "Installed Dev Plugins", and turn on Drone Runner.
+
+
+=== USING IT ===
+
+1. Get drone modules from Kaede on Oizys (X 17.3, Y 24.1) or Auxesia (X 27.8, Y 29.0) for dronebits.
+   Dronebits come from class A missions (EX and EX+ too) and provisional missions.
+2. Be on Oizys or Auxesia, on a crafter or gatherer, and keep one bag slot free.
+3. Type  /drone  and press Start. It uses a module, goes to the artifact the drone finds, examines it,
+   and keeps going until your modules run out. Press Stop, or type  /drone stop , at any time.
+4. Take the records to Kaede to appraise them. The "Kaede" button in the window flags her on the map.
+
+The window's "Finds" tab lists every record you got. If something goes wrong, the "Diagnostics" tab
+has a "Copy to clipboard" button. Send that text to whoever gave you the plugin.
