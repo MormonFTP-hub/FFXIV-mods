@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>MormonFTP</Author>
+    <Name>Drone Runner</Name>
+    <Punchline>Runs Artifact Search for you: deploys your drone modules, walks to each artifact and examines it.</Punchline>
+    <Description>For Cosmic Exploration on Oizys and Auxesia. Press Start on a crafter or gatherer and it uses a drone module, finds the artifact it located, travels there (with vnavmesh, on a mount for long trips), examines it, and goes again until your modules run out.
+Without vnavmesh it flags each artifact on your map and examines it as soon as you get there.
+It counts your gold, silver and bronze records as they come in.</Description>
+    <Tags>cosmic exploration;drone;artifact;oizys;auxesia;crafter;gatherer;utility</Tags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
