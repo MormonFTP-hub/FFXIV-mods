@@ -18,6 +18,10 @@ public class Configuration : IPluginConfiguration
     /// <summary>Print each record found in chat (local only).</summary>
     public bool EchoResults { get; set; } = true;
 
+    /// <summary>The artifact's map icon, learned the first time one is spotted (0 = not known yet).</summary>
+    public uint ArtifactIconId { get; set; } = 0;
+    public string ArtifactMarkerSource { get; set; } = "";
+
     // Lifetime tally
     public int TotalArtifacts { get; set; } = 0;
     public int TotalGold { get; set; } = 0;

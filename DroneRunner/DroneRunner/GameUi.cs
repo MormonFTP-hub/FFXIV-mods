@@ -11,8 +11,12 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace DroneRunner;
 
-/// <summary>A marker on the map (for the diagnostics panel and for spotting the artifact's red X).</summary>
-public readonly record struct MapMark(uint IconId, string Tooltip, Vector3 Position);
+/// <summary>A marker on the map or minimap. <see cref="Raw"/> is what the game stored: world X/Z for event markers, a
+/// packed short pair for the others (usually world × 16). The runner works out which by matching artifact spots.</summary>
+public readonly record struct MapMark(string Source, uint IconId, string Text, Vector3 Position, bool HasHeight, Vector2 Raw)
+{
+    public (string, uint, int, int) Key => (Source, IconId, (int)Raw.X, (int)Raw.Y);
+}
 
 /// <summary>Reads the bags, the map and nearby objects, and presses the game's own buttons.</summary>
 public static unsafe class GameUi
@@ -37,8 +41,9 @@ public static unsafe class GameUi
     public static bool CanUseGeneralAction(uint id) =>
         ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, id) == 0;
 
-    /// <summary>The map's event markers: quest and content icons, the artifact's red X among them.</summary>
-    public static List<MapMark> EventMarkers()
+    /// <summary>Every marker the map agent holds: event markers, map markers, temporary markers (treasure-style red
+    /// circles) and minimap markers. The artifact's red X is one of them.</summary>
+    public static List<MapMark> AllMarkers()
     {
         var list = new List<MapMark>();
         var agent = AgentMap.Instance();
@@ -48,11 +53,33 @@ public static unsafe class GameUi
         foreach (ref var m in agent->EventMarkers)
         {
             var tooltip = m.TooltipString == null ? "" : m.TooltipString->ToString();
-            list.Add(new MapMark(m.IconId, tooltip, m.Position));
+            list.Add(new MapMark("event", m.IconId, tooltip, m.Position, true, new Vector2(m.Position.X, m.Position.Z)));
+        }
+
+        var maps = agent->MapMarkers;
+        for (var i = 0; i < agent->MapMarkerCount && i < maps.Length; i++)
+            Add(list, "map", ref maps[i].MapMarker, maps[i].MapMarker.Subtext.ToString());
+
+        var temps = agent->TempMapMarkers;
+        for (var i = 0; i < agent->TempMapMarkerCount && i < temps.Length; i++)
+            Add(list, "temp", ref temps[i].MapMarker, temps[i].TooltipText.ToString());
+
+        var minis = agent->MiniMapMarkers;
+        for (var i = 0; i < agent->MiniMapMarkerCount && i < minis.Length; i++)
+            Add(list, "minimap", ref minis[i].MapMarker, "");
+
+        var gathering = agent->MiniMapGatheringMarkers;
+        for (var i = 0; i < gathering.Length; i++)
+        {
+            if (gathering[i].MapMarker.IconId != 0)
+                Add(list, "minimap-temp", ref gathering[i].MapMarker, gathering[i].TooltipText.ToString());
         }
 
         return list;
     }
+
+    private static void Add(List<MapMark> list, string source, ref MapMarkerBase m, string text) =>
+        list.Add(new MapMark(source, m.IconId, text, new Vector3(m.X / 16f, 0, m.Y / 16f), false, new Vector2(m.X, m.Y)));
 
     /// <summary>Put the map flag on a world position and open the map there.</summary>
     public static void FlagOnMap(Zone zone, Vector3 world)
@@ -64,12 +91,13 @@ public static unsafe class GameUi
         agent->OpenMapByMapId(zone.MapId, zone.TerritoryId);
     }
 
-    public static void Interact(IGameObject obj) =>
+    public static ulong Interact(IGameObject obj, bool checkLineOfSight) =>
         FFXIVClientStructs.FFXIV.Client.Game.Control.TargetSystem.Instance()->InteractWithObject(
-            (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)obj.Address, true);
+            (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)obj.Address, checkLineOfSight);
 
-    public static IEnumerable<IGameObject> EventObjects() =>
-        Plugin.ObjectTable.Where(o => o.ObjectKind == ObjectKind.EventObj);
+    /// <summary>Objects an artifact could be: event objects and treasure-type objects.</summary>
+    public static IEnumerable<IGameObject> FieldObjects() =>
+        Plugin.ObjectTable.Where(o => o.ObjectKind is ObjectKind.EventObj or ObjectKind.Treasure or ObjectKind.GatheringPoint);
 
     /// <summary>An addon that is open, drawn and finished loading.</summary>
     public static bool TryGetAddon(string name, out AtkUnitBase* addon)

@@ -23,16 +23,21 @@ public enum Phase
 /// <summary>One artifact examined and what it gave.</summary>
 public sealed record Find(DateTime Time, string Zone, uint RecordId, string RecordName, int Tier);
 
+/// <summary>Where the artifact is and how we know.</summary>
+public sealed record ArtifactFix(Vector3 Position, string Source, IGameObject? Object, MapMark? Marker);
+
 /// <summary>
-/// Runs Artifact Search: use a drone module, find the artifact it located (the artifact itself if it's in view, else the
-/// red X on the map, else the zone's known artifact spots nearest first), travel there, examine it, repeat.
+/// Runs Artifact Search: use a drone module, find the artifact it located, travel there, examine it, repeat.
+/// The artifact is found, best first: the object itself if it's in view; the red X on the map, read from whichever of
+/// the map's marker lists holds it and matched to the zone's fixed artifact spots; else a sweep of those spots.
 /// </summary>
 public sealed unsafe class Runner : IDisposable
 {
-    private const uint MountRoulette = 9;   // GeneralAction
-    private const uint Dismount = 23;       // GeneralAction
-    private const float ExamineRange = 3.5f;
-    private const float SiteSeenRange = 40f; // an artifact this close would be in the object table
+    private const uint MountRoulette = 9;    // GeneralAction
+    private const uint Dismount = 23;        // GeneralAction
+    private const float ExamineRange = 3.5f; // 2D, to stop walking and start examining
+    private const float SiteSeenRange = 25f; // an artifact this close shows up in the object table
+    private const float SnapRange = 10f;     // a map marker this close to an artifact spot is on that spot
 
     private readonly Plugin plugin;
     private readonly Navmesh nav = new();
@@ -45,6 +50,9 @@ public sealed unsafe class Runner : IDisposable
     public List<Find> Finds { get; } = [];
     public int FoundThisRun { get; private set; }
     public bool ManualTravel { get; private set; }
+
+    /// <summary>What happened, newest last, for the Diagnostics tab.</summary>
+    public List<string> RunLog { get; } = [];
 
     // Diagnostics
     public Vector3? Target { get; private set; }
@@ -63,23 +71,29 @@ public sealed unsafe class Runner : IDisposable
     private int deployTries;
     private bool locatedSignal;
     private bool alreadyDeployedSignal;
+    private HashSet<(string, uint, int, int)>? markerBaseline;
 
     // Locating / travelling
-    private bool targetIsArtifact;
     private Site? sweepSite;
     private readonly HashSet<uint> checkedSites = [];
-    private readonly List<Vector3> collectedSpots = [];
+    private readonly List<Vector3> doneSpots = [];
     private int moveTries;
+    private int stalls;
     private float bestDistance;
     private DateTime lastCloser;
     private bool mountTried;
+    private bool manualLeg;
     private bool flagged;
 
     // Examining
     private Dictionary<uint, int> recordsBefore = [];
+    private ulong examineId;
     private DateTime examineSince;
     private DateTime interactAt;
     private int interactTries;
+    private int approachTries;
+    private bool sawActivity;
+    private bool manualExamine;
 
     public Runner(Plugin plugin)
     {
@@ -114,6 +128,8 @@ public sealed unsafe class Runner : IDisposable
         return category is 32 or 33; // Disciple of the Land / Hand
     }
 
+    private static Vector3 Me => Plugin.ObjectTable.LocalPlayer?.Position ?? Vector3.Zero;
+
     /// <summary>Why a run can't start right now, or null if it can.</summary>
     public string? CantStart()
     {
@@ -121,7 +137,7 @@ public sealed unsafe class Runner : IDisposable
             return "Go to Oizys or Auxesia in Cosmic Exploration.";
         if (!OnCrafterOrGatherer())
             return "Switch to a crafter or gatherer: drones only work for them.";
-        if (GameUi.ItemCount(z.ModuleItemId) == 0 && FindArtifact(out _, out _, out _) == null)
+        if (GameUi.ItemCount(z.ModuleItemId) == 0 && FindArtifact() == null)
             return $"You have no {ItemName(z.ModuleItemId)}. Kaede sells them for dronebits.";
         if (GameUi.FreeBagSlots() == 0)
             return "Your bags are full: free one slot for the records.";
@@ -144,13 +160,16 @@ public sealed unsafe class Runner : IDisposable
         FoundThisRun = 0;
         ManualTravel = !Navmesh.Installed;
         checkedSites.Clear();
-        collectedSpots.Clear();
+        doneSpots.Clear();
+        markerBaseline = null;
         lastProgress = nextStep = DateTime.UtcNow;
         Status = "Starting";
+        RunLog.Clear();
+        Note($"Start on {zone!.Name}: {GameUi.ItemCount(zone.ModuleItemId)} modules, {Zones.Sites(zone).Count} artifact spots, vnavmesh {(ManualTravel ? "missing" : "ready")}");
 
         // A drone may already be out with an artifact waiting: fetch that first.
-        if (FindArtifact(out var pos, out var source, out var isObject) is not null)
-            BeginTravel(pos, source, isObject, null);
+        if (FindArtifact() is { } fix)
+            BeginTravel(fix, null);
         else
             BeginDeploy();
 
@@ -167,7 +186,16 @@ public sealed unsafe class Runner : IDisposable
         Target = null;
         nav.Stop();
         Status = why;
+        Note(why);
         Plugin.ChatGui.Print(why, "Drone", 45);
+    }
+
+    private void Note(string text)
+    {
+        RunLog.Add($"{DateTime.Now:HH:mm:ss} {text}");
+        if (RunLog.Count > 80)
+            RunLog.RemoveAt(0);
+        Plugin.Log.Info(text);
     }
 
     private void Progress(string status)
@@ -195,7 +223,10 @@ public sealed unsafe class Runner : IDisposable
 
         LastLogId = message.LogMessageId;
         LastLogTime = DateTime.Now;
-        if (Running && message.LogMessageId is Zones.WrongPlanetLog or Zones.OutsideDutyLog)
+        if (!Running)
+            return;
+        Note($"Game said: log message {message.LogMessageId}");
+        if (message.LogMessageId is Zones.WrongPlanetLog or Zones.OutsideDutyLog)
             Stop("Stopped: the game won't let a drone module go up here.");
     }
 
@@ -244,11 +275,14 @@ public sealed unsafe class Runner : IDisposable
         if (Plugin.Condition[ConditionFlag.Casting] || Plugin.Condition[ConditionFlag.OccupiedInCutSceneEvent]
             || Plugin.Condition[ConditionFlag.BetweenAreas] || Plugin.Condition[ConditionFlag.Jumping])
         {
+            if (Phase == Phase.Examining)
+                sawActivity = true;
             lastProgress = now;
             return;
         }
 
-        if (!ManualTravel && now - lastProgress > TimeSpan.FromSeconds(30))
+        var waitingOnYou = ManualTravel || manualLeg || manualExamine;
+        if (!waitingOnYou && now - lastProgress > TimeSpan.FromSeconds(30))
         {
             Stop($"Stopped: nothing happened for 30 seconds (last step: {Status}).");
             return;
@@ -263,7 +297,7 @@ public sealed unsafe class Runner : IDisposable
                 StepDeploy(now);
                 break;
             case Phase.Locating:
-                StepLocate(now);
+                StepLocate();
                 break;
             case Phase.Travelling:
                 StepTravel(now);
@@ -274,8 +308,8 @@ public sealed unsafe class Runner : IDisposable
         }
     }
 
-    /// <summary>The "Use [module]?" box when deploying, and any box about the artifact when examining. Anything
-    /// else is left alone and the run waits (the 30-second stop catches it).</summary>
+    /// <summary>The "Use [module]?" box when deploying; when examining, a box naming the artifact or any box that
+    /// opens right after we touched it. Anything else is left alone and the run waits.</summary>
     private bool HandlePrompts(DateTime now)
     {
         if (GameUi.TryGetAddon("SelectYesno", out var yesnoBase))
@@ -283,16 +317,18 @@ public sealed unsafe class Runner : IDisposable
             var yesno = (AddonSelectYesno*)yesnoBase;
             var text = GameUi.YesnoText(yesno);
             var ours = (Phase == Phase.Deploying && GameUi.Contains(text, ItemName(zone!.ModuleItemId)))
-                       || (Phase == Phase.Examining && GameUi.Contains(text, artifactName));
+                       || (Phase == Phase.Examining && (GameUi.Contains(text, artifactName) || now - interactAt < TimeSpan.FromSeconds(8)));
             if (ours && GameUi.ClickButton(yesnoBase, yesno->YesButton))
             {
+                Note($"Yes to \"{text}\"");
+                if (Phase == Phase.Examining)
+                    sawActivity = true;
                 Progress(Phase == Phase.Deploying ? "Deploying the drone" : "Examining the artifact");
                 nextStep = now.AddMilliseconds(500);
             }
             else
             {
                 Status = "A Yes/No box is open that isn't the drone's; answer it to carry on";
-                Plugin.Log.Debug($"Left a Yes/No alone in {Phase}: \"{text}\"");
             }
 
             return true;
@@ -301,12 +337,24 @@ public sealed unsafe class Runner : IDisposable
         if (Phase == Phase.Examining && GameUi.TryGetAddon("Talk", out var talk))
         {
             GameUi.ClickTalk(talk);
+            sawActivity = true;
             nextStep = now.AddMilliseconds(400);
+            return true;
+        }
+
+        if (Phase == Phase.Examining && !manualExamine
+            && (GameUi.TryGetAddon("SelectString", out _) || GameUi.TryGetAddon("SelectIconString", out _)))
+        {
+            manualExamine = true;
+            Note("A menu came up at the artifact: leaving it to you");
+            Plugin.ChatGui.Print("A menu came up at the artifact. Pick what you want; the run carries on once the record lands.", "Drone", 45);
             return true;
         }
 
         return false;
     }
+
+    // ---------------------------------------------------------------- deploy
 
     private void BeginDeploy()
     {
@@ -315,6 +363,8 @@ public sealed unsafe class Runner : IDisposable
         deployTries = 0;
         Target = null;
         TargetSource = "";
+        manualLeg = false;
+        manualExamine = false;
         Progress("Getting a drone module ready");
     }
 
@@ -351,6 +401,8 @@ public sealed unsafe class Runner : IDisposable
                 return;
             }
 
+            // Remember what's on the map now, so the drone's marker stands out as new.
+            markerBaseline = GameUi.AllMarkers().Select(m => m.Key).ToHashSet();
             modulesBefore = GameUi.ItemCount(z.ModuleItemId);
             locatedSignal = false;
             alreadyDeployedSignal = false;
@@ -358,6 +410,7 @@ public sealed unsafe class Runner : IDisposable
             deployIssued = true;
             deployTries++;
             deployAt = now;
+            Note($"Used {ItemName(z.ModuleItemId)} (try {deployTries}, {modulesBefore} left before)");
             Progress($"Using {ItemName(z.ModuleItemId)}");
             nextStep = now.AddMilliseconds(600);
             return;
@@ -365,23 +418,30 @@ public sealed unsafe class Runner : IDisposable
 
         if (alreadyDeployedSignal)
         {
-            Plugin.Log.Info("A drone was already out: looking for its artifact");
-            BeginLocate("A drone is already out: finding its artifact");
+            alreadyDeployedSignal = false;
+            if (FindArtifact() is { } waiting)
+                BeginTravel(waiting, null);
+            else
+                BeginLocate("A drone is already out: looking for its artifact");
             return;
         }
 
         var launched = locatedSignal || GameUi.ItemCount(z.ModuleItemId) < modulesBefore;
         if (launched)
         {
-            if (FindArtifact(out var pos, out var source, out var isObject) is not null)
+            if (FindArtifact() is { } fix)
             {
-                BeginTravel(pos, source, isObject, null);
+                BeginTravel(fix, null);
                 return;
             }
 
             Status = "Drone is scanning";
             if (now - deployAt > TimeSpan.FromSeconds(8))
-                BeginLocate("Drone found something; checking the artifact spots");
+            {
+                Note("Drone went up but no marker or artifact found; sweeping the spots");
+                BeginLocate("Checking the artifact spots");
+            }
+
             return;
         }
 
@@ -397,6 +457,8 @@ public sealed unsafe class Runner : IDisposable
         }
     }
 
+    // ---------------------------------------------------------------- locate
+
     private void BeginLocate(string status)
     {
         Phase = Phase.Locating;
@@ -405,17 +467,17 @@ public sealed unsafe class Runner : IDisposable
     }
 
     /// <summary>No artifact in view and no red X: go round the zone's artifact spots, nearest first, until it shows up.</summary>
-    private void StepLocate(DateTime now)
+    private void StepLocate()
     {
-        if (FindArtifact(out var pos, out var source, out var isObject) is not null)
+        if (FindArtifact() is { } fix)
         {
-            BeginTravel(pos, source, isObject, null);
+            BeginTravel(fix, null);
             return;
         }
 
-        var me = Plugin.ObjectTable.LocalPlayer!.Position;
+        var me = Me;
         var sites = Zones.Sites(zone!);
-        foreach (var s in sites.Where(s => GameUi.Distance2D(me, s.Position) < SiteSeenRange))
+        foreach (var s in sites.Where(s => Vector3.Distance(me, s.Position) < SiteSeenRange))
             checkedSites.Add(s.InstanceId);
 
         var next = sites.Where(s => !checkedSites.Contains(s.InstanceId))
@@ -425,75 +487,84 @@ public sealed unsafe class Runner : IDisposable
         {
             Stop(sites.Count == 0
                 ? "Stopped: no artifact in sight or on the map, and this zone's artifact spots couldn't be read."
-                : "Stopped: checked every artifact spot and found nothing. Look at the map for a red X.");
+                : "Stopped: checked every artifact spot and found nothing. If the map shows a red X, copy the Diagnostics tab and send it over.");
             return;
         }
 
-        BeginTravel(next.Position, $"checking artifact spot {checkedSites.Count + 1}/{sites.Count}", false, next);
+        BeginTravel(new ArtifactFix(next.Position, $"checking spot {checkedSites.Count + 1}/{sites.Count}", null, null), next);
     }
 
-    private void BeginTravel(Vector3 destination, string source, bool isArtifact, Site? site)
+    // ---------------------------------------------------------------- travel
+
+    private void BeginTravel(ArtifactFix fix, Site? site)
     {
         Phase = Phase.Travelling;
-        Target = destination;
-        TargetSource = source;
-        targetIsArtifact = isArtifact;
+        Target = fix.Position;
+        TargetSource = fix.Source;
         sweepSite = site;
         moveTries = 0;
+        stalls = 0;
         bestDistance = float.MaxValue;
         lastCloser = DateTime.UtcNow;
         mountTried = false;
+        manualLeg = false;
         flagged = false;
-        Progress($"Heading to the artifact ({source})");
+        var c = Zones.ToMapCoords(fix.Position, zone!.MapId);
+        Note($"Heading to X {c.X:0.0} Y {c.Y:0.0} ({fix.Source}), {GameUi.Distance2D(Me, fix.Position):0}y away");
+        Progress($"Heading to the artifact ({fix.Source})");
     }
 
     private void StepTravel(DateTime now)
     {
-        var me = Plugin.ObjectTable.LocalPlayer!.Position;
+        var me = Me;
 
         // Sharpen the destination: the artifact itself beats the map marker, which beats a guessed spot.
-        if (FindArtifact(out var pos, out var source, out var isObject) is not null
-            && (isObject || !targetIsArtifact) && Vector3.Distance(pos, Target!.Value) > 1f)
+        if (FindArtifact() is { } fix && Vector3.Distance(fix.Position, Target!.Value) > 1f
+            && (fix.Object != null || sweepSite != null))
         {
-            Target = pos;
-            TargetSource = source;
-            targetIsArtifact = isObject || source == "map marker";
+            Note($"Better fix: {fix.Source}");
+            Target = fix.Position;
+            TargetSource = fix.Source;
             sweepSite = null;
-            if (!ManualTravel)
+            if (!ManualTravel && !manualLeg)
                 nav.Stop();
+            moveTries = 0;
+            stalls = 0;
             flagged = false;
+            manualLeg = false;
         }
 
         var dest = Target!.Value;
         var dist = GameUi.Distance2D(me, dest);
-        var nearObject = NearestArtifactObject();
-        var objectDist = nearObject == null ? float.MaxValue : GameUi.Distance2D(me, nearObject.Position);
+        var obj = NearestArtifactObject();
+        var objDist = obj == null ? float.MaxValue : GameUi.Distance2D(me, obj.Position);
 
-        if (objectDist <= ExamineRange || (sweepSite != null && dist <= 8f))
+        if (obj != null && objDist <= ExamineRange)
         {
             nav.Stop();
-            if (objectDist <= ExamineRange)
-            {
-                BeginExamine();
-                return;
-            }
+            BeginExamine(obj);
+            return;
+        }
 
-            checkedSites.Add(sweepSite!.InstanceId);
+        if (sweepSite != null && dist <= 8f)
+        {
+            nav.Stop();
+            checkedSites.Add(sweepSite.InstanceId);
             BeginLocate("Nothing at this spot; trying the next");
             return;
         }
 
-        if (ManualTravel)
+        if (ManualTravel || manualLeg)
         {
             if (!flagged)
             {
                 GameUi.FlagOnMap(zone!, dest);
                 var c = Zones.ToMapCoords(dest, zone!.MapId);
-                Plugin.ChatGui.Print($"Artifact flagged on your map (X {c.X:0.0}, Y {c.Y:0.0}). Walk there and it's examined for you.", "Drone", 45);
+                Plugin.ChatGui.Print($"Artifact flagged on your map (X {c.X:0.0}, Y {c.Y:0.0}). Get there and it's examined for you.", "Drone", 45);
                 flagged = true;
             }
 
-            Status = $"Walk to the flag: {dist:0} yalms";
+            Status = $"Your turn: get to the flag ({dist:0} yalms). It examines the artifact when you're there.";
             lastProgress = now;
             return;
         }
@@ -502,7 +573,7 @@ public sealed unsafe class Runner : IDisposable
         {
             bestDistance = dist;
             lastCloser = now;
-            Progress($"Travelling to the artifact: {dist:0} yalms ({TargetSource})");
+            Progress($"Travelling: {dist:0} yalms to go ({TargetSource})");
         }
 
         // Ride for long trips, once per leg.
@@ -529,40 +600,54 @@ public sealed unsafe class Runner : IDisposable
 
         if (now - lastCloser > TimeSpan.FromSeconds(10))
         {
-            // Stuck: drop the path and ask for a new one.
+            stalls++;
+            Note($"Not getting closer ({dist:0}y left), stall {stalls}");
             nav.Stop();
             lastCloser = now;
             bestDistance = float.MaxValue;
         }
 
+        var stuck = stalls >= 3 || (moveTries >= 4 && !nav.Busy);
+        if (stuck)
+        {
+            nav.Stop();
+            if (sweepSite != null)
+            {
+                Note("Can't reach this spot; skipping it");
+                checkedSites.Add(sweepSite.InstanceId);
+                BeginLocate("Couldn't reach that spot; trying the next");
+                return;
+            }
+
+            // The real artifact, out of vnavmesh's reach (a floating island, say): hand the walk to you.
+            Note("Can't find a way there; handing the walk over");
+            manualLeg = true;
+            Plugin.ChatGui.Print("vnavmesh can't find a way to this artifact. Get there yourself and it takes over again.", "Drone", 45);
+            return;
+        }
+
         if (!nav.Busy)
         {
-            // Path finished but not close enough: the artifact may sit where the mesh doesn't reach. Try from here.
-            if (moveTries > 0 && nearObject != null && objectDist <= 7f)
-            {
-                BeginExamine();
-                return;
-            }
-
-            if (moveTries >= 5)
-            {
-                Stop("Stopped: vnavmesh couldn't find a way to the artifact. Walk over yourself and press Start again.");
-                return;
-            }
-
             nav.MoveTo(dest);
             moveTries++;
             nextStep = now.AddMilliseconds(500);
         }
     }
 
-    private void BeginExamine()
+    // ---------------------------------------------------------------- examine
+
+    private void BeginExamine(IGameObject obj)
     {
         Phase = Phase.Examining;
         recordsBefore = zone!.RecordIds.ToDictionary(id => id, GameUi.ItemCount);
+        examineId = obj.GameObjectId;
         examineSince = DateTime.UtcNow;
         interactTries = 0;
+        approachTries = 0;
         interactAt = DateTime.MinValue;
+        sawActivity = false;
+        manualExamine = false;
+        Note($"At the artifact: {obj.Name} ({obj.ObjectKind}, id {obj.BaseId}), {Vector3.Distance(Me, obj.Position):0.0}y");
         Progress("At the artifact");
     }
 
@@ -571,8 +656,7 @@ public sealed unsafe class Runner : IDisposable
         // Did a record land?
         foreach (var id in zone!.RecordIds)
         {
-            var gained = GameUi.ItemCount(id) - recordsBefore.GetValueOrDefault(id);
-            if (gained > 0)
+            if (GameUi.ItemCount(id) > recordsBefore.GetValueOrDefault(id))
             {
                 RecordFind(id);
                 return;
@@ -588,39 +672,69 @@ public sealed unsafe class Runner : IDisposable
         }
 
         if (Plugin.Condition[ConditionFlag.OccupiedInEvent] || Plugin.Condition[ConditionFlag.OccupiedInQuestEvent]
-            || Plugin.Condition[ConditionFlag.Occupied39] || Plugin.Condition[ConditionFlag.Occupied33])
+            || Plugin.Condition[ConditionFlag.Occupied39] || Plugin.Condition[ConditionFlag.Occupied33]
+            || Plugin.Condition[ConditionFlag.Occupied])
         {
+            sawActivity = true;
             Progress("Examining the artifact");
             return;
         }
 
-        var obj = NearestArtifactObject();
+        var obj = Plugin.ObjectTable.FirstOrDefault(o => o.GameObjectId == examineId && o.IsTargetable) ?? NearestArtifactObject();
         if (obj == null)
         {
-            // Gone without a record showing up (yet): give the bags a moment, then move on.
-            if (now - examineSince > TimeSpan.FromSeconds(6))
+            // Gone. If we touched it, it was collected (the record may sit somewhere the bag count can't see).
+            if (sawActivity || interactTries > 0)
             {
-                collectedSpots.Add(Target ?? Plugin.ObjectTable.LocalPlayer!.Position);
-                Plugin.Log.Info("Artifact gone but no record counted; moving on");
+                Note("Artifact gone after examining; no record seen in the bags");
+                doneSpots.Add(Target ?? Me);
+                FoundThisRun++;
                 BeginDeploy();
+            }
+            else if (now - examineSince > TimeSpan.FromSeconds(4))
+            {
+                BeginLocate("The artifact vanished; looking again");
             }
 
             return;
         }
 
-        if (now - interactAt < TimeSpan.FromSeconds(3))
+        if (manualExamine)
+        {
+            Status = "Your turn: examine the artifact. The run carries on once the record lands.";
+            lastProgress = now;
+            return;
+        }
+
+        if (now - interactAt < TimeSpan.FromSeconds(3.5))
             return;
 
-        if (interactTries >= 3)
+        // Close the last few yalms: interaction range is shorter than where the path ends.
+        var reach = Vector3.Distance(Me, obj.Position);
+        if (reach > 2.8f && approachTries < 2 && !ManualTravel && nav.IsReady)
         {
-            Stop("Stopped: examining the artifact didn't work three times. Try it yourself to see why.");
+            approachTries++;
+            nav.MoveTo(obj.Position);
+            Note($"Stepping closer ({reach:0.0}y)");
+            interactAt = now; // give the step time before interacting
+            return;
+        }
+
+        nav.Stop();
+        if (interactTries >= 4)
+        {
+            manualExamine = true;
+            Note("Interacting didn't take four times; leaving it to you");
+            Plugin.ChatGui.Print("Couldn't examine the artifact automatically. Click it yourself and the run carries on. (Diagnostics tab has details.)", "Drone", 45);
             return;
         }
 
         Plugin.TargetManager.Target = obj;
-        GameUi.Interact(obj);
+        var los = interactTries % 2 == 0;
+        var result = GameUi.Interact(obj, los);
         interactTries++;
         interactAt = now;
+        Note($"Interact try {interactTries} (line of sight check {los}) → {result}, {reach:0.0}y");
         Progress("Examining the artifact");
     }
 
@@ -631,7 +745,8 @@ public sealed unsafe class Runner : IDisposable
         var find = new Find(DateTime.Now, z.Name, recordId, ItemName(recordId), tier);
         Finds.Insert(0, find);
         FoundThisRun++;
-        collectedSpots.Add(Target ?? Plugin.ObjectTable.LocalPlayer!.Position);
+        doneSpots.Add(Target ?? Me);
+        Note($"Got {find.RecordName}");
 
         var c = plugin.Configuration;
         c.TotalArtifacts++;
@@ -652,54 +767,93 @@ public sealed unsafe class Runner : IDisposable
 
     // ---------------------------------------------------------------- finding the artifact
 
-    /// <summary>An artifact you can examine, in the object table.</summary>
+    private bool IsDone(Vector3 p) => doneSpots.Any(d => GameUi.Distance2D(d, p) < 5f);
+
+    /// <summary>An artifact you can examine, in the object table: named "artifact", or the artifact's id, or any
+    /// targetable field object standing on one of the zone's artifact spots.</summary>
     public IGameObject? NearestArtifactObject()
     {
-        var me = Plugin.ObjectTable.LocalPlayer?.Position ?? Vector3.Zero;
-        return GameUi.EventObjects()
-            .Where(o => o.IsTargetable && (o.BaseId == Zones.ArtifactEObj || GameUi.Contains(o.Name.TextValue, artifactName)))
+        var z = zone ?? CurrentZone;
+        var spots = z == null ? [] : Zones.Sites(z);
+        var me = Me;
+        return GameUi.FieldObjects()
+            .Where(o => o.IsTargetable && !IsDone(o.Position))
+            .Where(o => o.BaseId == Zones.ArtifactEObj
+                        || GameUi.Contains(o.Name.TextValue, artifactName)
+                        || spots.Any(s => GameUi.Distance2D(s.Position, o.Position) < 3f))
             .OrderBy(o => Vector3.Distance(me, o.Position))
             .FirstOrDefault();
     }
 
-    /// <summary>The "Artifact Site" marker on the map, unless it's where we already dug.</summary>
-    public MapMark? ArtifactMarker() =>
-        GameUi.EventMarkers()
-            .Where(m => GameUi.Contains(m.Tooltip, siteLabel))
-            .Where(m => !collectedSpots.Any(c => GameUi.Distance2D(c, m.Position) < 10f))
-            .Select(m => (MapMark?)m)
-            .FirstOrDefault();
-
-    /// <summary>Where the artifact is, best source first.</summary>
-    public object? FindArtifact(out Vector3 position, out string source, out bool isObject)
+    /// <summary>The artifact spot a map marker sits on, trying each way the game stores marker positions.</summary>
+    public (Site Site, float Distance)? SpotFor(MapMark m)
     {
-        if (NearestArtifactObject() is { } obj)
+        var z = zone ?? CurrentZone;
+        if (z == null)
+            return null;
+        var spots = Zones.Sites(z);
+        if (spots.Count == 0)
+            return null;
+
+        Vector2[] guesses = m.HasHeight
+            ? [m.Raw]
+            : [m.Raw / 16f, m.Raw, m.Raw - new Vector2(1024f)];
+        (Site Site, float Distance)? best = null;
+        foreach (var g in guesses)
         {
-            position = obj.Position;
-            source = "artifact in sight";
-            isObject = true;
-            return obj;
+            foreach (var s in spots)
+            {
+                var d = Vector2.Distance(g, new Vector2(s.Position.X, s.Position.Z));
+                if (best == null || d < best.Value.Distance)
+                    best = (s, d);
+            }
         }
 
-        if (ArtifactMarker() is { } mark)
+        return best;
+    }
+
+    /// <summary>The artifact's red X: a marker labelled "Artifact Site", or with the icon learned earlier, or new since
+    /// the drone went up, sitting on an artifact spot. Returns the spot it marks.</summary>
+    public ArtifactFix? ArtifactMarker()
+    {
+        var config = plugin.Configuration;
+        ArtifactFix? fallback = null;
+        foreach (var m in GameUi.AllMarkers())
         {
-            position = mark.Position;
-            // The marker has no height on some maps: borrow the nearest known spot's if it's close.
-            if (zone != null || CurrentZone != null)
+            if (SpotFor(m) is not { } spot || spot.Distance > SnapRange || IsDone(spot.Site.Position))
+                continue;
+
+            // Minimap markers come and go as you move, so only a label or the learned icon counts for them.
+            var steady = !m.Source.StartsWith("minimap", StringComparison.Ordinal);
+            var labelled = GameUi.Contains(m.Text, siteLabel);
+            var knownIcon = config.ArtifactIconId != 0 && m.IconId == config.ArtifactIconId && m.Source == config.ArtifactMarkerSource;
+            var isNew = steady && markerBaseline != null && !markerBaseline.Contains(m.Key) && spot.Distance < 6f;
+            if (labelled || knownIcon || isNew)
             {
-                var site = Zones.Sites(zone ?? CurrentZone!).OrderBy(s => GameUi.Distance2D(s.Position, mark.Position)).FirstOrDefault();
-                if (site != null && GameUi.Distance2D(site.Position, mark.Position) < 15f)
-                    position = site.Position;
+                if (!knownIcon && m.IconId != 0)
+                {
+                    config.ArtifactIconId = m.IconId;
+                    config.ArtifactMarkerSource = m.Source;
+                    config.Save();
+                    Note($"Learned the artifact's map icon: {m.IconId} ({m.Source} marker{(labelled ? ", labelled" : "")})");
+                }
+
+                return new ArtifactFix(spot.Site.Position, $"map marker ({m.Source})", null, m);
             }
 
-            source = "map marker";
-            isObject = false;
-            return mark;
+            // Before any drone this run there's no baseline: a marker right on a spot is a fair guess.
+            if (steady && markerBaseline == null && spot.Distance < 3f)
+                fallback ??= new ArtifactFix(spot.Site.Position, $"map marker on a spot ({m.Source}, icon {m.IconId})", null, m);
         }
 
-        position = default;
-        source = "";
-        isObject = false;
-        return null;
+        return fallback;
+    }
+
+    /// <summary>Where the artifact is, best source first.</summary>
+    public ArtifactFix? FindArtifact()
+    {
+        if (NearestArtifactObject() is { } obj)
+            return new ArtifactFix(obj.Position, "artifact in sight", obj, null);
+        return ArtifactMarker();
     }
 }

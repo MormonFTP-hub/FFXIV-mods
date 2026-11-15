@@ -2,7 +2,7 @@
 
 A Dalamud plugin that runs **Artifact Search** in Cosmic Exploration (Oizys and Auxesia) for you. Press Start on a crafter or gatherer and it uses a drone module, finds the artifact the drone located, travels there, examines it, logs the record (gold, silver or bronze) and uses the next module, until the modules run out.
 
-**First version, not yet tested in game (2026-11-15).** It builds, and the artifact spots it reads from the game files check out (45 on Oizys, 60 on Auxesia, every one matching the game's `WKSTreasureInfo` table). The in-game steps follow the game's data but haven't run against the live client yet. The **Diagnostics** tab shows what it can see, and its text is what's needed to fix a run that goes wrong.
+**Early version (2026-11-15).** v0.1.0's first in-game runs went in circles: it looked for the red X only in the map's event markers, didn't find it, and swept the nearest spots. v0.1.1 reads every marker list on the map and accepts a marker sitting on one of the zone's known artifact spots (45 on Oizys, 60 on Auxesia, read from the game files), learns the artifact's icon, steps closer before examining, and hands the walk or the click to you (map flag) instead of stopping when it can't do it. The **Diagnostics** tab has a run log plus every marker and nearby object; its text is what's needed to fix a run that goes wrong.
 
 ## Installing it (for friends)
 
@@ -41,9 +41,9 @@ The game's side of Artifact Search, as read from its data:
 The loop (`Runner.cs`):
 
 1. **Deploy.** `AgentInventoryContext.UseItem(module)`, Yes to the prompt, then wait for log 11379 or the module count to drop. Log 11380 means a drone is already out, so it goes looking for that one's artifact.
-2. **Locate.** Best source first: the artifact object in the object table, then the "Artifact Site" event marker on the map (`AgentMap.EventMarkers`, snapped to the nearest known spot for its height), then a sweep of the zone's spots, nearest first, until the object shows up.
+2. **Locate.** Best source first: the artifact object in the object table (named "artifact", id 2015138, or any targetable field object on an artifact spot); then the red X, read from every `AgentMap` marker list (event, map, temp, minimap) and matched to an artifact spot under each way the game stores positions (world, ×16, map pixels), taking a marker labelled "Artifact Site", one with the learned icon, or one that's new since the drone went up; then a sweep of the zone's spots, nearest first.
 3. **Travel.** vnavmesh IPC (`vnavmesh.SimpleMove.PathfindAndMoveTo`), Mount Roulette for long legs, a new path whenever it stops getting closer.
-4. **Examine.** Dismount, `TargetSystem.InteractWithObject`, Yes to any prompt naming the artifact, click through Talk boxes, and count the record that lands.
+4. **Examine.** Dismount, step within 2.8 yalms, `TargetSystem.InteractWithObject` (alternating the line-of-sight check), Yes to a prompt naming the artifact or opening right after, click through Talk boxes, and count the record that lands. After four failed tries it asks you to click it and carries on once the record lands.
 
 ## Building
 

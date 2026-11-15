@@ -258,9 +258,10 @@ public sealed class MainWindow : Window
             sb.AppendLine($"Last drone log message: {Run.LastLogId} at {Run.LastLogTime:HH:mm:ss}");
 
         var obj = Run.NearestArtifactObject();
-        sb.AppendLine(obj == null ? "Artifact object: none in view" : $"Artifact object: {obj.Name} id {obj.BaseId} at {Fmt(obj.Position)}, {GameUi.Distance2D(me, obj.Position):0.0}y");
+        sb.AppendLine(obj == null ? "Artifact object: none in view" : $"Artifact object: {obj.Name} ({obj.ObjectKind}) id {obj.BaseId} at {Fmt(obj.Position)}, {Vector3.Distance(me, obj.Position):0.0}y");
         var mark = Run.ArtifactMarker();
-        sb.AppendLine(mark == null ? "Artifact map marker: none" : $"Artifact map marker: icon {mark.Value.IconId} at {Fmt(mark.Value.Position)}");
+        sb.AppendLine(mark == null ? "Artifact map marker: none" : $"Artifact map marker: {mark.Source} at {Fmt(mark.Position)}");
+        sb.AppendLine($"Learned artifact icon: {(Config.ArtifactIconId == 0 ? "not yet" : $"{Config.ArtifactIconId} ({Config.ArtifactMarkerSource})")}");
 
         if (zone != null)
         {
@@ -270,13 +271,22 @@ public sealed class MainWindow : Window
         }
 
         sb.AppendLine();
-        sb.AppendLine("Map event markers:");
-        foreach (var m in GameUi.EventMarkers().Take(40))
-            sb.AppendLine($"  icon {m.IconId} \"{m.Tooltip}\" at {Fmt(m.Position)}");
+        sb.AppendLine("Run log:");
+        foreach (var line in Run.RunLog.TakeLast(40))
+            sb.AppendLine("  " + line);
 
-        sb.AppendLine("Event objects within 80y:");
-        foreach (var o in GameUi.EventObjects().Where(o => Vector3.Distance(me, o.Position) < 80).OrderBy(o => Vector3.Distance(me, o.Position)).Take(30))
-            sb.AppendLine($"  {o.BaseId} \"{o.Name}\" {(o.IsTargetable ? "targetable" : "not targetable")} at {Fmt(o.Position)}, {Vector3.Distance(me, o.Position):0.0}y");
+        sb.AppendLine();
+        sb.AppendLine("Map markers (source, icon, text, raw, nearest artifact spot):");
+        foreach (var m in GameUi.AllMarkers().Take(120))
+        {
+            var spot = Run.SpotFor(m);
+            sb.AppendLine($"  {m.Source} icon {m.IconId} \"{m.Text}\" raw ({m.Raw.X:0.#}, {m.Raw.Y:0.#})"
+                          + (spot == null ? "" : $" spot {spot.Value.Distance:0.0}y"));
+        }
+
+        sb.AppendLine("Field objects within 80y:");
+        foreach (var o in GameUi.FieldObjects().Where(o => Vector3.Distance(me, o.Position) < 80).OrderBy(o => Vector3.Distance(me, o.Position)).Take(30))
+            sb.AppendLine($"  {o.ObjectKind} {o.BaseId} \"{o.Name}\" {(o.IsTargetable ? "targetable" : "not targetable")} at {Fmt(o.Position)}, {Vector3.Distance(me, o.Position):0.0}y");
 
         return sb.ToString();
     }
