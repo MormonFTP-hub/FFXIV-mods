@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>MormonFTP</Author>
+    <Name>Materia Transmuter</Name>
+    <Punchline>Feeds your junk materia to Mutamix Bubblypots, five at a time, for a shot at better ones.</Punchline>
+    <Description>Tick the materia you don't want (Piety, say), stand next to Mutamix Bubblypots in Central Thanalan and press Start.
+It talks to him, puts five of the same grade in the transmute window, confirms, and keeps going until your junk runs out.
+It never touches materia you didn't tick, can keep a few of each, and logs what every trade gave you, grade-ups included.</Description>
+    <Tags>materia;transmute;transmutation;mutamix;gil;utility</Tags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
