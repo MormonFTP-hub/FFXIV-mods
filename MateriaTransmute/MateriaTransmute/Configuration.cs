@@ -28,5 +28,9 @@ public class Configuration : IPluginConfiguration
     /// <summary>Print each trade's result in chat (local only, nobody else sees it).</summary>
     public bool EchoResults { get; set; } = true;
 
+    // Lifetime tally, shown in the Results tab
+    public int TotalTrades { get; set; } = 0;
+    public int TotalGradeUps { get; set; } = 0;
+
     public void Save() => Plugin.PluginInterface.SavePluginConfig(this);
 }

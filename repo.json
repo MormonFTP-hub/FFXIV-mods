@@ -1,0 +1,26 @@
+[
+  {
+    "Author": "MormonFTP",
+    "Name": "Materia Transmuter",
+    "InternalName": "MateriaTransmute",
+    "AssemblyVersion": "0.1.0.0",
+    "Description": "Tick the materia you don't want (Piety, say), stand next to Mutamix Bubblypots in Central Thanalan and press Start.\nIt talks to him, puts five of the same grade in the transmute window, confirms, and keeps going until your junk runs out.\nIt never touches materia you didn't tick, can keep a few of each, and logs what every trade gave you, grade-ups included.",
+    "ApplicableVersion": "any",
+    "Tags": [
+      "materia",
+      "transmute",
+      "transmutation",
+      "mutamix",
+      "gil",
+      "utility"
+    ],
+    "DalamudApiLevel": 15,
+    "Punchline": "Feeds your junk materia to Mutamix Bubblypots, five at a time, for a shot at better ones.",
+    "RepoUrl": "https://github.com/MormonFTP-hub/FFXIV-mods/tree/main/MateriaTransmute",
+    "DownloadLinkInstall": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/MateriaTransmute.zip",
+    "DownloadLinkUpdate": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/MateriaTransmute.zip",
+    "DownloadLinkTesting": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/MateriaTransmute.zip",
+    "LastUpdate": 1794767771,
+    "AcceptsFeedback": false
+  }
+]

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Checks the trade picker (Planner) against made-up bags. Plain .NET: it only loads the plugin's types. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MateriaTransmute"><HintPath>..\..\MateriaTransmute\bin\Debug\MateriaTransmute.dll</HintPath></Reference>
+    <Reference Include="Dalamud"><HintPath>$(DalamudLibPath)Dalamud.dll</HintPath></Reference>
+    <Reference Include="FFXIVClientStructs"><HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath></Reference>
+    <Reference Include="InteropGenerator.Runtime"><HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

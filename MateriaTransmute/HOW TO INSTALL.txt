@@ -1,0 +1,39 @@
+MATERIA TRANSMUTER
+Gives your junk materia to Mutamix Bubblypots five at a time, so you get other materia back and sometimes a higher grade.
+
+You need XIVLauncher with Dalamud, the launcher that runs plugins. If you already use any plugin, you have it.
+
+
+=== EASY WAY (updates install themselves) ===
+
+1. In game, type  /xlsettings  and open the "Experimental" tab.
+2. Find "Custom Plugin Repositories". Paste this link into the empty box, then click the + next to it:
+
+      https://raw.githubusercontent.com/MormonFTP-hub/FFXIV-mods/main/repo.json
+
+3. Click "Save and Close" at the bottom.
+4. Type  /xlplugins , search for "Materia Transmuter" and click Install.
+
+
+=== USING THIS ZIP INSTEAD ===
+
+1. Make a folder you won't delete, for example  C:\FFXIV Plugins\Materia Transmuter , and unzip this file into it.
+2. In game, type  /xlsettings  and open the "Experimental" tab.
+3. Under "Dev Plugin Locations", paste the full path to the DLL, for example
+      C:\FFXIV Plugins\Materia Transmuter\MateriaTransmute.dll
+   click the + next to it, then "Save and Close".
+4. Type  /xlplugins , open "Dev Tools", then "Installed Dev Plugins", and turn on Materia Transmuter.
+
+
+=== USING IT ===
+
+1. Do the level 19 quest "Marvelously Mutable Materia" first if you haven't. It unlocks trading with Mutamix.
+2. Type  /transmute . Click "Show on map" to flag Mutamix Bubblypots at the Bonfire in Central Thanalan
+   (X 23.7, Y 13.6), then go there.
+3. On the "Pick junk" tab, tick the materia you don't want. Ticking a stat's name, such as Piety, ticks every grade of it.
+4. Stand next to Mutamix and press Start. It keeps trading until fewer than five of any grade are left.
+   Press Stop, or type  /transmute stop , at any time.
+
+Each trade takes five materia of the same grade. You get back one materia of a different stat, sometimes one grade higher.
+The plugin only uses materia you ticked. "Settings" can keep a few of each, or stop after a set number of trades.
+"Results" lists what every trade gave you.

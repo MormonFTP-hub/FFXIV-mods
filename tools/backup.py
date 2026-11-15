@@ -217,9 +217,12 @@ def main():
     run('git', 'push', '-q', 'origin', 'HEAD')
     print('pushed')
     sync_release(gh, 'mods', 'Mods (latest of each)', release_notes(mods), {m['asset']: m['path'] for m in mods}, True)
-    apps = {slug(Path(a).stem) + '.exe': ROOT / a for a in APPS if (ROOT / a).exists()}
+    apps = {slug(Path(a).stem) + Path(a).suffix: ROOT / a for a in APPS if (ROOT / a).exists()}
     sync_release(gh, 'apps', 'Apps (latest builds)',
-                 'Windows builds of the apps in this repo. See each app\'s readme for what it needs.\n', apps, False)
+                 'Windows builds of the apps in this repo. See each app\'s readme for what it needs.\n'
+                 'MateriaTransmute.zip is the Materia Transmuter Dalamud plugin. Install it in game from the custom repo '
+                 'https://raw.githubusercontent.com/MormonFTP-hub/FFXIV-mods/main/repo.json (see MateriaTransmute/HOW TO INSTALL.txt).\n',
+                 apps, False)
 
 
 if __name__ == '__main__':
