@@ -97,7 +97,7 @@ public static unsafe class GameUi
 
     /// <summary>Objects an artifact could be: event objects and treasure-type objects.</summary>
     public static IEnumerable<IGameObject> FieldObjects() =>
-        Plugin.ObjectTable.Where(o => o.ObjectKind is ObjectKind.EventObj or ObjectKind.Treasure or ObjectKind.GatheringPoint);
+        Plugin.ObjectTable.Where(o => o.ObjectKind is ObjectKind.EventObj or ObjectKind.ReactionEventObject or ObjectKind.Treasure or ObjectKind.GatheringPoint);
 
     /// <summary>An addon that is open, drawn and finished loading.</summary>
     public static bool TryGetAddon(string name, out AtkUnitBase* addon)

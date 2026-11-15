@@ -12,6 +12,7 @@ public sealed class Navmesh
     private readonly ICallGateSubscriber<bool> isReady;
     private readonly ICallGateSubscriber<Vector3, bool, bool> pathfindAndMoveTo;
     private readonly ICallGateSubscriber<bool> pathfindInProgress;
+    private readonly ICallGateSubscriber<bool> navPathfindInProgress;
     private readonly ICallGateSubscriber<bool> isRunning;
     private readonly ICallGateSubscriber<object> stop;
 
@@ -21,6 +22,7 @@ public sealed class Navmesh
         isReady = pi.GetIpcSubscriber<bool>("vnavmesh.Nav.IsReady");
         pathfindAndMoveTo = pi.GetIpcSubscriber<Vector3, bool, bool>("vnavmesh.SimpleMove.PathfindAndMoveTo");
         pathfindInProgress = pi.GetIpcSubscriber<bool>("vnavmesh.SimpleMove.PathfindInProgress");
+        navPathfindInProgress = pi.GetIpcSubscriber<bool>("vnavmesh.Nav.PathfindInProgress");
         isRunning = pi.GetIpcSubscriber<bool>("vnavmesh.Path.IsRunning");
         stop = pi.GetIpcSubscriber<object>("vnavmesh.Path.Stop");
     }
@@ -31,7 +33,9 @@ public sealed class Navmesh
     public bool IsReady => Try(() => isReady.InvokeFunc(), false);
 
     /// <summary>A path is being worked out or walked.</summary>
-    public bool Busy => Try(() => pathfindInProgress.InvokeFunc() || isRunning.InvokeFunc(), false);
+    public bool Busy =>
+        Try(() => pathfindInProgress.InvokeFunc(), false) || Try(() => navPathfindInProgress.InvokeFunc(), false)
+        || Try(() => isRunning.InvokeFunc(), false);
 
     public bool MoveTo(Vector3 destination) => Try(() => pathfindAndMoveTo.InvokeFunc(destination, false), false);
 

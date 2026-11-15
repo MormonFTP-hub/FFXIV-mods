@@ -3,7 +3,7 @@
     "Author": "MormonFTP",
     "Name": "Drone Runner",
     "InternalName": "DroneRunner",
-    "AssemblyVersion": "0.1.1.0",
+    "AssemblyVersion": "0.1.2.0",
     "Description": "For Cosmic Exploration on Oizys and Auxesia. Press Start on a crafter or gatherer and it uses a drone module, finds the artifact it located, travels there (with vnavmesh, on a mount for long trips), examines it, and goes again until your modules run out.\nWithout vnavmesh it flags each artifact on your map and examines it as soon as you get there.\nIt counts your gold, silver and bronze records as they come in.",
     "ApplicableVersion": "any",
     "Tags": [
@@ -22,7 +22,7 @@
     "DownloadLinkInstall": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/DroneRunner.zip",
     "DownloadLinkUpdate": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/DroneRunner.zip",
     "DownloadLinkTesting": "https://github.com/MormonFTP-hub/FFXIV-mods/releases/download/apps/DroneRunner.zip",
-    "LastUpdate": 1794771170,
+    "LastUpdate": 1794771971,
     "AcceptsFeedback": false
   },
   {

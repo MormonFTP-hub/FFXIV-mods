@@ -35,6 +35,8 @@ public static class Zones
     public const uint AlreadyDeployedLog = 11380;   // A drone module has already been deployed... retrieve any discovered artifacts
     public const uint WrongPlanetLog = 11381;       // Unable to use drone modules from another planet.
     public const uint OutsideDutyLog = 11382;       // This item cannot be used outside of specified duties.
+    public const uint AppraisalStartLog = 11386;    // Starting artifact appraisal... (examining it)
+    public const uint AppraisalDoneLog = 11383;     // Artifact appraisal complete! (the record follows)
 
     public static readonly Zone[] All =
     [

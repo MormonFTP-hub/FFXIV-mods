@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -38,6 +39,7 @@ public sealed unsafe class Runner : IDisposable
     private const float ExamineRange = 3.5f; // 2D, to stop walking and start examining
     private const float SiteSeenRange = 25f; // an artifact this close shows up in the object table
     private const float SnapRange = 10f;     // a map marker this close to an artifact spot is on that spot
+    private const float ArriveRange = 3f;    // 2D, standing on the marked spot
 
     private readonly Plugin plugin;
     private readonly Navmesh nav = new();
@@ -78,6 +80,8 @@ public sealed unsafe class Runner : IDisposable
     private readonly HashSet<uint> checkedSites = [];
     private readonly List<Vector3> doneSpots = [];
     private int moveTries;
+    private int moveFails;
+    private DateTime lastMoveAt;
     private int stalls;
     private float bestDistance;
     private DateTime lastCloser;
@@ -93,6 +97,8 @@ public sealed unsafe class Runner : IDisposable
     private int interactTries;
     private int approachTries;
     private bool sawActivity;
+    private bool appraisalDone;
+    private DateTime appraisalAt;
     private bool manualExamine;
 
     public Runner(Plugin plugin)
@@ -213,6 +219,13 @@ public sealed unsafe class Runner : IDisposable
                 break;
             case Zones.AlreadyDeployedLog:
                 alreadyDeployedSignal = true;
+                break;
+            case Zones.AppraisalStartLog:
+                sawActivity = true;
+                break;
+            case Zones.AppraisalDoneLog:
+                appraisalDone = true;
+                appraisalAt = DateTime.UtcNow;
                 break;
             case Zones.WrongPlanetLog:
             case Zones.OutsideDutyLog:
@@ -503,6 +516,8 @@ public sealed unsafe class Runner : IDisposable
         TargetSource = fix.Source;
         sweepSite = site;
         moveTries = 0;
+        moveFails = 0;
+        lastMoveAt = DateTime.MinValue;
         stalls = 0;
         bestDistance = float.MaxValue;
         lastCloser = DateTime.UtcNow;
@@ -529,6 +544,8 @@ public sealed unsafe class Runner : IDisposable
             if (!ManualTravel && !manualLeg)
                 nav.Stop();
             moveTries = 0;
+            moveFails = 0;
+            lastMoveAt = DateTime.MinValue;
             stalls = 0;
             flagged = false;
             manualLeg = false;
@@ -539,10 +556,11 @@ public sealed unsafe class Runner : IDisposable
         var obj = NearestArtifactObject();
         var objDist = obj == null ? float.MaxValue : GameUi.Distance2D(me, obj.Position);
 
-        if (obj != null && objDist <= ExamineRange)
+        // Arrived: at the artifact, or standing on the marked spot (the artifact may not show as a normal object).
+        if ((obj != null && objDist <= ExamineRange) || (sweepSite == null && dist <= ArriveRange))
         {
             nav.Stop();
-            BeginExamine(obj);
+            BeginExamine(obj != null && objDist <= ExamineRange ? obj : null);
             return;
         }
 
@@ -598,7 +616,7 @@ public sealed unsafe class Runner : IDisposable
             return;
         }
 
-        if (now - lastCloser > TimeSpan.FromSeconds(10))
+        if (now - lastCloser > TimeSpan.FromSeconds(12))
         {
             stalls++;
             Note($"Not getting closer ({dist:0}y left), stall {stalls}");
@@ -607,8 +625,7 @@ public sealed unsafe class Runner : IDisposable
             bestDistance = float.MaxValue;
         }
 
-        var stuck = stalls >= 3 || (moveTries >= 4 && !nav.Busy);
-        if (stuck)
+        if (stalls >= 3 || moveFails >= 3)
         {
             nav.Stop();
             if (sweepSite != null)
@@ -620,34 +637,46 @@ public sealed unsafe class Runner : IDisposable
             }
 
             // The real artifact, out of vnavmesh's reach (a floating island, say): hand the walk to you.
-            Note("Can't find a way there; handing the walk over");
+            Note($"Can't find a way there ({stalls} stalls, {moveFails} refused paths); handing the walk over");
             manualLeg = true;
             Plugin.ChatGui.Print("vnavmesh can't find a way to this artifact. Get there yourself and it takes over again.", "Drone", 45);
             return;
         }
 
-        if (!nav.Busy)
+        // Ask for a path when vnavmesh is idle, and give it time to work one out before asking again.
+        if (!nav.Busy && now - lastMoveAt > TimeSpan.FromSeconds(3))
         {
-            nav.MoveTo(dest);
+            var accepted = nav.MoveTo(dest);
+            lastMoveAt = now;
             moveTries++;
-            nextStep = now.AddMilliseconds(500);
+            if (!accepted)
+            {
+                moveFails++;
+                Note($"vnavmesh refused the path ({moveFails})");
+            }
         }
     }
 
     // ---------------------------------------------------------------- examine
 
-    private void BeginExamine(IGameObject obj)
+    private void BeginExamine(IGameObject? obj)
     {
         Phase = Phase.Examining;
         recordsBefore = zone!.RecordIds.ToDictionary(id => id, GameUi.ItemCount);
-        examineId = obj.GameObjectId;
+        examineId = obj?.GameObjectId ?? 0;
         examineSince = DateTime.UtcNow;
         interactTries = 0;
         approachTries = 0;
         interactAt = DateTime.MinValue;
         sawActivity = false;
+        appraisalDone = false;
         manualExamine = false;
-        Note($"At the artifact: {obj.Name} ({obj.ObjectKind}, id {obj.BaseId}), {Vector3.Distance(Me, obj.Position):0.0}y");
+        var spot = Target ?? Me;
+        Note(obj == null
+            ? $"On the spot ({GameUi.Distance2D(Me, spot):0.0}y); no artifact object recognised yet"
+            : $"At the artifact: {obj.Name} ({obj.ObjectKind}, id {obj.BaseId}), {Vector3.Distance(Me, obj.Position):0.0}y");
+        foreach (var line in NearbyObjects(spot, 12f).Take(15))
+            Note("  near: " + line);
         Progress("At the artifact");
     }
 
@@ -661,6 +690,13 @@ public sealed unsafe class Runner : IDisposable
                 RecordFind(id);
                 return;
             }
+        }
+
+        // The game said the appraisal finished but no record showed up in the bags: count it and carry on.
+        if (appraisalDone && now - appraisalAt > TimeSpan.FromSeconds(3))
+        {
+            RecordFind(0);
+            return;
         }
 
         if (Plugin.Condition[ConditionFlag.Mounted])
@@ -680,25 +716,6 @@ public sealed unsafe class Runner : IDisposable
             return;
         }
 
-        var obj = Plugin.ObjectTable.FirstOrDefault(o => o.GameObjectId == examineId && o.IsTargetable) ?? NearestArtifactObject();
-        if (obj == null)
-        {
-            // Gone. If we touched it, it was collected (the record may sit somewhere the bag count can't see).
-            if (sawActivity || interactTries > 0)
-            {
-                Note("Artifact gone after examining; no record seen in the bags");
-                doneSpots.Add(Target ?? Me);
-                FoundThisRun++;
-                BeginDeploy();
-            }
-            else if (now - examineSince > TimeSpan.FromSeconds(4))
-            {
-                BeginLocate("The artifact vanished; looking again");
-            }
-
-            return;
-        }
-
         if (manualExamine)
         {
             Status = "Your turn: examine the artifact. The run carries on once the record lands.";
@@ -706,8 +723,30 @@ public sealed unsafe class Runner : IDisposable
             return;
         }
 
+        if (sawActivity && now - interactAt < TimeSpan.FromSeconds(8))
+        {
+            Status = "Appraising the artifact";
+            return;
+        }
+
         if (now - interactAt < TimeSpan.FromSeconds(3.5))
             return;
+
+        var spot = Target ?? Me;
+        var candidates = SpotCandidates(spot);
+        if (examineId != 0 && Plugin.ObjectTable.FirstOrDefault(o => o.GameObjectId == examineId) is { } first)
+            candidates = candidates.Prepend(first).DistinctBy(o => o.GameObjectId).ToList();
+
+        if (candidates.Count == 0 || interactTries >= 6)
+        {
+            manualExamine = true;
+            Note(candidates.Count == 0 ? "Nothing to interact with on the spot; leaving it to you" : "Six tries didn't start an appraisal; leaving it to you");
+            Plugin.ChatGui.Print("Couldn't examine the artifact automatically. Examine it yourself and the run carries on. "
+                                 + "(Then copy the Diagnostics tab and send it over, so this can be fixed.)", "Drone", 45);
+            return;
+        }
+
+        var obj = candidates[interactTries % candidates.Count];
 
         // Close the last few yalms: interaction range is shorter than where the path ends.
         var reach = Vector3.Distance(Me, obj.Position);
@@ -715,34 +754,26 @@ public sealed unsafe class Runner : IDisposable
         {
             approachTries++;
             nav.MoveTo(obj.Position);
-            Note($"Stepping closer ({reach:0.0}y)");
-            interactAt = now; // give the step time before interacting
+            Note($"Stepping closer to {obj.Name} ({reach:0.0}y)");
+            interactAt = now;
             return;
         }
 
         nav.Stop();
-        if (interactTries >= 4)
-        {
-            manualExamine = true;
-            Note("Interacting didn't take four times; leaving it to you");
-            Plugin.ChatGui.Print("Couldn't examine the artifact automatically. Click it yourself and the run carries on. (Diagnostics tab has details.)", "Drone", 45);
-            return;
-        }
-
         Plugin.TargetManager.Target = obj;
-        var los = interactTries % 2 == 0;
+        var los = interactTries / Math.Max(candidates.Count, 1) % 2 == 0;
         var result = GameUi.Interact(obj, los);
         interactTries++;
         interactAt = now;
-        Note($"Interact try {interactTries} (line of sight check {los}) → {result}, {reach:0.0}y");
+        Note($"Interact try {interactTries}: {obj.ObjectKind} {obj.BaseId} \"{obj.Name}\" targetable {obj.IsTargetable}, {reach:0.0}y, line of sight check {los} → {result}");
         Progress("Examining the artifact");
     }
 
     private void RecordFind(uint recordId)
     {
         var z = zone!;
-        var tier = recordId == z.GoldRecordId ? 3 : recordId == z.SilverRecordId ? 2 : 1;
-        var find = new Find(DateTime.Now, z.Name, recordId, ItemName(recordId), tier);
+        var tier = recordId == 0 ? 0 : recordId == z.GoldRecordId ? 3 : recordId == z.SilverRecordId ? 2 : 1;
+        var find = new Find(DateTime.Now, z.Name, recordId, recordId == 0 ? "a record (not seen in the bags)" : ItemName(recordId), tier);
         Finds.Insert(0, find);
         FoundThisRun++;
         doneSpots.Add(Target ?? Me);
@@ -754,7 +785,7 @@ public sealed unsafe class Runner : IDisposable
         {
             case 3: c.TotalGold++; break;
             case 2: c.TotalSilver++; break;
-            default: c.TotalBronze++; break;
+            case 1: c.TotalBronze++; break;
         }
 
         c.Save();
@@ -768,6 +799,38 @@ public sealed unsafe class Runner : IDisposable
     // ---------------------------------------------------------------- finding the artifact
 
     private bool IsDone(Vector3 p) => doneSpots.Any(d => GameUi.Distance2D(d, p) < 5f);
+
+    private static bool CouldBeArtifact(IGameObject o) =>
+        o.ObjectKind is not (ObjectKind.Pc or ObjectKind.BattleNpc or ObjectKind.Mount or ObjectKind.Companion
+            or ObjectKind.Retainer or ObjectKind.Ornament or ObjectKind.HousingEventObject or ObjectKind.Cutscene or ObjectKind.CardStand);
+
+    /// <summary>Everything on the marked spot that could be the artifact, best guess first: its id or name, then field
+    /// objects, then anything else; targetable before not; nearest the spot first. Untargetable ones count here, since
+    /// the artifact itself is an invisible object.</summary>
+    public List<IGameObject> SpotCandidates(Vector3 spot)
+    {
+        int Rank(IGameObject o) =>
+            o.BaseId == Zones.ArtifactEObj ? 0
+            : GameUi.Contains(o.Name.TextValue, artifactName) ? 1
+            : o.ObjectKind == ObjectKind.EventObj ? 2
+            : o.ObjectKind is ObjectKind.ReactionEventObject or ObjectKind.Treasure or ObjectKind.GatheringPoint ? 3
+            : 4;
+        return Plugin.ObjectTable
+            .Where(o => CouldBeArtifact(o) && o.GameObjectId != Plugin.ObjectTable.LocalPlayer?.GameObjectId)
+            .Where(o => GameUi.Distance2D(o.Position, spot) <= (Rank(o) <= 1 ? 8f : 5f))
+            .OrderBy(Rank)
+            .ThenBy(o => o.IsTargetable ? 0 : 1)
+            .ThenBy(o => GameUi.Distance2D(o.Position, spot))
+            .Take(6)
+            .ToList();
+    }
+
+    /// <summary>Every object near a point, for the run log and Diagnostics.</summary>
+    public static IEnumerable<string> NearbyObjects(Vector3 point, float radius) =>
+        Plugin.ObjectTable
+            .Where(o => o.ObjectKind != ObjectKind.Pc && Vector3.Distance(o.Position, point) <= radius)
+            .OrderBy(o => Vector3.Distance(o.Position, point))
+            .Select(o => $"{o.ObjectKind} {o.BaseId} \"{o.Name}\" {(o.IsTargetable ? "targetable" : "not targetable")}, {Vector3.Distance(o.Position, point):0.0}y from the spot");
 
     /// <summary>An artifact you can examine, in the object table: named "artifact", or the artifact's id, or any
     /// targetable field object standing on one of the zone's artifact spots.</summary>

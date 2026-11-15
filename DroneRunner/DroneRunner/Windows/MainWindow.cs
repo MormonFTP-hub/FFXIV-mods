@@ -284,9 +284,14 @@ public sealed class MainWindow : Window
                           + (spot == null ? "" : $" spot {spot.Value.Distance:0.0}y"));
         }
 
-        sb.AppendLine("Field objects within 80y:");
-        foreach (var o in GameUi.FieldObjects().Where(o => Vector3.Distance(me, o.Position) < 80).OrderBy(o => Vector3.Distance(me, o.Position)).Take(30))
-            sb.AppendLine($"  {o.ObjectKind} {o.BaseId} \"{o.Name}\" {(o.IsTargetable ? "targetable" : "not targetable")} at {Fmt(o.Position)}, {Vector3.Distance(me, o.Position):0.0}y");
+        var at = Run.Target ?? me;
+        sb.AppendLine($"Could be the artifact, at {(Run.Target == null ? "your feet" : "the target")}:");
+        foreach (var o in Run.SpotCandidates(at))
+            sb.AppendLine($"  {o.ObjectKind} {o.BaseId} \"{o.Name}\" {(o.IsTargetable ? "targetable" : "not targetable")}, {GameUi.Distance2D(o.Position, at):0.0}y from it");
+
+        sb.AppendLine("Everything within 30y of you (not players):");
+        foreach (var line in Runner.NearbyObjects(me, 30f).Take(40))
+            sb.AppendLine("  " + line.Replace("from the spot", "away"));
 
         return sb.ToString();
     }
