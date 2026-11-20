@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <Author>Arcadia</Author>
+    <Name>PMP Capture</Name>
+    <Punchline>Saves the moment on screen so the PMP Viewer can redraw it and be checked against the game.</Punchline>
+    <Description>/pmpcapture saves your character as the game draws it right now: pose (with physics), camera, customize colours, the files Penumbra served, attribute and shape-key masks, the light, and the game's own G-buffers, light buffers, depth and final image. Read-only: it hooks nothing and changes nothing.</Description>
+    <Tags>penumbra;modding;capture;viewer</Tags>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Penumbra.Api" Version="5.19.2" />
+    <Reference Include="TerraFX.Interop.Windows">
+      <HintPath>$(DalamudLibPath)TerraFX.Interop.Windows.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

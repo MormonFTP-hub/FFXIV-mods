@@ -16,9 +16,23 @@ public sealed unsafe partial class Renderer
 
     public bool LeftHanded = Environment.GetEnvironmentVariable("XIVR_LH") == "1";
 
+    private static Matrix4x4 M16(float[] a) => new(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
+
     private void SetupCamera(CameraDesc c, int w, int h)
     {
-        _view = LeftHanded ? Matrix4x4.CreateLookAtLeftHanded(V3(c.Eye), V3(c.Target), V3(c.Up)) : Matrix4x4.CreateLookAt(V3(c.Eye), V3(c.Target), V3(c.Up));
+        if (c.View is { Length: 16 } v && c.Projection is { Length: 16 } p)
+        {
+            // a captured game camera, used as is
+            _view = M16(v);
+            _proj = M16(p);
+            _viewProj = _view * _proj;
+            Matrix4x4.Invert(_view, out _invView);
+            Matrix4x4.Invert(_proj, out _invProj);
+            Matrix4x4.Invert(_viewProj, out _invViewProj);
+            return;
+        }
+
+        _view =LeftHanded ? Matrix4x4.CreateLookAtLeftHanded(V3(c.Eye), V3(c.Target), V3(c.Up)) : Matrix4x4.CreateLookAt(V3(c.Eye), V3(c.Target), V3(c.Up));
         var f      = 1f / MathF.Tan(c.FovY * MathF.PI / 360f);
         var aspect = (float)w / h;
         // reversed-Z with an infinite far plane: depth 1 at the near plane, 0 at infinity (the lighting shaders clamp depth to 1e-6)

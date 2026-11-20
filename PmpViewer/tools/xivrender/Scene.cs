@@ -21,6 +21,12 @@ public sealed class SceneDesc
     /// <summary>World-space box the sun's shadow map covers (min xyz, max xyz); default: the models' boxes.</summary>
     public float[]? ShadowBounds { get; set; }
     public string? OutFile { get; set; }
+    /// <summary>Targets to also save unconverted (CLI): gbuffer0..4, lightdiffuse, lightspecular, depth, hdr, shadowmask,
+    /// ao, final. Each goes to OutFile with ".&lt;name&gt;.bin" and a ".json" header (size, DXGI format, row bytes).</summary>
+    public List<string>? RawOutputs { get; set; }
+    /// <summary>g_CustomizeParameter exactly as the game uploaded it (28 floats, from a capture): replaces the colours
+    /// computed from Customize for the first figure.</summary>
+    public float[]? CustomizeRaw { get; set; }
 
     public static SceneDesc Parse(string json) => JsonSerializer.Deserialize<SceneDesc>(json, Options)!;
 
@@ -45,6 +51,10 @@ public sealed class CameraDesc
     public float[] Up     { get; set; } = { 0, 1, 0 };
     public float   FovY   { get; set; } = 30;      // degrees
     public float   Near   { get; set; } = 0.1f;
+    /// <summary>The game's own view and projection matrices (System.Numerics order M11..M44, as the PMP Capture plugin
+    /// saves them); when given they replace Eye/Target/Up/FovY, so a captured frame is redrawn from exactly its camera.</summary>
+    public float[]? View       { get; set; }
+    public float[]? Projection { get; set; }
 }
 
 public sealed class EnvDesc

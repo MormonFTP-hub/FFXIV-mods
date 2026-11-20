@@ -81,11 +81,63 @@ def color(kind, clan, female, index):
 FACE_PAINT = "chara/common/texture/decal_face/_decal_{}.tex"
 
 
-def paint_color(index):
-    """Face paint colour (0..1 floats) for the customize index: 0-127 the dark colours, 128-255 the light ones."""
-    _, c = _data()
+def _shared_rgba(dark, light, index):
+    """A shared palette entry with its alpha (lips and face paint carry an opacity there): 0-127 from the dark block,
+    128-255 from the light one."""
+    d, _ = _data()
+    c = np.frombuffer(d, np.uint8, 2 * SHARED * 4).reshape(-1, 4)
     i = max(0, min(int(index), 255))
-    return (c[640 + i] if i < 128 else c[1152 + i - 128]) / 255
+    return c[dark + i] / 255 if i < 128 else c[light + i - 128] / 255
+
+
+def paint_color(index):
+    """Face paint colour (0..1 floats, RGB) for the customize index: 0-127 the dark colours, 128-255 the light ones."""
+    return _shared_rgba(640, 1152, index)[:3]
+
+
+def lip_color(index):
+    """Lipstick colour and opacity (RGBA, 0..1): 0-127 the dark lipsticks, 128-255 the light ones."""
+    return [round(float(x), 4) for x in _shared_rgba(512, 1024, index)]
+
+
+def feature_color(index):
+    """Facial feature (tattoo) colour (RGB, 0..1)."""
+    _, c = _data()
+    return (c[768 + max(0, min(int(index), 255))] / 255).round(4).tolist()
+
+
+# Dawntrail faces switch their customization by shape keys (shp_brw/eye/nse/chk/mth_a..d, shp_irs_a on the face model).
+# Taken as: value 0 (the menu's first option) is the bare face, value v turns on the v-th letter. NOT YET CONFIRMED:
+# check it against an in-game capture's face shape mask (tools/ingame.py reports it).
+FACE_SHAPES = (("eyebrows", "brw"), ("eyeShape", "eye"), ("nose", "nse"), ("jaw", "chk"), ("mouth", "mth"))
+
+
+def face_shapes(spec):
+    out = []
+    for key, menu in FACE_SHAPES:
+        v = int(spec.get(key) or 0)
+        if v > 0:
+            out.append(f"shp_{menu}_{chr(ord('a') + v - 1)}")
+    if spec.get("smallIris"):
+        out.append("shp_irs_a")
+    return out
+
+
+def from_bytes(hexstr):
+    """A viewer subject from the game's 26 customize bytes (as the PMP Capture plugin saves them)."""
+    b = bytes.fromhex(hexstr)
+    race_id, female, clan = b[0], b[1] == 1, b[4]
+    race = next((r for r, cs in RACE_CLANS.items() if clan in cs), None)
+    spec = {"subject": "character", "clan": clan, "height": b[3], "face": b[5] or 1, "hair": b[6] or 1,
+            "highlightIndex": b[11] if b[7] & 0x80 else None, "skinIndex": b[8], "eyeIndex": b[9], "hairIndex": b[10],
+            "features": b[12] & 0x7F, "legacyTattoo": bool(b[12] & 0x80), "featureColor": b[13], "eyebrows": b[14],
+            "eyeLeftIndex": b[15], "eyeShape": b[16] & 0x7F, "smallIris": bool(b[16] & 0x80), "nose": b[17], "jaw": b[18],
+            "mouth": b[19] & 0x7F, "lipstick": bool(b[19] & 0x80), "lipColor": b[20], "muscle": b[21], "tail": b[22] or 1,
+            "ear": b[22] or 1, "bust": b[23], "facePaint": b[24] & 0x7F, "facePaintReversed": bool(b[24] & 0x80),
+            "facePaintIndex": b[25], "raceId": race_id}
+    if race:
+        spec["race"] = M.RACE_OF[("Female" if female else "Male", race)]
+    return spec
 
 
 # Glamourer's advanced colour parameters -> the viewer's customize keys (the game's g_CustomizeParameter inputs, given
@@ -204,6 +256,15 @@ def from_glamourer(text):
         spec["facePaintReversed"] = bool(val("FacePaintReversed", 0)) if applies("FacePaintReversed") else False
     if applies("FacePaintColor"):
         spec["facePaintIndex"] = int(val("FacePaintColor", 0))
+    # face shape menus, small irises, lipstick, feature (tattoo) colour, the left eye and muscle tone
+    for key, field in (("eyebrows", "Eyebrows"), ("eyeShape", "EyeShape"), ("nose", "Nose"), ("jaw", "Jaw"), ("mouth", "Mouth"),
+                       ("lipColor", "LipColor"), ("featureColor", "TattooColor"), ("eyeLeftIndex", "EyeColorLeft"),
+                       ("muscle", "MuscleMass")):
+        if applies(field):
+            spec[key] = int(val(field, 0))
+    for key, field in (("smallIris", "SmallIris"), ("lipstick", "Lipstick"), ("legacyTattoo", "LegacyTattoo")):
+        if applies(field):
+            spec[key] = bool(val(field, 0))
     params = glamourer_parameters(d.get("Parameters") or {})
     if params:
         spec["design"] = params

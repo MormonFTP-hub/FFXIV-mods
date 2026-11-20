@@ -97,8 +97,14 @@ public sealed unsafe partial class Renderer
                     break;
                 }
                 case "g_CustomizeParameter":
-                    FillCustomize(Cbs.Ensure(cbl), d.Customize ?? _scene.Customize);
+                {
+                    var cb = Cbs.Ensure(cbl);
+                    if (_scene.CustomizeRaw is { Length: > 0 } raw)
+                        cb.SetBytes(MemoryMarshal.AsBytes(raw.AsSpan()));     // exactly what the game uploaded (capture)
+                    else
+                        FillCustomize(cb, d.Customize ?? _scene.Customize);
                     break;
+                }
                 case "g_ModelParameter":
                     Cbs.Ensure(cbl).Set("m_Params", 1, 0, 0, 0);
                     break;
@@ -403,6 +409,8 @@ public sealed unsafe partial class Renderer
         public int      Draws;
         public double   Ms;
         public List<string> Log = new();
+        /// <summary>Unconverted targets asked for in SceneDesc.RawOutputs: name -> (tight rows, width, height, DXGI format, row bytes).</summary>
+        public Dictionary<string, (byte[] Data, int Width, int Height, int Format, int RowBytes)> Raw = new();
     }
 
     private Gpu.Target? _shadowMap;
@@ -596,6 +604,28 @@ public sealed unsafe partial class Renderer
         SetTargets(new[] { _final }, null);
         Fullscreen(copyVs, tm, tb, false);
 
+        // ---- raw copies of targets (for comparing with a game capture number for number)
+        var raws = new Dictionary<string, (byte[], int, int, int, int)>();
+        foreach (var name in scene.RawOutputs ?? new List<string>())
+        {
+            UnbindAll();
+            var t = name switch
+            {
+                "gbuffer0" => _gbuf[0], "gbuffer1" => _gbuf[1], "gbuffer2" => _gbuf[2], "gbuffer3" => _gbuf[3], "gbuffer4" => _gbuf[4],
+                "lightdiffuse" => _lightDiffuse, "lightspecular" => _lightSpecular, "hdr" => _hdr, "shadowmask" => _shadowMask,
+                "ao" => _occlusion, "depth" => _depth, "final" => _final, _ => null,
+            };
+            if (t == null)
+                continue;
+            var bytes = Gpu.ReadBack(t, out var rp);
+            var bpp = t.Format is DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT ? 8 : 4;
+            var rowBytes = t.Width * bpp;
+            var tight = new byte[rowBytes * t.Height];
+            for (var y = 0; y < t.Height; y++)
+                Buffer.BlockCopy(bytes, y * rp, tight, y * rowBytes, rowBytes);
+            raws[name] = (tight, t.Width, t.Height, (int)t.Format, rowBytes);
+        }
+
         // ---- debug views replace the final image
         if (scene.Output != "final")
         {
@@ -626,7 +656,7 @@ public sealed unsafe partial class Renderer
         List<string> log;
         lock (Log)
             log = Log.ToList();
-        return new FrameResult { Width = _w, Height = _h, Rgba = rgba, Draws = draws, Ms = sw.Elapsed.TotalMilliseconds, Log = log };
+        return new FrameResult { Width = _w, Height = _h, Rgba = rgba, Draws = draws, Ms = sw.Elapsed.TotalMilliseconds, Log = log, Raw = raws };
     }
 
     /// <summary>GTAO into the occlusion target; several noise indices are averaged (the game's TAA does that over frames).</summary>

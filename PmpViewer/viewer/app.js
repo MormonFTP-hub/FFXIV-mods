@@ -940,6 +940,9 @@ async function applyGlamourer() {
     if (s.facePaint != null) { $('facePaint').value = s.facePaint; $('paintFlip').checked = !!s.facePaintReversed; }
     if (s.facePaintIndex != null) $('paintColor').value = s.facePaintIndex;
     st.design = s.design || null;      // the design's advanced colours (skin, hair, eyes, lips, face paint colour, ...)
+    // face shape menus, small irises, lipstick, feature colour, the left eye and muscle: no controls on the page yet
+    st.extra = Object.fromEntries(['eyebrows', 'eyeShape', 'nose', 'jaw', 'mouth', 'smallIris', 'lipstick', 'lipColor',
+      'featureColor', 'eyeLeftIndex', 'muscle', 'legacyTattoo'].filter((k) => s[k] != null).map((k) => [k, s[k]]));
     for (const row of $('gear').querySelectorAll('tr')) {
       const slot = row.dataset.slot;
       if (!(slot in (s.gear || {}))) continue;
@@ -974,7 +977,7 @@ function readSubject() {
     beard: $('beard').checked, skinIndex: c.skin, hairIndex: c.hair, highlightIndex: $('hlOn').checked ? c.highlight : null,
     eyeIndex: c.eye, collection: $('useCollection').checked,
     facePaint: +$('facePaint').value || 0, facePaintIndex: +$('paintColor').value || 0, facePaintReversed: $('paintFlip').checked,
-    design: st.design || undefined };
+    design: st.design || undefined, ...(st.extra || {}) };
 }
 
 // ------------------------------------------------------------------ loading

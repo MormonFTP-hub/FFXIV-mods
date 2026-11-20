@@ -231,6 +231,14 @@ def character(resolved, spec, dry=False):
             cust[kind] = C.color(kind, clan, female, spec[f"{kind}Index"])
     if "hairIndex" in spec and spec.get("highlightIndex") is None:
         cust["highlight"] = cust.get("hair")                   # highlights off
+    if spec.get("eyeLeftIndex") is not None:                   # heterochromia: the left eye has its own index
+        cust["eyeLeft"] = C.color("eye", clan, female, spec["eyeLeftIndex"])
+    if "lipstick" in spec:                                     # palette lipstick, with the palette's opacity
+        cust["lip"] = C.lip_color(spec.get("lipColor") or 0) if spec["lipstick"] else [0.0, 0.0, 0.0, 0.0]
+    if spec.get("featureColor") is not None:                   # facial feature / tattoo colour
+        cust["option"] = C.feature_color(spec["featureColor"])
+    if spec.get("muscle") is not None:                         # muscle tone slider, 0..100
+        cust["muscle"] = [round(int(spec["muscle"]) / 100, 4)]
     design = dict(spec.get("design") or {})                    # a Glamourer design's advanced colours win
     paint = int(spec.get("facePaint") or 0)
     paint_color = design.pop("decal", None) or (C.paint_color(spec.get("facePaintIndex") or 0).round(4).tolist() + [1.0])
@@ -274,16 +282,15 @@ def character(resolved, spec, dry=False):
             e = add_skeleton(M.est_skeleton(est_slot, est_race, v), label)
             e["est"] = {"slot": est_slot, "set": sid, "skeleton": v, "source": src}
 
-    # EQP of what is worn decides which slots and parts show
-    eqp = {}
-    for s in M.EQUIP:
-        g = gear.get(s)
-        if g:
-            eqp[s] = L.meta.eqp_entry(int(g[0]), s)
-        else:
-            eqp[s] = (None, "empty slot")
+    # EQP of what is worn decides which slots and parts show. A slot's bits can come from another slot's set (the body's
+    # set when the body doesn't show hands, legs or head), so the lookup takes the slot whose set is read
+    def eqp_of(owner, slot):
+        g = gear.get(owner)
+        if not g:
+            return M.EQP_DEFAULT & M.EQP_MASK[slot], "empty slot"
+        return L.meta.eqp_entry(int(g[0]), slot)
     atr_off = [m.get("Attribute") for m, _ in (resolved.manips_of("Atr") if resolved else []) if m.get("Entry") is False]
-    vis = V.Visibility(eqp, race, gear, atr_off, spec.get("features", 0), spec.get("beard", False))
+    vis = V.Visibility(eqp_of, race, gear, atr_off, spec.get("features", 0), spec.get("beard", False))
 
     def add_model(mdl, e, slot, model_race, imc=None, part_kind="equip"):
         mats = []
@@ -321,7 +328,7 @@ def character(resolved, spec, dry=False):
         imc, imc_src, imc_path = L.meta.imc_entry("accessory" if acc else "equipment", set_id, 0, idx, variant, s)
         mdl, e = L.model(gp, s, race, eqdp=chain, set=set_id, variant=variant, required=True,
                          imc={"entry": imc, "source": imc_src, "file": imc_path},
-                         eqp={"bits": eqp.get(s, (None,))[0], "source": eqp.get(s, (None, ""))[1]} if not acc else None)
+                         eqp=dict(zip(("bits", "source"), eqp_of(s, s))) if not acc else None)
         if imc is None and set_id:
             L.note("warn", f"{s}: e{set_id:04d} has no IMC entry for variant {variant}; the game falls back to variant 0's",
                    e["id"])
@@ -373,6 +380,8 @@ def character(resolved, spec, dry=False):
             slot = M.SLOT_OF_NAME.get(mm.get("Slot"), (mm.get("Slot") or "").lower() or None)
             if mm.get("Shape") in own and (slot is None or slot in (m["slot"], "unknown")):
                 on.append(mm["Shape"])
+        if m["slot"] == "face":           # the character's eyebrows, eye shape, nose, jaw, mouth and iris size
+            on += [n for n in C.face_shapes(spec) if n in own]
         m["shapesOn"] = sorted(set(on))
     for p in vis.problems:
         L.note(*p)

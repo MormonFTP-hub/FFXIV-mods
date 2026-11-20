@@ -82,26 +82,28 @@ def variant_attributes(mdl, imc, prefix, skip_a=False):
 
 
 class Visibility:
-    def __init__(self, eqp, race, gear, atr_off=(), features=0, beard=False):
-        """eqp: {slot: (entry of that slot's own set, source)} for the five gear slots (entry None = empty).
+    def __init__(self, eqp_of, race, gear, atr_off=(), features=0, beard=False):
+        """eqp_of(owner, slot) -> (that slot's EQP bits from the set worn in `owner`, source): Penumbra's GetSingleValue.
         features: the customization's facial-feature bits (atr_fv_a..g); beard: facial hair (atr_hig)."""
         self.features, self.beard = int(features), bool(beard)
         self.race = race
         self.gender, self.model_race = M.GENDER_RACE[race]
         self.gear = gear
         self.atr_off = set(atr_off)
-        own = {s: (M.EQP_DEFAULT if v is None else v) for s, (v, _) in eqp.items()}
-        self.src = {s: src or "empty slot" for s, (_, src) in eqp.items()}
-        body = own["top"]
-        # whose entry each slot's bits come from
+        body = eqp_of("top", "top")[0]
+        # whose set each slot's bits are read from: a body that doesn't show the head, hands or legs supplies those bits
+        # itself (from its own set's entry for that slot), and legs that don't show feet supply the feet bits
         take = {"top": "top", "met": "met" if body & E["BodyShowHead"] else "top",
                 "glv": "glv" if body & E["BodyShowHand"] else "top", "dwn": "dwn" if body & E["BodyShowLeg"] else "top"}
         legs_src = take["dwn"]
-        take["sho"] = "sho" if own[legs_src] & E["LegsShowFoot"] else legs_src
+        take["sho"] = "sho" if eqp_of(legs_src, "dwn")[0] & E["LegsShowFoot"] else legs_src
         self.take = take
         full = 0
+        self.src = {}
         for s in M.EQUIP:
-            full |= own[take[s]] & M.EQP_MASK[s]
+            bits, src = eqp_of(take[s], s)
+            full |= bits & M.EQP_MASK[s]
+            self.src[s] = src or "empty slot"
         # glove length: HideForearm decides between mid and long gloves
         if full & E["HandsHideForearm"]:
             t = full & (E["BodyHideGlovesL"] if full & E["HandsHideElbow"] else E["BodyHideGlovesM"])

@@ -31,6 +31,11 @@ if (Arg("--scene") is { } scenePath)
     var out_  = Arg("--out") ?? scene.OutFile ?? Path.ChangeExtension(scenePath, ".png");
     File.WriteAllBytes(out_, Png.Encode(res.Rgba, res.Width, res.Height));
     Console.WriteLine($"{out_}: {res.Width}x{res.Height}, {res.Draws} draws, {res.Ms:F0} ms");
+    foreach (var (name, (data, w, h, fmt, rowBytes)) in res.Raw)
+    {
+        File.WriteAllBytes($"{out_}.{name}.bin", data);
+        File.WriteAllText($"{out_}.{name}.json", $"{{\"width\":{w},\"height\":{h},\"format\":{fmt},\"rowBytes\":{rowBytes}}}");
+    }
     foreach (var l in res.Log)
         Console.WriteLine("  " + l);
     return;
