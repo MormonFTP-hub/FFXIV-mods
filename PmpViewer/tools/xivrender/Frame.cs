@@ -23,7 +23,10 @@ public sealed unsafe partial class Renderer
         if (c.View is { Length: 16 } v && c.Projection is { Length: 16 } p)
         {
             // a captured game camera, used as is
+            // the game keeps its view as a 3x4 affine matrix: the 4th column is whatever was in memory, so make it (0,0,0,1)
             _view = M16(v);
+            _view.M14 = _view.M24 = _view.M34 = 0;
+            _view.M44 = 1;
             _proj = M16(p);
             _viewProj = _view * _proj;
             Matrix4x4.Invert(_view, out _invView);

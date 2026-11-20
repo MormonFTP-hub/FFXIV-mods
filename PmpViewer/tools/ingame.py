@@ -235,10 +235,16 @@ def qs_matrix(t):
     return m
 
 
+def character_matrix(cap):
+    """The character's model -> world transform (position, rotation, scale incl. height)."""
+    sk = cap["character"]["skeleton"]
+    return qs_matrix(list(sk["position"]) + list(sk["rotation"]) + list(sk["scale"]))
+
+
 def captured_world(cap):
     """bone name -> posed world matrix (column-vector convention): character transform x model-space pose."""
     sk = cap["character"]["skeleton"]
-    w = qs_matrix(list(sk["position"]) + list(sk["rotation"]) + list(sk["scale"]))
+    w = character_matrix(cap)
     out = {}
     for p in sk.get("partials") or []:
         for name, t in zip(p.get("bones") or [], p.get("model") or []):
@@ -246,7 +252,9 @@ def captured_world(cap):
     return out
 
 
-def palettes(sc, world):
+def palettes(sc, world, char):
+    """Skinning matrices per model bone. A bone the skeleton doesn't have stays where the bind pose puts it relative to
+    the character (identity in model space), which is what the game does: those vertices don't move with the pose."""
     bind = {n: np.array(m, float).reshape(4, 4).T for n, m in zip(sc["skeleton"]["names"], sc["skeleton"]["world"])}
     missing = set()
     out = []
@@ -258,7 +266,7 @@ def palettes(sc, world):
                 p = world[name] @ np.linalg.inv(bind[name])
             else:
                 missing.add(name)
-                p = np.eye(4)
+                p = char.copy()
             if deform:
                 p = p @ deform[i]
             pal.append(p.T.ravel().tolist())
@@ -268,7 +276,7 @@ def palettes(sc, world):
 
 def render(sc, cap, folder, game_masks, viewer_colors):
     world = captured_world(cap)
-    pals, missing = palettes(sc, world)
+    pals, missing = palettes(sc, world, character_matrix(cap))
     cm_by_path = {}
     pen = penumbra_map(cap)
     for cm in cap["character"].get("models") or []:
@@ -292,7 +300,10 @@ def render(sc, cap, folder, game_masks, viewer_colors):
         if r.get("decal"):
             desc.update(Decal=r["decal"], DecalColor=r["decalColor"])
         models.append(desc)
-    cam = cap["camera"]["render"]
+    cam = dict(cap["camera"]["render"])
+    view = np.array(cam["view"], float).reshape(4, 4)
+    view[:, 3] = (0, 0, 0, 1)                 # the game keeps a 3x4 view; its 4th column is leftover memory
+    cam["view"] = view.ravel().tolist()
     rnd = cap["game"].get("render") or {}
     w, h = int(rnd.get("width") or 1920), int(rnd.get("height") or 1080)
     # the sun: the shadow camera looks along the light, so the light comes from minus its forward axis
