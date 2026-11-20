@@ -69,9 +69,16 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
+        StartCapture(args);
+    }
+
+    /// <summary>Queues a capture: "[in N] [label]".</summary>
+    private void StartCapture(string args)
+    {
         if (pending != null || waiting != null)
         {
             ChatGui.Print("[PMP Capture] a capture is still being saved");
+            WriteStatus("busy");
             return;
         }
 
@@ -92,6 +99,43 @@ public sealed class Plugin : IDalamudPlugin
             ChatGui.Print($"[PMP Capture] capturing in {delay:0.#} s");
     }
 
+    // A capture can also be asked for from the PC: write the arguments to <output>/request.txt.
+    // The plugin deletes the file, captures, and writes the saved folder (or "failed: ...") to <output>/last.txt.
+    private string RequestFile => Path.Combine(Configuration.OutputDirectory, "request.txt");
+    private string StatusFile  => Path.Combine(Configuration.OutputDirectory, "last.txt");
+    private DateTime nextPoll;
+
+    private void PollRequest()
+    {
+        if (DateTime.UtcNow < nextPoll)
+            return;
+        nextPoll = DateTime.UtcNow.AddSeconds(0.5);
+        try
+        {
+            if (!File.Exists(RequestFile))
+                return;
+            var args = File.ReadAllText(RequestFile).Trim();
+            File.Delete(RequestFile);
+            StartCapture(args);
+        }
+        catch (Exception e)
+        {
+            Log.Warning(e, "reading the capture request failed");
+        }
+    }
+
+    private void WriteStatus(string text)
+    {
+        try
+        {
+            File.WriteAllText(StatusFile, text);
+        }
+        catch (Exception e)
+        {
+            Log.Warning(e, "writing the capture status failed");
+        }
+    }
+
     private DateTime due;
 
     private static string Sanitize(string s)
@@ -103,6 +147,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnUpdate(IFramework framework)
     {
+        PollRequest();
         var job = pending;
         if (job == null || DateTime.UtcNow < due)
             return;
@@ -116,6 +161,7 @@ public sealed class Plugin : IDalamudPlugin
         {
             Log.Error(e, "capture failed");
             ChatGui.PrintError($"[PMP Capture] failed: {e.Message}");
+            WriteStatus("failed: " + e.Message);
         }
     }
 
@@ -135,7 +181,15 @@ public sealed class Plugin : IDalamudPlugin
             job.Note("render targets: " + e.Message);
         }
 
-        job.SaveInBackground(folder => ChatGui.Print($"[PMP Capture] saved {folder}"),
-            e => ChatGui.PrintError($"[PMP Capture] saving failed: {e.Message}"));
+        job.SaveInBackground(folder =>
+            {
+                ChatGui.Print($"[PMP Capture] saved {folder}");
+                WriteStatus(folder);
+            },
+            e =>
+            {
+                ChatGui.PrintError($"[PMP Capture] saving failed: {e.Message}");
+                WriteStatus("failed: " + e.Message);
+            });
     }
 }
