@@ -396,7 +396,13 @@ public sealed unsafe partial class Renderer
     // ------------------------------------------------------------------ pass membership
 
     /// <summary>Opaque passes: every material, except transparent ones without an alpha-test threshold (those only blend).</summary>
-    private static bool OpaquePass(DrawItem d) => !d.Mat.Transparent || d.Mat.AlphaThreshold > 0 || d.Mat.Decal;
+    /// Transparent glass (characterglass.shpk) never: in game its pixels keep what is behind it in the opaque G-buffer
+    /// (PMP Capture 2026-11-20, glasses e5518 lens), even though the package's default g_AlphaThreshold is above 0.
+    /// characterglass has no PASS_G_SEMITRANSPARENCY either: it is shaded forward in the semi composite pass only.
+    private static bool OpaquePass(DrawItem d) =>
+        !d.Mat.Transparent || d.Mat.Decal || (d.Mat.AlphaThreshold > 0 && !IsGlass(d));
+
+    private static bool IsGlass(DrawItem d) => d.Mat.Shpk.Name.EndsWith("characterglass.shpk", StringComparison.OrdinalIgnoreCase);
 
     private static bool SemiPass(DrawItem d) => d.Mat.Transparent && !d.Mat.Decal;
 

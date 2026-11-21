@@ -42,6 +42,7 @@ import meta as M  # noqa: E402
 CAPTURES = os.path.join(ROOT, "work", "ingame")
 XIVRENDER = os.path.join(ROOT, "apps", "xivrender", "xivrender.exe")
 SLOTS = ["met", "top", "glv", "dwn", "sho", "ear", "nek", "wrs", "rir", "ril"]
+NEAR = [0.1]           # the captured camera's near plane (set per capture)
 RAW = ["gbuffer0", "gbuffer1", "gbuffer2", "gbuffer3", "gbuffer4", "lightdiffuse", "lightspecular", "depth", "hdr", "final"]
 
 
@@ -115,7 +116,7 @@ def subject_of(cap):
         gear[slot] = [sid, var, s1, s2]
     spec["gear"] = gear
     spec["collection"] = True              # the game draws your whole collection
-    spec["captureGlasses"] = ch.get("glasses")
+    spec["glassesModel"] = int((ch.get("glasses") or [0])[0])   # set | variant << 16, as the Glasses sheet stores it
     return spec
 
 
@@ -301,6 +302,7 @@ def render(sc, cap, folder, game_masks, viewer_colors):
             desc.update(Decal=r["decal"], DecalColor=r["decalColor"])
         models.append(desc)
     cam = dict(cap["camera"]["render"])
+    NEAR[0] = float(cam.get("near") or 0.1)
     view = np.array(cam["view"], float).reshape(4, 4)
     view[:, 3] = (0, 0, 0, 1)                 # the game keeps a 3x4 view; its 4th column is leftover memory
     cam["view"] = view.ravel().tolist()
@@ -349,7 +351,7 @@ def to_u8(a, mode):
 
 
 def compare_pixels(targets, raws, folder):
-    """On the character's pixels: where the viewer drew geometry and both depths agree."""
+    """On the character's pixels: where the viewer drew geometry and its surface is within 5 mm of the game's."""
     res = {}
     if "depth" not in raws or "depth" not in targets:
         return {"error": "no depth to find the character's pixels"}
@@ -359,9 +361,16 @@ def compare_pixels(targets, raws, folder):
     if gd.shape != vd.shape:
         return {"error": f"size differs: game {gd.shape}, viewer {vd.shape}"}
     drawn = vd > 0
-    agree = drawn & (np.abs(gd - vd) < 2e-4 * np.maximum(vd, 1e-6) + 1e-6)
+    # reversed-Z infinite projection: view distance = near / depth. Same surface = within 5 mm of the game's.
+    near = NEAR[0]
+    zg = near / np.maximum(gd, 1e-9)
+    zv = near / np.maximum(vd, 1e-9)
+    dmm = np.where(drawn, np.abs(zg - zv) * 1000, np.inf)
+    agree = drawn & (dmm < 5)
     res["characterPixels"] = int(drawn.sum())
     res["depthAgrees"] = round(float(agree.sum() / max(drawn.sum(), 1)), 4)
+    res["depthWithin1mm"] = round(float((dmm < 1).sum() / max(drawn.sum(), 1)), 4)
+    res["depthMedianMm"] = round(float(np.median(dmm[drawn])), 2) if drawn.any() else None
     Image.fromarray(np.dstack([(drawn & ~agree) * 255, agree * 255, np.zeros_like(vd, np.uint8)]).astype(np.uint8)).save(
         os.path.join(folder, "depth_agreement.png"))
     for name, mode in (("gbuffer0", "u8"), ("gbuffer1", "u8"), ("gbuffer2", "u8"), ("gbuffer4", "u8"),
@@ -451,7 +460,9 @@ def write_md(r, path):
         if m["verdict"] != "same":
             L.append(f"- slot {m['slot']} `{m.get('path') or m.get('file')}`: {m['verdict']}"
                      + "".join(f"; {k} {m[k]}" for k in ("attrOnlyGame", "attrOnlyViewer", "shapeOnlyGame", "shapeOnlyViewer") if m.get(k)))
-    L += ["", "## 3. Customize colours (g_CustomizeParameter)", ""]
+    L += ["", "## 3. Customize colours (g_CustomizeParameter)", "",
+          "Viewer = the palette colours from the customize bytes alone. The game's values also carry Glamourer's advanced "
+          "colours when a design sets them (the viewer applies those from the design; the redraw uses the game's buffer).", ""]
     for c in r["customize"] or []:
         L.append(f"- {c['name']}: game {c['game']} viewer {c['viewer']} (max diff {c['maxDiff']})")
     if r.get("pixels"):

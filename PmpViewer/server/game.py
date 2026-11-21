@@ -350,6 +350,20 @@ def _decode_to(local, h, p):
 _items = None
 
 
+_glasses = None
+
+
+def glasses():
+    """Glasses sheet row -> {"id", "name", "model"}; model = set | variant << 16 (drawn as an equipment _met model)."""
+    global _glasses
+    if _glasses is None:
+        p = _cache("glasses.json")
+        if not os.path.exists(p):
+            SERVE.call("glasses", out=p)
+        _glasses = {int(r["id"]): r for r in json.load(open(p, encoding="utf-8"))}
+    return _glasses
+
+
 def items():
     global _items
     if _items is None:

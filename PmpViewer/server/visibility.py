@@ -104,6 +104,11 @@ class Visibility:
             bits, src = eqp_of(take[s], s)
             full |= bits & M.EQP_MASK[s]
             self.src[s] = src or "empty slot"
+        # HandsHideElbow only counts with HandsHideForearm (as FeetHideKnee only counts with FeetHideCalf): in game
+        # (PMP Capture, 2026-11-20) gloves e6064, whose EQP has HandsHideElbow alone, leave the top's atr_ude shown
+        self.elbow_dropped = bool(full & E["HandsHideElbow"] and not full & E["HandsHideForearm"])
+        if self.elbow_dropped:
+            full &= ~E["HandsHideElbow"]
         # glove length: HideForearm decides between mid and long gloves
         if full & E["HandsHideForearm"]:
             t = full & (E["BodyHideGlovesL"] if full & E["HandsHideElbow"] else E["BodyHideGlovesM"])
@@ -153,6 +158,8 @@ class Visibility:
                 out[attr] = {"show": not hide, "why": f"{who} EQP {flag} {'set' if hide else 'not set'}"}
                 if attr == "atr_hiz" and self.knee_dropped:
                     out[attr]["why"] = "feet EQP FeetHideKnee without FeetHideCalf: the game shows the knee"
+                if attr == "atr_ude" and self.elbow_dropped:
+                    out[attr]["why"] = "hands EQP HandsHideElbow without HandsHideForearm: the game shows the elbow"
         if slot == "glv" and "atr_arm" in attrs:
             hide = self.has("BodyHideGlovesS") or self.has("BodyHideGloveCuffs")
             out["atr_arm"] = {"show": not hide, "why": "body sleeves cover the glove top" if hide else "no glove-hiding body flag"}

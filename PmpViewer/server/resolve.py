@@ -339,6 +339,20 @@ def character(resolved, spec, dry=False):
             add_model(mdl, e, s, model_race, imc or {"MaterialId": 1, "AttributeMask": 0x3FF})
             models[-1]["stains"] = [int(x or 0) for x in list(g[2:4])]
 
+    # glasses (Dawntrail facewear): an equipment _met model, model value = set | variant << 16, drawn in their own slot
+    gm = int(spec.get("glassesModel") or 0)
+    if gm & 0xFFFF:
+        set_id, variant = gm & 0xFFFF, (gm >> 16) & 0xFF
+        model_race, chain = L.meta.model_race(race, set_id, "met")
+        gp = f"chara/equipment/e{set_id:04d}/model/{model_race}e{set_id:04d}_met.mdl"
+        imc, imc_src, imc_path = L.meta.imc_entry("equipment", set_id, 0, 0, variant, "met")
+        mdl, e = L.model(gp, "glasses", race, eqdp=chain, set=set_id, variant=variant, required=True,
+                         imc={"entry": imc, "source": imc_src, "file": imc_path})
+        if model_race != race:
+            e["deformer"] = f"{model_race} -> {race}"
+        if mdl:
+            add_model(mdl, e, "glasses", model_race, imc or {"MaterialId": variant, "AttributeMask": 0x3FF})
+
     # face, hair, tail, ears
     parts = [("face", "f", ids["face"], "fac", True)]
     parts.append(("hair", "h", ids["hair"], "hir", True))

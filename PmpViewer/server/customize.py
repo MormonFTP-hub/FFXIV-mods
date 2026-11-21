@@ -284,4 +284,12 @@ def from_glamourer(text):
         gear["met"] = None
         spec["notes"].append("the design hides the hat, so no head piece is loaded")
     spec["gear"] = gear
+    # glasses (Dawntrail facewear): Bonus.Glasses.BonusId = slot << 48 | Glasses row
+    g = (d.get("Bonus") or {}).get("Glasses")
+    if isinstance(g, dict) and g.get("Apply", True):
+        row = int(g.get("BonusId") or 0) & 0xFFFF
+        model = (game.glasses().get(row) or {}).get("model") if row else None
+        spec["glassesModel"] = int(model) if model else None
+        if row and not model:
+            spec["notes"].append(f"the design's glasses (Glasses row {row}) have no model in this game version")
     return spec

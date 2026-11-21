@@ -16,6 +16,7 @@ using Penumbra.GameData.Files.MaterialStructs;
 //   {"op":"mtrl","file":F}                   -> shader, keys, constants, samplers, textures, colour table
 //   {"op":"tex","file":F|"path":P,"out":B}   -> top mip as RGBA bytes in B, {"w","h","format"}
 //   {"op":"items","out":J}                   -> every equippable item to J
+//   {"op":"glasses","out":J}                 -> every Glasses row (id, name, model = set | variant << 16) to J
 //   {"op":"manips","json":[...]}             -> how many manipulations Penumbra's own reader accepts
 // argument: the game's sqpack folder (the viewer finds it from XIVLauncher's settings)
 var sqPack = args.Length > 0 ? args[0] : @"C:\Program Files (x86)\SquareEnix\FINAL FANTASY XIV - A Realm Reborn\game\sqpack";
@@ -41,6 +42,7 @@ while ((line = Console.ReadLine()) != null)
             "mtrl"    => Mtrl(req),
             "tex"     => Tex(req),
             "items"   => Items(req),
+            "glasses" => GlassesRows(req),
             "manips"  => Manips(req),
             var op    => throw new Exception($"unknown op {op}"),
         };
@@ -360,6 +362,15 @@ JsonNode Items(JsonObject req)
 {
     var rows = game.GetExcelSheet<Item>()!.Where(i => i.EquipSlotCategory.RowId != 0 && !i.Name.IsEmpty)
         .Select(i => new { id = i.RowId, name = i.Name.ToString(), slot = i.EquipSlotCategory.RowId, model = i.ModelMain, sub = i.ModelSub, icon = (int)i.Icon })
+        .ToList();
+    File.WriteAllText(req["out"]!.GetValue<string>(), JsonSerializer.Serialize(rows));
+    return new JsonObject { ["count"] = rows.Count };
+}
+
+JsonNode GlassesRows(JsonObject req)
+{
+    var rows = game.GetExcelSheet<Glasses>()!.Where(g => g.Model != 0)
+        .Select(g => new { id = g.RowId, name = g.Name.ToString(), model = g.Model })
         .ToList();
     File.WriteAllText(req["out"]!.GetValue<string>(), JsonSerializer.Serialize(rows));
     return new JsonObject { ["count"] = rows.Count };
