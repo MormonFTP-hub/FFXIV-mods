@@ -9,10 +9,10 @@ import { OutputPass } from './vendor/OutputPass.js';
 const $ = (id) => document.getElementById(id);
 const SLOTS = ['met', 'top', 'glv', 'dwn', 'sho', 'ear', 'nek', 'wrs', 'rir', 'ril'];
 const SLOT_LABEL = { met: 'Head', top: 'Body', glv: 'Hands', dwn: 'Legs', sho: 'Feet', ear: 'Ears', nek: 'Neck',
-  wrs: 'Wrists', rir: 'Ring R', ril: 'Ring L' };
+  wrs: 'Wrists', rir: 'Ring R', ril: 'Ring L', glasses: 'Glasses' };
 const SLOT_COLOR = { met: 0xe0554f, top: 0x4f86e0, glv: 0xe8c93a, dwn: 0x4cc38a, sho: 0xa766e0, ear: 0xe08a4f,
   nek: 0x4fd0e0, wrs: 0xe04fb8, rir: 0x9ad04f, ril: 0x9ad04f, face: 0xd9b38c, hair: 0x8c6a4a, tail: 0x8c6a4a,
-  zear: 0xd9b38c, body: 0xcccccc, weapon: 0xcccccc };
+  zear: 0xd9b38c, glasses: 0x5fb0b0, body: 0xcccccc, weapon: 0xcccccc };
 const SRC_COLOR = { mod: 0x4cc38a, game: 0x8a909c, swap: 0x6aa8ff, collection: 0xd9a441, missing: 0xff6b6b };
 const TAIL_RACES = ['c0701', 'c0801', 'c1301', 'c1401', 'c1501', 'c1601'];
 const EAR_RACES = ['c1701', 'c1801'];

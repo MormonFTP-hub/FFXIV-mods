@@ -1,6 +1,7 @@
 """Compare the PMP Viewer with the game, using a capture saved in game by the PMP Capture plugin (/pmpcapture).
 
     python -P -E tools/ingame.py [capture folder | latest] [--game-masks] [--viewer-colors] [--no-render]
+    python -P -E tools/ingame.py capture [--label NAME]     (game running: ask PMP Capture for a capture, then compare it)
 
 The capture holds what the game drew at one moment: the character's customize bytes and gear, every file Penumbra
 served (game path -> actual file), each model's enabled attribute / shape-key masks, the pose (model-space bone
@@ -28,6 +29,7 @@ import math
 import os
 import subprocess
 import sys
+import time
 
 import numpy as np
 from PIL import Image
@@ -53,6 +55,22 @@ def latest():
     if not folders:
         sys.exit(f"no captures in {CAPTURES} (in game: /pmpcapture)")
     return os.path.dirname(folders[-1])
+
+
+def request_capture(label):
+    """Ask the running game's PMP Capture for a capture (it polls <captures>/request.txt) and wait for it to be saved."""
+    os.makedirs(CAPTURES, exist_ok=True)
+    status = os.path.join(CAPTURES, "last.txt")
+    before = os.path.getmtime(status) if os.path.exists(status) else 0
+    open(os.path.join(CAPTURES, "request.txt"), "w", encoding="utf-8").write(label or "")
+    for _ in range(120):
+        time.sleep(0.5)
+        if os.path.exists(status) and os.path.getmtime(status) > before:
+            text = open(status, encoding="utf-8").read().strip()
+            if text.startswith("failed") or text == "busy":
+                sys.exit(f"PMP Capture: {text}")
+            return text
+    sys.exit("no answer from PMP Capture in 60 s (is the game running with the plugin loaded?)")
 
 
 def half(a):
@@ -422,8 +440,13 @@ def main():
     ap.add_argument("--game-masks", action="store_true")
     ap.add_argument("--viewer-colors", action="store_true")
     ap.add_argument("--no-render", action="store_true")
+    ap.add_argument("--label", default="", help="with 'capture': the capture's name")
     a = ap.parse_args()
-    folder = latest() if a.capture == "latest" else os.path.abspath(a.capture)
+    if a.capture == "capture":
+        folder = request_capture(a.label)
+        print("captured", folder)
+    else:
+        folder = latest() if a.capture == "latest" else os.path.abspath(a.capture)
     out = os.path.join(folder, "compare")
     os.makedirs(out, exist_ok=True)
     cap, targets = load_capture(folder)

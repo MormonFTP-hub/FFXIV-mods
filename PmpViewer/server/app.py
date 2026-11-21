@@ -145,7 +145,7 @@ def api_races_check(q):
         warns = [p for p in scene["problems"] if p["level"] == "warn"]
         rows.append({"code": code, "label": label, "slots": cells, "errors": len(errs), "warns": len(warns),
                      "first": (errs or warns or [{"text": ""}])[0]["text"][:160]})
-    order = M.EQUIP + M.ACCES + ["face", "hair", "tail", "zear"]
+    order = M.EQUIP + M.ACCES + ["glasses", "face", "hair", "tail", "zear"]
     return {"rows": rows, "slots": sorted(slots, key=lambda x: order.index(x) if x in order else 99)}
 
 

@@ -12,6 +12,8 @@ It is read-only. It hooks nothing, changes nothing in the game, and only reads m
 
 Outside GPose it captures your own character. Hide the HUD with Scroll Lock (use `in 5` to get the time), or the HUD and your nameplate end up in the final image.
 
+**From the PC:** while the game runs, write the label (or nothing) to `<captures folder>equest.txt`. The plugin checks for it twice a second, deletes it, captures, and writes the saved folder (or `failed: ...`) to `<captures folder>\last.txt`. `python -P -E PmpViewer/tools/ingame.py capture --label <name>` does that and runs the comparison.
+
 `/pmpcapture dir <folder>` changes where captures go. The default is `E:\FFXIV-mods\PmpViewer\work\ingame`, which is never committed.
 
 ## What a capture holds (`capture.json` plus `*.bin.gz`)
