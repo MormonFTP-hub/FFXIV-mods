@@ -38,6 +38,7 @@ State as of 2026-11-20 (after the first in-game captures). README.md explains wh
 - **The light:** the redraw uses the Day preset. Fit sun colour and ambient from the captured light buffers + G-buffer normals (direction from the shadow camera); then the final image can be compared. Character Lighting is 0 in the owner's settings.
 - **Bones missing from the skeleton:** identity in model space (ingame.py) vs parent joints: parent fit slightly better (legs within 5 mm 80% vs 78%) but neither is exact. Reading the vertex weights of `ya_*` would settle it.
 - **OptionColor.w** is 1.0 in the game's g_CustomizeParameter; the viewer writes 0. Unknown meaning.
+- **G-buffer 4 alpha** is 10/255 on every character pixel in game, 0 in the viewer (all four captures; RGB within 2/255 on 66-85%). Same shader, so it comes from an input the viewer doesn't set. G-buffers 0 and 1 differ without bias (normals mean 5-26/255, gbuffer1 red 7/255): fine-detail noise, cause not pinned (texture filtering is a candidate).
 - **Post effects:** glare, AA, SSR, and GPose depth of field (on in the captures) aren't drawn.
 - **Weapons** aren't drawn on the character (captures list them: w0337, w0387).
 
