@@ -82,6 +82,9 @@ main{padding-block:22px 40px}
 .f.wide{grid-column:1/-1}
 .note{font-size:13px;line-height:1.45;color:var(--ink-2);background:var(--sunk);border-left:3px solid var(--accent);padding:8px 11px;overflow-wrap:anywhere}
 .note b{color:var(--ink);font-weight:600}
+.meter{height:14px;background:var(--sunk);border:1px solid var(--line)}
+.meter div{height:100%;background:var(--accent);max-width:100%}
+.meter.over div{background:var(--warn)}
 .check{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--ink-2)}
 .check input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--accent);flex:none}
 .check small{display:block;font-size:12px;color:var(--muted)}
@@ -133,7 +136,7 @@ details .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;max
 details code{font:13px ui-monospace,Consolas,monospace;background:var(--sunk);padding:1px 5px;color:var(--ink)}
 footer{color:var(--muted);font-size:12.5px;padding-block:0 28px}
 footer a{color:inherit}
-@media (max-width:520px){.hero b{font-size:46px}.tabs{margin-left:0;width:100%}.tabs a{flex:1;text-align:center;padding-inline:6px;font-size:15px}}
+@media (max-width:520px){.hero b{font-size:46px}.tabs{margin-left:0;width:100%}.tabs a{flex:1 1 auto;text-align:center;padding-inline:5px;font-size:14px;letter-spacing:.03em}}
 @media (prefers-reduced-motion:no-preference){.tabs a,button{transition:color .12s,filter .12s}}
 </style>
 
@@ -143,6 +146,7 @@ footer a{color:inherit}
     <nav class="tabs" aria-label="Tools">
       <a href="#damage" data-tab="damage">Damage</a>
       <a href="#pulls" data-tab="pulls">Headhunting</a>
+      <a href="#base" data-tab="base">Base</a>
       <a href="#sanity" data-tab="sanity">Sanity</a>
     </nav>
   </div>
@@ -317,6 +321,76 @@ footer a{color:inherit}
   </details>
 </section>
 
+<!-- ======================= BASE ======================= -->
+<section class="view" id="view-base" hidden>
+  <div class="lede">
+    <h2>Base building</h2>
+    <p>Lay out your base, then see if the power holds, what it makes each day and what it costs to build. The starting layout is the common 2-4-3 as an example.</p>
+  </div>
+  <div class="cols">
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Left side</h3><span id="b_leftLabel"></span></header>
+        <div class="body">
+          <div class="fields" id="f-b-layout"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Other rooms</h3><span>set a room to Not built to leave it out</span></header>
+        <div class="body">
+          <div class="fields" id="f-b-rooms"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>What the rooms do</h3><span id="b_jobLabel"></span></header>
+        <div class="body">
+          <div class="fields" id="f-b-jobs"></div>
+          <span class="sub">Productivity bonus from operators</span>
+          <div class="fields" id="f-b-eff"></div>
+          <span class="sub">Drones</span>
+          <div class="fields" id="f-b-drones"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Power</h3><span id="b_powerLabel"></span></header>
+        <div class="body">
+          <div class="hero"><b id="b_spare">0</b><span id="b_spareText"></span></div>
+          <div class="meter" role="img" id="b_meter"><div id="b_meterFill"></div></div>
+          <div class="chip" id="b_powerChip" hidden>&#9650; Not enough power. Lower a room or add a Power Plant.</div>
+          <div class="chip" id="b_leftChip" hidden></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Each day</h3><span id="b_dayLabel"></span></header>
+        <div class="body">
+          <div class="hero"><b id="b_lmd">0</b><span id="b_lmdText">LMD a day</span></div>
+          <div class="chip" id="b_goldChip" hidden></div>
+          <div class="tablewrap"><table id="b_table"></table></div>
+          <dl class="stats" id="b_stats"></dl>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Cost to build</h3><span>every room, from nothing to the levels chosen</span></header>
+        <div class="body">
+          <div class="tablewrap"><table id="b_cost"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <details>
+    <summary>How this is worked out</summary>
+    <div class="body">
+      <p>Power, operator slots and build costs for every room level come from the game's own data tables (global server). Build cost covers the rooms only: clearing space and the materials' own crafting costs are not counted.</p>
+      <p>Factories: one Pure Gold takes 1 h 12 min, a Drill, Frontline or Tactical Battle Record takes 45 min, 1 h 20 min or 3 h (200, 400 or 1,000 EXP), and an Originium Shard takes 1 h. A productivity bonus of +100% doubles the speed. Each operator in a room adds 1% on top of their skills, so enter the bonus the room shows in game, without the base 100%.</p>
+      <p>Trading Posts: a level 3 post rolls a 2, 3 or 4 Pure Gold order (1,000, 1,500 or 2,000 LMD) 30%, 50% and 20% of the time, taking 2 h 24 min, 3 h 30 min and 4 h 36 min. Level 2 rolls 60% and 40% of the first two, and level 1 only the first. Tailoring skills shift a level 3 post toward 4 Pure Gold orders. An Orundum order takes 2 Originium Shards, pays 20 Orundum and takes 2 h. Order rules are from the Arknights Terra Wiki.</p>
+      <p>Drones come back at 1 every 6 minutes (240 a day) and each one skips 3 minutes of work. Operator skills do not speed drones up. If the Trading Posts want more Pure Gold than the base makes, LMD is counted only for the Pure Gold there is.</p>
+    </div>
+  </details>
+</section>
+
 <!-- ======================= SANITY ======================= -->
 <section class="view" id="view-sanity" hidden>
   <div class="lede">
@@ -406,6 +480,37 @@ put('f-banner',
   F('p_share','Share for your operator',50,{suf:'%',min:0,max:100,hint:'Chance a 6&#9733; is the one you want.'})+
   F('p_pity','Pulls since your last 6&#9733;',0,{min:0,max:98})+
   F('p_pulls','Pulls to spend',0,{min:0}));
+function S(id,label,opts,val,hint){
+  return `<label class="f" for="${id}"><span class="f-l">${label}</span><span class="f-i"><select id="${id}">${opts.map(o=>`<option value="${o[0]}"${String(o[0])===String(val)?' selected':''}>${o[1]}</option>`).join('')}</select></span>${hint?`<span class="f-h">${hint}</span>`:''}</label>`;
+}
+const lvls=(max,zero)=>{ const a=zero?[[0,'Not built']]:[]; for(let i=1;i<=max;i++) a.push([i,'Level '+i]); return a; };
+const cnt=max=>{ const a=[]; for(let i=0;i<=max;i++) a.push([i,String(i)]); return a; };
+put('f-b-layout',
+  S('b_preset','Layout',[['243','2-4-3'],['153','1-5-3'],['252','2-5-2'],['333','3-3-3'],['custom','My own']],'243','Trading Posts, Factories, Power Plants.')+
+  '<span></span>'+
+  S('b_tp','Trading Posts',cnt(5),2)+S('b_tplv','Trading Post level',lvls(3),3)+
+  S('b_fac','Factories',cnt(5),4)+S('b_faclv','Factory level',lvls(3),3)+
+  S('b_pp','Power Plants',cnt(3),3)+S('b_pplv','Power Plant level',lvls(3),3));
+put('f-b-rooms',
+  S('b_cc','Control Center',lvls(5),5)+S('b_meet','Reception Room',lvls(3,1),3)+
+  S('b_d1','Dormitory 1',lvls(5,1),5)+S('b_d2','Dormitory 2',lvls(5,1),5)+
+  S('b_d3','Dormitory 3',lvls(5,1),5)+S('b_d4','Dormitory 4',lvls(5,1),5)+
+  S('b_work','Workshop',lvls(3,1),3)+S('b_hire','Office',lvls(3,1),3)+
+  S('b_train','Training Room',lvls(3,1),3));
+put('f-b-jobs',
+  S('b_gold','Factories on Pure Gold',cnt(5),2)+
+  S('b_shard','Factories on Originium Shards',cnt(5),0,'Level 3 factories only.')+
+  S('b_oru','Trading Posts on Orundum',cnt(5),0,'Level 3 posts only. The rest sell Pure Gold.')+
+  S('b_recipe','Shard recipe',[['cube','2 Orirock Cube + 1,600 LMD'],['device','1 Device + 1,000 LMD']],'cube')+
+  S('b_mix','Trading Post orders',[['n','Normal'],['a','Tailoring α'],['b','Tailoring β']],'n','Tailoring skills change level 3 orders.'));
+put('f-b-eff',
+  F('b_etp','Trading Posts',100,{suf:'%',min:0,hint:'What the room shows, minus the base 100%.'})+
+  F('b_egold','Pure Gold factories',100,{suf:'%',min:0})+
+  F('b_erec','Battle Record factories',100,{suf:'%',min:0})+
+  F('b_eshard','Shard factories',100,{suf:'%',min:0}));
+put('f-b-drones',
+  F('b_drones','Drones spent per day',240,{min:0,hint:'240 come back each day without skills.'})+
+  S('b_duse','Spent on',[['gold','Pure Gold'],['rec','Battle Records'],['tp','Trading Post orders'],['none','Nothing']],'gold'));
 put('f-san',
   F('s_lvl','Doctor level',120,{min:1,max:120})+
   F('s_cur','Sanity now',24,{min:0}));
@@ -754,6 +859,97 @@ function renderPulls(){
 }
 $('p_kind').addEventListener('change',()=>{ const k=$('p_kind').value; $('p_g150').checked=(k==='std1'); if(k==='lim') $('p_spark').checked=true; });
 
+/* ======================= BASE ======================= */
+/* From building_data.json (tools/extract_base.py). e = power (minus = uses), d = drones to build, c = materials, s = operator slots. */
+const BASE={"CONTROL":{"n":"Control Center","lv":[{"e":0,"d":0,"c":[],"s":1},{"e":0,"d":20,"c":[["Keel",1],["Light Building Material",1]],"s":2},{"e":0,"d":40,"c":[["Keel",1],["Light Building Material",3]],"s":3},{"e":0,"d":80,"c":[["Keel",1],["Concrete Building Material",4]],"s":4},{"e":0,"d":120,"c":[["Keel",1],["Reinforced Building Material",8]],"s":5}]},"TRADING":{"n":"Trading Post","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":1},{"e":-30,"d":60,"c":[["Concrete Building Material",3]],"s":2},{"e":-60,"d":120,"c":[["Reinforced Building Material",5]],"s":3}]},"MANUFACTURE":{"n":"Factory","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":1},{"e":-30,"d":60,"c":[["Concrete Building Material",3]],"s":2},{"e":-60,"d":120,"c":[["Reinforced Building Material",5]],"s":3}]},"POWER":{"n":"Power Plant","lv":[{"e":60,"d":10,"c":[["Light Building Material",1]],"s":1},{"e":130,"d":60,"c":[["Concrete Building Material",3]],"s":1},{"e":270,"d":120,"c":[["Reinforced Building Material",5]],"s":1}]},"DORMITORY":{"n":"Dormitory","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":5},{"e":-20,"d":20,"c":[["Light Building Material",3]],"s":5},{"e":-30,"d":60,"c":[["Concrete Building Material",3]],"s":5},{"e":-45,"d":100,"c":[["Reinforced Building Material",4]],"s":5},{"e":-65,"d":160,"c":[["Reinforced Building Material",8]],"s":5}]},"MEETING":{"n":"Reception Room","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":2},{"e":-30,"d":60,"c":[["Concrete Building Material",3]],"s":2},{"e":-60,"d":120,"c":[["Reinforced Building Material",5]],"s":2}]},"WORKSHOP":{"n":"Workshop","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":1},{"e":-10,"d":60,"c":[["Light Building Material",3]],"s":1},{"e":-10,"d":120,"c":[["Concrete Building Material",6]],"s":1}]},"HIRE":{"n":"Office","lv":[{"e":-10,"d":10,"c":[["Light Building Material",1]],"s":1},{"e":-30,"d":60,"c":[["Concrete Building Material",3]],"s":1},{"e":-60,"d":120,"c":[["Reinforced Building Material",5]],"s":1}]},"TRAINING":{"n":"Training Room","lv":[{"e":-10,"d":10,"c":[["Light Building Material",2]],"s":2},{"e":-30,"d":60,"c":[["Concrete Building Material",6]],"s":2},{"e":-60,"d":120,"c":[["Reinforced Building Material",10]],"s":2}]}};
+const REC=[{n:'Drill Battle Record',t:2700,xp:200},{n:'Frontline Battle Record',t:4800,xp:400},{n:'Tactical Battle Record',t:10800,xp:1000}];
+const GOLD_T=4320, SHARD_T=3600, DRONE_T=180, DAY=86400;
+const ORDERS={t:[144,210,276], gold:[2,3,4], mix:{1:[1,0,0],2:[.6,.4,0],3:[.3,.5,.2],a:[.15,.3,.55],b:[.05,.1,.85]}};
+const PRESET={243:[2,4,3],153:[1,5,3],252:[2,5,2],333:[3,3,3]};
+function calcBase(v){
+  const rooms=[['TRADING',v.tp,v.tplv],['MANUFACTURE',v.fac,v.faclv],['POWER',v.pp,v.pplv],['CONTROL',1,v.cc],
+    ['DORMITORY',1,v.d[0]],['DORMITORY',1,v.d[1]],['DORMITORY',1,v.d[2]],['DORMITORY',1,v.d[3]],
+    ['MEETING',1,v.meet],['WORKSHOP',1,v.work],['HIRE',1,v.hire],['TRAINING',1,v.train]];
+  let made=0, used=0, slots=0, beds=0, drones=0; const mats={};
+  rooms.forEach(([k,n,lv])=>{
+    if(!n||!lv) return; const L=BASE[k].lv;
+    const e=L[lv-1].e*n; if(e>0) made+=e; else used-=e;
+    if(k==='DORMITORY') beds+=L[lv-1].s*n; else slots+=L[lv-1].s*n;
+    for(let i=0;i<lv;i++){ drones+=L[i].d*n; L[i].c.forEach(([m,c])=>{ mats[m]=(mats[m]||0)+c*n; }); }
+  });
+  const sp=b=>1+Math.max(0,b)/100;
+  /* jobs */
+  const gold=Math.min(v.gold,v.fac), shard=v.faclv===3?Math.min(v.shard,v.fac-gold):0, rec=v.fac-gold-shard;
+  const oruTP=v.tplv===3?Math.min(v.oru,v.tp):0, lmdTP=v.tp-oruTP;
+  const R=REC[v.faclv-1];
+  const p=ORDERS.mix[v.tplv===3&&v.mix!=='n'?v.mix:v.tplv];
+  const avgT=p.reduce((a,x,i)=>a+x*ORDERS.t[i],0)*60, avgG=p.reduce((a,x,i)=>a+x*ORDERS.gold[i],0);
+  const dr=Math.max(0,v.drones)*DRONE_T;
+  let goldMade=gold*DAY/GOLD_T*sp(v.egold)+(v.duse==='gold'&&gold?dr/GOLD_T:0);
+  let recMade=rec*DAY/R.t*sp(v.erec)+(v.duse==='rec'&&rec?dr/R.t:0);
+  const orders=lmdTP*DAY/avgT*sp(v.etp)+(v.duse==='tp'&&lmdTP?dr/avgT:0);
+  const goldWanted=orders*avgG, goldSold=Math.min(goldWanted,goldMade);
+  const shardMade=shard*DAY/SHARD_T*sp(v.eshard), shardWanted=oruTP*DAY/7200*sp(v.etp)*2, shardUsed=Math.min(shardMade,shardWanted);
+  const shardLmd=shardMade*(v.recipe==='device'?1000:1600), shardMat=shardMade*(v.recipe==='device'?1:2);
+  return {made,used,slots,beds,drones,mats,left:v.tp+v.fac+v.pp,gold,shard,rec,oruTP,lmdTP,R,avgT,avgG,orders,
+    goldMade,goldWanted,goldSold,lmdIn:goldSold*500,lmd:goldSold*500-shardLmd,exp:recMade*R.xp,recMade,
+    shardMade,shardWanted,shardUsed,orundum:shardUsed/2*20,shardLmd,shardMat};
+}
+function readBase(){
+  const iv=id=>parseInt($(id).value,10)||0;
+  return {tp:iv('b_tp'),tplv:iv('b_tplv'),fac:iv('b_fac'),faclv:iv('b_faclv'),pp:iv('b_pp'),pplv:iv('b_pplv'),cc:iv('b_cc'),
+    d:[iv('b_d1'),iv('b_d2'),iv('b_d3'),iv('b_d4')],meet:iv('b_meet'),work:iv('b_work'),hire:iv('b_hire'),train:iv('b_train'),
+    gold:iv('b_gold'),shard:iv('b_shard'),oru:iv('b_oru'),recipe:$('b_recipe').value,mix:$('b_mix').value,
+    etp:num('b_etp'),egold:num('b_egold'),erec:num('b_erec'),eshard:num('b_eshard'),drones:num('b_drones'),duse:$('b_duse').value};
+}
+function renderBase(){
+  const v=readBase(), r=calcBase(v), spare=r.made-r.used;
+  $('b_leftLabel').textContent=r.left+' of 9 rooms used';
+  $('b_leftChip').hidden=r.left<=9;
+  $('b_leftChip').innerHTML='&#9650; The left side holds 9 rooms. This layout has '+r.left+'.';
+  $('b_spare').textContent=(spare>0?'+':spare<0?'−':'')+nf(Math.abs(spare));
+  $('b_spareText').textContent=spare<0?'power short':spare===0?'power to spare: it fits exactly':'power to spare';
+  $('b_powerLabel').textContent=nf(r.used)+' used of '+nf(r.made)+' made';
+  $('b_meter').className='meter'+(spare<0?' over':'');
+  $('b_meter').setAttribute('aria-label','Power used: '+nf(r.used)+' of '+nf(r.made));
+  $('b_meterFill').style.width=(r.made>0?Math.min(100,r.used/r.made*100):(r.used?100:0))+'%';
+  $('b_powerChip').hidden=spare>=0;
+  $('b_jobLabel').textContent=r.rec+' on Battle Records, '+r.lmdTP+' selling Pure Gold';
+  $('b_dayLabel').textContent=r.slots+' operators at work, '+r.beds+' dormitory beds';
+  $('b_lmd').textContent=nf(r.lmd);
+  $('b_lmdText').textContent='LMD a day'+(r.shardLmd?', after paying for shards':'');
+  const short=r.goldWanted-r.goldMade;
+  $('b_goldChip').hidden=!(short>0.05);
+  $('b_goldChip').innerHTML='&#9650; Short of Pure Gold by '+nf(short,1)+' a day. The Trading Posts will run dry.';
+  const row=(l,x,d=0)=>'<tr><td>'+l+'</td><td>'+nf(x,d)+'</td><td>'+nf(x*7,d)+'</td><td>'+nf(x*30,d)+'</td></tr>';
+  let t='<thead><tr><th>Makes</th><th>Day</th><th>Week</th><th>30 days</th></tr></thead><tbody>'+row('LMD',r.lmd)+row('EXP',r.exp);
+  if(r.oruTP||r.shard) t+=row('Orundum',r.orundum);
+  t+=row('Pure Gold left over',r.goldMade-r.goldSold,1);
+  if(r.shard) t+=row(v.recipe==='device'?'Device used':'Orirock Cube used',r.shardMat);
+  $('b_table').innerHTML=t+'</tbody>';
+  const st=[
+    ['Pure Gold made', nf(r.goldMade,1)+' <small>a day from '+r.gold+' '+(r.gold===1?'factory':'factories')+'</small>'],
+    ['Pure Gold the Trading Posts want', nf(r.goldWanted,1)+' <small>a day</small>'],
+    ['LMD orders', nf(r.orders,1)+' <small>a day, '+nf(r.avgG*500)+' LMD each on average</small>'],
+    [r.R.n+'s', nf(r.recMade,1)+' <small>a day</small>']
+  ];
+  if(r.shard||r.oruTP) st.push(['Originium Shards made / wanted', nf(r.shardMade,1)+' / '+nf(r.shardWanted,1)+' <small>a day</small>']);
+  if(v.shard&&v.faclv<3) st.push(['Originium Shards','need level 3 factories']);
+  if(v.oru&&v.tplv<3) st.push(['Orundum orders','need level 3 Trading Posts']);
+  $('b_stats').innerHTML=st.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+  const order=['Light Building Material','Concrete Building Material','Reinforced Building Material','Keel'];
+  let c='<thead><tr><th>Needs</th><th>Amount</th></tr></thead><tbody><tr><td>Drones</td><td>'+nf(r.drones)+'</td></tr>';
+  order.concat(Object.keys(r.mats).filter(m=>!order.includes(m))).forEach(m=>{ if(r.mats[m]) c+='<tr><td>'+m+'</td><td>'+nf(r.mats[m])+'</td></tr>'; });
+  $('b_cost').innerHTML=c+'</tbody>';
+}
+['input','change'].forEach(ev=>{
+  $('b_preset').addEventListener(ev,()=>{ const p=PRESET[$('b_preset').value]; if(!p) return; setv('b_tp',p[0]); setv('b_fac',p[1]); setv('b_pp',p[2]); setv('b_gold',Math.min(p[0],p[1])); });
+  ['b_tp','b_fac','b_pp'].forEach(id=>$(id).addEventListener(ev,()=>{
+    const cur=[$('b_tp').value,$('b_fac').value,$('b_pp').value].join('');
+    setv('b_preset',PRESET[cur]?cur:'custom');
+  }));
+});
+
 /* ======================= SANITY ======================= */
 function sanityCap(l){
   l=clamp(Math.round(l),1,120);
@@ -797,7 +993,7 @@ function renderSanity(){
 }
 
 /* ---------- routing and wiring ---------- */
-const RENDER={damage:renderDamage,pulls:renderPulls,sanity:renderSanity};
+const RENDER={damage:renderDamage,pulls:renderPulls,base:renderBase,sanity:renderSanity};
 const fromHash=()=>{ const h=(location.hash||'').slice(1); return RENDER[h]?h:null; };
 let tab=fromHash()||'damage';
 function current(){ return tab; }
@@ -818,6 +1014,6 @@ let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout((
 show();
 loadLists();
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>RENDER[current()]());
-window.__ak={calcDamage,pullCurve,sanityCap,runsFor};
+window.__ak={calcDamage,pullCurve,sanityCap,runsFor,calcBase};
 })();
 </script>
