@@ -509,7 +509,7 @@ footer a{color:inherit}
   <details>
     <summary>How this is worked out</summary>
     <div class="body">
-      <p>Sanity comes back at 1 every 6 minutes, which is 240 a day. The cap is set by your Doctor level: 135 at level 5, 165 at level 35, and 180 from level 117.</p>
+      <p>Sanity comes back at 1 every 6 minutes, which is 240 a day. Max Sanity follows your Doctor level. The game's own table runs from 82 at level 1 to 135 at level 120, and updates have added a flat bonus on top. The page adds 75, which matches a level 36 account showing 195 (157 at level 1, 210 at level 120). If your game shows a different number, type it into Max Sanity.</p>
       <p>Average runs: <code>materials needed &divide; drop chance</code>. The "9 times out of 10" line is the number of runs that is enough for 90% of players, since drops are luck. Sanity per material is <code>stage cost &divide; drop chance</code>; lower is better when you compare stages.</p>
     </div>
   </details>
@@ -603,7 +603,8 @@ put('f-b-drones',
   F('b_drones','Drones spent per day',240,{min:0,hint:'240 come back each day without skills.'})+
   S('b_duse','Spent on',[['gold','Pure Gold'],['rec','Battle Records'],['tp','Trading Post orders'],['none','Nothing']],'gold'));
 put('f-san',
-  F('s_lvl','Doctor level',120,{min:1,max:120})+
+  F('s_lvl','Doctor level',120,{min:1,max:120,hint:'Sets Max Sanity for you.'})+
+  F('s_max','Max Sanity',210,{min:1,hint:'Type your own if the game shows a different number.'})+
   F('s_cur','Sanity now',24,{min:0}));
 put('f-farm',
   F('s_need','Materials needed',40,{min:1})+
@@ -1241,14 +1242,14 @@ $('m_base').addEventListener('click',()=>{
 $('m_clear').addEventListener('click',()=>{ matRows=[]; $('m_note').hidden=true; renderMatRows(); refresh(); });
 
 /* ======================= SANITY ======================= */
-function sanityCap(l){
-  l=clamp(Math.round(l),1,120);
-  if(l<=5) return 125+2*l;
-  if(l<=35) return 130+l;
-  const t=[[117,180],[113,179],[109,178],[105,177],[101,176],[85,175],[80,174],[75,173],[70,172],[65,171],[60,170],[55,169],[50,168],[45,167],[40,166]];
-  for(const [L,c] of t) if(l>=L) return c;
-  return 165;
-}
+/* Max Sanity by Doctor level. AP_BASE is playerApMap from the game's gamedata_const.json (82 at level 1, 135 at 120).
+   Updates have added a flat bonus on top that is not in that table. A player's level 36 account shows 195, which is
+   the table's 120 plus 75, so the page uses +75. The Max Sanity box can be typed over if an account differs. */
+const AP_BASE=[82,84,86,88,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,120,120,120,120,121,121,121,121,121,122,122,122,122,122,123,123,123,123,123,124,124,124,124,124,125,125,125,125,125,126,126,126,126,126,127,127,127,127,127,128,128,128,128,128,129,129,129,129,129,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,131,131,131,131,132,132,132,132,133,133,133,133,134,134,134,134,135,135,135,135];
+const AP_BONUS=75;
+function sanityCap(l){ return AP_BASE[clamp(Math.round(l)||1,1,120)-1]+AP_BONUS; }
+if(!('s_max' in saved)) $('s_max').value=sanityCap(num('s_lvl'));      /* first visit, or a visit saved before this box existed */
+['input','change'].forEach(ev=>$('s_lvl').addEventListener(ev,()=>{ $('s_max').value=sanityCap(num('s_lvl')); }));
 function dur(mins){ const h=Math.floor(mins/60), m=Math.round(mins%60); return h?(h+' h'+(m?' '+m+' min':'')):(m+' min'); }
 function runsFor(need,p,conf){
   if(p>=1) return need;
@@ -1257,14 +1258,14 @@ function runsFor(need,p,conf){
   return n;
 }
 function renderSanity(){
-  const cap=sanityCap(num('s_lvl')), cur=Math.max(0,num('s_cur')), left=Math.max(0,cap-cur), mins=left*6;
+  const cap=Math.max(1,Math.round(num('s_max'))||sanityCap(num('s_lvl'))), cur=Math.max(0,num('s_cur')), left=Math.max(0,cap-cur), mins=left*6;
   $('s_full').textContent=left?dur(mins):'Full';
   const when=new Date(Date.now()+mins*60000), today=new Date();
   const dayDiff=Math.round((new Date(when.getFullYear(),when.getMonth(),when.getDate())-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/864e5);
   const clock=when.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   $('s_fullText').textContent=left?'until Sanity is full, at '+clock+(dayDiff===0?' today':dayDiff===1?' tomorrow':' in '+dayDiff+' days'):'Sanity is at the cap, so new Sanity is being lost';
   $('s_stats').innerHTML=[
-    ['Sanity cap at level '+clamp(Math.round(num('s_lvl')),1,120), nf(cap)],
+    ['Max Sanity', nf(cap)+(cap!==sanityCap(num('s_lvl'))?' <small>(typed in)</small>':' <small>(level '+clamp(Math.round(num('s_lvl'))||1,1,120)+')</small>')],
     ['Sanity still to come', nf(left)],
     ['A full bar from empty takes', dur(cap*6)],
     ['Sanity per day', '240']
