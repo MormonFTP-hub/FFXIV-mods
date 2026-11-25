@@ -24,7 +24,7 @@ with open(os.path.join(root, "index.html"), encoding="utf-8") as f:
     page = f.read()
 with open(os.path.join(site, "index.html"), "w", encoding="utf-8", newline="\n") as f:
     f.write(HEAD + page + "\n</html>\n")
-for name in ("operators.json", "enemies.json", "baseskills.json"):
+for name in ("operators.json", "enemies.json", "baseskills.json", "workshop.json"):
     shutil.copyfile(os.path.join(root, name), os.path.join(site, name))
 for name in sorted(os.listdir(site)):
     p = os.path.join(site, name)

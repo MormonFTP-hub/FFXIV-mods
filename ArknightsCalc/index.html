@@ -92,6 +92,15 @@ main{padding-block:22px 40px}
 .oprow button{padding:7px 10px;font-size:13px}
 .grp .f-h b{color:var(--ink-2);font-weight:600}
 @media (max-width:520px){.oprow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.oprow>b{grid-column:1/-1}}
+.matlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.matlist li{display:grid;grid-template-columns:minmax(0,1fr) 92px 92px auto;gap:8px;align-items:end;padding-top:10px;border-top:1px solid var(--grid)}
+.matlist b{align-self:center;overflow-wrap:anywhere}
+.matlist small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.matlist label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
+.matlist button{padding:7px 10px;font-size:13px}
+td small{color:var(--muted);font-weight:400}
+td.tw,th.tw{white-space:normal;min-width:120px;text-align:left}
+@media (max-width:520px){.matlist li{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.matlist li>b{grid-column:1/-1}.tabs{flex-wrap:wrap}}
 .meter{height:14px;background:var(--sunk);border:1px solid var(--line)}
 .meter div{height:100%;background:var(--accent);max-width:100%}
 .meter.over div{background:var(--warn)}
@@ -148,6 +157,7 @@ footer{color:var(--muted);font-size:12.5px;padding-block:0 28px}
 footer a{color:inherit}
 @media (max-width:520px){.hero b{font-size:46px}.tabs{margin-left:0;width:100%}.tabs a{flex:1 1 auto;text-align:center;padding-inline:5px;font-size:14px;letter-spacing:.03em}}
 @media (prefers-reduced-motion:no-preference){.tabs a,button{transition:color .12s,filter .12s}}
+@media (max-width:520px){th,td{padding:6px 5px;font-size:13px}td.tw,th.tw{min-width:72px}}
 </style>
 
 <div class="bar">
@@ -157,6 +167,7 @@ footer a{color:inherit}
       <a href="#damage" data-tab="damage">Damage</a>
       <a href="#pulls" data-tab="pulls">Headhunting</a>
       <a href="#base" data-tab="base">Base</a>
+      <a href="#materials" data-tab="materials">Materials</a>
       <a href="#sanity" data-tab="sanity">Sanity</a>
     </nav>
   </div>
@@ -411,6 +422,62 @@ footer a{color:inherit}
   </details>
 </section>
 
+<!-- ======================= MATERIALS ======================= -->
+<section class="view" id="view-materials" hidden>
+  <div class="lede">
+    <h2>Materials and where to farm them</h2>
+    <p>List what you want from the Workshop. The page works out the raw materials and the cheapest stage to farm each one. The starting list is the building materials for the example 2-4-3 base.</p>
+  </div>
+  <div class="cols">
+    <div class="stack">
+      <div class="panel">
+        <header><h3>What you want to make</h3><span id="m_count"></span></header>
+        <div class="body">
+          <div class="fields">
+            <label class="f wide" for="m_add"><span class="f-l">Add a Workshop recipe</span><span class="f-i"><select id="m_add"><option value="">Loading the recipes...</option></select></span></label>
+          </div>
+          <div class="btns">
+            <button id="m_base" type="button">Use my base's build cost</button>
+            <button id="m_clear" type="button" class="ghost">Clear the list</button>
+          </div>
+          <p class="note" id="m_note" hidden></p>
+          <ul class="matlist" id="m_rows"></ul>
+          <label class="check"><input type="checkbox" id="m_lmd" checked><span>Farm the LMD too<small>Counts CE-6 runs for the LMD the crafting costs.</small></span></label>
+        </div>
+      </div>
+      <details>
+        <summary>All 66 Workshop recipes</summary>
+        <div class="body"><div class="tablewrap"><table id="m_all"></table></div></div>
+      </details>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Farm these</h3><span id="m_days"></span></header>
+        <div class="body">
+          <div class="hero"><b id="m_sanity">0</b><span id="m_sanityText">Sanity in total</span></div>
+          <div class="chip" id="m_stuck" hidden></div>
+          <div class="tablewrap"><table id="m_farm"></table></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Then craft these</h3><span id="m_craftLabel"></span></header>
+        <div class="body">
+          <div class="tablewrap"><table id="m_craft"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <details>
+    <summary>How this is worked out</summary>
+    <div class="body">
+      <p>The 66 recipes, their ingredients, LMD cost and Morale cost are the game's own Workshop table (global server). Drop rates are from Penguin Statistics (penguin-stats.io), the player-reported drop database, for stages that are open all the time on the global server: main story, supply stages and permanent side stories.</p>
+      <p>For every material the page compares farming it directly with crafting it from smaller materials, and takes whichever needs less Sanity. The stage shown is the one with the least Sanity per drop. Runs are the average: drops are luck, so plan for a few more.</p>
+      <p>Not counted: the other drops you pick up on the same runs, the Workshop's chance of a bonus item, and what you already have of the raw materials. LMD is counted at CE-6: 10,000 LMD for 36 Sanity. Keel cannot be farmed: the four the Control Center needs come from clearing 1-1, 1-8, 3-4 and 4-7 for the first time.</p>
+    </div>
+  </details>
+</section>
+
 <!-- ======================= SANITY ======================= -->
 <section class="view" id="view-sanity" hidden>
   <div class="lede">
@@ -552,6 +619,7 @@ function persist(){
   const o={}; inputs.forEach(el=>{ if(el.id) o[el.id]=(el.type==='checkbox'||el.type==='radio')?el.checked:el.value; });
   if(pinned) o.__pin=pinned;
   o.__base=baseOps;
+  o.__mat=matRows;
   try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){}
 }
 const num = id => { const v=parseFloat($(id).value); return isFinite(v)?v:0; };
@@ -801,6 +869,17 @@ function loadLists(){
     if(en){ lastEn=en; enBuild(en, fresh?null:saved.n_lvl); enApply(fresh); }
     RENDER[current()](); if(fresh) persist();
   }).catch(()=>{ $('n_name').placeholder='The enemy list did not load. Type numbers below.'; });
+  get('workshop.json').then(data=>{
+    WS=data;
+    const groups={}; WS.recipes.forEach(x=>{ (groups[x.t]=groups[x.t]||[]).push(x); });
+    $('m_add').innerHTML='<option value="">Choose a recipe to add</option>'+['BUILDING','EVOLVE','SKILL','ASC'].filter(k=>groups[k]).map(k=>
+      '<optgroup label="'+TYPE_LABEL[k]+'">'+groups[k].map(x=>'<option value="'+x.id+'">'+esc(rname(x))+'</option>').join('')+'</optgroup>').join('');
+    $('m_all').innerHTML='<thead><tr><th>Makes</th><th>From</th><th>LMD</th><th>Morale</th></tr></thead><tbody>'+WS.recipes.map(x=>
+      '<tr><td>'+esc(iname(x.o))+(x.c>1?' ×'+x.c:'')+'</td><td class="tw" style="text-align:left">'+esc(rfrom(x))+'</td><td>'+nf(x.lmd)+'</td><td>'+nf(x.m)+'</td></tr>').join('')+'</tbody>';
+    if(!matRows) matRows=baseRows().rows;      /* first visit: the example base's building materials */
+    matRows=matRows.filter(r=>recById(r.id));
+    renderMatRows(); RENDER[current()]();
+  }).catch(()=>{ $('m_add').innerHTML='<option value="">The recipes did not load</option>'; $('m_sanityText').textContent='The recipe list did not load.'; });
   const adds=Object.keys(GROUPS).map(g=>$('g_'+g+'_add'));
   get('baseskills.json').then(list=>{
     list.forEach(o=>bsMap.set(o.n.toLowerCase(),o));
@@ -1038,6 +1117,103 @@ function renderBase(){
   }));
 });
 
+/* ======================= MATERIALS ======================= */
+/* workshop.json beside the page: items {id:{n,r,s:[[stage,sanity,drops per run],...]}} and the 66 recipes {id,o,c,lmd,m,t,in,x}. */
+let WS=null;
+let matRows=Array.isArray(saved.__mat)?saved.__mat:null;      /* [{id: recipe id, q: wanted, h: have}] */
+const LMD_ID='4001';
+const TYPE_LABEL={BUILDING:'Base building',EVOLVE:'Elite materials',SKILL:'Skill summaries',ASC:'Chips'};
+const recById=id=>WS.recipes.find(r=>r.id===String(id));
+const iname=id=>WS.items[id]?WS.items[id].n:id;
+function rname(r){
+  const multi=WS.recipes.filter(x=>x.o===r.o).length>1;
+  return iname(r.o)+(r.c>1?' ×'+r.c:'')+(multi?' (from '+iname(r.in[0][0])+')':'');
+}
+const rfrom=r=>r.in.map(([i,n])=>n+' '+iname(i)).join(' + ');
+/* recipes the page may choose on its own when breaking a material down (never chip swaps or furniture) */
+const autoRecipe=r=>r.t==='EVOLVE'||r.t==='SKILL'||(r.t==='BUILDING'&&iname(r.o)!=='Furniture Part');
+function planMaterials(rows,withLmd){
+  const best=id=>{ const s=WS.items[id]&&WS.items[id].s[0]; return s?s[1]/s[2]:Infinity; };
+  const lmdRate=best(LMD_ID), memo={}, busy=new Set();
+  /* cheapest way to get one of an item: farm it, or craft it from cheaper things */
+  function route(id){
+    if(memo[id]) return memo[id];
+    if(busy.has(id)) return {cost:Infinity,via:null};
+    busy.add(id);
+    let r={cost:best(id),via:isFinite(best(id))?'farm':null};
+    WS.recipes.forEach(x=>{
+      if(x.o!==id||!autoRecipe(x)) return;
+      let c=x.lmd*(isFinite(lmdRate)?lmdRate:0); x.in.forEach(([i,n])=>{ c+=route(i).cost*n; }); c/=x.c;
+      if(c<r.cost) r={cost:c,via:x};
+    });
+    busy.delete(id); memo[id]=r; return r;
+  }
+  const farm={}, craft=new Map(), stuck={}; let lmd=0;
+  function make(x,out){ const times=Math.ceil(out/x.c-1e-9); if(times<=0) return; craft.set(x,(craft.get(x)||0)+times); lmd+=x.lmd*times; x.in.forEach(([i,n])=>need(i,n*times)); }
+  function need(id,q){ const r=route(id); if(r.via==='farm') farm[id]=(farm[id]||0)+q; else if(r.via) make(r.via,q); else stuck[id]=(stuck[id]||0)+q; }
+  rows.forEach(row=>{ const x=recById(row.id); if(x) make(x,Math.max(0,(+row.q||0)-(+row.h||0))); });
+  if(withLmd&&lmd>0) farm[LMD_ID]=(farm[LMD_ID]||0)+lmd;
+  const lines=Object.keys(farm).map(id=>{ const s=WS.items[id].s, runs=Math.ceil(farm[id]/s[0][2]-1e-9); return {id,need:farm[id],s,runs,sanity:runs*s[0][1]}; })
+    .sort((a,b)=>(a.id===LMD_ID)-(b.id===LMD_ID)||b.sanity-a.sanity);
+  return {lines,craft:[...craft.entries()].reverse(),stuck,lmd,total:lines.reduce((a,l)=>a+l.sanity,0)};
+}
+function renderMatRows(){
+  if(!WS) return;
+  $('m_rows').innerHTML=matRows.map((row,i)=>{
+    const x=recById(row.id); if(!x) return '';
+    const nm=esc(rname(x));
+    return '<li><b>'+nm+'<small>'+esc(rfrom(x))+(x.lmd?' + '+nf(x.lmd)+' LMD':'')+'</small></b>'+
+      '<label>Want<span class="f-i"><input id="m_q_'+i+'" type="number" inputmode="numeric" min="0" value="'+(+row.q||0)+'" data-i="'+i+'" data-f="q" aria-label="How many '+nm+' you want"></span></label>'+
+      '<label>Have<span class="f-i"><input id="m_h_'+i+'" type="number" inputmode="numeric" min="0" value="'+(+row.h||0)+'" data-i="'+i+'" data-f="h" aria-label="How many '+nm+' you have"></span></label>'+
+      '<button type="button" class="ghost" data-i="'+i+'" data-f="x" aria-label="Remove '+nm+'">Remove</button></li>';
+  }).join('');
+}
+function baseRows(){
+  const mats=calcBase(readBase()).mats, rows=[];
+  WS.recipes.forEach(x=>{ if(x.t==='BUILDING'&&mats[iname(x.o)]&&iname(x.o)!=='Furniture Part') rows.push({id:x.id,q:mats[iname(x.o)],h:0}); });
+  return {rows,keel:mats.Keel||0};
+}
+function renderMaterials(){
+  if(!WS){ $('m_sanityText').textContent='Sanity in total. Loading the recipes...'; return; }
+  const p=planMaterials(matRows,on('m_lmd'));
+  $('m_count').textContent=matRows.length+(matRows.length===1?' recipe':' recipes')+' on the list';
+  $('m_sanity').textContent=nf(p.total);
+  $('m_sanityText').textContent='Sanity in total, on average';
+  $('m_days').textContent=p.total?'about '+nf(p.total/240,1)+' days of natural Sanity':'';
+  const st=Object.keys(p.stuck);
+  $('m_stuck').hidden=!st.length;
+  $('m_stuck').innerHTML='&#9650; No open stage drops '+st.map(id=>esc(iname(id))).join(', ')+', and nothing here crafts it.';
+  let t='<thead><tr><th>Material</th><th>Need</th><th class="tw">Farm at</th><th>Runs</th><th>Sanity</th></tr></thead><tbody>';
+  p.lines.forEach(l=>{
+    const alt=l.s.slice(1).map(s=>s[0]).join(', ');
+    t+='<tr><td class="tw">'+esc(iname(l.id))+'</td><td>'+nf(l.need)+'</td><td class="tw"><b>'+esc(l.s[0][0])+'</b> <small><br>'+nf(l.s[0][2],l.s[0][2]%1?2:0)+' a run for '+nf(l.s[0][1])+' Sanity'+(alt?'<br>or '+esc(alt):'')+'</small></td><td>'+nf(l.runs)+'</td><td>'+nf(l.sanity)+'</td></tr>';
+  });
+  if(!p.lines.length) t+='<tr><td colspan="5">Nothing to farm. Add a recipe on the left.</td></tr>';
+  $('m_farm').innerHTML=t+'</tbody>';
+  let c='<thead><tr><th class="tw">Craft</th><th>Times</th><th>LMD</th><th>Morale</th></tr></thead><tbody>', morale=0;
+  p.craft.forEach(([x,n])=>{ morale+=x.m*n; c+='<tr><td class="tw">'+esc(rname(x))+' <small><br>from '+esc(rfrom(x))+'</small></td><td>'+nf(n)+'</td><td>'+nf(x.lmd*n)+'</td><td>'+nf(x.m*n)+'</td></tr>'; });
+  if(!p.craft.length) c+='<tr><td colspan="4">Nothing to craft yet.</td></tr>';
+  $('m_craft').innerHTML=c+'</tbody>';
+  $('m_craftLabel').textContent=p.craft.length?nf(p.lmd)+' LMD and '+nf(morale)+' Morale in all':'';
+}
+$('m_rows').addEventListener('input',ev=>{ const t=ev.target, row=matRows&&matRows[+t.dataset.i]; if(row&&(t.dataset.f==='q'||t.dataset.f==='h')) row[t.dataset.f]=Math.max(0,parseFloat(t.value)||0); });
+$('m_rows').addEventListener('click',ev=>{ const t=ev.target; if(t.dataset.f!=='x') return; matRows.splice(+t.dataset.i,1); renderMatRows(); refresh(); });
+['input','change'].forEach(ev=>$('m_add').addEventListener(ev,()=>{
+  const id=$('m_add').value; if(!id||!WS) return;
+  $('m_add').value='';
+  if(!matRows.some(r=>r.id===id)) matRows.push({id,q:1,h:0});
+  renderMatRows();
+}));
+$('m_base').addEventListener('click',()=>{
+  if(!WS) return;
+  const b=baseRows();
+  b.rows.forEach(n=>{ const old=matRows.find(r=>r.id===n.id); if(old) old.q=n.q; else matRows.push(n); });
+  $('m_note').hidden=false;
+  $('m_note').innerHTML='Added the building materials for the layout on the <b>Base</b> tab, built from nothing.'+(b.keel?' It also needs <b>'+b.keel+' Keel</b>, which cannot be farmed: they come from clearing 1-1, 1-8, 3-4 and 4-7 for the first time.':'');
+  renderMatRows(); refresh();
+});
+$('m_clear').addEventListener('click',()=>{ matRows=[]; $('m_note').hidden=true; renderMatRows(); refresh(); });
+
 /* ======================= SANITY ======================= */
 function sanityCap(l){
   l=clamp(Math.round(l),1,120);
@@ -1081,7 +1257,7 @@ function renderSanity(){
 }
 
 /* ---------- routing and wiring ---------- */
-const RENDER={damage:renderDamage,pulls:renderPulls,base:renderBase,sanity:renderSanity};
+const RENDER={damage:renderDamage,pulls:renderPulls,base:renderBase,materials:renderMaterials,sanity:renderSanity};
 const fromHash=()=>{ const h=(location.hash||'').slice(1); return RENDER[h]?h:null; };
 let tab=fromHash()||'damage';
 function current(){ return tab; }

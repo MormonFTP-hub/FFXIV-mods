@@ -36,7 +36,7 @@ Step npx @('--yes', $Wrangler, 'deploy', '--config', 'ArknightsCalc/tools/wrangl
 
 # The live files should be the ones just built.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-foreach ($name in 'index.html', 'operators.json', 'enemies.json', 'baseskills.json') {
+foreach ($name in 'index.html', 'operators.json', 'enemies.json', 'baseskills.json', 'workshop.json') {
   $want = (Get-Item "$Site\$name").Length
   $u = if ($name -eq 'index.html') { $Url } else { "$Url$name" }
   try {
