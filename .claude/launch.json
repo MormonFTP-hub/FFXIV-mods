@@ -206,6 +206,22 @@
       "port": 8815
     },
     {
+      "name": "arknights-calc",
+      "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+      "runtimeArgs": [
+        "-P",
+        "-E",
+        "-m",
+        "http.server",
+        "8823",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "ArknightsCalc"
+      ],
+      "port": 8823
+    },
+    {
       "name": "blm-site",
       "runtimeExecutable": "C:\\Users\\hltil\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
       "runtimeArgs": [

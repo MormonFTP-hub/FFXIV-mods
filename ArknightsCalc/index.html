@@ -80,6 +80,8 @@ main{padding-block:22px 40px}
 .f-s{display:flex;align-items:center;padding:0 9px 0 0;font-size:13px;color:var(--muted)}
 .f-h{font-size:12px;line-height:1.35;color:var(--muted)}
 .f.wide{grid-column:1/-1}
+.note{font-size:13px;line-height:1.45;color:var(--ink-2);background:var(--sunk);border-left:3px solid var(--accent);padding:8px 11px;overflow-wrap:anywhere}
+.note b{color:var(--ink);font-weight:600}
 .check{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--ink-2)}
 .check input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--accent);flex:none}
 .check small{display:block;font-size:12px;color:var(--muted)}
@@ -153,13 +155,28 @@ footer a{color:inherit}
 <section class="view" id="view-damage">
   <div class="lede">
     <h2>Damage per second</h2>
-    <p>Type in an operator's numbers and an enemy's numbers. The chart shows how the damage holds up as the enemy gets tougher. The starting values are an example.</p>
+    <p>Pick an operator and an enemy, or type your own numbers. The chart shows how the damage holds up as the enemy gets tougher. The starting setup is an example.</p>
   </div>
   <div class="cols">
     <div class="stack">
       <div class="panel">
-        <header><h3>Operator</h3><span>from the operator page and skill text</span></header>
+        <header><h3>Operator</h3><span>pick one, or type your own numbers</span></header>
         <div class="body">
+          <div class="fields">
+            <label class="f wide" for="o_name"><span class="f-l">Operator</span><span class="f-i"><input id="o_name" type="text" list="o_list" autocomplete="off" placeholder="Loading the operator list..."></span><span class="f-h">Picking one fills in the numbers below. Add ally buffs after.</span></label>
+          </div>
+          <datalist id="o_list"></datalist>
+          <div class="fields" id="o_opts" hidden>
+            <label class="f" for="o_elite"><span class="f-l">Promotion</span><span class="f-i"><select id="o_elite"></select></span></label>
+            <label class="f" for="o_lvl"><span class="f-l">Level</span><span class="f-i"><input id="o_lvl" type="number" inputmode="numeric" min="1" value="1"></span></label>
+            <label class="f" for="o_trust"><span class="f-l">Trust</span><span class="f-i"><input id="o_trust" type="number" inputmode="numeric" min="0" max="100" value="100"><span class="f-s">%</span></span><span class="f-h">The stat bonus stops at 100%.</span></label>
+            <label class="f" for="o_pot"><span class="f-l">Potential</span><span class="f-i"><select id="o_pot"></select></span></label>
+            <label class="f" for="o_mod"><span class="f-l">Module</span><span class="f-i"><select id="o_mod"></select></span></label>
+            <label class="f" for="o_modlv"><span class="f-l">Module stage</span><span class="f-i"><select id="o_modlv"></select></span></label>
+            <label class="f" for="o_skill"><span class="f-l">Skill</span><span class="f-i"><select id="o_skill"></select></span></label>
+            <label class="f" for="o_sklv"><span class="f-l">Skill level</span><span class="f-i"><select id="o_sklv"></select></span></label>
+          </div>
+          <p class="note" id="o_note" hidden></p>
           <div class="seg" role="radiogroup" aria-label="Damage type">
             <label><input type="radio" name="d_type" id="d_type_phys" value="phys" checked><span>Physical</span></label>
             <label><input type="radio" name="d_type" id="d_type_arts" value="arts"><span>Arts</span></label>
@@ -174,8 +191,14 @@ footer a{color:inherit}
         </div>
       </div>
       <div class="panel">
-        <header><h3>Enemy</h3><span>from the wiki's enemy page</span></header>
+        <header><h3>Enemy</h3><span>pick one, or type your own numbers</span></header>
         <div class="body">
+          <div class="fields">
+            <label class="f wide" for="n_name"><span class="f-l">Enemy</span><span class="f-i"><input id="n_name" type="text" list="n_list" autocomplete="off" placeholder="Loading the enemy list..."></span></label>
+            <label class="f" for="n_lvl" id="n_lvlRow" hidden><span class="f-l">Strength tier</span><span class="f-i"><select id="n_lvl"></select></span><span class="f-h">Later stages use the higher tiers.</span></label>
+          </div>
+          <datalist id="n_list"></datalist>
+          <p class="note" id="n_note" hidden></p>
           <div class="fields" id="f-enemy"></div>
           <span class="sub">Debuffs on the enemy</span>
           <div class="fields" id="f-debuff"></div>
@@ -213,6 +236,7 @@ footer a{color:inherit}
       <p>Enemy DEF: <code>(DEF &minus; flat reduction) &times; (1 &minus; reduction%)</code>, then the operator's own ignore: minus the flat part, then times <code>(1 &minus; ignore%)</code>. RES works the same way and stays between 0 and 100.</p>
       <p>Physical hit: <code>ATK &minus; DEF</code>. Arts hit: <code>ATK &times; (1 &minus; RES / 100)</code>. True damage skips both. A hit never does less than 5% of its ATK. Fragile multiplies the result, and only the strongest Fragile counts.</p>
       <p>Time between attacks: <code>(interval + interval change) &times; 100 / (100 + ASPD bonus)</code>. Total ASPD stays between 20 and 600.</p>
+      <p>Picked operators: ATK is the level's base ATK plus trust, potential and module bonuses, taken from the game's own data tables (global server). From a skill, the page fills in only its ATK bonus, damage multiplier, ASPD bonus, hit count and duration. Attack interval changes, talents and anything unusual are left to you, so read the skill text shown under the picker.</p>
       <p>Rules are from the Arknights Terra Wiki damage pages. Enter several ATK or DEF percentages as one combined number.</p>
     </div>
   </details>
@@ -327,7 +351,7 @@ footer a{color:inherit}
 </section>
 
 </main>
-<footer class="wrap">Fan-made. Not affiliated with Hypergryph or Yostar. Game rules from the Arknights Terra Wiki (arknights.wiki.gg). Your numbers are kept in this browser only.</footer>
+<footer class="wrap">Fan-made. Not affiliated with Hypergryph or Yostar. Game rules from the Arknights Terra Wiki (arknights.wiki.gg). Operator and enemy stats from the ArknightsGameData_YoStar tables on GitHub. Your numbers are kept in this browser only.</footer>
 
 <script>
 (function(){
@@ -543,6 +567,116 @@ function renderDamage(){
   });
   $('d_table').innerHTML=t+'</tbody>';
 }
+/* ---------- operator and enemy lists (operators.json, enemies.json beside the page) ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fresh=!('d_atk' in saved);
+const opMap=new Map(), enMap=new Map();
+let lastOp=null, lastEn=null;
+const setv=(id,v)=>{ $(id).value=v; };
+function options(id,items,want){
+  const el=$(id); el.innerHTML=items.map(i=>`<option value="${i[0]}">${esc(i[1])}</option>`).join('');
+  if(want!=null && items.some(i=>String(i[0])===String(want))) el.value=String(want);
+}
+const opNow=()=>opMap.get($('o_name').value.trim().toLowerCase())||null;
+const enNow=()=>enMap.get($('n_name').value.trim().toLowerCase())||null;
+function skillLevels(want){
+  const o=opNow(), s=o&&o.s[+$('o_skill').value];
+  options('o_sklv', s?s.l.map((l,i)=>[i,l.k]):[[0,'None']], want ?? (s?s.l.length-1:0));
+  $('o_sklv').disabled=!s;
+}
+function opBuild(o,want){
+  want=want||{};
+  options('o_elite',o.p.map((p,i)=>[i,'Elite '+i]), want.o_elite ?? o.p.length-1);
+  const ph=o.p[+$('o_elite').value]||o.p[0];
+  $('o_lvl').max=ph[0]; setv('o_lvl', want.o_lvl ?? ph[0]);
+  setv('o_trust', want.o_trust ?? 100);
+  options('o_pot',[1,2,3,4,5,6].slice(0,o.o.length+1).map(n=>[n,'Potential '+n]), want.o_pot ?? 1);
+  options('o_mod',[[-1,'No module']].concat(o.m.map((m,i)=>[i,m.n])), want.o_mod ?? -1);
+  options('o_modlv',[[1,'Stage 1'],[2,'Stage 2'],[3,'Stage 3']], want.o_modlv ?? 3);
+  options('o_skill',[[-1,'Basic attack']].concat(o.s.map((s,i)=>[i,'Skill '+(i+1)+': '+s.n])), want.o_skill ?? o.s.length-1);
+  skillLevels(want.o_sklv);
+}
+/* fill=true writes the operator's numbers into the fields; false only refreshes the note */
+function opApply(fill){
+  const o=opNow(); $('o_opts').hidden=!o; $('o_note').hidden=!o; if(!o) return;
+  const e=+$('o_elite').value||0, ph=o.p[e]||o.p[0];
+  const lv=clamp(Math.round(num('o_lvl'))||1,1,ph[0]);
+  const base=Math.round(ph[1]+(ph[2]-ph[1])*(ph[0]>1?(lv-1)/(ph[0]-1):0));
+  const trust=Math.round(o.t*clamp(num('o_trust'),0,100)/100);
+  const pot=+$('o_pot').value||1; let pa=0, ps=0;
+  for(let i=0;i<pot-1&&i<o.o.length;i++){ pa+=o.o[i][0]; ps+=o.o[i][1]; }
+  const md=o.m[+$('o_mod').value]||null, ms=(+$('o_modlv').value||3)-1;
+  const ma=md?(md.a[ms]||0):0, msp=md?(md.s[ms]||0):0;
+  $('o_modlv').disabled=!md;
+  const s=o.s[+$('o_skill').value]||null, sl=s?(s.l[+$('o_sklv').value]||s.l[s.l.length-1]):null, f=sl?sl.f:{};
+  if(fill){
+    setv('d_atk',base+trust+pa+ma); setv('d_int',ph[3]);
+    setv('d_atkpct',f.atk||0); setv('d_mult',f.scale||100); setv('d_hits',f.hits||1);
+    setv('d_aspd',(ph[4]-100)+ps+msp+(f.aspd||0)); setv('d_dur',sl?sl.t:0);
+  }
+  let h='<b>ATK '+nf(base+trust+pa+ma)+'</b> = '+nf(base)+' at Elite '+e+' level '+lv+(trust?' + '+trust+' trust':'')+(pa?' + '+pa+' potential':'')+(ma?' + '+ma+' module':'')+'.';
+  if(ps||msp) h+=' ASPD +'+(ps+msp)+' from '+(ps&&msp?'potential and module':ps?'potential':'module')+'.';
+  if(sl){
+    const got=[];
+    if(f.atk) got.push('ATK buffs '+f.atk+'%'); if(f.scale) got.push('skill damage '+f.scale+'%');
+    if(f.aspd) got.push('ASPD +'+f.aspd); if(f.hits) got.push(f.hits+' hits per attack'); if(sl.t) got.push('duration '+sl.t+' s');
+    h+='<br><b>'+esc(s.n)+' ('+sl.k+'):</b> '+esc(sl.d)+'<br>'+(got.length?'Filled in from the skill: '+got.join(', ')+'. Anything else in the text, such as attack interval changes, is yours to enter.':'Nothing in this skill could be filled in automatically. Enter its numbers from the text.');
+  }
+  $('o_note').innerHTML=h;
+}
+function enBuild(en,want){ options('n_lvl',en.l.map((_,i)=>[i,'Tier '+(i+1)]), want ?? 0); }
+function enApply(fill){
+  const en=enNow(); $('n_note').hidden=!en; $('n_lvlRow').hidden=!en||en.l.length<2; if(!en) return;
+  const L=en.l[+$('n_lvl').value]||en.l[0];
+  if(fill){ setv('e_hp',L[0]); setv('e_def',L[2]); setv('e_res',L[3]); }
+  $('n_note').innerHTML='<b>'+esc(en.n)+'</b>: '+(en.k?esc(en.k)+' enemy':'enemy')+', HP '+nf(L[0])+', ATK '+nf(L[1])+', DEF '+nf(L[2])+', RES '+nf(L[3])+'.';
+}
+function onOpName(){
+  const o=opNow();
+  if(o && o!==lastOp){
+    lastOp=o; opBuild(o);
+    $(o.c==='Caster'||o.c==='Supporter'||o.c==='Medic'?'d_type_arts':'d_type_phys').checked=true;
+    setv('d_intflat',0); opApply(true);
+  } else if(!o){ lastOp=null; opApply(false); }
+}
+function onEnName(){
+  const en=enNow();
+  if(en && en!==lastEn){ lastEn=en; enBuild(en); enApply(true); }
+  else if(!en){ lastEn=null; enApply(false); }
+}
+['input','change'].forEach(ev=>{
+  $('o_name').addEventListener(ev,onOpName);
+  $('n_name').addEventListener(ev,onEnName);
+  $('n_lvl').addEventListener(ev,()=>enApply(true));
+  ['o_elite','o_lvl','o_trust','o_pot','o_mod','o_modlv','o_skill','o_sklv'].forEach(id=>$(id).addEventListener(ev,()=>{
+    const o=opNow(); if(!o) return;
+    if(id==='o_elite' && ev==='input'){ const ph=o.p[+$('o_elite').value]||o.p[0]; $('o_lvl').max=ph[0]; setv('o_lvl',ph[0]); }
+    if(id==='o_skill') skillLevels();
+    opApply(true);
+  }));
+});
+function loadLists(){
+  const get=u=>fetch(u).then(r=>{ if(!r.ok) throw new Error(u); return r.json(); });
+  get('operators.json').then(list=>{
+    list.forEach(o=>opMap.set(o.n.toLowerCase(),o));
+    $('o_list').innerHTML=list.map(o=>`<option value="${esc(o.n)}">${o.r}★ ${o.c}</option>`).join('');
+    $('o_name').placeholder='Type a name, e.g. Exusiai';
+    if(fresh && opMap.has('exusiai')) setv('o_name','Exusiai');
+    const o=opNow();
+    if(o){ lastOp=o; opBuild(o, fresh?null:saved); opApply(fresh); }
+    RENDER[current()](); if(fresh) persist();
+  }).catch(()=>{ $('o_name').placeholder='The operator list did not load. Type numbers below.'; });
+  get('enemies.json').then(list=>{
+    list.forEach(e=>enMap.set(e.n.toLowerCase(),e));
+    $('n_list').innerHTML=list.map(e=>`<option value="${esc(e.n)}">${esc(e.k)}</option>`).join('');
+    $('n_name').placeholder='Type a name, e.g. Heavy Defender';
+    if(fresh && enMap.has('hateful avenger')) setv('n_name','Hateful Avenger');
+    const en=enNow();
+    if(en){ lastEn=en; enBuild(en, fresh?null:saved.n_lvl); enApply(fresh); }
+    RENDER[current()](); if(fresh) persist();
+  }).catch(()=>{ $('n_name').placeholder='The enemy list did not load. Type numbers below.'; });
+}
+
 $('d_pin').addEventListener('click',()=>{ pinned=readDamage(); persist(); renderDamage(); });
 $('d_unpin').addEventListener('click',()=>{ pinned=null; persist(); renderDamage(); });
 
@@ -682,6 +816,7 @@ document.querySelector('main').addEventListener('change',refresh);
 window.addEventListener('hashchange',()=>{ const h=fromHash(); if(h && h!==tab){ tab=h; show(); } });
 let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>RENDER[current()](),120); });
 show();
+loadLists();
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>RENDER[current()]());
 window.__ak={calcDamage,pullCurve,sanityCap,runsFor};
 })();
