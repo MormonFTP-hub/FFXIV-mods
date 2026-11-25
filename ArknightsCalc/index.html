@@ -82,6 +82,16 @@ main{padding-block:22px 40px}
 .f.wide{grid-column:1/-1}
 .note{font-size:13px;line-height:1.45;color:var(--ink-2);background:var(--sunk);border-left:3px solid var(--accent);padding:8px 11px;overflow-wrap:anywhere}
 .note b{color:var(--ink);font-weight:600}
+#b_ops{display:flex;flex-direction:column;gap:14px}
+.grp{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--grid)}
+.grp-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px}
+.grp-h span{font-size:12.5px;color:var(--muted);text-align:right}
+.grp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.oprow{display:grid;grid-template-columns:minmax(0,1fr) 104px 92px auto;gap:8px;align-items:center;margin-bottom:4px}
+.oprow b{overflow-wrap:anywhere}
+.oprow button{padding:7px 10px;font-size:13px}
+.grp .f-h b{color:var(--ink-2);font-weight:600}
+@media (max-width:520px){.oprow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.oprow>b{grid-column:1/-1}}
 .meter{height:14px;background:var(--sunk);border:1px solid var(--line)}
 .meter div{height:100%;background:var(--accent);max-width:100%}
 .meter.over div{background:var(--warn)}
@@ -345,7 +355,16 @@ footer a{color:inherit}
         <header><h3>What the rooms do</h3><span id="b_jobLabel"></span></header>
         <div class="body">
           <div class="fields" id="f-b-jobs"></div>
-          <span class="sub">Productivity bonus from operators</span>
+          <span class="sub">Operators in the rooms</span>
+          <p class="f-h">Pick who works where and their skills are added up for you. Each operator also adds 1%. You can change any number.</p>
+          <div id="b_ops">
+            <div class="grp"><div class="grp-h"><b>Trading Posts</b><span id="g_tp_c"></span></div><span class="f-i"><input id="g_tp_add" type="text" list="g_list_T" autocomplete="off" placeholder="Loading the list..."></span><ul id="g_tp_list"></ul></div>
+            <div class="grp"><div class="grp-h"><b>Pure Gold factories</b><span id="g_gold_c"></span></div><span class="f-i"><input id="g_gold_add" type="text" list="g_list_M" autocomplete="off" placeholder="Loading the list..."></span><ul id="g_gold_list"></ul></div>
+            <div class="grp"><div class="grp-h"><b>Battle Record factories</b><span id="g_rec_c"></span></div><span class="f-i"><input id="g_rec_add" type="text" list="g_list_M" autocomplete="off" placeholder="Loading the list..."></span><ul id="g_rec_list"></ul></div>
+            <div class="grp"><div class="grp-h"><b>Shard factories</b><span id="g_shard_c"></span></div><span class="f-i"><input id="g_shard_add" type="text" list="g_list_M" autocomplete="off" placeholder="Loading the list..."></span><ul id="g_shard_list"></ul></div>
+          </div>
+          <datalist id="g_list_T"></datalist><datalist id="g_list_M"></datalist>
+          <span class="sub">Productivity bonus typed in</span>
           <div class="fields" id="f-b-eff"></div>
           <span class="sub">Drones</span>
           <div class="fields" id="f-b-drones"></div>
@@ -384,7 +403,8 @@ footer a{color:inherit}
     <summary>How this is worked out</summary>
     <div class="body">
       <p>Power, operator slots and build costs for every room level come from the game's own data tables (global server). Build cost covers the rooms only: clearing space and the materials' own crafting costs are not counted.</p>
-      <p>Factories: one Pure Gold takes 1 h 12 min, a Drill, Frontline or Tactical Battle Record takes 45 min, 1 h 20 min or 3 h (200, 400 or 1,000 EXP), and an Originium Shard takes 1 h. A productivity bonus of +100% doubles the speed. Each operator in a room adds 1% on top of their skills, so enter the bonus the room shows in game, without the base 100%.</p>
+      <p>Factories: one Pure Gold takes 1 h 12 min, a Drill, Frontline or Tactical Battle Record takes 45 min, 1 h 20 min or 3 h (200, 400 or 1,000 EXP), and an Originium Shard takes 1 h. A productivity bonus of +100% doubles the speed.</p>
+      <p>Picked operators: each one's Trading Post or Factory skills at the chosen promotion are added up, plus 1% per operator, and shared out evenly over the rooms of that kind. Skills that only work for one product count only there. Skills that depend on who else is in the room, on time, or on other rooms are marked, and the page takes the plain number from their text (the highest one for skills that build up over time), so correct those yourself. Control Center skills are not counted: add them in the typed-in bonus.</p>
       <p>Trading Posts: a level 3 post rolls a 2, 3 or 4 Pure Gold order (1,000, 1,500 or 2,000 LMD) 30%, 50% and 20% of the time, taking 2 h 24 min, 3 h 30 min and 4 h 36 min. Level 2 rolls 60% and 40% of the first two, and level 1 only the first. Tailoring skills shift a level 3 post toward 4 Pure Gold orders. An Orundum order takes 2 Originium Shards, pays 20 Orundum and takes 2 h. Order rules are from the Arknights Terra Wiki.</p>
       <p>Drones come back at 1 every 6 minutes (240 a day) and each one skips 3 minutes of work. Operator skills do not speed drones up. If the Trading Posts want more Pure Gold than the base makes, LMD is counted only for the Pure Gold there is.</p>
     </div>
@@ -504,7 +524,7 @@ put('f-b-jobs',
   S('b_recipe','Shard recipe',[['cube','2 Orirock Cube + 1,600 LMD'],['device','1 Device + 1,000 LMD']],'cube')+
   S('b_mix','Trading Post orders',[['n','Normal'],['a','Tailoring α'],['b','Tailoring β']],'n','Tailoring skills change level 3 orders.'));
 put('f-b-eff',
-  F('b_etp','Trading Posts',100,{suf:'%',min:0,hint:'What the room shows, minus the base 100%.'})+
+  F('b_etp','Trading Posts',100,{suf:'%',min:0,hint:'Added on top of picked operators. Use it for Control Center bonuses, or for the room\'s whole bonus if you pick nobody.'})+
   F('b_egold','Pure Gold factories',100,{suf:'%',min:0})+
   F('b_erec','Battle Record factories',100,{suf:'%',min:0})+
   F('b_eshard','Shard factories',100,{suf:'%',min:0}));
@@ -531,6 +551,7 @@ inputs.forEach(el=>{
 function persist(){
   const o={}; inputs.forEach(el=>{ if(el.id) o[el.id]=(el.type==='checkbox'||el.type==='radio')?el.checked:el.value; });
   if(pinned) o.__pin=pinned;
+  o.__base=baseOps;
   try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){}
 }
 const num = id => { const v=parseFloat($(id).value); return isFinite(v)?v:0; };
@@ -780,6 +801,13 @@ function loadLists(){
     if(en){ lastEn=en; enBuild(en, fresh?null:saved.n_lvl); enApply(fresh); }
     RENDER[current()](); if(fresh) persist();
   }).catch(()=>{ $('n_name').placeholder='The enemy list did not load. Type numbers below.'; });
+  const adds=Object.keys(GROUPS).map(g=>$('g_'+g+'_add'));
+  get('baseskills.json').then(list=>{
+    list.forEach(o=>bsMap.set(o.n.toLowerCase(),o));
+    ['T','M'].forEach(room=>{ $('g_list_'+room).innerHTML=list.filter(o=>o.s.some(s=>s.g===room)).map(o=>`<option value="${esc(o.n)}">${o.r}★</option>`).join(''); });
+    adds.forEach(el=>{ el.placeholder='Add an operator by name'; });
+    renderOpLists(); RENDER[current()]();
+  }).catch(()=>{ adds.forEach(el=>{ el.placeholder='The list did not load. Type the bonus below.'; }); });
 }
 
 $('d_pin').addEventListener('click',()=>{ pinned=readDamage(); persist(); renderDamage(); });
@@ -881,6 +909,10 @@ function calcBase(v){
   /* jobs */
   const gold=Math.min(v.gold,v.fac), shard=v.faclv===3?Math.min(v.shard,v.fac-gold):0, rec=v.fac-gold-shard;
   const oruTP=v.tplv===3?Math.min(v.oru,v.tp):0, lmdTP=v.tp-oruTP;
+  /* picked operators: their skill bonuses plus 1% each, shared out over the rooms of that kind */
+  const picked=(g,rooms)=>{ const o=v.ops&&v.ops[g]; return o&&o.n&&rooms>0?(o.sum+o.n)/rooms:0; };
+  const add={tp:picked('tp',v.tp),gold:picked('gold',gold),rec:picked('rec',rec),shard:picked('shard',shard)};
+  v=Object.assign({},v,{etp:v.etp+add.tp,egold:v.egold+add.gold,erec:v.erec+add.rec,eshard:v.eshard+add.shard});
   const R=REC[v.faclv-1];
   const p=ORDERS.mix[v.tplv===3&&v.mix!=='n'?v.mix:v.tplv];
   const avgT=p.reduce((a,x,i)=>a+x*ORDERS.t[i],0)*60, avgG=p.reduce((a,x,i)=>a+x*ORDERS.gold[i],0);
@@ -891,7 +923,7 @@ function calcBase(v){
   const goldWanted=orders*avgG, goldSold=Math.min(goldWanted,goldMade);
   const shardMade=shard*DAY/SHARD_T*sp(v.eshard), shardWanted=oruTP*DAY/7200*sp(v.etp)*2, shardUsed=Math.min(shardMade,shardWanted);
   const shardLmd=shardMade*(v.recipe==='device'?1000:1600), shardMat=shardMade*(v.recipe==='device'?1:2);
-  return {made,used,slots,beds,drones,mats,left:v.tp+v.fac+v.pp,gold,shard,rec,oruTP,lmdTP,R,avgT,avgG,orders,
+  return {add,eff:{tp:v.etp,gold:v.egold,rec:v.erec,shard:v.eshard},made,used,slots,beds,drones,mats,left:v.tp+v.fac+v.pp,gold,shard,rec,oruTP,lmdTP,R,avgT,avgG,orders,
     goldMade,goldWanted,goldSold,lmdIn:goldSold*500,lmd:goldSold*500-shardLmd,exp:recMade*R.xp,recMade,
     shardMade,shardWanted,shardUsed,orundum:shardUsed/2*20,shardLmd,shardMat};
 }
@@ -900,8 +932,58 @@ function readBase(){
   return {tp:iv('b_tp'),tplv:iv('b_tplv'),fac:iv('b_fac'),faclv:iv('b_faclv'),pp:iv('b_pp'),pplv:iv('b_pplv'),cc:iv('b_cc'),
     d:[iv('b_d1'),iv('b_d2'),iv('b_d3'),iv('b_d4')],meet:iv('b_meet'),work:iv('b_work'),hire:iv('b_hire'),train:iv('b_train'),
     gold:iv('b_gold'),shard:iv('b_shard'),oru:iv('b_oru'),recipe:$('b_recipe').value,mix:$('b_mix').value,
-    etp:num('b_etp'),egold:num('b_egold'),erec:num('b_erec'),eshard:num('b_eshard'),drones:num('b_drones'),duse:$('b_duse').value};
+    etp:num('b_etp'),egold:num('b_egold'),erec:num('b_erec'),eshard:num('b_eshard'),drones:num('b_drones'),duse:$('b_duse').value,
+    ops:Object.fromEntries(Object.keys(GROUPS).map(g=>[g,{n:baseOps[g].length,sum:baseOps[g].reduce((a,x)=>a+(+x.b||0),0)}]))};
 }
+/* ---------- operators in the rooms (baseskills.json beside the page) ---------- */
+const GROUPS={tp:{room:'T',field:'b_etp'},gold:{room:'M',field:'b_egold'},rec:{room:'M',field:'b_erec'},shard:{room:'M',field:'b_eshard'}};
+let baseOps=saved.__base&&typeof saved.__base==='object'?saved.__base:{};
+Object.keys(GROUPS).forEach(g=>{ if(!Array.isArray(baseOps[g])) baseOps[g]=[]; });
+const bsMap=new Map();
+const maxElite=o=>o.r>=4?2:o.r===3?1:0;
+const countsFor=(s,g)=>g==='tp'||s.t==='all'||s.t===g;
+/* the skills an operator brings to a kind of room at a promotion: the newest one in each skill slot */
+function opSkills(o,g,e){
+  const best={};
+  o.s.forEach(s=>{ if(s.g===GROUPS[g].room && s.e<=e && (!best[s.k]||best[s.k].e<s.e)) best[s.k]=s; });
+  return Object.values(best);
+}
+const opDefault=(o,g,e)=>opSkills(o,g,e).reduce((a,s)=>a+(countsFor(s,g)?s.v:0),0);
+const shortSkill=d=>d.replace(/^When this Operator is assigned to (?:a|an|the) (?:Trading Post|Factory),\s*/i,'');
+function renderOpLists(){
+  Object.keys(GROUPS).forEach(g=>{
+    $('g_'+g+'_list').innerHTML=baseOps[g].map((x,i)=>{
+      const o=bsMap.get(String(x.n).toLowerCase()), sk=o?opSkills(o,g,x.e):[], me=o?maxElite(o):2, nm=esc(x.n);
+      const txt=!o?'':sk.length?sk.map(s=>'<b>'+esc(s.n)+':</b> '+esc(shortSkill(s.d))+(countsFor(s,g)?'':' (not for this product)')).join(' '):'No skill for this room at this promotion.';
+      const chk=sk.some(s=>s.q&&countsFor(s,g));
+      return '<li><div class="oprow"><b>'+nm+'</b>'+
+        '<span class="f-i"><select id="g_'+g+'_'+i+'_e" data-g="'+g+'" data-i="'+i+'" data-f="e" aria-label="Promotion of '+nm+'">'+[0,1,2].filter(e=>e<=me).map(e=>'<option value="'+e+'"'+(e===x.e?' selected':'')+'>Elite '+e+'</option>').join('')+'</select></span>'+
+        '<span class="f-i"><input id="g_'+g+'_'+i+'_b" type="number" inputmode="decimal" value="'+(+x.b||0)+'" data-g="'+g+'" data-i="'+i+'" data-f="b" aria-label="Bonus from '+nm+'"><span class="f-s">%</span></span>'+
+        '<button type="button" class="ghost" data-g="'+g+'" data-i="'+i+'" data-f="x" aria-label="Remove '+nm+'">Remove</button></div>'+
+        '<p class="f-h">'+txt+(chk?' <b>This depends on other things, so check the number.</b>':'')+'</p></li>';
+    }).join('');
+  });
+}
+$('b_ops').addEventListener('input',ev=>{
+  const t=ev.target, g=t.dataset.g, x=g&&baseOps[g][+t.dataset.i]; if(!x) return;
+  if(t.dataset.f==='b') x.b=parseFloat(t.value)||0;
+  if(t.dataset.f==='e'){ x.e=+t.value; const o=bsMap.get(String(x.n).toLowerCase()); if(o) x.b=opDefault(o,g,x.e); renderOpLists(); }
+});
+$('b_ops').addEventListener('click',ev=>{
+  const t=ev.target; if(t.dataset.f!=='x') return;
+  baseOps[t.dataset.g].splice(+t.dataset.i,1); renderOpLists(); refresh();
+});
+Object.keys(GROUPS).forEach(g=>{
+  const el=$('g_'+g+'_add');
+  const add=()=>{
+    const o=bsMap.get(el.value.trim().toLowerCase()); if(!o) return;
+    el.value='';
+    if(baseOps[g].some(x=>x.n===o.n)) return;
+    if(!baseOps[g].length) setv(GROUPS[g].field,0);      /* switching from a typed total to picked operators */
+    const e=maxElite(o); baseOps[g].push({n:o.n,e,b:opDefault(o,g,e)}); renderOpLists();
+  };
+  el.addEventListener('input',add); el.addEventListener('change',add);
+});
 function renderBase(){
   const v=readBase(), r=calcBase(v), spare=r.made-r.used;
   $('b_leftLabel').textContent=r.left+' of 9 rooms used';
@@ -916,6 +998,12 @@ function renderBase(){
   $('b_powerChip').hidden=spare>=0;
   $('b_jobLabel').textContent=r.rec+' on Battle Records, '+r.lmdTP+' selling Pure Gold';
   $('b_dayLabel').textContent=r.slots+' operators at work, '+r.beds+' dormitory beds';
+  const perTP=BASE.TRADING.lv[v.tplv-1].s, perF=BASE.MANUFACTURE.lv[v.faclv-1].s;
+  const room={tp:[v.tp,perTP],gold:[r.gold,perF],rec:[r.rec,perF],shard:[r.shard,perF]};
+  Object.keys(GROUPS).forEach(g=>{
+    const n=baseOps[g].length, slots=room[g][0]*room[g][1];
+    $('g_'+g+'_c').textContent=room[g][0]?n+' of '+slots+' slots'+(n>slots?', too many':'')+', +'+nf(r.eff[g], r.eff[g]%1?1:0)+'% in each room':'no rooms of this kind';
+  });
   $('b_lmd').textContent=nf(r.lmd);
   $('b_lmdText').textContent='LMD a day'+(r.shardLmd?', after paying for shards':'');
   const short=r.goldWanted-r.goldMade;

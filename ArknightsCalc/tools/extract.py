@@ -123,6 +123,58 @@ for name, group in seen.items():
         for o in group:
             o["n"] = "%s (%s)" % (name, o["c"])
 ops.sort(key=lambda o: (-o["r"], o["n"]))
+
+# Base skills for Trading Posts and Factories (excel/building_data.json), for the Base tab.
+PHASE = {"PHASE_0": 0, "PHASE_1": 1, "PHASE_2": 2}
+LEAD = re.compile(r"^When this Operator is assigned to (?:a|an|the) [A-Za-z ]+?,\s*", re.I)
+COND = re.compile(r"for every|for each|per |up to|if |when |with |other|increase|decrease|convert|considered", re.I)
+
+def base_value(text, eff):
+    if re.search(r"productivity|efficiency", text, re.I):
+        m = re.search(r"up to \+?(\d+(?:\.\d+)?)%", text, re.I)
+        if m:
+            return float(m.group(1))
+    if eff:
+        return float(eff)
+    m = (re.search(r"(?:productivity|efficiency)\s*\+(\d+(?:\.\d+)?)%", text, re.I)
+         or re.search(r"\+(\d+(?:\.\d+)?)%\s*(?:productivity|order acquisition efficiency)", text, re.I))
+    return float(m.group(1)) if m else 0.0
+
+bpath = os.path.join(raw, "building_data.json")
+if os.path.exists(bpath):
+    bd = load("building_data.json")
+    rows = []
+    for o in ops:
+        c = bd["chars"].get(o["id"])
+        if not c:
+            continue
+        sk = []
+        for slot, s in enumerate(c.get("buffChar") or []):
+            for x in s.get("buffData") or []:
+                b = bd["buffs"].get(x["buffId"])
+                if not b or b["roomType"] not in ("TRADING", "MANUFACTURE"):
+                    continue
+                text = TAG.sub("", b["description"]).replace("\n", " ").strip()
+                tag = ("rec" if re.search(r"Battle Record", text, re.I) else
+                       "gold" if re.search(r"Precious Metal|Pure Gold", text, re.I) else
+                       "shard" if re.search(r"Originium", text, re.I) else "all")
+                row = {"k": slot, "g": b["roomType"][0], "e": PHASE.get(x["cond"]["phase"], 0), "n": b["buffName"],
+                       "d": text, "v": num(base_value(text, b.get("efficiency"))), "t": tag}
+                if COND.search(LEAD.sub("", text)) or "the same" in text:
+                    row["q"] = 1
+                sk.append(row)
+        if sk:
+            rows.append({"n": o["n"], "r": o["r"], "s": sk})
+    path = os.path.join(out, "baseskills.json")
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("[\n" + ",\n".join(json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in rows) + "\n]\n")
+    alls = [s for r in rows for s in r["s"]]
+    print("baseskills.json", len(rows), "operators", len(alls), "skills", os.path.getsize(path), "bytes;",
+          sum(1 for s in alls if s["v"] == 0), "with no number,", sum(1 for s in alls if s.get("q")), "flagged to check")
+    for nm in ("Exusiai", "Texas", "Gravel", "Vermeil", "Ptilopsis"):
+        r = next((r for r in rows if r["n"] == nm), None)
+        print(" ", nm, json.dumps(r["s"] if r else None)[:420])
+
 for o in ops:
     del o["id"]
 
