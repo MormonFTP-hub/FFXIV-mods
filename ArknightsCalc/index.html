@@ -99,6 +99,9 @@ main{padding-block:22px 40px}
 .matlist label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
 .matlist button{padding:7px 10px;font-size:13px}
 td small{color:var(--muted);font-weight:400}
+.have{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:12px;color:var(--muted)}
+.have .f-i{width:76px}
+.have .f-i input{padding:4px 6px;font-size:14px}
 td.tw,th.tw{white-space:normal;min-width:120px;text-align:left}
 @media (max-width:520px){.matlist li{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.matlist li>b{grid-column:1/-1}.tabs{flex-wrap:wrap}}
 .meter{height:14px;background:var(--sunk);border:1px solid var(--line)}
@@ -157,7 +160,7 @@ footer{color:var(--muted);font-size:12.5px;padding-block:0 28px}
 footer a{color:inherit}
 @media (max-width:520px){.hero b{font-size:46px}.tabs{margin-left:0;width:100%}.tabs a{flex:1 1 auto;text-align:center;padding-inline:5px;font-size:14px;letter-spacing:.03em}}
 @media (prefers-reduced-motion:no-preference){.tabs a,button{transition:color .12s,filter .12s}}
-@media (max-width:520px){th,td{padding:6px 5px;font-size:13px}td.tw,th.tw{min-width:72px}}
+@media (max-width:520px){th,td{padding:6px 5px;font-size:13px}td.tw,th.tw{min-width:72px}.have{flex-direction:column;align-items:flex-start;gap:2px}.have .f-i{width:64px}}
 </style>
 
 <div class="bar">
@@ -426,7 +429,7 @@ footer a{color:inherit}
 <section class="view" id="view-materials" hidden>
   <div class="lede">
     <h2>Materials and where to farm them</h2>
-    <p>List what you want from the Workshop. The page works out the raw materials and the cheapest stage to farm each one. The starting list is the building materials for the example 2-4-3 base.</p>
+    <p>List what you want from the Workshop. The page works out the raw materials and the cheapest stage to farm each one, minus what you already have. The starting list is the building materials for the example 2-4-3 base.</p>
   </div>
   <div class="cols">
     <div class="stack">
@@ -473,7 +476,8 @@ footer a{color:inherit}
     <div class="body">
       <p>The 66 recipes, their ingredients, LMD cost and Morale cost are the game's own Workshop table (global server). Drop rates are from Penguin Statistics (penguin-stats.io), the player-reported drop database, for stages that are open all the time on the global server: main story, supply stages and permanent side stories.</p>
       <p>For every material the page compares farming it directly with crafting it from smaller materials, and takes whichever needs less Sanity. The stage shown is the one with the least Sanity per drop. Runs are the average: drops are luck, so plan for a few more.</p>
-      <p>Not counted: the other drops you pick up on the same runs, the Workshop's chance of a bonus item, and what you already have of the raw materials. LMD is counted at CE-6: 10,000 LMD for 36 Sanity. Keel cannot be farmed: the four the Control Center needs come from clearing 1-1, 1-8, 3-4 and 4-7 for the first time.</p>
+      <p>Type what you already own in the "Have" box under a material and the runs shrink to cover only the rest. The page remembers those amounts in this browser.</p>
+      <p>Not counted: the other drops you pick up on the same runs, and the Workshop's chance of a bonus item. LMD is counted at CE-6: 10,000 LMD for 36 Sanity. Keel cannot be farmed: the four the Control Center needs come from clearing 1-1, 1-8, 3-4 and 4-7 for the first time.</p>
     </div>
   </details>
 </section>
@@ -620,6 +624,7 @@ function persist(){
   if(pinned) o.__pin=pinned;
   o.__base=baseOps;
   o.__mat=matRows;
+  o.__have=matHave;
   try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){}
 }
 const num = id => { const v=parseFloat($(id).value); return isFinite(v)?v:0; };
@@ -1132,7 +1137,8 @@ function rname(r){
 const rfrom=r=>r.in.map(([i,n])=>n+' '+iname(i)).join(' + ');
 /* recipes the page may choose on its own when breaking a material down (never chip swaps or furniture) */
 const autoRecipe=r=>r.t==='EVOLVE'||r.t==='SKILL'||(r.t==='BUILDING'&&iname(r.o)!=='Furniture Part');
-function planMaterials(rows,withLmd){
+let matHave=saved.__have&&typeof saved.__have==='object'?saved.__have:{};      /* raw materials already owned, by item id */
+function planMaterials(rows,withLmd,have){
   const best=id=>{ const s=WS.items[id]&&WS.items[id].s[0]; return s?s[1]/s[2]:Infinity; };
   const lmdRate=best(LMD_ID), memo={}, busy=new Set();
   /* cheapest way to get one of an item: farm it, or craft it from cheaper things */
@@ -1148,13 +1154,22 @@ function planMaterials(rows,withLmd){
     });
     busy.delete(id); memo[id]=r; return r;
   }
-  const farm={}, craft=new Map(), stuck={}; let lmd=0;
+  /* farm[id] = [everything the list calls for, what is left after the materials already owned] */
+  const farm={}, craft=new Map(), stuck={}, left=Object.assign({},have||{}); let lmd=0;
   function make(x,out){ const times=Math.ceil(out/x.c-1e-9); if(times<=0) return; craft.set(x,(craft.get(x)||0)+times); lmd+=x.lmd*times; x.in.forEach(([i,n])=>need(i,n*times)); }
-  function need(id,q){ const r=route(id); if(r.via==='farm') farm[id]=(farm[id]||0)+q; else if(r.via) make(r.via,q); else stuck[id]=(stuck[id]||0)+q; }
+  function need(id,q){
+    const r=route(id), own=Math.min(+left[id]||0,q); left[id]=(+left[id]||0)-own;
+    if(r.via==='farm'){ const f=farm[id]||(farm[id]=[0,0]); f[0]+=q; f[1]+=q-own; }
+    else if(r.via) make(r.via,q-own);
+    else stuck[id]=(stuck[id]||0)+q-own;
+  }
   rows.forEach(row=>{ const x=recById(row.id); if(x) make(x,Math.max(0,(+row.q||0)-(+row.h||0))); });
-  if(withLmd&&lmd>0) farm[LMD_ID]=(farm[LMD_ID]||0)+lmd;
-  const lines=Object.keys(farm).map(id=>{ const s=WS.items[id].s, runs=Math.ceil(farm[id]/s[0][2]-1e-9); return {id,need:farm[id],s,runs,sanity:runs*s[0][1]}; })
-    .sort((a,b)=>(a.id===LMD_ID)-(b.id===LMD_ID)||b.sanity-a.sanity);
+  if(withLmd&&lmd>0) farm[LMD_ID]=[lmd,Math.max(0,lmd-(+left[LMD_ID]||0))];
+  Object.keys(stuck).forEach(id=>{ if(stuck[id]<=0) delete stuck[id]; });
+  const lines=Object.keys(farm).map(id=>{
+    const s=WS.items[id].s, runsFor=q=>q>0?Math.ceil(q/s[0][2]-1e-9):0, runs=runsFor(farm[id][1]);
+    return {id,gross:farm[id][0],need:farm[id][1],s,runs,sanity:runs*s[0][1],rank:runsFor(farm[id][0])*s[0][1]};
+  }).sort((a,b)=>(a.id===LMD_ID)-(b.id===LMD_ID)||b.rank-a.rank);      /* order ignores what is owned, so rows stay put while typing */
   return {lines,craft:[...craft.entries()].reverse(),stuck,lmd,total:lines.reduce((a,l)=>a+l.sanity,0)};
 }
 function renderMatRows(){
@@ -1175,7 +1190,7 @@ function baseRows(){
 }
 function renderMaterials(){
   if(!WS){ $('m_sanityText').textContent='Sanity in total. Loading the recipes...'; return; }
-  const p=planMaterials(matRows,on('m_lmd'));
+  const p=planMaterials(matRows,on('m_lmd'),matHave);
   $('m_count').textContent=matRows.length+(matRows.length===1?' recipe':' recipes')+' on the list';
   $('m_sanity').textContent=nf(p.total);
   $('m_sanityText').textContent='Sanity in total, on average';
@@ -1183,13 +1198,23 @@ function renderMaterials(){
   const st=Object.keys(p.stuck);
   $('m_stuck').hidden=!st.length;
   $('m_stuck').innerHTML='&#9650; No open stage drops '+st.map(id=>esc(iname(id))).join(', ')+', and nothing here crafts it.';
-  let t='<thead><tr><th>Material</th><th>Need</th><th class="tw">Farm at</th><th>Runs</th><th>Sanity</th></tr></thead><tbody>';
+  /* The table is rebuilt only when its materials change, so a "have" box keeps its cursor while you type. */
+  const tb=$('m_farm'), sig=p.lines.map(l=>l.id).join(',')||'none';
+  if(tb.dataset.sig!==sig){
+    let t='<thead><tr><th>Material</th><th>Need</th><th class="tw">Farm at</th><th>Runs</th><th>Sanity</th></tr></thead><tbody>';
+    p.lines.forEach(l=>{
+      const alt=l.s.slice(1).map(s=>s[0]).join(', '), nm=esc(iname(l.id));
+      t+='<tr data-id="'+l.id+'"><td class="tw">'+nm+'<label class="have">Have<span class="f-i"><input id="m_have_'+l.id+'" type="number" inputmode="numeric" min="0" value="'+(+matHave[l.id]||0)+'" data-have="'+l.id+'" aria-label="How many '+nm+' you have"></span></label></td><td></td>'+
+        '<td class="tw"><b>'+esc(l.s[0][0])+'</b> <small><br>'+nf(l.s[0][2],l.s[0][2]%1?2:0)+' a run for '+nf(l.s[0][1])+' Sanity'+(alt?'<br>or '+esc(alt):'')+'</small></td><td></td><td></td></tr>';
+    });
+    if(!p.lines.length) t+='<tr><td colspan="5">Nothing to farm. Add a recipe on the left.</td></tr>';
+    tb.innerHTML=t+'</tbody>'; tb.dataset.sig=sig;
+  }
   p.lines.forEach(l=>{
-    const alt=l.s.slice(1).map(s=>s[0]).join(', ');
-    t+='<tr><td class="tw">'+esc(iname(l.id))+'</td><td>'+nf(l.need)+'</td><td class="tw"><b>'+esc(l.s[0][0])+'</b> <small><br>'+nf(l.s[0][2],l.s[0][2]%1?2:0)+' a run for '+nf(l.s[0][1])+' Sanity'+(alt?'<br>or '+esc(alt):'')+'</small></td><td>'+nf(l.runs)+'</td><td>'+nf(l.sanity)+'</td></tr>';
+    const tr=tb.querySelector('tr[data-id="'+l.id+'"]'); if(!tr) return;
+    tr.children[1].innerHTML=nf(l.need)+(l.need<l.gross?'<small><br>of '+nf(l.gross)+'</small>':'');
+    tr.children[3].textContent=nf(l.runs); tr.children[4].textContent=nf(l.sanity);
   });
-  if(!p.lines.length) t+='<tr><td colspan="5">Nothing to farm. Add a recipe on the left.</td></tr>';
-  $('m_farm').innerHTML=t+'</tbody>';
   let c='<thead><tr><th class="tw">Craft</th><th>Times</th><th>LMD</th><th>Morale</th></tr></thead><tbody>', morale=0;
   p.craft.forEach(([x,n])=>{ morale+=x.m*n; c+='<tr><td class="tw">'+esc(rname(x))+' <small><br>from '+esc(rfrom(x))+'</small></td><td>'+nf(n)+'</td><td>'+nf(x.lmd*n)+'</td><td>'+nf(x.m*n)+'</td></tr>'; });
   if(!p.craft.length) c+='<tr><td colspan="4">Nothing to craft yet.</td></tr>';
@@ -1197,6 +1222,7 @@ function renderMaterials(){
   $('m_craftLabel').textContent=p.craft.length?nf(p.lmd)+' LMD and '+nf(morale)+' Morale in all':'';
 }
 $('m_rows').addEventListener('input',ev=>{ const t=ev.target, row=matRows&&matRows[+t.dataset.i]; if(row&&(t.dataset.f==='q'||t.dataset.f==='h')) row[t.dataset.f]=Math.max(0,parseFloat(t.value)||0); });
+$('m_farm').addEventListener('input',ev=>{ const id=ev.target.dataset.have; if(id) matHave[id]=Math.max(0,parseFloat(ev.target.value)||0); });
 $('m_rows').addEventListener('click',ev=>{ const t=ev.target; if(t.dataset.f!=='x') return; matRows.splice(+t.dataset.i,1); renderMatRows(); refresh(); });
 ['input','change'].forEach(ev=>$('m_add').addEventListener(ev,()=>{
   const id=$('m_add').value; if(!id||!WS) return;
