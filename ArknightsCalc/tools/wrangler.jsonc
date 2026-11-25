@@ -1,0 +1,10 @@
+// Cloudflare settings for the calculator's website: https://arknights-calc.lack-age-im.workers.dev
+// After tools/build_site.py, from the repo root: npx wrangler deploy --config ArknightsCalc/tools/wrangler.jsonc
+{
+  "name": "arknights-calc",
+  "compatibility_date": "2026-10-23",
+  "assets": { "directory": "../build/site" },
+  "workers_dev": true,
+  // No per-version preview addresses: only the current upload is reachable.
+  "preview_urls": false
+}
