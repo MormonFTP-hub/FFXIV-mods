@@ -1,0 +1,688 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Arknights Field Calculator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: a black command bar with three tools; each tool is inputs on the left, the answer and its chart on the right. */
+:root{
+  --bg:#e9ecee; --panel:#fcfcfb; --sunk:#f1f3f4;
+  --ink:#14171a; --ink-2:#4a5158; --muted:#7d848b; --line:#d3d8dc; --grid:#e3e6e8; --axis:#bfc5ca;
+  --bar-bg:#15181b; --bar-fg:#f2f4f5; --bar-dim:#9aa2a9;
+  --accent:#007db5; --accent-ink:#ffffff; --accent-soft:#dff1f9;
+  --s1:#2a78d6; --s2:#eb6834;
+  --warn:#fab219; --warn-ink:#4d3500; --warn-soft:#fdf0cf;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101214; --panel:#1a1b1c; --sunk:#232527;
+    --ink:#eef0f1; --ink-2:#bcc2c7; --muted:#878e94; --line:#31363a; --grid:#2a2d30; --axis:#3d4246;
+    --bar-bg:#000000; --bar-fg:#f2f4f5; --bar-dim:#8d959c;
+    --accent:#35aee8; --accent-ink:#06202c; --accent-soft:#12303f;
+    --s1:#3987e5; --s2:#d95926;
+    --warn:#fab219; --warn-ink:#fbd98a; --warn-soft:#3a2c08;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101214; --panel:#1a1b1c; --sunk:#232527;
+  --ink:#eef0f1; --ink-2:#bcc2c7; --muted:#878e94; --line:#31363a; --grid:#2a2d30; --axis:#3d4246;
+  --bar-bg:#000000; --bar-fg:#f2f4f5; --bar-dim:#8d959c;
+  --accent:#35aee8; --accent-ink:#06202c; --accent-soft:#12303f;
+  --s1:#3987e5; --s2:#d95926;
+  --warn:#fab219; --warn-ink:#fbd98a; --warn-soft:#3a2c08;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:.01em}
+p{margin:0}
+
+/* command bar */
+.bar{background:var(--bar-bg);color:var(--bar-fg);margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;padding-block:14px 0}
+.brand{display:flex;flex-direction:column;gap:2px;padding-bottom:12px}
+.brand small{font-family:var(--display);font-weight:500;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--bar-dim)}
+.brand h1{font-size:28px;font-weight:700;line-height:1;text-transform:uppercase}
+.tabs{display:flex;gap:2px;margin-left:auto}
+.tabs a{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--bar-dim);padding:10px 16px 12px;border-top:3px solid transparent}
+.tabs a:hover{color:var(--bar-fg)}
+.tabs a[aria-current="page"]{background:var(--bg);color:var(--ink);border-top-color:var(--accent)}
+.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hazard{height:6px;background:repeating-linear-gradient(-45deg,var(--bar-bg) 0 8px,var(--accent) 8px 16px)}
+
+main{padding-block:22px 40px}
+.view{display:flex;flex-direction:column;gap:18px}
+.lede{display:flex;flex-direction:column;gap:4px;max-width:65ch}
+.lede h2{font-size:26px;font-weight:700;text-transform:uppercase}
+.lede p{color:var(--ink-2)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+
+.panel{background:var(--panel);border:1px solid var(--line);min-width:0}
+.panel>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--line)}
+.panel>header h3{font-size:16px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.panel>header span{font-size:12.5px;color:var(--muted)}
+.panel .body{padding:14px;display:flex;flex-direction:column;gap:14px}
+.sub{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* fields */
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f-l{font-size:13px;font-weight:500;color:var(--ink-2)}
+.f-i{display:flex;align-items:stretch;border:1px solid var(--line);background:var(--sunk)}
+.f-i:focus-within{border-color:var(--accent)}
+.f-i input,.f-i select{flex:1;min-width:0;width:100%;border:0;background:transparent;color:var(--ink);font:500 16px var(--body);font-variant-numeric:tabular-nums;padding:7px 9px;outline:0}
+.f-i input:disabled{color:var(--muted)}
+.f-s{display:flex;align-items:center;padding:0 9px 0 0;font-size:13px;color:var(--muted)}
+.f-h{font-size:12px;line-height:1.35;color:var(--muted)}
+.f.wide{grid-column:1/-1}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--ink-2)}
+.check input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--accent);flex:none}
+.check small{display:block;font-size:12px;color:var(--muted)}
+.checks{display:flex;flex-direction:column;gap:9px}
+.seg{display:flex;border:1px solid var(--line);background:var(--sunk)}
+.seg label{flex:1;text-align:center;position:relative}
+.seg input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg span{display:block;padding:8px 6px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+
+/* results */
+.hero{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.hero b{font-family:var(--display);font-weight:700;font-size:58px;line-height:.95;font-variant-numeric:tabular-nums}
+.hero span{color:var(--ink-2);max-width:34ch}
+.chip{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;background:var(--warn-soft);color:var(--warn-ink);border-left:4px solid var(--warn);padding:5px 10px;font-size:13px;font-weight:500}
+.stats{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0;margin:0}
+.stats dt,.stats dd{margin:0;padding:7px 0;border-top:1px solid var(--grid)}
+.stats dt{color:var(--ink-2)}
+.stats dd{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;padding-left:14px}
+.stats dd small{font-weight:400;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:600 15px var(--display);letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+button:hover{filter:brightness(1.08)}
+
+/* charts */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.chart .tick{fill:var(--muted);font:12px var(--body);font-variant-numeric:tabular-nums}
+.chart .axl{fill:var(--ink-2);font:500 12px var(--body)}
+.chart .lab{fill:var(--ink);font:600 12.5px var(--body)}
+.tip{position:absolute;top:8px;pointer-events:none;background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;font-size:13px;white-space:nowrap;z-index:2}
+.tip b{display:block;font-weight:600;margin-bottom:2px}
+.tip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.tip div{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:7px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 10px;text-align:right;border-top:1px solid var(--grid);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{border-top:0;font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+tr.you td{background:var(--accent-soft);font-weight:600}
+
+details{border:1px solid var(--line);background:var(--panel)}
+summary{cursor:pointer;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+details .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;max-width:75ch;color:var(--ink-2);font-size:14px}
+details code{font:13px ui-monospace,Consolas,monospace;background:var(--sunk);padding:1px 5px;color:var(--ink)}
+footer{color:var(--muted);font-size:12.5px;padding-block:0 28px}
+footer a{color:inherit}
+@media (max-width:520px){.hero b{font-size:46px}.tabs{margin-left:0;width:100%}.tabs a{flex:1;text-align:center;padding-inline:6px;font-size:15px}}
+@media (prefers-reduced-motion:no-preference){.tabs a,button{transition:color .12s,filter .12s}}
+</style>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="brand"><small>Fan-made field tools</small><h1>Arknights Calculator</h1></div>
+    <nav class="tabs" aria-label="Tools">
+      <a href="#damage" data-tab="damage">Damage</a>
+      <a href="#pulls" data-tab="pulls">Headhunting</a>
+      <a href="#sanity" data-tab="sanity">Sanity</a>
+    </nav>
+  </div>
+  <div class="hazard"></div>
+</div>
+
+<main class="wrap">
+
+<!-- ======================= DAMAGE ======================= -->
+<section class="view" id="view-damage">
+  <div class="lede">
+    <h2>Damage per second</h2>
+    <p>Type in an operator's numbers and an enemy's numbers. The chart shows how the damage holds up as the enemy gets tougher. The starting values are an example.</p>
+  </div>
+  <div class="cols">
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Operator</h3><span>from the operator page and skill text</span></header>
+        <div class="body">
+          <div class="seg" role="radiogroup" aria-label="Damage type">
+            <label><input type="radio" name="d_type" id="d_type_phys" value="phys" checked><span>Physical</span></label>
+            <label><input type="radio" name="d_type" id="d_type_arts" value="arts"><span>Arts</span></label>
+            <label><input type="radio" name="d_type" id="d_type_true" value="true"><span>True</span></label>
+          </div>
+          <div class="fields" id="f-atk"></div>
+          <span class="sub">Attack timing</span>
+          <div class="fields" id="f-time"></div>
+          <label class="check"><input type="checkbox" id="d_frames"><span>Snap attack timing to game frames<small>The game runs at 30 steps a second, so real timing lands on 1/30 s steps.</small></span></label>
+          <span class="sub">Ignores enemy DEF or RES</span>
+          <div class="fields" id="f-ign"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Enemy</h3><span>from the wiki's enemy page</span></header>
+        <div class="body">
+          <div class="fields" id="f-enemy"></div>
+          <span class="sub">Debuffs on the enemy</span>
+          <div class="fields" id="f-debuff"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Result</h3><span id="d_typeLabel"></span></header>
+        <div class="body">
+          <div class="hero"><b id="d_dps">0</b><span>damage per second against this enemy</span></div>
+          <div class="chip" id="d_floor" hidden>&#9650; Hitting the 5% minimum. The enemy's DEF or RES blocks almost everything.</div>
+          <dl class="stats" id="d_stats"></dl>
+          <div class="btns">
+            <button id="d_pin" type="button">Pin this setup to compare</button>
+            <button id="d_unpin" type="button" class="ghost" hidden>Clear pinned setup</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3 id="d_chartTitle">Damage per second by enemy DEF</h3></header>
+        <div class="body">
+          <div class="legend" id="d_legend"></div>
+          <div class="chart" id="d_chart"></div>
+          <div class="tablewrap"><table id="d_table"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <details>
+    <summary>How this is worked out</summary>
+    <div class="body">
+      <p>ATK for the hit: <code>floor(ATK &times; (1 + buffs%)) + flat ATK</code>, then times the skill and extra multipliers.</p>
+      <p>Enemy DEF: <code>(DEF &minus; flat reduction) &times; (1 &minus; reduction%)</code>, then the operator's own ignore: minus the flat part, then times <code>(1 &minus; ignore%)</code>. RES works the same way and stays between 0 and 100.</p>
+      <p>Physical hit: <code>ATK &minus; DEF</code>. Arts hit: <code>ATK &times; (1 &minus; RES / 100)</code>. True damage skips both. A hit never does less than 5% of its ATK. Fragile multiplies the result, and only the strongest Fragile counts.</p>
+      <p>Time between attacks: <code>(interval + interval change) &times; 100 / (100 + ASPD bonus)</code>. Total ASPD stays between 20 and 600.</p>
+      <p>Rules are from the Arknights Terra Wiki damage pages. Enter several ATK or DEF percentages as one combined number.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ======================= HEADHUNTING ======================= -->
+<section class="view" id="view-pulls" hidden>
+  <div class="lede">
+    <h2>Headhunting odds</h2>
+    <p>Count the pulls you will have when a banner opens, then see the chance they get you the 6&#9733; you want. The starting values are an example.</p>
+  </div>
+  <div class="cols">
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Savings</h3><span id="p_nowLabel"></span></header>
+        <div class="body">
+          <div class="fields" id="f-save"></div>
+          <label class="check"><input type="checkbox" id="p_useop" checked><span>Turn Originite Prime into Orundum<small>1 Originite Prime = 180 Orundum</small></span></label>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Income until the banner</h3><span id="p_incLabel"></span></header>
+        <div class="body">
+          <div class="fields" id="f-inc"></div>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="p_daily" checked><span>Daily missions<small>100 Orundum a day</small></span></label>
+            <label class="check"><input type="checkbox" id="p_weekly" checked><span>Weekly missions<small>500 Orundum a week</small></span></label>
+            <label class="check"><input type="checkbox" id="p_card"><span>Monthly Card<small>200 Orundum a day</small></span></label>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Banner</h3></header>
+        <div class="body">
+          <div class="fields">
+            <label class="f wide" for="p_kind"><span class="f-l">Banner type</span><span class="f-i"><select id="p_kind">
+              <option value="std1">Standard, one featured 6&#9733; (50%)</option>
+              <option value="std2">Standard, two featured 6&#9733; (25% each)</option>
+              <option value="lim">Limited, two featured 6&#9733; (35% each)</option>
+              <option value="custom">Custom share</option>
+            </select></span></label>
+          </div>
+          <div class="fields" id="f-banner"></div>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="p_link" checked><span>Spend the pulls counted above<small>Untick to type a pull count yourself.</small></span></label>
+            <label class="check"><input type="checkbox" id="p_g150" checked><span>After 150 pulls, the next 6&#9733; is the featured one<small>Works once per banner. On a banner with two featured 6&#9733;, tick it only if the guarantee covers the one you want.</small></span></label>
+            <label class="check" id="p_sparkRow" hidden><input type="checkbox" id="p_spark" checked><span>Trade 300 pulls for the operator<small>Limited banners give one contract per pull; 300 buys the featured 6&#9733;.</small></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <header><h3>Result</h3><span id="p_bannerLabel"></span></header>
+        <div class="body">
+          <div class="hero"><b id="p_chance">0%</b><span id="p_chanceText"></span></div>
+          <dl class="stats" id="p_stats"></dl>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h3>Chance of the operator by pull count</h3></header>
+        <div class="body">
+          <div class="chart" id="p_chart"></div>
+          <div class="tablewrap"><table id="p_table"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <details>
+    <summary>How this is worked out</summary>
+    <div class="body">
+      <p>Each pull has a 2% chance of a 6&#9733;. After 50 pulls without one, the chance goes up by 2% on every pull: 4% on the 51st, 6% on the 52nd, and 100% on the 99th. Getting a 6&#9733; resets the count.</p>
+      <p>When a 6&#9733; appears, it is the one you want with the share shown for the banner type. The page follows every possible run of luck pull by pull and adds up the ones that end with the operator.</p>
+      <p>One pull costs 600 Orundum. Standard banners share one pity count; each limited banner keeps its own, so enter 0 for a limited banner you have not pulled on. The guarantee and the 300-pull trade are counted from your first pull on the banner.</p>
+      <p>Rates are from the Arknights Terra Wiki headhunting page. "Other pulls per month" starts at 5 as a rough figure for certificate-shop and sign-in permits; change it to what you really get.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ======================= SANITY ======================= -->
+<section class="view" id="view-sanity" hidden>
+  <div class="lede">
+    <h2>Sanity and farming</h2>
+    <p>See when your Sanity is full again, and how long a material takes to farm. The starting values are an example.</p>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <header><h3>Refill timer</h3><span>1 Sanity every 6 minutes</span></header>
+      <div class="body">
+        <div class="fields" id="f-san"></div>
+        <div class="hero"><b id="s_full">0 h</b><span id="s_fullText"></span></div>
+        <dl class="stats" id="s_stats"></dl>
+      </div>
+    </div>
+    <div class="panel">
+      <header><h3>Farming plan</h3><span>for one material on one stage</span></header>
+      <div class="body">
+        <div class="fields" id="f-farm"></div>
+        <div class="hero"><b id="s_days">0</b><span id="s_daysText"></span></div>
+        <dl class="stats" id="s_farmStats"></dl>
+      </div>
+    </div>
+  </div>
+  <details>
+    <summary>How this is worked out</summary>
+    <div class="body">
+      <p>Sanity comes back at 1 every 6 minutes, which is 240 a day. The cap is set by your Doctor level: 135 at level 5, 165 at level 35, and 180 from level 117.</p>
+      <p>Average runs: <code>materials needed &divide; drop chance</code>. The "9 times out of 10" line is the number of runs that is enough for 90% of players, since drops are luck. Sanity per material is <code>stage cost &divide; drop chance</code>; lower is better when you compare stages.</p>
+    </div>
+  </details>
+</section>
+
+</main>
+<footer class="wrap">Fan-made. Not affiliated with Hypergryph or Yostar. Game rules from the Arknights Terra Wiki (arknights.wiki.gg). Your numbers are kept in this browser only.</footer>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+const nf = (v,d=0) => (isFinite(v)?v:0).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct = (v,d=1) => v<1&&v>=0.99995 ? 'over 99.99%' : nf(v*100, v>=0.9995&&v<1?2:d)+'%';
+
+/* ---------- field builders ---------- */
+function F(id,label,val,o={}){
+  return `<label class="f${o.wide?' wide':''}" for="${id}"><span class="f-l">${label}</span><span class="f-i"><input id="${id}" type="number" inputmode="decimal" value="${val}" step="${o.step??1}"${o.min!=null?` min="${o.min}"`:''}${o.max!=null?` max="${o.max}"`:''}>${o.suf?`<span class="f-s">${o.suf}</span>`:''}</span>${o.hint?`<span class="f-h">${o.hint}</span>`:''}</label>`;
+}
+const put = (id,html) => { $(id).innerHTML = html; };
+
+put('f-atk',
+  F('d_atk','ATK',820,{min:0,hint:'The ATK shown on the operator page.'})+
+  F('d_atkpct','ATK buffs',80,{suf:'%',hint:'Every +ATK% added together.'})+
+  F('d_atkflat','Flat ATK',0,{hint:'Bard Inspiration and other flat ATK.'})+
+  F('d_mult','Skill damage',100,{suf:'%',min:0,hint:'"Deals 250% ATK" = 250.'})+
+  F('d_mult2','Extra multiplier',100,{suf:'%',min:0,hint:'Talent or module damage multipliers.'})+
+  F('d_hits','Hits per attack',1,{min:1}));
+put('f-time',
+  F('d_int','Attack interval',1.2,{suf:'s',step:0.05,min:0.05})+
+  F('d_intflat','Interval change',0,{suf:'s',step:0.05,hint:'"Attack interval &minus;0.4" = &minus;0.4.'})+
+  F('d_aspd','ASPD bonus',0,{hint:'Every +ASPD added together.'})+
+  F('d_dur','Skill duration',30,{suf:'s',min:0,hint:'For total damage. 0 to skip.'}));
+put('f-ign',
+  F('d_ignflat','Flat amount',0,{min:0})+
+  F('d_ignpct','Percent',0,{suf:'%',min:0,max:100}));
+put('f-enemy',
+  F('e_def','DEF',800,{min:0})+
+  F('e_res','RES',20,{min:0,max:100})+
+  F('e_hp','HP',25000,{min:0,hint:'For time to kill. 0 to skip.'}));
+put('f-debuff',
+  F('e_defflat','DEF down (flat)',0,{min:0})+
+  F('e_defpct','DEF down',0,{suf:'%',min:0,max:100})+
+  F('e_resflat','RES down (flat)',0,{min:0})+
+  F('e_respct','RES down',0,{suf:'%',min:0,max:100})+
+  F('e_frag','Fragile',0,{suf:'%',min:0,hint:'Only the strongest one counts.'}));
+put('f-save',
+  F('p_oru','Orundum',24000,{min:0,step:100})+
+  F('p_op','Originite Prime',30,{min:0})+
+  F('p_permit','Headhunting Permits',8,{min:0})+
+  F('p_ten','Ten-roll Permits',1,{min:0}));
+put('f-inc',
+  F('p_days','Days until the banner',30,{min:0})+
+  F('p_anni','Annihilation per week',1800,{min:0,step:50,hint:'Your weekly Orundum cap.'})+
+  F('p_xoru','Other Orundum per month',600,{min:0,step:100,hint:'The certificate shop sells 600.'})+
+  F('p_xpull','Other pulls per month',5,{min:0,hint:'Shop and sign-in permits.'}));
+put('f-banner',
+  F('p_share','Share for your operator',50,{suf:'%',min:0,max:100,hint:'Chance a 6&#9733; is the one you want.'})+
+  F('p_pity','Pulls since your last 6&#9733;',0,{min:0,max:98})+
+  F('p_pulls','Pulls to spend',0,{min:0}));
+put('f-san',
+  F('s_lvl','Doctor level',120,{min:1,max:120})+
+  F('s_cur','Sanity now',24,{min:0}));
+put('f-farm',
+  F('s_need','Materials needed',40,{min:1})+
+  F('s_rate','Drop chance per run',35,{suf:'%',min:0.1,max:100,step:0.1})+
+  F('s_cost','Sanity per run',18,{min:1})+
+  F('s_extra','Extra Sanity per day',0,{min:0,hint:'Potions and refills, on top of 240.'}));
+
+/* ---------- saved inputs ---------- */
+const KEY='akcalc:v1';
+let saved={}; try{ saved=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ saved={}; }
+const inputs=[...document.querySelectorAll('main input, main select')];
+inputs.forEach(el=>{
+  if(!el.id) return;
+  if(el.id in saved){ if(el.type==='checkbox'||el.type==='radio') el.checked=!!saved[el.id]; else el.value=saved[el.id]; }
+});
+function persist(){
+  const o={}; inputs.forEach(el=>{ if(el.id) o[el.id]=(el.type==='checkbox'||el.type==='radio')?el.checked:el.value; });
+  if(pinned) o.__pin=pinned;
+  try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){}
+}
+const num = id => { const v=parseFloat($(id).value); return isFinite(v)?v:0; };
+const on = id => $(id).checked;
+
+/* ---------- chart ---------- */
+function niceScale(max,n){
+  if(!(max>0)) max=1;
+  const raw=max/n, p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p;
+  const step=(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p;
+  const top=Math.ceil(max/step-1e-9)*step, ticks=[];
+  for(let v=0; v<=top+step/2; v+=step) ticks.push(v);
+  return {top,ticks};
+}
+/* cfg: {xs:[..], series:[{name,color,ys:[..],dash}], xMax, yMax, xTicks, xLabel, yFmt, xFmt, mark:{x,y,label}} */
+function drawChart(host,cfg){
+  const W=Math.max(260,Math.floor(host.clientWidth)); if(!host.clientWidth) return;
+  const H=Math.round(clamp(W*0.52,210,320));
+  const m={l:54,r:18,t:16,b:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const ys=niceScale(cfg.yMax,4), yTop=cfg.yFixed||ys.top, yTicks=cfg.yTicks||ys.ticks;
+  const X=x=>m.l+x/cfg.xMax*iw, Y=y=>m.t+ih-Math.min(y,yTop)/yTop*ih;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${cfg.aria}">`;
+  yTicks.forEach(v=>{ s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(${v===0?'--axis':'--grid'})" stroke-width="1"/><text class="tick" x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${cfg.yFmt(v)}</text>`; });
+  cfg.xTicks.forEach(v=>{ s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${m.t+ih}" y2="${m.t+ih+4}" stroke="var(--axis)" stroke-width="1"/><text class="tick" x="${X(v)}" y="${m.t+ih+17}" text-anchor="middle">${cfg.xFmt(v)}</text>`; });
+  s+=`<text class="axl" x="${m.l+iw/2}" y="${H-5}" text-anchor="middle">${cfg.xLabel}</text>`;
+  cfg.series.forEach(se=>{
+    const d=cfg.xs.map((x,i)=>`${i?'L':'M'}${X(x).toFixed(1)},${Y(se.ys[i]).toFixed(1)}`).join('');
+    s+=`<path d="${d}" fill="none" stroke="var(${se.color})" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${se.dash?' stroke-dasharray="6 4"':''}/>`;
+  });
+  if(cfg.mark && cfg.mark.x<=cfg.xMax){
+    const mx=X(cfg.mark.x), my=Y(cfg.mark.y), right=mx<m.l+iw*0.62, up=my>m.t+26;
+    s+=`<line x1="${mx}" x2="${mx}" y1="${m.t}" y2="${m.t+ih}" stroke="var(--axis)" stroke-width="1" stroke-dasharray="3 3"/>`;
+    s+=`<circle cx="${mx}" cy="${my}" r="5" fill="var(--s1)" stroke="var(--panel)" stroke-width="2"/>`;
+    s+=`<text class="lab" x="${mx+(right?10:-10)}" y="${my+(up?-10:18)}" text-anchor="${right?'start':'end'}" stroke="var(--panel)" stroke-width="4" paint-order="stroke">${cfg.mark.label}</text>`;
+  }
+  s+=`<g class="hov" visibility="hidden"><line y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink-2)" stroke-width="1"/>`;
+  cfg.series.forEach(se=>{ s+=`<circle r="4.5" fill="var(${se.color})" stroke="var(--panel)" stroke-width="2"/>`; });
+  s+=`</g><rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/></svg><div class="tip" hidden></div>`;
+  host.innerHTML=s;
+  const svg=host.querySelector('svg'), hov=host.querySelector('.hov'), tip=host.querySelector('.tip');
+  const line=hov.querySelector('line'), dots=[...hov.querySelectorAll('circle')];
+  function move(ev){
+    const r=svg.getBoundingClientRect(), px=(ev.clientX-r.left)*(W/r.width);
+    const xv=clamp((px-m.l)/iw,0,1)*cfg.xMax;
+    let bi=0,bd=Infinity; cfg.xs.forEach((x,i)=>{ const d=Math.abs(x-xv); if(d<bd){bd=d;bi=i;} });
+    const cx=X(cfg.xs[bi]);
+    line.setAttribute('x1',cx); line.setAttribute('x2',cx);
+    cfg.series.forEach((se,i)=>{ dots[i].setAttribute('cx',cx); dots[i].setAttribute('cy',Y(se.ys[bi])); });
+    hov.setAttribute('visibility','visible');
+    tip.innerHTML=`<b>${cfg.tipX(cfg.xs[bi])}</b>`+cfg.series.map(se=>`<div><i style="background:var(${se.color})"></i>${cfg.series.length>1?se.name+': ':''}${cfg.tipY(se.ys[bi])}</div>`).join('');
+    tip.hidden=false;
+    const sx=cx*(r.width/W), tw=tip.offsetWidth;
+    tip.style.left=(sx+14+tw>r.width ? Math.max(0,sx-14-tw) : sx+14)+'px';
+  }
+  svg.addEventListener('pointermove',move);
+  svg.addEventListener('pointerdown',move);
+  svg.addEventListener('pointerleave',()=>{ hov.setAttribute('visibility','hidden'); tip.hidden=true; });
+}
+
+/* ======================= DAMAGE ======================= */
+let pinned = saved.__pin || null;
+function readDamage(){
+  return {
+    type: on('d_type_arts')?'arts':on('d_type_true')?'true':'phys',
+    atk:num('d_atk'), atkpct:num('d_atkpct'), atkflat:num('d_atkflat'), mult:num('d_mult'), mult2:num('d_mult2'),
+    hits:Math.max(1,Math.round(num('d_hits'))), int:num('d_int'), intflat:num('d_intflat'), aspd:num('d_aspd'), dur:num('d_dur'),
+    frames:on('d_frames'), ignflat:num('d_ignflat'), ignpct:num('d_ignpct'),
+    def:num('e_def'), res:num('e_res'), hp:num('e_hp'),
+    defflat:num('e_defflat'), defpct:num('e_defpct'), resflat:num('e_resflat'), respct:num('e_respct'), frag:num('e_frag')
+  };
+}
+function calcDamage(v){
+  const atk=Math.max(0, Math.floor(v.atk*(1+v.atkpct/100))+v.atkflat);
+  const hitAtk=atk*(v.mult/100)*(v.mult2/100);
+  const def=Math.max(0,(v.def-v.defflat)*(1-clamp(v.defpct,0,100)/100));
+  const res=clamp((v.res-v.resflat)*(1-clamp(v.respct,0,100)/100),0,100);
+  const ign=1-clamp(v.ignpct,0,100)/100;
+  const defEff=Math.max(0,def-v.ignflat)*ign, resEff=clamp(Math.max(0,res-v.ignflat)*ign,0,100);
+  const floor=0.05*hitAtk; let raw;
+  if(v.type==='phys') raw=hitAtk-defEff; else if(v.type==='arts') raw=hitAtk*(1-resEff/100); else raw=hitAtk;
+  const floored=v.type!=='true' && hitAtk>0 && raw<floor;
+  const hit=Math.max(raw,v.type==='true'?0:floor)*(1+Math.max(0,v.frag)/100);
+  const aspd=clamp(100+v.aspd,20,600);
+  let interval=Math.max(1/30,(v.int+v.intflat))*100/aspd;
+  if(v.frames) interval=Math.max(1,Math.round(interval*30))/30;
+  const perAttack=hit*v.hits, dps=perAttack/interval;
+  return {atk,hitAtk,defEff,resEff,hit,perAttack,interval,dps,floored,aspd};
+}
+const TYPE_NAME={phys:'Physical',arts:'Arts',true:'True'};
+function renderDamage(){
+  const v=readDamage(), r=calcDamage(v);
+  $('d_dps').textContent=nf(r.dps, r.dps<100?1:0);
+  $('d_typeLabel').textContent=TYPE_NAME[v.type]+' damage';
+  $('d_floor').hidden=!r.floored;
+  let rows=[
+    ['ATK for each hit', nf(r.hitAtk)],
+    v.type==='phys'?['Enemy DEF after debuffs', nf(r.defEff)]:v.type==='arts'?['Enemy RES after debuffs', nf(r.resEff,1)]:['Enemy DEF and RES','ignored'],
+    ['Damage per hit', nf(r.hit, r.hit<100?1:0)],
+  ];
+  if(v.hits>1) rows.push(['Damage per attack <small>('+v.hits+' hits)</small>', nf(r.perAttack)]);
+  rows.push(['Time between attacks', nf(r.interval,3)+' s <small>(ASPD '+nf(r.aspd)+')</small>']);
+  if(v.hp>0 && r.perAttack>0){ const n=Math.ceil(v.hp/r.perAttack); rows.push(['Attacks to kill', nf(n)+' <small>(about '+nf(n*r.interval,1)+' s)</small>']); }
+  if(v.dur>0){ const n=Math.max(1,Math.floor(v.dur/r.interval)); rows.push(['Total over '+nf(v.dur, v.dur%1?1:0)+' s', nf(n*r.perAttack)+' <small>('+nf(n)+' attacks)</small>']); }
+  let pv=null, pr=null;
+  if(pinned){
+    pv=Object.assign({},pinned,{def:v.def,res:v.res,hp:v.hp}); pr=calcDamage(pv);
+    const diff=pr.dps>0?(r.dps/pr.dps-1)*100:0;
+    rows.push(['Pinned setup <small>('+TYPE_NAME[pv.type]+', same enemy)</small>', nf(pr.dps, pr.dps<100?1:0)+' DPS <small>(this one is '+(diff>=0?'+':'&minus;')+nf(Math.abs(diff),1)+'%)</small>']);
+  }
+  $('d_stats').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+  $('d_unpin').hidden=!pinned;
+  $('d_pin').textContent=pinned?'Replace pinned setup':'Pin this setup to compare';
+
+  /* chart: sweep the stat that matters for the current damage type */
+  const byRes=v.type==='arts';
+  const xMax=byRes?100:Math.max(2000, Math.ceil(v.def*1.25/500)*500);
+  const N=100, xs=[]; for(let i=0;i<=N;i++) xs.push(xMax*i/N);
+  const sweep=base=>xs.map(x=>calcDamage(Object.assign({},base,byRes?{res:x}:{def:x})).dps);
+  const series=[{name:'This setup',color:'--s1',ys:sweep(v)}];
+  if(pv) series.push({name:'Pinned setup',color:'--s2',ys:sweep(pv),dash:false});
+  const yMax=Math.max(1,...series.map(s=>Math.max(...s.ys)));
+  const xt=byRes?[0,20,40,60,80,100]:niceScale(xMax,5).ticks.filter(t=>t<=xMax);
+  const stat=byRes?'RES':'DEF';
+  $('d_chartTitle').textContent='Damage per second by enemy '+stat;
+  $('d_legend').innerHTML=series.length>1?series.map(s=>`<span><i style="background:var(${s.color})"></i>${s.name}</span>`).join(''):'';
+  $('d_legend').hidden=series.length<2;
+  const fmtK=n=>n>=10000?nf(n/1000,n%1000?1:0)+'k':nf(n);
+  drawChart($('d_chart'),{xs,series,xMax,yMax,xTicks:xt,xLabel:'Enemy '+stat+' before debuffs',yFmt:fmtK,xFmt:v=>nf(v),
+    aria:'Line chart of damage per second against enemy '+stat,
+    mark:{x:byRes?v.res:v.def,y:r.dps,label:'This enemy: '+nf(r.dps)},
+    tipX:x=>stat+' '+nf(x),tipY:y=>nf(y)+' DPS'});
+  const pts=byRes?[0,10,20,30,50,70,90]:[0,300,600,1000,1500,2000,3000];
+  let t='<thead><tr><th>Enemy '+stat+'</th><th>This setup</th>'+(pv?'<th>Pinned</th><th>Difference</th>':'')+'</tr></thead><tbody>';
+  pts.forEach(x=>{
+    const a=calcDamage(Object.assign({},v,byRes?{res:x}:{def:x})).dps;
+    t+='<tr><td>'+nf(x)+'</td><td>'+nf(a)+'</td>';
+    if(pv){ const b=calcDamage(Object.assign({},pv,byRes?{res:x}:{def:x})).dps; t+='<td>'+nf(b)+'</td><td>'+(b>0?(a>=b?'+':'&minus;')+nf(Math.abs(a/b-1)*100,1)+'%':'')+'</td>'; }
+    t+='</tr>';
+  });
+  $('d_table').innerHTML=t+'</tbody>';
+}
+$('d_pin').addEventListener('click',()=>{ pinned=readDamage(); persist(); renderDamage(); });
+$('d_unpin').addEventListener('click',()=>{ pinned=null; persist(); renderDamage(); });
+
+/* ======================= HEADHUNTING ======================= */
+const rate6 = p => p<50 ? 0.02 : Math.min(1, 0.02+0.02*(p-49));
+/* returns, for n = 0..maxN: chance of the wanted operator, chance of any 6-star, average 6-stars */
+function pullCurve(o){
+  const start=clamp(Math.round(o.pity),0,98);
+  let miss=new Float64Array(99); miss[start]=1;      // no wanted operator yet, by pity count
+  let all=new Float64Array(99); all[start]=1;        // every run, by pity count
+  let noSix=1, exp6=0;
+  const want=[0], any=[0], avg=[0];
+  for(let n=1;n<=o.maxN;n++){
+    const s=(o.g150 && n>150)?1:o.share;
+    const nm=new Float64Array(99), na=new Float64Array(99);
+    for(let p=0;p<99;p++){
+      const r=rate6(p);
+      if(miss[p]>0){ nm[0]+=miss[p]*r*(1-s); if(p<98) nm[p+1]+=miss[p]*(1-r); }
+      if(all[p]>0){ exp6+=all[p]*r; na[0]+=all[p]*r; if(p<98) na[p+1]+=all[p]*(1-r); }
+    }
+    noSix*=1-rate6(Math.min(98,start+n-1));
+    miss=nm; all=na;
+    let f=0; for(let p=0;p<99;p++) f+=miss[p];
+    if(o.spark && n>=300){ f=0; miss=new Float64Array(99); }
+    want.push(1-f); any.push(1-noSix); avg.push(exp6);
+  }
+  return {want,any,avg};
+}
+function renderPulls(){
+  const kind=$('p_kind').value, days=Math.max(0,num('p_days'));
+  const have=num('p_oru')+(on('p_useop')?num('p_op')*180:0);
+  const nowPulls=Math.floor(have/600)+num('p_permit')+10*num('p_ten');
+  const income=days*(on('p_daily')?100:0)+days/7*(on('p_weekly')?500:0)+days/7*num('p_anni')+days*(on('p_card')?200:0)+days/30*num('p_xoru');
+  const laterPulls=Math.floor((have+income)/600)+num('p_permit')+10*num('p_ten')+Math.floor(days/30*num('p_xpull'));
+  $('p_nowLabel').textContent=nf(nowPulls)+' pulls right now';
+  $('p_incLabel').textContent='+'+nf(Math.max(0,laterPulls-nowPulls))+' pulls in '+nf(days)+' days';
+  const link=on('p_link'); $('p_pulls').disabled=link; if(link) $('p_pulls').value=laterPulls;
+  const N=Math.max(0,Math.round(num('p_pulls')));
+  const shareEl=$('p_share'); shareEl.disabled=kind!=='custom';
+  if(kind==='std1') shareEl.value=50; else if(kind==='std2') shareEl.value=25; else if(kind==='lim') shareEl.value=35;
+  const share=clamp(num('p_share'),0,100)/100;
+  $('p_sparkRow').hidden=kind!=='lim';
+  const spark=kind==='lim'&&on('p_spark');
+  const maxN=Math.max(400,N);
+  const c=pullCurve({share,pity:num('p_pity'),g150:on('p_g150'),spark,maxN});
+  const ch=c.want[Math.min(N,maxN)];
+  $('p_chance').textContent=pct(ch);
+  $('p_chanceText').textContent='chance of at least one copy of the 6★ you want in '+nf(N)+' pulls';
+  $('p_bannerLabel').textContent=$('p_kind').selectedOptions[0].textContent;
+  const need=t=>{ for(let n=0;n<=maxN;n++) if(c.want[n]>=t) return n; return null; };
+  $('p_stats').innerHTML=[
+    ['Pulls when the banner opens', nf(laterPulls)+' <small>('+nf(nowPulls)+' now)</small>'],
+    ['Orundum when the banner opens', nf(have+income)],
+    ['Chance of any 6★', pct(c.any[Math.min(N,maxN)])],
+    ['Average 6★ operators', nf(c.avg[Math.min(N,maxN)],2)],
+    ['Chance you miss the operator', pct(1-ch)]
+  ].map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+  const n99=need(0.99)||maxN;
+  const xMax=clamp(Math.ceil(Math.max(N*1.15,n99+20,150)/50)*50,150,maxN);
+  const xs=[]; for(let n=0;n<=xMax;n++) xs.push(n);
+  drawChart($('p_chart'),{xs,series:[{name:'Chance',color:'--s1',ys:xs.map(n=>c.want[n]*100)}],xMax,yMax:100,yFixed:100,yTicks:[0,25,50,75,100],
+    xTicks:niceScale(xMax,5).ticks.filter(t=>t<=xMax),xLabel:'Pulls spent on the banner',yFmt:v=>v+'%',xFmt:v=>nf(v),
+    aria:'Line chart of the chance of getting the operator by number of pulls',
+    mark:N>0?{x:N,y:ch*100,label:'You: '+pct(ch)}:null,
+    tipX:x=>nf(x)+' pulls',tipY:y=>nf(y,1)+'% chance'});
+  let t='<thead><tr><th>To reach</th><th>Pulls</th><th>Orundum</th><th>Short by</th></tr></thead><tbody>';
+  /* certain: the 300-pull trade, or a 6-star on pull 150 followed by the longest possible wait (99 pulls) */
+  const certain=Math.min(spark?300:Infinity, on('p_g150')?249:Infinity);
+  [[0.5,'50% chance'],[0.75,'75% chance'],[0.9,'90% chance'],[0.99,'99% chance'],[2,'Certain']].forEach(([p,l])=>{
+    const n=p>1?(isFinite(certain)?certain:null):need(p);
+    if(n==null){ t+='<tr><td>'+l+'</td><td>'+(p>1?'never certain':'over '+nf(maxN))+'</td><td></td><td></td></tr>'; return; }
+    t+='<tr'+(N>=n?' class="you"':'')+'><td>'+l+'</td><td>'+nf(n)+'</td><td>'+nf(n*600)+'</td><td>'+(N>=n?'covered':nf(n-N)+' pulls')+'</td></tr>';
+  });
+  $('p_table').innerHTML=t+'</tbody>';
+}
+$('p_kind').addEventListener('change',()=>{ const k=$('p_kind').value; $('p_g150').checked=(k==='std1'); if(k==='lim') $('p_spark').checked=true; });
+
+/* ======================= SANITY ======================= */
+function sanityCap(l){
+  l=clamp(Math.round(l),1,120);
+  if(l<=5) return 125+2*l;
+  if(l<=35) return 130+l;
+  const t=[[117,180],[113,179],[109,178],[105,177],[101,176],[85,175],[80,174],[75,173],[70,172],[65,171],[60,170],[55,169],[50,168],[45,167],[40,166]];
+  for(const [L,c] of t) if(l>=L) return c;
+  return 165;
+}
+function dur(mins){ const h=Math.floor(mins/60), m=Math.round(mins%60); return h?(h+' h'+(m?' '+m+' min':'')):(m+' min'); }
+function runsFor(need,p,conf){
+  if(p>=1) return need;
+  let lp=need*Math.log(p), cum=Math.exp(lp), n=need;
+  while(cum<conf && n<2e6){ lp+=Math.log(n/(n-need+1))+Math.log(1-p); n++; cum+=Math.exp(lp); }
+  return n;
+}
+function renderSanity(){
+  const cap=sanityCap(num('s_lvl')), cur=Math.max(0,num('s_cur')), left=Math.max(0,cap-cur), mins=left*6;
+  $('s_full').textContent=left?dur(mins):'Full';
+  const when=new Date(Date.now()+mins*60000), today=new Date();
+  const dayDiff=Math.round((new Date(when.getFullYear(),when.getMonth(),when.getDate())-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/864e5);
+  const clock=when.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  $('s_fullText').textContent=left?'until Sanity is full, at '+clock+(dayDiff===0?' today':dayDiff===1?' tomorrow':' in '+dayDiff+' days'):'Sanity is at the cap, so new Sanity is being lost';
+  $('s_stats').innerHTML=[
+    ['Sanity cap at level '+clamp(Math.round(num('s_lvl')),1,120), nf(cap)],
+    ['Sanity still to come', nf(left)],
+    ['A full bar from empty takes', dur(cap*6)],
+    ['Sanity per day', '240']
+  ].map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+
+  const need=Math.max(1,Math.round(num('s_need'))), p=clamp(num('s_rate'),0.1,100)/100, cost=Math.max(1,num('s_cost')), perDay=240+Math.max(0,num('s_extra'));
+  const avgRuns=need/p, r90=runsFor(need,p,0.9), days=avgRuns*cost/perDay;
+  $('s_days').textContent=nf(days, days<10?1:0);
+  $('s_daysText').textContent=(days===1?'day':'days')+' of Sanity on average, at '+nf(perDay)+' a day';
+  $('s_farmStats').innerHTML=[
+    ['Average runs', nf(Math.ceil(avgRuns))],
+    ['Average Sanity', nf(Math.ceil(avgRuns)*cost)],
+    ['Enough runs 9 times out of 10', nf(r90)+' <small>('+nf(r90*cost)+' Sanity, '+nf(r90*cost/perDay,1)+' days)</small>'],
+    ['Sanity per material', nf(cost/p,1)]
+  ].map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+}
+
+/* ---------- routing and wiring ---------- */
+const RENDER={damage:renderDamage,pulls:renderPulls,sanity:renderSanity};
+const fromHash=()=>{ const h=(location.hash||'').slice(1); return RENDER[h]?h:null; };
+let tab=fromHash()||'damage';
+function current(){ return tab; }
+document.querySelectorAll('.tabs a').forEach(a=>a.addEventListener('click',ev=>{
+  ev.preventDefault(); tab=a.dataset.tab; show();
+  try{ location.hash=tab; }catch(e){}
+}));
+function show(){
+  Object.keys(RENDER).forEach(k=>{ $('view-'+k).hidden=(k!==tab); });
+  document.querySelectorAll('.tabs a').forEach(a=>{ if(a.dataset.tab===tab) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  RENDER[tab]();
+}
+function refresh(){ RENDER[current()](); persist(); }
+document.querySelector('main').addEventListener('input',refresh);
+document.querySelector('main').addEventListener('change',refresh);
+window.addEventListener('hashchange',()=>{ const h=fromHash(); if(h && h!==tab){ tab=h; show(); } });
+let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>RENDER[current()](),120); });
+show();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>RENDER[current()]());
+window.__ak={calcDamage,pullCurve,sanityCap,runsFor};
+})();
+</script>
